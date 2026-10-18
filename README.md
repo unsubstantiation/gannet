@@ -30,7 +30,7 @@ Install from an ordinary PowerShell window:
 
 ```powershell
 git clone https://github.com/nuipona/gannet.git
-cd frigate-windows
+cd gannet
 py -3.12 bootstrap_windows.py
 powershell -ExecutionPolicy Bypass -File .\run_frigate.ps1
 ```

@@ -79,7 +79,8 @@ from frigate.record.export import (
     export_video_path,
     validate_ffmpeg_args,
 )
-from frigate.util.path import sanitize_contained_path
+from frigate.util.path import is_same_path, rename_path, sanitize_contained_path
+from frigate.util.platform import is_subpath
 from frigate.util.time import is_current_hour
 
 logger = logging.getLogger(__name__)
@@ -988,8 +989,25 @@ async def export_rename(event_id: str, body: ExportRenameBody, request: Request)
 
     # move the file first so a rename that can't happen leaves the row alone
     if moved:
+        # A POSIX rename can replace an existing file, while Windows refuses
+        # the move. Reject collisions before moving so the same request answers
+        # 409 on both platforms and never overwrites another export. rename_path
+        # handles a case-only rename, where Windows considers both spellings
+        # the same path.
+        if os.path.exists(new_path) and not is_same_path(old_path, new_path):
+            logger.warning(
+                "Export %s cannot be renamed, %s is taken", event_id, new_path
+            )
+            return JSONResponse(
+                content={
+                    "success": False,
+                    "message": "Another export already uses that name.",
+                },
+                status_code=409,
+            )
+
         try:
-            os.rename(old_path, new_path)
+            rename_path(old_path, new_path)
         except OSError:
             logger.exception("Failed to rename export file for %s", event_id)
             return JSONResponse(
@@ -1006,7 +1024,7 @@ async def export_rename(event_id: str, body: ExportRenameBody, request: Request)
         # the queue database has no transactions, so undo the move by hand
         if moved:
             with contextlib.suppress(OSError):
-                os.rename(new_path, old_path)
+                rename_path(new_path, old_path)
 
         if isinstance(err, IntegrityError):
             logger.warning(
@@ -1183,21 +1201,51 @@ async def get_export(export_id: str, request: Request):
         )
 
 
+#: the executable name ffmpeg has on this platform, without the extension
+FFMPEG_PROCESS_NAME = "ffmpeg"
+
+
+def _is_ffmpeg_process(process: psutil.Process) -> bool:
+    """Whether a process is ffmpeg, whatever this platform calls it.
+
+    Windows reports the executable as ``ffmpeg.exe``, so comparing the name
+    against ``ffmpeg`` alone never matched and the in-progress export guard
+    below never fired.
+    """
+    name = process.name()
+
+    if not name:
+        return False
+
+    return os.path.splitext(name)[0].lower() == FFMPEG_PROCESS_NAME
+
+
 def _get_files_in_use() -> set[str]:
-    """Get set of export filenames currently in use by ffmpeg."""
+    """Get set of export filenames currently in use by ffmpeg.
+
+    The names are lower cased because Windows file names are case
+    insensitive, so an export called ``Package thief.mp4`` is the same file as
+    one called ``package thief.mp4``.
+    """
     files_in_use: set[str] = set()
+
     for process in psutil.process_iter():
         try:
-            if process.name() != "ffmpeg":
+            if not _is_ffmpeg_process(process):
                 continue
             file_list = process.open_files()
             if file_list:
                 for nt in file_list:
-                    if nt.path.startswith(EXPORT_DIR):
-                        files_in_use.add(nt.path.split("/")[-1])
+                    if is_subpath(nt.path, EXPORT_DIR):
+                        files_in_use.add(os.path.basename(nt.path).lower())
         except psutil.Error:
             continue
     return files_in_use
+
+
+def _export_file_name(path: str) -> str:
+    """The file name of an export, lower cased for comparison."""
+    return os.path.basename(path).lower()
 
 
 @router.post(
@@ -1219,7 +1267,7 @@ def bulk_delete_exports(body: ExportBulkDeleteBody):
     files_in_use = _get_files_in_use()
 
     for export in exports:
-        if export.video_path.split("/")[-1] in files_in_use:
+        if _export_file_name(export.video_path) in files_in_use:
             return JSONResponse(
                 content={
                     "success": False,

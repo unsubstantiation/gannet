@@ -1,14 +1,18 @@
 """Tests for safe filesystem path construction."""
 
+import ntpath
 import os
 import shutil
 import tempfile
 import unittest
+from unittest.mock import MagicMock, patch
 
 from frigate.const import TRIGGER_DIR
 from frigate.util.path import (
     get_trigger_thumbnail_path,
     is_contained_in,
+    is_same_path,
+    rename_path,
     safe_join,
     sanitize_contained_path,
     sanitize_path_component,
@@ -73,6 +77,8 @@ class TestSafeJoin(unittest.TestCase):
 
 
 class TestIsContainedIn(unittest.TestCase):
+    base = "/media/frigate/clips"
+
     def test_rejects_sibling_sharing_a_name_prefix(self):
         self.assertFalse(
             is_contained_in("/media/frigate/clips_evil/x.webp", "/media/frigate/clips")
@@ -97,6 +103,120 @@ class TestIsContainedIn(unittest.TestCase):
 
     def test_rejects_uncomparable_paths(self):
         self.assertFalse(is_contained_in("relative/x", "/media/frigate/clips"))
+
+    def test_case_follows_the_platform(self):
+        """Windows resolves a path that differs only in case to the same file.
+
+        ``os.path.commonpath`` reports the case of the path it was handed, so
+        comparing it to the base directory rejected a path the filesystem
+        resolves to a file inside that directory.
+        """
+        path = os.path.join(self.base, "A", "b.webp")
+        base = os.path.join(self.base, "a")
+
+        if os.name == "nt":
+            self.assertTrue(is_contained_in(path, base))
+        else:
+            self.assertFalse(is_contained_in(path, base))
+
+
+class TestWindowsPathComparisons(unittest.TestCase):
+    """Exercise Windows path semantics on every CI platform."""
+
+    def test_containment_is_case_insensitive_but_component_aware(self):
+        with patch("frigate.util.path.os.path", ntpath):
+            self.assertTrue(
+                is_contained_in(
+                    r"C:\Frigate\Media\Clips\A.webp",
+                    r"c:\frigate\media\clips",
+                )
+            )
+            self.assertFalse(
+                is_contained_in(
+                    r"C:\Frigate\Media\Clips_evil\A.webp",
+                    r"c:\frigate\media\clips",
+                )
+            )
+
+    def test_same_path_ignores_case(self):
+        with patch("frigate.util.path.os.path", ntpath):
+            self.assertTrue(
+                is_same_path(
+                    r"C:\Frigate\Media\Clips",
+                    r"c:\frigate\media\clips",
+                )
+            )
+            self.assertFalse(
+                is_same_path(
+                    r"C:\Frigate\Media\Clips",
+                    r"D:\Frigate\Media\Clips",
+                )
+            )
+
+
+class TestRenamePath(unittest.TestCase):
+    """Windows needs a temporary hop for case-only path renames."""
+
+    def test_case_only_windows_rename_uses_a_temporary_sibling(self):
+        source = r"C:\Frigate\Media\Clips"
+        destination = r"c:\frigate\media\clips"
+
+        with (
+            patch("frigate.util.path.os.path", ntpath),
+            patch("frigate.util.path.os.name", "nt"),
+            patch("frigate.util.path.os.rename") as rename,
+        ):
+            rename_path(source, destination)
+
+        self.assertEqual(rename.call_count, 2)
+        first_source, temporary = rename.call_args_list[0].args
+        second_source, second_destination = rename.call_args_list[1].args
+        self.assertEqual(first_source, source)
+        self.assertEqual(second_source, temporary)
+        self.assertEqual(second_destination, destination)
+        self.assertEqual(ntpath.dirname(temporary), ntpath.dirname(source))
+
+    def test_case_only_rename_restores_the_original_if_the_second_move_fails(self):
+        source = r"C:\Frigate\Media\Clips"
+        destination = r"c:\frigate\media\clips"
+        rename = MagicMock(side_effect=[None, OSError("move failed"), None])
+
+        with (
+            patch("frigate.util.path.os.path", ntpath),
+            patch("frigate.util.path.os.name", "nt"),
+            patch("frigate.util.path.os.rename", rename),
+        ):
+            with self.assertRaisesRegex(OSError, "move failed"):
+                rename_path(source, destination)
+
+        self.assertEqual(rename.call_count, 3)
+        temporary = rename.call_args_list[0].args[1]
+        self.assertEqual(rename.call_args_list[2].args, (temporary, source))
+
+    def test_renaming_a_path_to_itself_is_a_no_op(self):
+        rename = MagicMock()
+
+        with patch("frigate.util.path.os.rename", rename):
+            rename_path("/media/frigate/clips", "/media/frigate/clips")
+
+        rename.assert_not_called()
+
+
+class TestIsSamePath(unittest.TestCase):
+    def test_matches_the_same_path(self):
+        self.assertTrue(is_same_path("/media/frigate/clips", "/media/frigate/clips"))
+
+    def test_rejects_a_different_path(self):
+        self.assertFalse(is_same_path("/media/frigate/clips", "/media/frigate/other"))
+
+    def test_case_follows_the_platform(self):
+        first = os.path.join("/media/frigate", "Clips")
+        second = os.path.join("/media/frigate", "clips")
+
+        if os.name == "nt":
+            self.assertTrue(is_same_path(first, second))
+        else:
+            self.assertFalse(is_same_path(first, second))
 
 
 class TestSanitizeContainedPath(unittest.TestCase):
@@ -128,6 +248,18 @@ class TestSanitizeContainedPath(unittest.TestCase):
             sanitize_contained_path("/media/frigate/clips/a/b.webp", self.base),
             os.path.normpath("/media/frigate/clips/a/b.webp"),
         )
+
+    def test_case_follows_the_platform(self):
+        """A path that only differs in case is inside the base on Windows."""
+        value = os.path.join(self.base, "A", "b.webp")
+        base = os.path.join(self.base, "a")
+
+        result = sanitize_contained_path(value, base)
+
+        if os.name == "nt":
+            self.assertIsNotNone(result)
+        else:
+            self.assertIsNone(result)
 
 
 class TestTriggerThumbnailPath(unittest.TestCase):

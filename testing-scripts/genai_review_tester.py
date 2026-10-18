@@ -8,8 +8,8 @@ Setup:
        output is saved under clips/genai-requests/<review_id>/.
     2. Copy one or more of those folders (numbered frame images plus
        prompt.txt) into testing-scripts/genai-review-examples/.
-    3. Run from the repo root:
-       python3 testing-scripts/genai_review_tester.py
+    3. Activate the project's virtual environment and run from the repo root:
+       python testing-scripts/genai_review_tester.py
 
 The script presents a menu to edit provider settings (provider, base URL,
 optional API key, model) or run an example. Examples are selected with the
@@ -27,12 +27,20 @@ import logging
 import os
 import re
 import sys
-import termios
 import time
-import tty
+from collections.abc import Iterator
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
+
+IS_WINDOWS = os.name == "nt"
+
+if IS_WINDOWS:
+    import msvcrt
+else:  # pragma: no cover - the Windows build never reaches this branch
+    import termios
+    import tty
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
@@ -94,6 +102,137 @@ class TesterSettings:
         )
 
 
+#: the keys the menu understands, normalized across platforms
+KEY_UP = "up"
+KEY_DOWN = "down"
+KEY_ENTER = "enter"
+KEY_ESCAPE = "escape"
+KEY_CANCEL = "cancel"
+
+#: the scan codes the Windows console reports for the arrow keys
+WINDOWS_SCAN_CODES = {"H": KEY_UP, "P": KEY_DOWN}
+
+
+def _read_key_posix() -> str:
+    """Read one key press from a POSIX terminal in cbreak mode."""
+    char = sys.stdin.read(1)
+
+    if char == "\x1b":
+        sequence = sys.stdin.read(1)
+        if sequence != "[":
+            return KEY_ESCAPE
+        arrow = sys.stdin.read(1)
+        return {"A": KEY_UP, "B": KEY_DOWN}.get(arrow, "")
+
+    if char in ("\r", "\n"):
+        return KEY_ENTER
+
+    if char == "\x03":
+        return KEY_CANCEL
+
+    return char
+
+
+def _read_key_windows() -> str:
+    """Read one key press from the Windows console.
+
+    The console reports a function or arrow key as a two character sequence:
+    a prefix of ``\\x00`` or ``\\xe0`` followed by the scan code.
+    """
+    char = msvcrt.getwch()
+
+    if char in ("\x00", "\xe0"):
+        return WINDOWS_SCAN_CODES.get(msvcrt.getwch(), "")
+
+    if char == "\x03":
+        return KEY_CANCEL
+
+    if char in ("\r", "\n"):
+        return KEY_ENTER
+
+    if char == "\x1b":
+        return KEY_ESCAPE
+
+    return char
+
+
+@contextmanager
+def _raw_key_input():
+    """Read single key presses without the terminal echoing them.
+
+    POSIX puts the terminal in cbreak mode, Windows uses the console's own
+    key reader, which never echoes.
+    """
+    if IS_WINDOWS:
+        yield _read_key_windows
+        return
+
+    fd = sys.stdin.fileno()
+    old_attrs = termios.tcgetattr(fd)
+    try:
+        tty.setcbreak(fd)
+        yield _read_key_posix
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_attrs)
+
+
+@contextmanager
+def _ansi_console() -> Iterator[bool]:
+    """Enable ANSI cursor control while drawing, restoring the mode afterward.
+
+    Windows 10 and 11 support escape sequences, but the console only processes
+    them when virtual terminal processing is enabled. The mode belongs to the
+    console rather than this process, so the original value must be restored
+    when the menu exits.
+    """
+    if not IS_WINDOWS:
+        yield True
+        return
+
+    import ctypes
+    from ctypes import wintypes
+
+    enable_virtual_terminal_processing = 0x0004
+    std_output_handle = ctypes.c_uint32(-11).value
+
+    try:
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        get_std_handle = kernel32.GetStdHandle
+        get_std_handle.argtypes = [wintypes.DWORD]
+        get_std_handle.restype = wintypes.HANDLE
+
+        get_console_mode = kernel32.GetConsoleMode
+        get_console_mode.argtypes = [
+            wintypes.HANDLE,
+            ctypes.POINTER(wintypes.DWORD),
+        ]
+        get_console_mode.restype = wintypes.BOOL
+
+        set_console_mode = kernel32.SetConsoleMode
+        set_console_mode.argtypes = [wintypes.HANDLE, wintypes.DWORD]
+        set_console_mode.restype = wintypes.BOOL
+
+        handle = get_std_handle(std_output_handle)
+        mode = wintypes.DWORD()
+        can_enable = get_console_mode(handle, ctypes.byref(mode))
+        original_mode = mode.value
+        can_enable = can_enable and set_console_mode(
+            handle, original_mode | enable_virtual_terminal_processing
+        )
+    except (AttributeError, OSError):  # pragma: no cover - Windows only
+        yield False
+        return
+
+    if not can_enable:
+        yield False
+        return
+
+    try:
+        yield True
+    finally:
+        set_console_mode(handle, original_mode)
+
+
 def select_option(
     title: str, options: list[str], descriptions: list[str] | None = None
 ) -> int | None:
@@ -118,45 +257,45 @@ def select_option(
 
     selected = 0
 
-    def render(first: bool) -> None:
+    def render(first: bool, *, in_place: bool) -> None:
         if not first:
-            # Move the cursor back up and redraw in place
-            sys.stdout.write(f"\x1b[{len(options)}A")
+            if in_place:
+                # Move the cursor back up and redraw in place
+                sys.stdout.write(f"\x1b[{len(options)}A")
+            else:
+                # the console cannot move the cursor, so the menu is printed
+                # again and the previous copy scrolls out of the way
+                print()
         for i, option in enumerate(options):
             marker = "❯" if i == selected else " "
             line = f"  {marker} {option}"
             if descriptions and descriptions[i]:
                 line += f"  ({descriptions[i]})"
-            sys.stdout.write(f"\x1b[2K{line}\n")
+            if in_place:
+                sys.stdout.write(f"\x1b[2K{line}\n")
+            else:
+                sys.stdout.write(f"{line}\n")
         sys.stdout.flush()
 
-    render(True)
-    fd = sys.stdin.fileno()
-    old_attrs = termios.tcgetattr(fd)
-    try:
-        tty.setcbreak(fd)
-        while True:
-            ch = sys.stdin.read(1)
-            if ch == "\x1b":
-                seq = sys.stdin.read(1)
-                if seq != "[":
-                    return None  # bare Esc cancels
-                arrow = sys.stdin.read(1)
-                if arrow == "A":
+    with _ansi_console() as in_place:
+        render(True, in_place=in_place)
+
+        with _raw_key_input() as read_key:
+            while True:
+                key = read_key()
+
+                if key == KEY_UP or key == "k":
                     selected = (selected - 1) % len(options)
-                elif arrow == "B":
+                elif key == KEY_DOWN or key == "j":
                     selected = (selected + 1) % len(options)
-            elif ch in ("k",):
-                selected = (selected - 1) % len(options)
-            elif ch in ("j",):
-                selected = (selected + 1) % len(options)
-            elif ch in ("\r", "\n"):
-                return selected
-            elif ch in ("q", "\x03"):
-                return None
-            render(False)
-    finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_attrs)
+                elif key == KEY_ENTER:
+                    return selected
+                elif key in (KEY_ESCAPE, KEY_CANCEL, "q"):
+                    return None
+                else:
+                    continue
+
+                render(False, in_place=in_place)
 
 
 def prompt_text(label: str, current: str, secret: bool = False) -> str:

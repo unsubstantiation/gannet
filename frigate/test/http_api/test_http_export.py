@@ -432,6 +432,97 @@ class TestHttpExport(BaseTestHttp):
             assert response.status_code == 400
             assert Export.get(Export.id == "front_door_running").video_path == video
 
+    def test_rename_export_rejected_when_the_name_is_taken(self):
+        """Two exports cannot end up with the same file.
+
+        os.rename replaces an existing file on POSIX but fails on Windows, so
+        the destination is checked before the move. Without the check the
+        request answered 500 on Windows and 409 everywhere else, and the POSIX
+        path overwrote the file the other export still pointed at.
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            taken = os.path.join(tmpdir, "Package thief_abc123.mp4")
+            video = os.path.join(tmpdir, "front_door_abc123.mp4")
+
+            for path in (taken, video):
+                with open(path, "wb") as handle:
+                    handle.write(b"video")
+
+            Export.create(
+                id="front_door_abc123",
+                camera="front_door",
+                name="front door export",
+                date=100,
+                video_path=video,
+                thumb_path=os.path.join(tmpdir, "t.webp"),
+                in_progress=False,
+            )
+            Export.create(
+                id="other_abc123",
+                camera="front_door",
+                name="Package thief",
+                date=200,
+                video_path=taken,
+                thumb_path=os.path.join(tmpdir, "t2.webp"),
+                in_progress=False,
+            )
+
+            with patch("frigate.record.export.EXPORT_DIR", tmpdir):
+                with AuthTestClient(self.app) as client:
+                    response = client.patch(
+                        "/export/front_door_abc123/rename",
+                        json={"name": "Package thief"},
+                    )
+
+            assert response.status_code == 409
+
+            unchanged = Export.get(Export.id == "front_door_abc123")
+            assert unchanged.name == "front door export"
+            assert unchanged.video_path == video
+
+            # the export that already used the name keeps its file
+            assert os.path.exists(taken)
+            assert os.path.exists(video)
+
+    def test_rename_export_allows_a_case_only_name_change(self):
+        """Changing filename case still names the same file on Windows."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            video = os.path.join(tmpdir, "Package thief_abc123.mp4")
+            with open(video, "wb") as handle:
+                handle.write(b"video")
+
+            Export.create(
+                id="front_door_abc123",
+                camera="front_door",
+                name="Package thief",
+                date=100,
+                video_path=video,
+                thumb_path=os.path.join(tmpdir, "t.webp"),
+                in_progress=False,
+            )
+
+            with patch("frigate.record.export.EXPORT_DIR", tmpdir):
+                with AuthTestClient(self.app) as client:
+                    response = client.patch(
+                        "/export/front_door_abc123/rename",
+                        json={"name": "package thief"},
+                    )
+
+            assert response.status_code == 200
+
+            renamed = Export.get(Export.id == "front_door_abc123")
+            self.assertEqual(renamed.name, "package thief")
+            self.assertEqual(
+                os.path.basename(renamed.video_path).lower(),
+                "package thief_abc123.mp4",
+            )
+            self.assertTrue(os.path.exists(renamed.video_path))
+
+            # On Windows both spellings name the same file; on a case-sensitive
+            # filesystem the old spelling should have been moved away.
+            if os.name != "nt":
+                self.assertFalse(os.path.exists(video))
+
     def test_rename_export_missing_file_leaves_the_row_alone(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             video = os.path.join(tmpdir, "front_door_gone_abc123.mp4")
@@ -1437,6 +1528,48 @@ class TestHttpExport(BaseTestHttp):
 
         assert response.status_code == 400
         assert Export.select().count() == 1
+
+    def test_bulk_delete_exports_held_by_a_windows_ffmpeg(self):
+        """The guard has to find the file FFmpeg is still writing.
+
+        On Windows the process is ``ffmpeg.exe`` and the path is spelled with
+        backslashes, so a check that only knows the POSIX spelling never
+        matched and the export could be deleted while it was being written.
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            video = os.path.join(tmpdir, "exp1.mp4")
+            with open(video, "wb") as handle:
+                handle.write(b"video")
+
+            Export.create(
+                id="exp1",
+                camera="front_door",
+                name="export_1",
+                date=100,
+                video_path=video,
+                thumb_path=os.path.join(tmpdir, "exp1.jpg"),
+                in_progress=False,
+            )
+
+            ffmpeg = MagicMock()
+            ffmpeg.name.return_value = "ffmpeg.exe"
+            opened = MagicMock()
+            opened.path = video
+            ffmpeg.open_files.return_value = [opened]
+
+            with patch("frigate.api.export.EXPORT_DIR", tmpdir):
+                with patch(
+                    "frigate.api.export.psutil.process_iter", return_value=[ffmpeg]
+                ):
+                    with AuthTestClient(self.app) as client:
+                        response = client.post(
+                            "/exports/delete",
+                            json={"ids": ["exp1"]},
+                        )
+
+            assert response.status_code == 400
+            assert Export.select().count() == 1
+            assert os.path.exists(video)
 
     def test_bulk_delete_exports_non_admin_rejected(self):
         """Non-admin users cannot bulk delete."""

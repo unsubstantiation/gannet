@@ -336,15 +336,21 @@ class NativeAuthMiddleware:
 
 
 def is_contained_in(path: str, directory: str) -> bool:
-    """Containment check that survives symlinks pointing outside a root."""
+    """Containment check that survives symlinks pointing outside a root.
+
+    The comparison is case insensitive where the platform is, because Windows
+    resolves a path that differs only in letter case to the same file.
+    """
     resolved = os.path.realpath(path)
     root = os.path.realpath(directory)
 
     try:
-        return os.path.commonpath([resolved, root]) == root
+        common = os.path.commonpath([resolved, root])
     except ValueError:
         # different Windows drives, so the paths are not comparable
         return False
+
+    return os.path.normcase(common) == os.path.normcase(root)
 
 
 class SpaFiles:

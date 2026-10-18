@@ -22,7 +22,7 @@ from frigate.db.sqlitevecq import SqliteVecQueueDatabase
 from frigate.models import Event
 from frigate.util.builtin import serialize
 from frigate.util.classification import kickoff_model_training
-from frigate.util.path import safe_join
+from frigate.util.path import is_same_path, rename_path, safe_join
 from frigate.util.process import FrigateProcess
 
 from .util import ZScoreNormalization
@@ -293,7 +293,13 @@ class EmbeddingsContext:
         if not os.path.exists(old_path):
             raise ValueError(f"Face {old_name} not found.")
 
-        os.rename(old_path, new_path)
+        # A POSIX rename can replace an existing empty directory, while
+        # Windows refuses the move. Reject a different existing destination
+        # consistently; rename_path handles the case-only rename separately.
+        if os.path.exists(new_path) and not is_same_path(old_path, new_path):
+            raise ValueError(f"Face {new_name} already exists.")
+
+        rename_path(old_path, new_path)
 
         self.requestor.send_data(
             EmbeddingsRequestEnum.clear_face_classifier.value, None
