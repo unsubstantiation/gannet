@@ -163,6 +163,36 @@ class TestPlaylistSegmentOffsets(unittest.TestCase):
         self.assertEqual(command[command.index("-ss") + 1], "30.000")
         self.assertEqual(command[command.index("-t") + 1], "30.000")
 
+    def test_no_codec_specific_bitstream_filter_is_forced(self):
+        """The remux has to work for HEVC recordings as well as H.264.
+
+        ``h264_mp4toannexb`` was passed for every MP4 input. ffmpeg refuses
+        to apply it to an HEVC stream and exits, so cameras recording H.265
+        could not be played back at all. The mpegts muxer inserts the right
+        filter for the codec it is given, so none should be requested.
+        """
+        remux = _Remux(payload=b"segment")
+
+        with tempfile.TemporaryDirectory() as root:
+            cache = self.enter_cache(root, remux)
+            recording = _recording(root, "00.00.mp4")
+            segment = VodSegment(
+                index=0,
+                path=recording,
+                start=100.0,
+                duration=10.0,
+                file_start=100.0,
+            )
+
+            asyncio.run(render_segment(_playlist(cache, [segment]), segment))
+
+        command = remux.commands[0]
+
+        self.assertNotIn("-bsf:v", command)
+        self.assertNotIn("h264_mp4toannexb", command)
+        self.assertEqual(command[command.index("-c") + 1], "copy")
+        self.assertEqual(command[command.index("-f") + 1], "mpegts")
+
     def enter_cache(self, root: str, remux: _Remux) -> str:
         cache = os.path.join(root, "vod")
         self.enterContext(patch.object(vod_native, "VOD_CACHE_ROOT", cache))
@@ -349,6 +379,83 @@ class TestCacheSweep(unittest.TestCase):
         with tempfile.TemporaryDirectory() as cache:
             with patch.object(vod_native, "VOD_CACHE_ROOT", cache):
                 asyncio.run(start_and_stop())
+
+
+class TestPlaylistRendering(unittest.TestCase):
+    def test_the_master_playlist_points_at_its_sibling_media_playlist(self):
+        """The variant URI is relative, so it resolves against the master URL.
+
+        A player fetching ``.../master.m3u8`` then asks for ``.../index.m3u8``
+        on the same route, whichever route shape and timestamp formatting it
+        used. An absolute URL rebuilt from parsed floats was not reliably one
+        the routes accepted.
+        """
+        playlist = _playlist(
+            "cache",
+            [
+                VodSegment(
+                    index=0,
+                    path="recording.mp4",
+                    start=1700000000.5,
+                    duration=10.0,
+                    file_start=1700000000.5,
+                )
+            ],
+        )
+
+        lines = playlist.master_m3u8().splitlines()
+
+        self.assertEqual(lines[0], "#EXTM3U")
+        self.assertEqual(lines[-1], "index.m3u8")
+        self.assertTrue(lines[-2].startswith("#EXT-X-STREAM-INF:"))
+        self.assertIn("BANDWIDTH=", lines[-2])
+        # the recordings are not 1280x720, so the variant must not claim it
+        self.assertNotIn("RESOLUTION", lines[-2])
+
+
+class TestHourRange(unittest.TestCase):
+    """The ``/vod/{YYYY-MM}/{day}/{hour}/{camera}/{tz}`` form of a range."""
+
+    def test_the_hour_is_local_to_the_requested_zone_on_that_day(self):
+        """The offset in force on the requested day is the one that applies.
+
+        The hour used to be shifted by the zone's *current* UTC offset, so in
+        a zone with daylight saving every hour asked for across the seasonal
+        boundary from today came back an hour early or late.
+        """
+        # Anchorage is UTC-9 in January and UTC-8 in July; whichever applies
+        # today, both of these have to be right at the same time
+        winter = vod_native.hour_range("2024-01", 15, 10, "America,Anchorage")
+        summer = vod_native.hour_range("2024-07", 15, 10, "America,Anchorage")
+
+        self.assertIsNotNone(winter)
+        self.assertIsNotNone(summer)
+        self.assertEqual(
+            time.strftime("%Y-%m-%d %H:%M", time.gmtime(winter[0])),
+            "2024-01-15 19:00",
+        )
+        self.assertEqual(
+            time.strftime("%Y-%m-%d %H:%M", time.gmtime(summer[0])),
+            "2024-07-15 18:00",
+        )
+
+    def test_a_range_is_one_hour_long(self):
+        start, end = vod_native.hour_range("2024-03", 10, 1, "America,New_York")
+
+        self.assertAlmostEqual(end - start, 3600 - 0.001, places=3)
+
+    def test_utc_is_used_without_a_zone(self):
+        start, _end = vod_native.hour_range("2024-03", 1, 5, None)
+
+        self.assertEqual(
+            time.strftime("%Y-%m-%d %H:%M", time.gmtime(start)), "2024-03-01 05:00"
+        )
+
+    def test_an_invalid_date_is_rejected(self):
+        self.assertIsNone(vod_native.hour_range("2024-13", 1, 0, None))
+        self.assertIsNone(vod_native.hour_range("2024-02", 30, 0, None))
+        self.assertIsNone(vod_native.hour_range("2024-02", 1, 24, None))
+        self.assertIsNone(vod_native.hour_range("front_door", 1, 0, None))
 
 
 class TestSegmentLookup(unittest.TestCase):

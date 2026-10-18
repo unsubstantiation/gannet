@@ -111,6 +111,7 @@ class Go2rtcProcess:
             self.process = sp.Popen(command, **kwargs)
         except OSError as err:
             logger.error("Unable to start go2rtc: %s", err)
+            self._close_log()
             return False
 
         logger.info("Started go2rtc: %s", self.process.pid)
@@ -130,7 +131,10 @@ class Go2rtcProcess:
                 self.process.wait()
 
         self.process = None
+        self._close_log()
 
+    def _close_log(self) -> None:
+        """Release the log file; a handle left open pins the log on Windows."""
         if self.log_file is not None:
             try:
                 self.log_file.close()

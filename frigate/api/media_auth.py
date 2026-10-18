@@ -6,14 +6,16 @@ request) calls into this module to classify the requested URI from the
 current role may access them.
 
 Without this, the auth check only verifies the JWT — every authenticated user
-could read clips, recordings, and exports for *any* camera, bypassing the
-per-camera authorization the regular API enforces via `require_camera_access`.
+could read clips, recordings, exports, and VOD playlists for *any* camera,
+bypassing the per-camera authorization the regular API enforces via
+`require_camera_access`.
 """
 
 from __future__ import annotations
 
 import logging
 import os
+import re
 from enum import Enum
 from urllib.parse import unquote, urlparse
 
@@ -21,9 +23,15 @@ from peewee import DoesNotExist
 
 from frigate.config import FrigateConfig
 from frigate.const import EXPORT_DIR
-from frigate.models import Export, User
+from frigate.models import Event, Export, User
 
 logger = logging.getLogger(__name__)
+
+#: roots whose URIs are media and must resolve to a camera before a
+#: camera-restricted role may read them
+MEDIA_ROOTS = ("clips", "recordings", "exports", "vod")
+
+_YEAR_MONTH = re.compile(r"^\d{4}-\d{2}$")
 
 
 class MediaAuthResolution(str, Enum):
@@ -33,8 +41,8 @@ class MediaAuthResolution(str, Enum):
     ADMIN_ONLY = "admin_only"
     LISTING_MULTI_CAMERA = "listing_multi_camera"
     LISTING_NEUTRAL = "listing_neutral"
-    # Under a recognized media root (/clips, /recordings, /exports) but
-    # unclassifiable (unknown subtree, no matching DB row, DB error).
+    # Under a recognized media root (/clips, /recordings, /exports, /vod)
+    # but unclassifiable (unknown subtree, no matching DB row, DB error).
     # Restricted users are denied; admins/full-access roles are allowed
     # (the server will likely return 404 if the file genuinely doesn't exist).
     UNRESOLVED_MEDIA = "unresolved_media"
@@ -94,6 +102,8 @@ def resolve_media_uri(
         return _resolve_clip(parts, frigate_config)
     if root == "exports":
         return _resolve_export(parts)
+    if root == "vod":
+        return _resolve_vod(parts)
 
     return MediaAuthResolution.UNKNOWN, None
 
@@ -214,6 +224,60 @@ def _resolve_export(
         return MediaAuthResolution.UNRESOLVED_MEDIA, None
 
 
+def _resolve_vod(
+    parts: list[str],
+) -> tuple[MediaAuthResolution, str | None]:
+    """Classify the HLS routes the native gateway serves under ``/vod``.
+
+    The shapes mirror ``frigate.api.web.vod_routes`` and are matched in the
+    same order, so the camera this returns is the camera that route would
+    read recordings for::
+
+        /vod                                                → multi-camera
+        /vod/clip/{camera}/start/{s}/end/{e}/{playlist}     → camera
+        /vod/event/{event_id}/start/{s}/end/{e}/{playlist}  → camera (DB)
+        /vod/{YYYY-MM}/{day}/{hour}/{camera}[/{tz}]/{pl}    → camera
+        /vod/{camera}[/{stream}]/start/{s}/end/{e}/{file}   → camera
+    """
+    if len(parts) == 1:
+        return MediaAuthResolution.LISTING_MULTI_CAMERA, None
+
+    kind = parts[1]
+
+    if kind == "clip":
+        if len(parts) < 3:
+            return MediaAuthResolution.UNRESOLVED_MEDIA, None
+        return MediaAuthResolution.CAMERA, parts[2]
+
+    if kind == "event":
+        if len(parts) < 3:
+            return MediaAuthResolution.UNRESOLVED_MEDIA, None
+        return _camera_of_event(parts[2])
+
+    # the hour routes take any string as the year-month but only digits for
+    # the day and hour, so a camera route can never be mistaken for one
+    if (
+        len(parts) >= 5
+        and _YEAR_MONTH.match(kind)
+        and parts[2].isdigit()
+        and parts[3].isdigit()
+    ):
+        return MediaAuthResolution.CAMERA, parts[4]
+
+    return MediaAuthResolution.CAMERA, kind
+
+
+def _camera_of_event(event_id: str) -> tuple[MediaAuthResolution, str | None]:
+    try:
+        event = Event.get(Event.id == event_id)
+        return MediaAuthResolution.CAMERA, event.camera
+    except DoesNotExist:
+        return MediaAuthResolution.UNRESOLVED_MEDIA, None
+    except Exception as e:
+        logger.warning("Event DB lookup failed for %s: %s", event_id, e)
+        return MediaAuthResolution.UNRESOLVED_MEDIA, None
+
+
 def check_camera_access(role: str, camera: str, frigate_config: FrigateConfig) -> bool:
     """Return True iff `role` may access `camera`.
 
@@ -259,7 +323,7 @@ def deny_response_for_media_uri(
         raw = urlparse(original_url).path or original_url
         decoded = unquote(raw)
         first = decoded.lstrip("/").split("/", 1)[0] if decoded else ""
-        if first in ("clips", "recordings", "exports"):
+        if first in MEDIA_ROOTS:
             return 403
         return None
 

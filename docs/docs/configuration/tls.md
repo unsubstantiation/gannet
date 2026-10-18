@@ -12,7 +12,7 @@ tls:
   enabled: true
 ```
 
-On first startup, Frigate creates a self-signed certificate beneath the Windows configuration directory. Browsers will warn until that certificate or its issuing authority is trusted.
+On first startup, Frigate creates a self-signed certificate beneath the Windows configuration directory. Browsers will warn until that certificate or its issuing authority is trusted. The generated certificate is valid for one year; Frigate replaces it on startup once it has expired or has less than 30 days left, so a long-running install never ends up serving a lapsed certificate. Browsers that trusted the old certificate will prompt again after a renewal.
 
 ## Custom certificate
 
@@ -50,4 +50,4 @@ Disabling TLS does not disable authentication. Use plain HTTP only on loopback o
 
 ## Certificate renewal
 
-Renew custom certificates before expiration, replace the files atomically, and restart the Windows service. Verify the complete certificate chain from another machine after renewal.
+Only the certificate Frigate generated itself is renewed automatically. Renew custom certificates before expiration, replace the files atomically, and restart the Windows service; Frigate logs a warning at startup when a custom certificate has expired or is within 30 days of doing so. Verify the complete certificate chain from another machine after renewal.

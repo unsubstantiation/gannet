@@ -13,7 +13,7 @@ import asyncio
 import logging
 import os
 import secrets
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Mapping
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -26,7 +26,7 @@ from starlette.staticfiles import StaticFiles
 
 from frigate.api import vod_native
 from frigate.api.auth import auth as auth_check
-from frigate.const import CACHE_DIR, CLIPS_DIR, EXPORT_DIR, RECORD_DIR
+from frigate.const import CLIPS_DIR, EXPORT_DIR, RECORD_DIR
 from frigate.models import Event
 from frigate.util.platform import (
     get_web_dir,
@@ -52,6 +52,8 @@ PROTECTED_PREFIXES = (
     "/clips/",
     "/recordings/",
     "/exports/",
+    # nothing is mounted at /cache any more; it stays protected so a future
+    # mount cannot be reached without signing in
     "/cache/",
     "/live/",
     "/go2rtc/",
@@ -456,28 +458,29 @@ def _media_playlist(
 
 
 def _master_playlist(
-    camera: str, start: float, end: float, stream: str | None, base: str
+    camera: str, start: float, end: float, stream: str | None
 ) -> Response:
+    """A one variant master whose media playlist is the sibling ``index.m3u8``.
+
+    The variant URI is relative, so whatever route shape the player used to
+    fetch the master (``/vod/{camera}/...``, ``/vod/clip/...``, with or
+    without a stream name) resolves to the matching ``index.m3u8`` beside it.
+    """
     playlist = _playlist_or_error(camera, start, end, stream)
 
     if isinstance(playlist, Response):
         return playlist
 
     return PlainTextResponse(
-        playlist.master_m3u8(base),
+        playlist.master_m3u8(),
         media_type="application/vnd.apple.mpegurl",
         headers={"Cache-Control": "no-store"},
     )
 
 
-def _clone_base(camera: str, start: float, end: float, stream: str | None) -> str:
-    """The URL prefix the master playlist points its variant at."""
-    numbers = f"start/{start:g}/end/{end:g}"
-
-    if stream:
-        return f"/vod/{camera}/{stream}/{numbers}"
-
-    return f"/vod/{camera}/{numbers}"
+#: the ``{playlist}`` route parameter names the file without its ``.m3u8``
+#: suffix, which the route pattern matches separately
+MASTER_PLAYLIST = "master"
 
 
 async def vod_playlist(request: Request) -> Response:
@@ -491,12 +494,9 @@ async def vod_playlist(request: Request) -> Response:
     start = float(request.path_params["start"])
     end = float(request.path_params["end"])
     stream = request.path_params.get("stream")
-    name = request.path_params["playlist"]
 
-    if name == "master.m3u8":
-        return _master_playlist(
-            camera, start, end, stream, _clone_base(camera, start, end, stream)
-        )
+    if request.path_params["playlist"] == MASTER_PLAYLIST:
+        return _master_playlist(camera, start, end, stream)
 
     return _media_playlist(camera, start, end, stream)
 
@@ -510,17 +510,15 @@ async def vod_clip(request: Request) -> Response:
     camera = request.path_params["camera"]
     start = float(request.path_params["start"])
     end = float(request.path_params["end"])
-    name = request.path_params["playlist"]
 
-    if name == "master.m3u8":
-        base = f"/vod/clip/{camera}/start/{start:g}/end/{end:g}"
-        return _master_playlist(camera, start, end, None, base)
+    if request.path_params["playlist"] == MASTER_PLAYLIST:
+        return _master_playlist(camera, start, end, None)
 
     return _media_playlist(camera, start, end, None)
 
 
 async def vod_event(request: Request) -> Response:
-    """``/vod/event/{event_id}/start/{start}/end/{end}/index.m3u8``."""
+    """``/vod/event/{event_id}/start/{start}/end/{end}/{index,master}.m3u8``."""
     event_id = request.path_params["event_id"]
     start = float(request.path_params["start"])
     end = float(request.path_params["end"])
@@ -530,12 +528,10 @@ async def vod_event(request: Request) -> Response:
     except Event.DoesNotExist:
         return Response(status_code=404)
 
-    playlist = _playlist_or_error(event.camera, start, end, None)
+    if request.path_params["playlist"] == MASTER_PLAYLIST:
+        return _master_playlist(event.camera, start, end, None)
 
-    if isinstance(playlist, Response):
-        return playlist
-
-    return vod_native.playlist_response(playlist)
+    return _media_playlist(event.camera, start, end, None)
 
 
 async def vod_hour(request: Request) -> Response:
@@ -775,7 +771,10 @@ async def proxy_http(request: Request) -> Response:
 
             return Response(
                 content,
-                status_code=upstream_response.status_code,
+                # aiohttp reports the code as ``status``; ``status_code`` is the
+                # Starlette name, and reading it here raised AttributeError
+                # for every proxied request, which broke WebRTC signalling
+                status_code=upstream_response.status,
                 headers=headers,
                 media_type=upstream_response.headers.get("Content-Type"),
             )
@@ -818,11 +817,28 @@ async def _startup() -> None:
     vod_native.start_cache_maintenance()
 
 
-@asynccontextmanager
-async def _lifespan(app: Starlette) -> AsyncIterator[None]:
-    """Run native gateway startup work through Starlette's lifespan API."""
-    await _startup()
-    yield
+def _lifespan_for(api_app: Any) -> Any:
+    """Build the gateway lifespan, which also runs the mounted API's lifespan.
+
+    Starlette only drives the lifespan of the outermost application. The
+    FastAPI app is mounted under ``/api`` here, so its own lifespan (which
+    starts the debug replay auto-stop watchdog) would otherwise never be
+    entered on a native install, even though it runs when FastAPI is served
+    directly.
+    """
+
+    @asynccontextmanager
+    async def _lifespan(app: Starlette) -> AsyncIterator[Mapping[str, Any] | None]:
+        await _startup()
+
+        if not isinstance(api_app, Starlette):
+            yield None
+            return
+
+        async with api_app.router.lifespan_context(api_app) as api_state:
+            yield api_state if isinstance(api_state, Mapping) else None
+
+    return _lifespan
 
 
 def create_native_web_app(api_app: Any, port: int) -> Starlette:
@@ -853,7 +869,10 @@ def create_native_web_app(api_app: Any, port: int) -> Starlette:
         Mount("/clips", app=StaticFiles(directory=CLIPS_DIR, check_dir=False)),
         Mount("/recordings", app=StaticFiles(directory=RECORD_DIR, check_dir=False)),
         Mount("/exports", app=StaticFiles(directory=EXPORT_DIR, check_dir=False)),
-        Mount("/cache", app=StaticFiles(directory=CACHE_DIR, check_dir=False)),
+        # CACHE_DIR is deliberately not served. It holds in-progress recording
+        # segments, preview frames, and VOD remux output for every camera, and
+        # nothing in the web app reads it over HTTP; exposing it would let any
+        # signed-in viewer bypass the per-camera media checks.
         # live view and the websocket servers
         Route("/live/webrtc/webrtc.html", proxy_http, methods=["GET"]),
         WebSocketRoute("/ws", websocket_endpoint),
@@ -865,7 +884,7 @@ def create_native_web_app(api_app: Any, port: int) -> Starlette:
         Mount("/", app=SpaFiles(web_dir)),
     ]
 
-    app = Starlette(routes=routes, lifespan=_lifespan)
+    app = Starlette(routes=routes, lifespan=_lifespan_for(api_app))
     app.add_middleware(NativeAuthMiddleware, api_app=api_app, port=port)
     return app
 

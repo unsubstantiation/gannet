@@ -9,7 +9,7 @@ import subprocess as sp
 import tempfile
 import time
 from collections.abc import Iterator
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path as FilePath
 from typing import IO, Any
@@ -849,15 +849,12 @@ async def vod_hour(
     year_month: str, day: int, hour: int, camera_name: str, tz_name: str
 ):
     parts = year_month.split("-")
-    start_date = (
-        datetime(int(parts[0]), int(parts[1]), day, hour, tzinfo=UTC)
-        - datetime.now(
-            ZoneInfo(get_normalized_tz_name(tz_name.replace(",", "/")))
-        ).utcoffset()
-    )
-    end_date = start_date + timedelta(hours=1) - timedelta(milliseconds=1)
-    start_ts = start_date.timestamp()
-    end_ts = end_date.timestamp()
+    # the hour is local to the requested zone, so build it there and let the
+    # zone supply the offset in force on that day; subtracting the zone's
+    # *current* offset was an hour out across a daylight saving change
+    tz = ZoneInfo(get_normalized_tz_name(tz_name.replace(",", "/")))
+    start_ts = datetime(int(parts[0]), int(parts[1]), day, hour, tzinfo=tz).timestamp()
+    end_ts = start_ts + timedelta(hours=1).total_seconds() - 0.001
 
     return await vod_ts(camera_name, start_ts, end_ts)
 

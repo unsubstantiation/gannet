@@ -19,6 +19,13 @@ logger = logging.getLogger(__name__)
 _CERTIFICATE_NAME = "fullchain.pem"
 _PRIVATE_KEY_NAME = "privkey.pem"
 
+#: organization written into the generated certificate; it is how a pair
+#: Frigate created itself is told apart from one an administrator installed
+_GENERATED_ORGANIZATION = "Frigate Native Windows"
+_GENERATED_LIFETIME = timedelta(days=365)
+#: a generated certificate is replaced once this little of its lifetime is left
+_RENEW_WITHIN = timedelta(days=30)
+
 
 def default_tls_paths(config_dir: str) -> tuple[str, str]:
     """Return the conventional persistent certificate and key paths."""
@@ -71,7 +78,7 @@ def _write_new_certificate(cert_file: Path, key_file: Path) -> None:
     hostname = socket.gethostname() or "localhost"
     subject = x509.Name(
         [
-            x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Frigate Native Windows"),
+            x509.NameAttribute(NameOID.ORGANIZATION_NAME, _GENERATED_ORGANIZATION),
             x509.NameAttribute(NameOID.COMMON_NAME, hostname),
         ]
     )
@@ -83,7 +90,7 @@ def _write_new_certificate(cert_file: Path, key_file: Path) -> None:
         .public_key(private_key.public_key())
         .serial_number(x509.random_serial_number())
         .not_valid_before(now - timedelta(minutes=5))
-        .not_valid_after(now + timedelta(days=365))
+        .not_valid_after(now + _GENERATED_LIFETIME)
         .add_extension(
             x509.SubjectAlternativeName(_subject_alt_names()), critical=False
         )
@@ -127,12 +134,73 @@ def _write_new_certificate(cert_file: Path, key_file: Path) -> None:
     os.replace(key_temp, key_file)
 
 
-def ensure_tls_certificate(cert_path: str, key_path: str) -> tuple[str, str]:
-    """Return a usable TLS pair, generating the default pair when absent.
+def is_generated_certificate(certificate: x509.Certificate) -> bool:
+    """Whether a certificate is one of the self-signed pairs this module writes."""
+    if certificate.issuer != certificate.subject:
+        return False
 
-    Existing files are treated as administrator-managed and are never
-    overwritten. A partial pair is rejected rather than silently replacing a
-    certificate or private key.
+    return any(
+        attribute.value == _GENERATED_ORGANIZATION
+        for attribute in certificate.subject.get_attributes_for_oid(
+            NameOID.ORGANIZATION_NAME
+        )
+    )
+
+
+def _needs_renewal(cert_file: Path) -> bool:
+    """Decide whether an existing certificate should be regenerated.
+
+    Only a certificate Frigate generated itself is ever replaced, and only once
+    it has expired or is inside the renewal window; before this check the
+    generated pair simply expired after a year and the gateway kept serving a
+    certificate every browser rejected. A certificate an administrator
+    installed is theirs to renew, so it is left alone and only warned about.
+    """
+    try:
+        certificate = x509.load_pem_x509_certificate(cert_file.read_bytes())
+    except (OSError, ValueError) as err:
+        logger.warning(
+            "Unable to read the TLS certificate %s (%s); leaving it in place",
+            cert_file,
+            err,
+        )
+        return False
+
+    expires = certificate.not_valid_after_utc
+    remaining = expires - datetime.now(UTC)
+
+    if remaining > _RENEW_WITHIN:
+        return False
+
+    state = "expired" if remaining <= timedelta(0) else "expires"
+
+    if is_generated_certificate(certificate):
+        logger.info(
+            "The self-signed TLS certificate %s %s on %s; generating a new one",
+            cert_file,
+            state,
+            expires.date(),
+        )
+        return True
+
+    logger.warning(
+        "The TLS certificate %s %s on %s; renew it, replace the files, and "
+        "restart Frigate",
+        cert_file,
+        state,
+        expires.date(),
+    )
+    return False
+
+
+def ensure_tls_certificate(cert_path: str, key_path: str) -> tuple[str, str]:
+    """Return a usable TLS pair, generating the default pair when needed.
+
+    A pair is generated when both files are absent, and regenerated when the
+    existing certificate is one Frigate generated earlier that has expired or
+    is about to. Any other existing files are treated as administrator-managed
+    and are never overwritten. A partial pair is rejected rather than silently
+    replacing a certificate or private key.
     """
     cert_file = Path(cert_path).expanduser().resolve()
     key_file = Path(key_path).expanduser().resolve()
@@ -147,6 +215,9 @@ def ensure_tls_certificate(cert_path: str, key_path: str) -> tuple[str, str]:
         )
 
     if cert_exists:
+        if _needs_renewal(cert_file):
+            _write_new_certificate(cert_file, key_file)
+
         return str(cert_file), str(key_file)
 
     cert_file.parent.mkdir(parents=True, exist_ok=True)

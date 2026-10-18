@@ -84,7 +84,7 @@ auth:
       - driveway
 ```
 
-The internal listener is always loopback-only and cannot share the public port. When both TLS files are absent Frigate creates a self-signed pair. Custom role camera lists cannot be empty.
+The internal listener is always loopback-only and cannot share the public port. `networking.ipv6.enabled` makes the public listener bind the dual-stack wildcard `::` (IPv6 and IPv4) instead of `0.0.0.0`; `FRIGATE_WEB_HOST` overrides either. When both TLS files are absent Frigate creates a self-signed pair and renews it itself when it is within 30 days of expiry; certificates you install are never touched. Custom role camera lists cannot be empty.
 
 Proxy-supplied identity requires native authentication to be disabled and a shared secret:
 

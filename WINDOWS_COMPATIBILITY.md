@@ -36,6 +36,23 @@ Proxy identity mappings require a configured shared secret. Client-address
 forwarding is accepted only when the direct peer belongs to a configured
 trusted network.
 
+Media is authorised per camera for roles with a camera allow-list. The check
+in `frigate/api/media_auth.py` classifies `/clips`, `/recordings`, `/exports`
+and the native `/vod` playlist and segment routes, so a restricted viewer can
+only play back the cameras their role names. The cache directory is never
+served over HTTP: it holds in-progress segments and preview frames for every
+camera, and nothing in the web app reads it.
+
+The gateway runs the mounted FastAPI application's lifespan inside its own, so
+startup work FastAPI declares (such as the debug replay auto-stop watchdog)
+runs on the native install exactly as it does when FastAPI is served directly.
+Only the public listener runs the lifespan; the loopback listener shares the
+same application state.
+
+When `tls.enabled` is set and no certificate is configured, the gateway
+generates a self-signed pair and renews it itself once it is within 30 days of
+expiry. A certificate an administrator installed is never replaced.
+
 Frigate launches and stops `go2rtc.exe` as a child. FFmpeg and other descendants
 are attached to a Windows Job Object so they cannot outlive Frigate. The
 optional SCM wrapper in `frigate/util/windows_service.py` uses the same runtime
@@ -71,7 +88,10 @@ Add `--install-service` from an elevated PowerShell session to register the SCM
 service. See `docs/docs/frigate/installation.md` for paths, environment
 overrides, service commands, upgrades, and uninstall steps.
 
-Repository checks are:
+Repository checks are (`check_windows_requirements.py` resolves every pin
+against PyPI for Windows CPython 3.12 and also verifies the pins against each
+other's declared dependency bounds, so a pin that pip could never install
+alongside the others fails locally rather than in the install step on CI):
 
 ```powershell
 ruff format --check bootstrap_windows.py frigate migrations testing-scripts

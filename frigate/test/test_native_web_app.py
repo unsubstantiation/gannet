@@ -4,13 +4,19 @@ import asyncio
 import ntpath
 import threading
 import unittest
+from contextlib import asynccontextmanager
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
+from urllib.parse import urljoin
 
+from aiohttp import web as aiohttp_web
+from fastapi import FastAPI
 from starlette.requests import Request
 from starlette.responses import Response
+from starlette.routing import Mount
 
 from frigate.api.auth import deny_response_for_go2rtc_stream
+from frigate.api.vod_native import VodPlaylist, VodSegment
 from frigate.api.web import (
     GO2RTC_URL,
     JSMEPEG_URL,
@@ -148,6 +154,256 @@ class TestNativeWebApp(unittest.TestCase):
 
             with TestClient(app):
                 sweep.assert_called_once()
+
+
+def _admin_auth(request: Request) -> Response:
+    """Stand-in for the auth endpoint that lets everything through as admin."""
+    return Response(
+        status_code=202,
+        headers={"remote-user": "admin", "remote-role": "admin"},
+    )
+
+
+def _fake_playlist(camera: str, start: float, end: float, stream: str | None):
+    """A playlist for a range, without touching the recordings table."""
+    return VodPlaylist(
+        camera=camera,
+        stream_type=stream or "main",
+        start=start,
+        end=end,
+        segments=[
+            VodSegment(
+                index=0,
+                path=f"/recordings/{camera}/00.00.mp4",
+                start=start,
+                duration=end - start,
+                file_start=start,
+            )
+        ],
+    )
+
+
+class TestMountedApiLifespan(unittest.TestCase):
+    """The FastAPI app's lifespan has to run even though it is mounted.
+
+    Starlette only drives the lifespan of the outermost application, so the
+    background work FastAPI starts on startup (the debug replay auto-stop
+    watchdog) silently never ran on a native install.
+    """
+
+    def test_the_api_lifespan_is_entered_and_left_with_the_gateway(self):
+        from starlette.testclient import TestClient
+
+        events: list[str] = []
+
+        @asynccontextmanager
+        async def api_lifespan(app: FastAPI):
+            events.append("startup")
+            yield
+            events.append("shutdown")
+
+        api_app = FastAPI(lifespan=api_lifespan)
+
+        with patch("frigate.api.web.vod_native.start_cache_maintenance"):
+            app = create_native_web_app(api_app, 5000)
+
+            with TestClient(app):
+                self.assertEqual(events, ["startup"])
+
+        self.assertEqual(events, ["startup", "shutdown"])
+
+    def test_an_api_app_without_a_lifespan_is_tolerated(self):
+        """Tests and tooling hand the gateway stand-ins for the API app."""
+        from starlette.testclient import TestClient
+
+        with patch("frigate.api.web.vod_native.start_cache_maintenance"):
+            app = create_native_web_app(MagicMock(), 5000)
+
+            with TestClient(app):
+                pass
+
+
+class TestGatewayRoutes(unittest.TestCase):
+    """Requests through the whole gateway stack with a permissive auth check."""
+
+    def _client(self, api_app=None):
+        from starlette.testclient import TestClient
+
+        self.enterContext(patch("frigate.api.web.vod_native.start_cache_maintenance"))
+        self.enterContext(patch("frigate.api.web.auth_check", side_effect=_admin_auth))
+        api_app = api_app or SimpleNamespace(
+            frigate_config=SimpleNamespace(
+                auth=SimpleNamespace(enabled=True),
+                proxy=SimpleNamespace(
+                    auth_secret=None,
+                    header_map=SimpleNamespace(user=None, role=None),
+                ),
+            )
+        )
+        return TestClient(create_native_web_app(api_app, 8971))
+
+    def test_the_master_playlist_variant_resolves_to_a_served_playlist(self):
+        """``master.m3u8`` is a master playlist whose variant can be fetched.
+
+        The web player asks for ``master.m3u8`` for every recordings range.
+        Two things were wrong with it: the route compared the ``{playlist}``
+        parameter against ``master.m3u8`` although the pattern strips the
+        suffix, so the branch never ran, and had it run it would have built
+        the variant URL with ``:g`` formatting, which renders ``1700000000.5``
+        as ``1.7e+09`` and is not a path the float routes accept.
+        """
+        for master_url in (
+            "/vod/front_door/start/1700000000.5/end/1700003600.25/master.m3u8",
+            "/vod/front_door/sub/start/1700000000.5/end/1700003600.25/master.m3u8",
+            "/vod/clip/front_door/start/1700000000.5/end/1700000030/master.m3u8",
+        ):
+            with (
+                self.subTest(master_url=master_url),
+                patch(
+                    "frigate.api.web.vod_native.build_playlist",
+                    side_effect=_fake_playlist,
+                ),
+            ):
+                client = self._client()
+                master = client.get(master_url)
+
+                self.assertEqual(master.status_code, 200)
+                self.assertEqual(
+                    master.headers["content-type"].split(";")[0],
+                    "application/vnd.apple.mpegurl",
+                )
+
+                lines = master.text.splitlines()
+                self.assertEqual(lines[0], "#EXTM3U")
+                self.assertTrue(
+                    any(line.startswith("#EXT-X-STREAM-INF:") for line in lines),
+                    master.text,
+                )
+                self.assertNotIn("#EXTINF:", master.text)
+                variant_uri = [line for line in lines if not line.startswith("#")][-1]
+
+                # resolve the way an HLS client does, against the master URL
+                media = client.get(urljoin(master_url, variant_uri))
+
+                self.assertEqual(media.status_code, 200, media.text)
+                self.assertIn("#EXTINF:", media.text)
+                self.assertIn("seg-00000.ts", media.text)
+
+    def test_the_cache_directory_is_not_served(self):
+        """CACHE_DIR holds every camera's in-progress recordings and previews.
+
+        The web app never reads it over HTTP, so publishing it only gave any
+        signed-in viewer a way around the per-camera media checks.
+        """
+        client = self._client()
+        app = client.app
+
+        self.assertFalse(
+            any(
+                isinstance(route, Mount) and route.path == "/cache"
+                for route in app.routes
+            )
+        )
+        self.assertTrue(needs_auth("/cache/preview.jpg"))
+
+
+class TestProxyHttp(unittest.IsolatedAsyncioTestCase):
+    """The plain HTTP proxy in front of go2rtc."""
+
+    async def _serve_upstream(self, handler):
+        """Start a loopback upstream, returning its base URL and runner."""
+        app = aiohttp_web.Application()
+        app.router.add_route("*", "/{tail:.*}", handler)
+        runner = aiohttp_web.AppRunner(app)
+        await runner.setup()
+        site = aiohttp_web.TCPSite(runner, "127.0.0.1", 0)
+        await site.start()
+        port = site._server.sockets[0].getsockname()[1]
+        return f"http://127.0.0.1:{port}", runner
+
+    async def test_the_upstream_status_and_body_reach_the_browser(self):
+        """WebRTC signalling answers through this proxy.
+
+        The upstream status was read from an attribute aiohttp responses do
+        not have, so every proxied request ended in a 500 before the body or
+        status reached the browser.
+        """
+        from frigate.api.web import proxy_http
+
+        seen: dict[str, object] = {}
+
+        async def upstream(request: aiohttp_web.Request):
+            seen["path"] = request.path_qs
+            seen["method"] = request.method
+            seen["body"] = await request.text()
+            return aiohttp_web.Response(
+                status=201,
+                text='{"type":"answer"}',
+                content_type="application/json",
+                headers={"X-Upstream": "go2rtc"},
+            )
+
+        base, runner = await self._serve_upstream(upstream)
+        self.addAsyncCleanup(runner.cleanup)
+
+        scope = {
+            "type": "http",
+            "method": "POST",
+            "scheme": "http",
+            "path": "/api/go2rtc/webrtc",
+            "raw_path": b"/api/go2rtc/webrtc",
+            "query_string": b"src=front_door",
+            "headers": [(b"host", b"frigate.local"), (b"content-type", b"text/plain")],
+            "server": ("127.0.0.1", 8971),
+        }
+
+        async def receive():
+            return {"type": "http.request", "body": b"v=0 offer", "more_body": False}
+
+        with patch("frigate.api.web.GO2RTC_URL", base):
+            response = await proxy_http(Request(scope, receive))
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.body, b'{"type":"answer"}')
+        self.assertEqual(response.headers["x-upstream"], "go2rtc")
+        self.assertTrue(response.headers["content-type"].startswith("application/json"))
+        self.assertEqual(
+            seen,
+            {
+                "path": "/api/webrtc?src=front_door",
+                "method": "POST",
+                "body": "v=0 offer",
+            },
+        )
+
+    async def test_an_unreachable_upstream_is_a_bad_gateway(self):
+        from frigate.api.web import proxy_http
+
+        async def upstream(request: aiohttp_web.Request):
+            return aiohttp_web.Response()
+
+        base, runner = await self._serve_upstream(upstream)
+        # the server is closed again before the request is made
+        await runner.cleanup()
+
+        scope = {
+            "type": "http",
+            "method": "GET",
+            "scheme": "http",
+            "path": "/go2rtc/api/streams",
+            "raw_path": b"/go2rtc/api/streams",
+            "query_string": b"",
+            "headers": [(b"host", b"frigate.local")],
+            "server": ("127.0.0.1", 8971),
+        }
+
+        async def receive():
+            return {"type": "http.request", "body": b"", "more_body": False}
+
+        with patch("frigate.api.web.GO2RTC_URL", base):
+            response = await proxy_http(Request(scope, receive))
+
+        self.assertEqual(response.status_code, 502)
 
 
 class TestNativeProxyIdentity(unittest.IsolatedAsyncioTestCase):
