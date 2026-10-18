@@ -109,6 +109,21 @@ class TestAuthInternalPort(BaseTestHttp):
 
             self.assertEqual(resp.status_code, 401)
 
+    def test_a_malformed_port_header_is_not_the_internal_port(self):
+        """A header that is not a number must fail closed, not raise.
+
+        The gateway sets this header itself and drops a client supplied one, but
+        /auth is also reachable as /api/auth by an authenticated caller, and an
+        unparsable value used to escape as an unhandled ValueError.
+        """
+        app = self._create_app()
+
+        with AuthTestClient(app) as client:
+            for value in ("internal", "5000.0", "", " 5000 "):
+                with self.subTest(value=value):
+                    resp = client.get("/auth", headers={"x-server-port": value})
+                    self.assertEqual(resp.status_code, 401)
+
     def test_swapped_config_does_not_move_the_trusted_port(self):
         """The live config is not what /auth trusts.
 
