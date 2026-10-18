@@ -122,6 +122,39 @@ class TestGo2rtcProcess(unittest.TestCase):
         self.assertIn("creationflags", popen.call_args.kwargs)
         process.log_file.close()
 
+    @patch("frigate.util.go2rtc_process.sp.Popen", side_effect=OSError("denied"))
+    @patch("frigate.util.go2rtc_process.prepare_homekit_config")
+    @patch(
+        "frigate.util.go2rtc_process.find_go2rtc",
+        return_value=r"C:\\Frigate\\go2rtc.exe",
+    )
+    @patch("frigate.util.go2rtc_process.get_service_log_path")
+    def test_a_failed_start_releases_the_log_file(
+        self,
+        service_log_path: MagicMock,
+        _find: MagicMock,
+        prepare: MagicMock,
+        _popen: MagicMock,
+    ) -> None:
+        """An open handle on the log would pin it until Frigate exited."""
+        prepare.return_value = r"C:\\ProgramData\\Frigate\\config\\go2rtc_homekit.yml"
+
+        with tempfile.TemporaryDirectory() as directory:
+            log_path = os.path.join(directory, "logs", "go2rtc.log")
+            service_log_path.return_value = log_path
+            process = Go2rtcProcess(os.path.join(directory, "go2rtc.yaml"))
+
+            with patch(
+                "frigate.util.go2rtc_process.sp.CREATE_NEW_PROCESS_GROUP",
+                512,
+                create=True,
+            ):
+                self.assertFalse(process.start())
+
+            self.assertIsNone(process.log_file)
+            self.assertIsNone(process.process)
+            # with the handle released the directory can be removed
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
