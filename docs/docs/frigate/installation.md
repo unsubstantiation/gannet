@@ -144,6 +144,25 @@ $env:FRIGATE_WEB_HOST = '127.0.0.1'
 Allow port 8971 through Windows Defender Firewall only when other computers need
 to reach Frigate. Keep port 5000 blocked from the network.
 
+### IPv6
+
+The public listener binds the IPv4 wildcard `0.0.0.0` unless IPv6 is enabled in
+the config:
+
+```yaml
+networking:
+  ipv6:
+    enabled: true
+```
+
+With it enabled and no `FRIGATE_WEB_HOST` override, Frigate binds the dual-stack
+wildcard `::`, which on Windows accepts both IPv6 and IPv4 connections. An
+explicit `FRIGATE_WEB_HOST` always wins; an IPv6 address there while
+`networking.ipv6.enabled` is `false` is still bound, but a warning is logged
+because the installer's firewall rule and these docs assume the config reflects
+what is in effect. The internal listener is loopback-only (`127.0.0.1`)
+regardless of this setting.
+
 ## Hardware acceleration
 
 Set one of the Windows decode presets under `ffmpeg.hwaccel_args`:
