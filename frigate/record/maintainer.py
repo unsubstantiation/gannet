@@ -1041,6 +1041,9 @@ class RecordingMaintainer(threading.Thread):
                     logger.error(f"Unable to convert {cache_path} to {file_path}")
                     if p.stderr:
                         logger.error((await p.stderr.read()).decode("ascii"))
+                    # the partial output would make every retry take the
+                    # "already stored" branch, so drop it and keep the segment
+                    robust_remove(file_path, missing_ok=True)
                     return None
                 else:
                     logger.debug(
@@ -1058,7 +1061,8 @@ class RecordingMaintainer(threading.Thread):
 
                 # the converted file has replaced the cache file, and an
                 # antivirus scanner may still hold the original open
-                await async_robust_remove(cache_path)
+                await discard_cache_file(cache_path)
+                self.end_time_cache.pop(cache_path, None)
 
                 rand_id = "".join(
                     random.choices(string.ascii_lowercase + string.digits, k=6)
@@ -1087,7 +1091,10 @@ class RecordingMaintainer(threading.Thread):
                 }
         except Exception:
             logger.exception(f"Unable to store recording segment {cache_path}")
-            await discard_cache_file(cache_path)
+
+        # the destination already holds this segment, so the cache copy is
+        # redundant; a scanner may still hold it open
+        await discard_cache_file(cache_path)
 
         # clear end_time cache
         self.end_time_cache.pop(cache_path, None)

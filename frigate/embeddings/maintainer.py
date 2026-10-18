@@ -552,8 +552,10 @@ class EmbeddingMaintainer(threading.Thread):
                 frame_name, camera_config.frame_shape_yuv, frame_time
             )
         except FileNotFoundError:
+            # the segment is gone; leave yuv_frame unset so the guard below
+            # reports the frame as unavailable instead of raising a NameError
             logger.debug(f"Frame {frame_name} not found for camera {camera}")
-            pass
+            yuv_frame = None
 
         if yuv_frame is None:
             logger.debug(
@@ -821,7 +823,7 @@ class EmbeddingMaintainer(threading.Thread):
                 frame_name, camera_config.frame_shape_yuv, frame_time
             )
         except FileNotFoundError:
-            pass
+            yuv_frame = None
 
         if yuv_frame is None:
             logger.debug(

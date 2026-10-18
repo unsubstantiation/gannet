@@ -105,8 +105,6 @@ class StatsEmitter(threading.Thread):
         self.ffmpeg_cpu = EpisodeTracker(FFMPEG_HIGH_CPU_PCT)
         self.detect_cpu = EpisodeTracker(DETECT_HIGH_CPU_PCT)
 
-        # the shm notice's params as last sent, so only a change is written
-
         # create communication for stats
         self.requestor = InterProcessRequestor()
 
@@ -258,8 +256,6 @@ class StatsEmitter(threading.Thread):
 
                 for camera in tracker.update(averages, now):
                     raise_notice(kind, scope=camera, params={"cpu": averages[camera]})
-
-        # shm too small for the cameras
 
         # repeats of batched kinds, such as failed logins
         flush_notices()
