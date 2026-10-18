@@ -194,9 +194,10 @@ class AudioTranscriptionPostProcessor(PostProcessorApi):
             logger.debug("Recognizer not initialized")
             return None
 
-        try:  # type: ignore[unreachable]
-            # Save audio data to a temporary wav (faster-whisper expects a file)
-            temp_wav = os.path.join(CACHE_DIR, f"temp_audio_{int(time.time())}.wav")
+        # Save audio data to a temporary wav (faster-whisper expects a file)
+        temp_wav = os.path.join(CACHE_DIR, f"temp_audio_{int(time.time())}.wav")  # type: ignore[unreachable]
+
+        try:
             with open(temp_wav, "wb") as f:
                 f.write(audio_data)
 
@@ -205,8 +206,6 @@ class AudioTranscriptionPostProcessor(PostProcessorApi):
                 language=resolve_language(self.config.audio_transcription.language),
                 beam_size=5,
             )
-
-            robust_remove(temp_wav)
 
             # Combine all segment texts
             text = " ".join(segment.text.strip() for segment in segments)
@@ -223,6 +222,13 @@ class AudioTranscriptionPostProcessor(PostProcessorApi):
         except Exception as e:
             logger.error(f"Error transcribing audio: {e}")
             return None
+        finally:
+            # the segments generator reads the file, so it can only go once the
+            # text above is built; a failure must not leave it in the cache
+            try:
+                robust_remove(temp_wav, missing_ok=True)
+            except OSError as e:
+                logger.warning(f"Unable to remove {temp_wav}: {e}")
 
     def _transcription_wrapper(self, event: dict[str, Any]) -> None:
         """Wrapper to run transcription and reset running flag when done."""

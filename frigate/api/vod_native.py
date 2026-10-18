@@ -30,6 +30,7 @@ from frigate.const import CACHE_DIR
 from frigate.models import Event, Recordings
 from frigate.util.file import robust_remove, robust_rmtree
 from frigate.util.platform import resolve_ffmpeg_binary
+from frigate.util.recording_coverage import recording_overlap
 
 logger = logging.getLogger(__name__)
 
@@ -170,11 +171,8 @@ def _recordings_for_range(
             Recordings.end_time,
             Recordings.stream_type,
         )
-        .where(
-            (Recordings.camera == camera)
-            & (Recordings.end_time >= start)
-            & (Recordings.start_time <= end)
-        )
+        .where(recording_overlap(start, end))
+        .where(Recordings.camera == camera)
         .order_by(Recordings.start_time.asc())
         .dicts()
     )
