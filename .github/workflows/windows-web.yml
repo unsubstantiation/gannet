@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 name: Windows Web
 
 # The frontend ships as the native build (`build:native`, served from `/`),

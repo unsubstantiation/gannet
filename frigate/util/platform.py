@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Native Windows paths, processes, hardware APIs, and IPC helpers.
 
 The application has one runtime platform. Files live below a writable Windows

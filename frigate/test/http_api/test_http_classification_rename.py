@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Classification category renames on a case-insensitive (NTFS) file system."""
 
 import os

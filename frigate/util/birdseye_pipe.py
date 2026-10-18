@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Loopback TCP transport for raw birdseye restream frames on Windows."""
 
 import logging

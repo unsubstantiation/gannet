@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """The native web server, which replaces nginx on Windows."""
 
 import asyncio

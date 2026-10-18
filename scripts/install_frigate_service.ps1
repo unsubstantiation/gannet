@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 <#
 .SYNOPSIS
     Install, configure, start, stop or remove the Frigate Windows SCM service.

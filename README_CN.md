@@ -1,5 +1,5 @@
 <p align="center">
-  <img align="center" alt="logo" src="docs/static/img/branding/frigate.png">
+  <img align="center" alt="Gannet NVR logo" src="web/images/branding/logo.png" width="420">
 </p>
 
 # Frigate NVR™ - 一个具有实时目标检测的本地 NVR
@@ -10,7 +10,8 @@
 
 [English](README.md) | \[简体中文\]
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Source-available, non-commercial](https://img.shields.io/badge/License-Non--commercial-red.svg)](LICENSING.md)
+[![Upstream Frigate code: MIT](https://img.shields.io/badge/Upstream_Frigate_code-MIT-yellow.svg)](LICENSES/MIT.txt)
 
 一个完整的本地网络视频录像机（NVR），专为[Home Assistant](https://www.home-assistant.io)设计，具备 AI 目标/物体检测功能。使用 OpenCV 和 TensorFlow 在本地为 IP 摄像头执行实时物体检测。
 
@@ -34,7 +35,7 @@
 在普通的 PowerShell 窗口中安装：
 
 ```powershell
-git clone https://github.com/nuipona/gannet.git
+git clone https://github.com/unsubstantiation/gannet.git
 cd gannet
 py -3.12 bootstrap_windows.py
 powershell -ExecutionPolicy Bypass -File .\run_frigate.ps1
@@ -57,16 +58,25 @@ Windows 相关特性：
 
 ## 赞助
 
-如果您想通过捐赠支持开发，请使用 [Github Sponsors](https://github.com/sponsors/blakeblackshear)。
+如需支持开发，捐款请通过 [Github Sponsors](https://github.com/sponsors/blakeblackshear) 捐给**上游 Frigate**；
+本分支没有自己的捐款渠道，其开发由[LICENSE](LICENSE) 第 15 条所述商业许可的收入支持。
 
 ## 协议
 
-本项目采用 **MIT 许可证**授权。
+本项目采用**源码可见（source-available）、仅限非商业使用**的许可，**不是开源许可**。
 
-**代码部分**：本代码库中的源代码、配置文件和文档均遵循 [MIT 许可证](LICENSE)。您可以自由使用、修改和分发这些代码，但必须保留原始版权声明。
+**本分支自行编写的代码**（Windows 引导脚本、原生平台/服务层、PowerShell 工具、Gannet 主题以及 Windows 测试套件）
+遵循 [Gannet 非商业许可证 1.0](LICENSE)：可自由用于个人学习、研究、教学及非营利用途，衍生作品须采用相同条款；
+**不得**用于任何商业用途（企业内部的免费使用同样不允许）；不得用于训练 AI 模型，也不得发布由 AI 生成的衍生版本。
 
-**商标部分**：“Frigate”名称、“Frigate NVR”品牌以及 Frigate 的 Logo 为 **Frigate, Inc. 的商标**，**不在** MIT 许可证覆盖范围内。
-有关品牌资产的规范使用详情，请参阅我们的[《商标政策》](TRADEMARK.md)。
+**继承自 [Frigate](https://github.com/blakeblackshear/frigate) 的代码**仍然适用其
+[MIT 许可证](LICENSES/MIT.txt)，本分支无权收回上游已授予的权利；这部分占本仓库的大多数文件，
+包括商业使用在内的 MIT 权利依然有效。具体文件归属请见 [`REUSE.toml`](REUSE.toml) 与
+[`LICENSING.md`](LICENSING.md)（说明边界、理由以及商业许可的申请方式）。
+
+**商标部分**：“Gannet”、“Gannet NVR” 以及 Gannet 的 Logo 为 **unsubstantiation**（fairuniversal.com）的商标；
+“Frigate” 名称与 Frigate 的 Logo 为 **Frigate, Inc. 的商标**。两者**均不**在 MIT 许可证覆盖范围内，
+任何分支都必须把这两套品牌资产替换成自己的。详见[《商标政策》](TRADEMARK.md)。
 
 ## 截图
 
@@ -111,4 +121,5 @@ Bilibili：https://space.bilibili.com/3546894915602564
 
 ---
 
-**Copyright © 2026 Frigate, Inc.**
+**Copyright © 2026 Frigate, Inc.**（Frigate 代码部分，MIT 许可证）
+**Copyright © 2026 unsubstantiation**（本分支原创部分，Gannet 非商业许可证）

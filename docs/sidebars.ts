@@ -13,6 +13,7 @@ const sidebars: SidebarsConfig = {
       "frigate/camera_setup",
       "frigate/video_pipeline",
       "frigate/network_requirements",
+      "frigate/licensing",
       "frigate/glossary",
     ],
     Guides: [

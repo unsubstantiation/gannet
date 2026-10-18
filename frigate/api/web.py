@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Native Windows HTTP gateway for the UI, API, media, and live streams.
 
 The public listener serves the React application, authenticates protected

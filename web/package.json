@@ -1,6 +1,7 @@
 {
   "name": "web-new",
   "private": true,
+  "license": "LicenseRef-GNCL-1.0 AND MIT",
   "version": "0.0.0",
   "type": "module",
   "scripts": {

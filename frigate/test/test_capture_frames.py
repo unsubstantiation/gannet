@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Tests for reading decoded frames out of ffmpeg's stdout.
 
 The frame reader asks a pipe for one frame at a time and writes it into a

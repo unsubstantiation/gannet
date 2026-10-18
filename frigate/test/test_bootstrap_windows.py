@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Tests for the native Windows bootstrap script.
 
 The script is standard library only so these can run anywhere; they exercise

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Tests for graceful FFmpeg shutdown on native Windows."""
 
 import logging

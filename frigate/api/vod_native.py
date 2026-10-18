@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Native Windows HLS generation for recorded video.
 
 The ``/vod`` endpoints build playlists from recording rows in the database and

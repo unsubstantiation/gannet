@@ -1,30 +1,39 @@
-# COPYRIGHT AND TRADEMARK NOTICE
+## Gannet Documentation Brand Assets
 
-The images, logos, and icons contained in this directory (the "Brand Assets") are
-proprietary to Frigate, Inc. and are NOT covered by the MIT License governing the
-rest of this repository.
+This directory holds the logo mark and favicon used by the Gannet documentation
+site, and they belong to **unsubstantiation** (fairuniversal.com), the individual
+who maintains this fork. These images are brand material, not software: they are **not** licensed by
+the MIT license that covers upstream Frigate code, nor by the noncommercial license
+that covers this fork's own code. Names and logos travel under trademark law, and
+neither license moves them.
 
-1. TRADEMARK STATUS
-   The "Frigate" name and the accompanying logo are common law trademarks™ of
-   Frigate, Inc. Frigate, Inc. reserves all rights to these marks.
+### You may
 
-2. LIMITED PERMISSION FOR USE
-   Permission is hereby granted to display these Brand Assets strictly for the
-   following purposes:
-   a. To execute the software interface on a local machine.
-   b. To identify the software in documentation or reviews (nominative use).
+- display these assets to identify this fork and its documentation, and
+- link to them.
 
-3. RESTRICTIONS
-   You may NOT:
-   a. Use these Brand Assets to represent a derivative work (fork) as an official
-   product of Frigate, Inc.
-   b. Use these Brand Assets in a way that implies endorsement, sponsorship, or
-   commercial affiliation with Frigate, Inc.
-   c. Modify or alter the Brand Assets.
+### You may not
 
-If you fork this repository with the intent to distribute a modified or competing
-version of the software, you must replace these Brand Assets with your own
-original content.
+- use them in a way that suggests this fork, its author, or its documentation
+  endorse or sponsor your project,
+- present them as your own, or register them (or anything confusingly similar) as a
+  trademark, service mark, or other source indicator, or
+- ship them inside your own modified version of this software.
 
-ALL RIGHTS RESERVED.
-Copyright (c) 2026 Frigate, Inc.
+### If you fork or otherwise modify this software, replace these assets
+
+Distribute a modified version and you must use your own name and your own images
+here — editing these files is not enough, because the point is that the artwork
+identifies *us*. Delete what is in this directory, put your own equivalent files at
+the same paths, and update `docs/docusaurus.config.ts` (`favicon`, `navbar.logo`) to
+match. Saying accurately, in plain text, that your version is derived from Gannet is
+always fine.
+
+### What changed here
+
+Frigate's documentation assets — `frigate.png`, `logo.svg`, `logo-dark.svg`, and its
+`favicon.ico` — were **removed** from this fork rather than licensed, so nothing in
+this directory is Frigate, Inc. property any more. That removal is what
+`docs/docusaurus.config.ts` and this fork's `TRADEMARK.md` both require of a fork
+that ships a modified version; the upstream attribution for the surrounding
+documentation lives in `LICENSES/MIT.txt` at the repository root and is untouched.

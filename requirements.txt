@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 # Native Windows runtime dependencies for 64-bit CPython 3.12.
 # This is the authoritative application dependency set. Every package publishes
 # a Windows wheel for CPython 3.12, except titlecase, which is pure Python.

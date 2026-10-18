@@ -1,2 +1,3 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 # Every test is expected to pass on native Windows.
 # Temporary exclusions must include a test id and a concrete Windows reason.

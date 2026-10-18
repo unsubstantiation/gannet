@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Make sure child processes die when Frigate does, on Windows.
 
 Frigate runs a lot of processes: one ffmpeg per camera stream, go2rtc for live

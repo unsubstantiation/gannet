@@ -166,6 +166,15 @@ and `http_api/test_http_config_encoding.py` (UTF-8 config round trips).
 
 ## Release limitation
 
-`winget-manifest/Frigate.FrigateWindows.yaml` remains a template until a signed
-Windows installer is published. The bootstrap and source launcher are the
-supported installation path in the meantime.
+`winget-manifest/unsubstantiation.GannetNVR.yaml` remains a template until a
+signed Windows installer is published from this fork's own releases. Two fields in
+it are not formatting choices: `Publisher` is the person who maintains this fork,
+because Frigate, Inc. does not publish it, and `License: GNCL-1.0 AND MIT` is what
+the tree actually carries, so a submission that says otherwise would be a
+misstatement to the registry as well as to users. The installer asset is still
+named for upstream (`frigate-windows-installer.exe`); rename it in the release
+workflow and the manifest in the same change, or `winget validate` fails on a
+404.
+
+The bootstrap and source launcher are the supported installation path in the
+meantime.

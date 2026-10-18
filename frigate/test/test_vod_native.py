@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Native HLS playlist and segment generation for the Windows gateway."""
 
 import asyncio

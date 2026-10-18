@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 import tempfile
 import unittest
 from datetime import UTC, datetime, timedelta

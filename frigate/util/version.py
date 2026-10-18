@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Resolve the version reported by the native Windows installation."""
 
 from importlib.metadata import PackageNotFoundError

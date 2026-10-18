@@ -1,0 +1,41 @@
+The MIT License
+
+Copyright (c) 2026 Frigate, Inc. (Frigate™)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+This file exists because most of this repository is not ours to license.
+
+It is the license text of blakeblackshear/frigate, reproduced verbatim and
+unmodified, as that license's own condition requires. The files this fork did
+not change, and the upstream parts of the files it did change, are licensed to
+you by Frigate, Inc. and the Frigate contributors under these terms. That grant
+permits commercial use, is not restricted by the Gannet Noncommercial License in
+LICENSE, and cannot be narrowed by this project: the upstream copyright holders
+never agreed to narrow it.
+
+Where a file is marked `MIT AND LicenseRef-GNCL-1.0` in REUSE.toml, both apply
+to that file: this license to the upstream material in it, and the Gannet
+Noncommercial License to the material unsubstantiation and their contributors authored.
+See LICENSING.md for the boundary and REUSE.toml for the file-by-file mapping.
+
+Removing or editing this file would put this repository outside the terms it
+received. If you redistribute this fork, keep it.

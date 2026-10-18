@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Platform helper tests for Windows command and path handling."""
 
 import ntpath

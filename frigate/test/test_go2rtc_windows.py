@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Native Windows go2rtc configuration and HomeKit persistence tests."""
 
 import os

@@ -7,6 +7,13 @@ name = "frigate-nvr"
 version = "0.19.0"
 description = "Native Windows network video recorder with local AI detection"
 requires-python = ">=3.12,<3.13"
+# Two licenses, deliberately. `LicenseRef-GNCL-1.0` is this fork's own
+# noncommercial license for the material it authored (LICENSE, and the paths
+# REUSE.toml maps to it); `MIT` is Frigate's, which covers the majority of the tree
+# and cannot be narrowed by a fork. A single-license metadata field would mislead
+# both humans and scanners, and PEP 639 allows the expression.
+license = "LicenseRef-GNCL-1.0 AND MIT"
+license-files = ["LICENSE", "LICENSES/*.txt", "LICENSING.md", "THIRD_PARTY.md", "TRADEMARK.md"]
 classifiers = [
   "Operating System :: Microsoft :: Windows",
   "Programming Language :: Python :: 3.12",

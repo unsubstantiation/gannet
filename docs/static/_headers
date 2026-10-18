@@ -6,3 +6,10 @@ https://:version.:project.pages.dev/*
 
 https://docs-dev.frigate.video/*
   X-Robots-Tag: noindex
+
+# TDM Reservation Protocol, technique 2 (HTTP header). Mirrors
+# /.well-known/tdmrep.json for agents that read headers without fetching bodies.
+# Applies to the docs site; it is a rights reservation, not a license, and it
+# covers this fork's own writing only.
+/*
+  TDM-Reservation: 1

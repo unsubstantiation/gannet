@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Windows SCM service wrapper for Frigate, using pywin32.
 
 pywin32 is part of requirements.txt, so a native install

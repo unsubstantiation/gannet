@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Check that the native Windows dependency set can actually install.
 
 Three things are verified, all against the PyPI JSON API so the check needs no

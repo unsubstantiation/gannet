@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Tests for closing the config pub/sub sockets.
 
 A publisher or subscriber that is dropped without ``stop()`` used to leave

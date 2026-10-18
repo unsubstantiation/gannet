@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Tests for the cross platform key reader of the GenAI review tester.
 
 The tester is a developer tool, but it is part of a Windows only repository,

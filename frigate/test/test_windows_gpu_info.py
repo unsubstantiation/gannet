@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Tests for the native Windows video hardware report behind ``/api/gpuinfo``."""
 
 import subprocess as sp
