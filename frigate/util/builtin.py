@@ -293,7 +293,7 @@ def update_yaml_file_bulk(file_path: str, updates: dict[str, Any]):
     yaml.indent(mapping=2, sequence=4, offset=2)
 
     try:
-        with open(file_path) as f:
+        with open(file_path, encoding="utf-8") as f:
             data = yaml.load(f)
     except FileNotFoundError:
         logger.error(
@@ -314,7 +314,7 @@ def update_yaml_file_bulk(file_path: str, updates: dict[str, Any]):
         data = update_yaml(data, key_path, new_value)
 
     try:
-        with open(file_path, "w") as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             yaml.dump(data, f)
     except Exception as e:
         logger.error(f"Unable to write to Frigate config file {file_path}: {e}")

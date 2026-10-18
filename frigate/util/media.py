@@ -843,7 +843,7 @@ def write_orphan_report(
         dry_run: Whether the sync was a dry run, for the report header.
     """
     try:
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             f.write("# Media Sync Orphan Report\n")
             f.write(f"# Job: {job_id}\n")
             f.write(

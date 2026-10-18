@@ -143,6 +143,7 @@ class GenAIClient:
                     CLIPS_DIR, "genai-requests", review_data["id"], "prompt.txt"
                 ),
                 "w",
+                encoding="utf-8",
             ) as f:
                 f.write(context_prompt)
 
@@ -159,6 +160,7 @@ class GenAIClient:
                             f"{index}.txt",
                         ),
                         "w",
+                        encoding="utf-8",
                     ) as f:
                         f.write(caption)
 
@@ -177,6 +179,7 @@ class GenAIClient:
                     CLIPS_DIR, "genai-requests", review_data["id"], "response.txt"
                 ),
                 "w",
+                encoding="utf-8",
             ) as f:
                 f.write(response)
 
@@ -265,6 +268,7 @@ class GenAIClient:
                     CLIPS_DIR, "genai-requests", f"{start_ts}-{end_ts}", "prompt.txt"
                 ),
                 "w",
+                encoding="utf-8",
             ) as f:
                 f.write(timeline_summary_prompt)
 
@@ -276,6 +280,7 @@ class GenAIClient:
                     CLIPS_DIR, "genai-requests", f"{start_ts}-{end_ts}", "response.txt"
                 ),
                 "w",
+                encoding="utf-8",
             ) as f:
                 f.write(response)
 

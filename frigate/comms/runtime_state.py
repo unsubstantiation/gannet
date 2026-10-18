@@ -165,7 +165,7 @@ class RuntimeStatePersistence:
         if not os.path.exists(self._path):
             return {}
         try:
-            with open(self._path) as f:
+            with open(self._path, encoding="utf-8") as f:
                 data = json.load(f)
         except (OSError, json.JSONDecodeError):
             logger.exception(
@@ -177,6 +177,6 @@ class RuntimeStatePersistence:
     def _write_locked(self, data: dict[str, Any]) -> None:
         """Atomically write the JSON file while the FileLock is held."""
         tmp_path = f"{self._path}.tmp"
-        with open(tmp_path, "w") as f:
+        with open(tmp_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, sort_keys=True)
         os.replace(tmp_path, self._path)

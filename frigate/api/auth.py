@@ -81,7 +81,7 @@ def require_admin_by_default():
         "/stats",
         "/stats/history",
         "/config",
-        "/vainfo",
+        "/gpuinfo",
         "/nvinfo",
         "/labels",
         "/sub_labels",
@@ -381,7 +381,7 @@ def get_jwt_secret() -> str:
                 fd = os.open(
                     jwt_secret_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600
                 )
-                with os.fdopen(fd, "w") as f:
+                with os.fdopen(fd, "w", encoding="utf-8") as f:
                     f.write(str(jwt_secret))
             except Exception:
                 logger.warning(
@@ -389,7 +389,7 @@ def get_jwt_secret() -> str:
                 )
         else:
             logger.debug("Using jwt secret from .jwt_secret file in config directory.")
-            with open(jwt_secret_file) as f:
+            with open(jwt_secret_file, encoding="utf-8") as f:
                 try:
                     jwt_secret = f.readline().strip()
                 except Exception:

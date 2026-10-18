@@ -1066,7 +1066,7 @@ class TestProfilePersistence(unittest.TestCase):
 
         written_data = {}
 
-        def mock_write(_self, content):
+        def mock_write(_self, content, encoding=None):
             written_data.update(json.loads(content))
 
         with patch.object(
@@ -1089,7 +1089,7 @@ class TestProfilePersistence(unittest.TestCase):
         }
         written_data = {}
 
-        def mock_write(_self, content):
+        def mock_write(_self, content, encoding=None):
             written_data.update(json.loads(content))
 
         config_data = {

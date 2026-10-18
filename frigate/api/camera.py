@@ -1281,14 +1281,14 @@ async def delete_camera(
 
     try:
         with lock:
-            with open(config_file) as f:
+            with open(config_file, encoding="utf-8") as f:
                 old_raw_config = f.read()
 
             try:
                 yaml = YAML()
                 yaml.indent(mapping=2, sequence=4, offset=2)
 
-                with open(config_file) as f:
+                with open(config_file, encoding="utf-8") as f:
                     data = yaml.load(f)
 
                 # Remove camera from config
@@ -1315,16 +1315,16 @@ async def delete_camera(
                     for role_name in empty_roles:
                         del auth["roles"][role_name]
 
-                with open(config_file, "w") as f:
+                with open(config_file, "w", encoding="utf-8") as f:
                     yaml.dump(data, f)
 
-                with open(config_file) as f:
+                with open(config_file, encoding="utf-8") as f:
                     new_raw_config = f.read()
 
                 try:
                     config = FrigateConfig.parse(new_raw_config)
                 except Exception:
-                    with open(config_file, "w") as f:
+                    with open(config_file, "w", encoding="utf-8") as f:
                         f.write(old_raw_config)
                     logger.exception(
                         "Config error after removing camera %s",

@@ -6,6 +6,7 @@ import errno
 import logging
 import os
 import shutil
+import stat
 import time
 from datetime import datetime
 from pathlib import Path
@@ -597,6 +598,67 @@ def robust_move(
     _run_with_retry(
         lambda: shutil.move(src, dst), attempts, delay, f"move of {src} to {dst}"
     )
+
+
+def _clear_read_only(path: str) -> bool:
+    """Clear the Windows read-only attribute; True when it was set."""
+    try:
+        mode = os.stat(path).st_mode
+    except OSError:
+        return False
+    if mode & stat.S_IWRITE:
+        return False
+    try:
+        os.chmod(path, mode | stat.S_IWRITE)
+    except OSError:
+        return False
+    return True
+
+
+def _rmtree_once(path: str) -> None:
+    """Remove a tree, clearing the read-only attribute where Windows needs it.
+
+    ``shutil.rmtree`` raises ``PermissionError`` for a read-only file on
+    Windows, where POSIX only looks at the directory. Files copied out of a
+    download or a removable drive often carry that attribute. The first error
+    for a held file is re-raised so the retry loop can wait for it.
+    """
+    held: list[OSError] = []
+
+    def onexc(function, failed_path, err):
+        if not isinstance(err, OSError):
+            raise err
+        if is_held_by_another_process(err):
+            if _clear_read_only(failed_path):
+                try:
+                    function(failed_path)
+                    return
+                except OSError as retry_err:
+                    err = retry_err
+            if not held:
+                held.append(err)
+            return
+        # a parent of a held file cannot be removed yet; the retry gets it
+        if held and err.errno in (errno.ENOTEMPTY, errno.EEXIST):
+            return
+        raise err
+
+    shutil.rmtree(path, onexc=onexc)
+    if held:
+        raise held[0]
+
+
+def robust_rmtree(
+    path: str,
+    attempts: int = FILE_OPERATION_ATTEMPTS,
+    delay: float = FILE_OPERATION_DELAY,
+) -> None:
+    """Remove a directory tree, retrying while another process holds a file.
+
+    Read-only files are made writable first, so a tree that came from a
+    download or an export can be removed on Windows as it would be on POSIX.
+    """
+    _run_with_retry(lambda: _rmtree_once(path), attempts, delay, f"removal of {path}")
 
 
 async def async_robust_remove(

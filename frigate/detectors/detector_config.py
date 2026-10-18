@@ -211,7 +211,7 @@ class ModelConfig(BaseModel):
                     f"Unable to connect to Frigate+ to download model info for {model_id}"
                 ) from e
 
-            with open(model_info_path, "w") as f:
+            with open(model_info_path, "w", encoding="utf-8") as f:
                 json.dump(model_info, f)
 
         model_info = load_plus_model_info(model_id)

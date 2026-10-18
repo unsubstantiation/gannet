@@ -8,7 +8,6 @@ frigate.jobs.debug_replay. This module owns only session presence
 import asyncio
 import logging
 import os
-import shutil
 import threading
 import time
 
@@ -36,6 +35,7 @@ from frigate.jobs.export import JobStatePublisher
 from frigate.types import JobStatusTypesEnum
 from frigate.util.camera_cleanup import cleanup_camera_db, cleanup_camera_files
 from frigate.util.config import find_config_file
+from frigate.util.file import robust_rmtree
 
 logger = logging.getLogger(__name__)
 
@@ -129,7 +129,7 @@ class DebugReplayManager:
 
         config_file = find_config_file()
         yaml_parser = YAML()
-        with open(config_file) as f:
+        with open(config_file, encoding="utf-8") as f:
             config_data = yaml_parser.load(f)
 
         if "cameras" not in config_data or config_data["cameras"] is None:
@@ -311,7 +311,7 @@ class DebugReplayManager:
         # Remove replay-specific cache directory
         if os.path.exists(REPLAY_DIR):
             try:
-                shutil.rmtree(REPLAY_DIR)
+                robust_rmtree(REPLAY_DIR)
                 logger.debug("Removed replay cache directory")
             except Exception as e:
                 logger.error("Failed to remove replay cache: %s", e)
@@ -355,7 +355,7 @@ def cleanup_replay_cameras() -> None:
 
     if os.path.exists(REPLAY_DIR):
         try:
-            shutil.rmtree(REPLAY_DIR)
+            robust_rmtree(REPLAY_DIR)
         except Exception as e:
             logger.error("Failed to remove replay cache directory: %s", e)
 

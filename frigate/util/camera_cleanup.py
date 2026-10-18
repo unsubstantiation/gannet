@@ -3,7 +3,6 @@
 import glob
 import logging
 import os
-import shutil
 
 from frigate.const import CLIPS_DIR, RECORD_DIR, THUMB_DIR
 from frigate.models import (
@@ -16,6 +15,7 @@ from frigate.models import (
     Timeline,
     Trigger,
 )
+from frigate.util.file import robust_rmtree
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +121,7 @@ def cleanup_camera_files(
     for dir_path in dirs_to_clean:
         if os.path.exists(dir_path):
             try:
-                shutil.rmtree(dir_path)
+                robust_rmtree(dir_path)
                 logger.debug("Removed directory: %s", dir_path)
             except Exception as e:
                 logger.error("Failed to remove %s: %s", dir_path, e)

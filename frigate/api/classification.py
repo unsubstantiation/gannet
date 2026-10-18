@@ -42,8 +42,13 @@ from frigate.util.classification import (
     read_training_metadata,
     write_training_metadata,
 )
-from frigate.util.file import get_event_snapshot
-from frigate.util.path import safe_join, sanitize_path_component
+from frigate.util.file import get_event_snapshot, robust_rmtree
+from frigate.util.path import (
+    is_same_path,
+    rename_path,
+    safe_join,
+    sanitize_path_component,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -1064,7 +1069,9 @@ def rename_classification_category(
             status_code=404,
         )
 
-    if os.path.exists(new_folder):
+    # Windows resolves a name that differs only in letter case to the same
+    # folder, so a case-only rename must not be reported as a collision.
+    if os.path.exists(new_folder) and not is_same_path(old_folder, new_folder):
         return JSONResponse(
             content=(
                 {
@@ -1076,7 +1083,7 @@ def rename_classification_category(
         )
 
     try:
-        os.rename(old_folder, new_folder)
+        rename_path(old_folder, new_folder)
 
         # Mark dataset as ready to train by resetting training metadata
         # This ensures the dataset is marked as changed after renaming
@@ -1327,7 +1334,7 @@ def delete_classification_model(request: Request, name: str):
     # Delete the classification model's data directory in clips
     if os.path.exists(data_dir):
         try:
-            shutil.rmtree(data_dir)
+            robust_rmtree(data_dir)
             logger.info(f"Deleted classification data directory for {name}")
         except Exception as e:
             logger.debug(f"Failed to delete data directory for {name}: {e}")
@@ -1335,7 +1342,7 @@ def delete_classification_model(request: Request, name: str):
     # Delete the classification model's files in model_cache
     if os.path.exists(model_dir):
         try:
-            shutil.rmtree(model_dir)
+            robust_rmtree(model_dir)
             logger.info(f"Deleted classification model directory for {name}")
         except Exception as e:
             logger.debug(f"Failed to delete model directory for {name}: {e}")

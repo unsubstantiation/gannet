@@ -2780,16 +2780,21 @@ paths:
         - frigateAdminAuth: []
       x-required-role: admin
       description: '**Access:** Admin role required.'
-  /vainfo:
+  /gpuinfo:
     get:
       tags:
         - App
-      summary: Vainfo
+      summary: Gpuinfo
       description: |-
         **Access:** Any authenticated user.
 
-        Explain why the legacy libva diagnostic is absent on Windows.
-      operationId: vainfo_vainfo_get
+        Describe the video hardware Windows exposes to Frigate.
+
+        Reports the active display adapters, the processor, the hardware
+        acceleration methods compiled into the installed FFmpeg, the accelerators
+        go2rtc could open, and the ``preset-windows-*`` decoder families Frigate
+        recommends. This is the native replacement for the Linux ``vainfo`` output.
+      operationId: gpuinfo_gpuinfo_get
       responses:
         '200':
           description: Successful Response

@@ -45,7 +45,9 @@ def load_plus_model_info(model_id: str) -> dict[str, Any] | None:
         The model info, or None when it has not been cached or cannot be read
     """
     try:
-        with open(os.path.join(MODEL_CACHE_DIR, f"{model_id}.json")) as f:
+        with open(
+            os.path.join(MODEL_CACHE_DIR, f"{model_id}.json"), encoding="utf-8"
+        ) as f:
             model_info: dict[str, Any] = json.load(f)
     except (OSError, ValueError):
         return None

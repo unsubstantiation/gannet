@@ -44,6 +44,8 @@ Windows Task Manager, `Get-CimInstance Win32_VideoController`, and the Frigate d
 
 ## Troubleshooting
 
+Open **System → General** and click **Hardware Info** to see what Windows exposes to Frigate: the active display adapters, the processor, the acceleration methods compiled into the pinned `ffmpeg.exe`, the accelerators go2rtc could open, and the `preset-windows-*` family Frigate recommends. The same report is available from `GET /api/gpuinfo`, and NVIDIA driver details from `GET /api/nvinfo`.
+
 If FFmpeg repeatedly exits:
 
 - switch to `preset-windows-d3d11va`;

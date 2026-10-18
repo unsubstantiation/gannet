@@ -97,7 +97,7 @@ def load_raw_config(config_file: str | None = None) -> dict[str, Any]:
     config_file = config_file or find_config_file()
 
     try:
-        with open(config_file) as file:
+        with open(config_file, encoding="utf-8") as file:
             raw_config = file.read()
 
         if config_file.endswith((".yaml", ".yml")):
@@ -298,7 +298,7 @@ def write_go2rtc_config(config: dict[str, Any], path: str | None = None) -> str:
     path = path or go2rtc_config_path()
     os.makedirs(os.path.dirname(path), exist_ok=True)
 
-    with open(path, "w") as file:
+    with open(path, "w", encoding="utf-8") as file:
         yaml.dump(config, file)
 
     # the config contains camera credentials; do not leave it world-readable

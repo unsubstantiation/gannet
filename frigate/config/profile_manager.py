@@ -454,7 +454,7 @@ class ProfileManager:
                 data.setdefault("last_activated", {})[profile_name] = datetime.now(
                     UTC
                 ).timestamp()
-            PERSISTENCE_FILE.write_text(json.dumps(data))
+            PERSISTENCE_FILE.write_text(json.dumps(data), encoding="utf-8")
         except OSError:
             logger.exception("Failed to persist active profile")
 
@@ -463,7 +463,7 @@ class ProfileManager:
         """Load the full persisted profile data from disk."""
         try:
             if PERSISTENCE_FILE.exists():
-                raw = PERSISTENCE_FILE.read_text().strip()
+                raw = PERSISTENCE_FILE.read_text(encoding="utf-8").strip()
                 if raw:
                     return json.loads(raw)
         except (OSError, json.JSONDecodeError):

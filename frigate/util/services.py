@@ -518,6 +518,70 @@ def get_nvidia_driver_info() -> dict[str, Any]:
         return results
 
 
+def get_ffmpeg_hwaccels(ffmpeg_path: str | None = None) -> list[str]:
+    """List the hardware acceleration methods the installed FFmpeg was built with."""
+    ffmpeg = ffmpeg_path or resolve_ffmpeg_binary("ffmpeg")
+    try:
+        result = sp.run(
+            [ffmpeg, "-hide_banner", "-hwaccels"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except (OSError, sp.SubprocessError) as err:
+        logger.debug("Unable to list FFmpeg hwaccels: %s", err)
+        return []
+
+    hwaccels: list[str] = []
+    for line in result.stdout.splitlines():
+        name = line.strip()
+        if not name or name.lower().startswith("hardware acceleration methods"):
+            continue
+        hwaccels.append(name)
+    return hwaccels
+
+
+def get_windows_gpu_info(ffmpeg_path: str | None = None) -> dict[str, Any]:
+    """Describe the video hardware Windows exposes to Frigate.
+
+    This replaces the libva ``vainfo`` diagnostic of the Linux image: it
+    reports the active display adapters, the processor, the hardware
+    acceleration methods compiled into the installed FFmpeg, the accelerators
+    go2rtc could open, and the ``preset-windows-*`` families Frigate would use.
+    """
+    from frigate.util.hwaccel import hwaccel_options, windows_hwaccel_preset
+    from frigate.util.platform import (
+        get_cpu_brand,
+        get_display_adapter_vendors,
+        get_display_adapters,
+    )
+
+    adapters = get_display_adapters(refresh=True)
+    vendors = sorted(get_display_adapter_vendors())
+    go2rtc_sources = get_go2rtc_hardware_sources()
+    _, families = hwaccel_options()
+
+    info: dict[str, Any] = {
+        "adapters": adapters,
+        "vendors": vendors,
+        "cpu": get_cpu_brand(),
+        "ffmpeg_hwaccels": get_ffmpeg_hwaccels(ffmpeg_path),
+        "go2rtc_hardware": [
+            {"name": source.get("name", ""), "url": source.get("url", "")}
+            for source in go2rtc_sources
+        ],
+        "decoders": [
+            {"key": family.key, "presets": dict(family.presets)} for family in families
+        ],
+        "recommended": windows_hwaccel_preset(go2rtc_sources),
+    }
+
+    if "nvidia" in vendors:
+        info["nvidia"] = get_nvidia_driver_info()
+
+    return info
+
+
 def get_go2rtc_hardware_sources() -> list[dict[str, str]]:
     """Ask go2rtc which ffmpeg accelerators it can open.
 
