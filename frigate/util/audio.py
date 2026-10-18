@@ -19,6 +19,7 @@ from frigate.const import (
     STREAM_TYPE_SUB,
 )
 from frigate.models import Recordings
+from frigate.util.file import robust_remove
 from frigate.util.platform import ffmpeg_concat_file_line
 
 logger = logging.getLogger(__name__)
@@ -174,7 +175,7 @@ def get_audio_from_recording(
         return None
     finally:
         try:
-            os.unlink(file_path)
+            robust_remove(file_path, missing_ok=True)
         except OSError:
             pass
 

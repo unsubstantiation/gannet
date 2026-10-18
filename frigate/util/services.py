@@ -21,6 +21,7 @@ import requests
 from frigate.const import SHM_FRAMES_VAR
 from frigate.util.builtin import clean_camera_user_pass, escape_special_characters
 from frigate.util.env import UnknownVariableError, substitute_frigate_vars
+from frigate.util.file import robust_remove
 from frigate.util.platform import (
     get_tmp_dir,
     resolve_ffmpeg_binary,  # noqa: F401 - public compatibility import
@@ -49,7 +50,7 @@ def _mark_restart_requested() -> None:
 def consume_restart_request() -> bool:
     path = os.path.join(get_tmp_dir(), RESTART_MARKER_NAME)
     try:
-        os.remove(path)
+        robust_remove(path)
     except FileNotFoundError:
         return False
     except OSError as err:

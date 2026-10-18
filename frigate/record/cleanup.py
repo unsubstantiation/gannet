@@ -23,6 +23,7 @@ from frigate.const import (
 )
 from frigate.models import Previews, Recordings, ReviewSegment, UserReviewStatus
 from frigate.util.builtin import clear_and_unlink
+from frigate.util.file import robust_remove
 from frigate.util.media import remove_empty_directories
 
 logger = logging.getLogger(__name__)
@@ -125,7 +126,7 @@ class RecordingCleanup(threading.Thread):
         thumbs_to_delete = list(map(lambda x: x.thumb_path, expired_reviews))
         for thumb in thumbs_to_delete:
             thumb_path = Path(thumb)
-            thumb_path.unlink(missing_ok=True)
+            robust_remove(thumb_path, missing_ok=True)
             maybe_empty_dirs.add(thumb_path.parent)
 
         max_deletes = 100000
@@ -246,7 +247,7 @@ class RecordingCleanup(threading.Thread):
                 or (mode == RetainModeEnum.active_objects and recording.objects == 0)
             ):
                 recording_path = Path(recording.path)
-                recording_path.unlink(missing_ok=True)
+                robust_remove(recording_path, missing_ok=True)
                 deleted_recordings.add(recording.id)
                 maybe_empty_dirs.add(recording_path.parent)
             else:
@@ -328,7 +329,7 @@ class RecordingCleanup(threading.Thread):
             # Delete previews without any relevant recordings
             if not keep:
                 preview_path = Path(preview.path)
-                preview_path.unlink(missing_ok=True)
+                robust_remove(preview_path, missing_ok=True)
                 deleted_previews.add(preview.id)
                 maybe_empty_dirs.add(preview_path.parent)
 
@@ -392,7 +393,7 @@ class RecordingCleanup(threading.Thread):
 
             for recording in no_camera_recordings:
                 recording_path = Path(recording.path)
-                recording_path.unlink(missing_ok=True)
+                robust_remove(recording_path, missing_ok=True)
                 deleted_recordings.add(recording.id)
                 maybe_empty_dirs.add(recording_path.parent)
 

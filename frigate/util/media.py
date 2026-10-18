@@ -27,6 +27,7 @@ from frigate.models import (
     ReviewSegment,
 )
 from frigate.util.config import default_ffmpeg_binary
+from frigate.util.file import is_held_by_another_process, robust_remove
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +91,12 @@ def remove_empty_directories(root: Path, paths: Iterable[Path]) -> None:
             except FileNotFoundError:
                 pass
             except OSError as e:
-                if e.errno == errno.ENOTEMPTY:
+                # non-empty, or held open by the search indexer or antivirus;
+                # a later run removes it
+                if e.errno in (
+                    errno.ENOTEMPTY,
+                    errno.EEXIST,
+                ) or is_held_by_another_process(e):
                     continue
                 raise
 
@@ -252,7 +258,7 @@ def sync_recordings(
         for file in files_to_delete:
             size = _file_size(file)
             try:
-                os.unlink(file)
+                robust_remove(file, missing_ok=True)
             except OSError as e:
                 logger.error(f"Failed to delete {file}: {e}")
                 continue
@@ -347,7 +353,7 @@ def sync_event_snapshots(dry_run: bool = False, force: bool = False) -> SyncResu
         for file_path in orphans:
             size = _file_size(file_path)
             try:
-                os.unlink(file_path)
+                robust_remove(file_path, missing_ok=True)
             except OSError as e:
                 logger.error(f"Failed to delete {file_path}: {e}")
                 continue
@@ -448,7 +454,7 @@ def sync_event_thumbnails(dry_run: bool = False, force: bool = False) -> SyncRes
         for file_path in orphans:
             size = _file_size(file_path)
             try:
-                os.unlink(file_path)
+                robust_remove(file_path, missing_ok=True)
             except OSError as e:
                 logger.error(f"Failed to delete {file_path}: {e}")
                 continue
@@ -533,7 +539,7 @@ def sync_review_thumbnails(dry_run: bool = False, force: bool = False) -> SyncRe
         for file_path in orphans:
             size = _file_size(file_path)
             try:
-                os.unlink(file_path)
+                robust_remove(file_path, missing_ok=True)
             except OSError as e:
                 logger.error(f"Failed to delete {file_path}: {e}")
                 continue
@@ -616,7 +622,7 @@ def sync_previews(dry_run: bool = False, force: bool = False) -> SyncResult:
         for file_path in orphans:
             size = _file_size(file_path)
             try:
-                os.unlink(file_path)
+                robust_remove(file_path, missing_ok=True)
             except OSError as e:
                 logger.error(f"Failed to delete {file_path}: {e}")
                 continue
@@ -713,7 +719,7 @@ def sync_exports(dry_run: bool = False, force: bool = False) -> SyncResult:
         for file_path in orphans:
             size = _file_size(file_path)
             try:
-                os.unlink(file_path)
+                robust_remove(file_path, missing_ok=True)
             except OSError as e:
                 logger.error(f"Failed to delete {file_path}: {e}")
                 continue

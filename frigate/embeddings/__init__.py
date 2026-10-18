@@ -22,6 +22,7 @@ from frigate.db.sqlitevecq import SqliteVecQueueDatabase
 from frigate.models import Event
 from frigate.util.builtin import serialize
 from frigate.util.classification import kickoff_model_training
+from frigate.util.file import robust_remove, robust_rmdir
 from frigate.util.path import is_same_path, rename_path, safe_join
 from frigate.util.process import FrigateProcess
 
@@ -256,10 +257,10 @@ class EmbeddingsContext:
             file_path = safe_join(folder, id)
 
             if file_path and os.path.isfile(file_path):
-                os.unlink(file_path)
+                robust_remove(file_path)
 
         if face != "train" and len(os.listdir(folder)) == 0:
-            os.rmdir(folder)
+            robust_rmdir(folder)
 
         self.requestor.send_data(
             EmbeddingsRequestEnum.clear_face_classifier.value, None

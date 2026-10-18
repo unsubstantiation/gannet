@@ -32,6 +32,7 @@ from frigate.const import (
 from frigate.models import ReviewSegment
 from frigate.review.types import SeverityEnum
 from frigate.track.object_processing import ManualEventState
+from frigate.util.file import robust_remove
 from frigate.util.image import SharedMemoryFrameManager, calculate_16_9_crop
 
 logger = logging.getLogger(__name__)
@@ -601,7 +602,7 @@ class ReviewSegmentMaintainer(threading.Thread):
                         if zone not in segment.zones:
                             segment.zones.append(zone)
 
-                    Path(pending.frame_path).unlink(missing_ok=True)
+                    robust_remove(pending.frame_path, missing_ok=True)
                     should_update_state = True
 
                 segment.pending_detections = []

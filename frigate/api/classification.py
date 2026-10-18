@@ -5,7 +5,6 @@ import datetime
 import logging
 import os
 import random
-import shutil
 import string
 from typing import Any
 
@@ -42,7 +41,13 @@ from frigate.util.classification import (
     read_training_metadata,
     write_training_metadata,
 )
-from frigate.util.file import get_event_snapshot, robust_rmtree
+from frigate.util.file import (
+    get_event_snapshot,
+    robust_move,
+    robust_remove,
+    robust_rmdir,
+    robust_rmtree,
+)
 from frigate.util.path import (
     is_same_path,
     rename_path,
@@ -206,7 +211,7 @@ def train_face(request: Request, name: str, body: dict = None):
     os.makedirs(new_file_folder, exist_ok=True)
 
     if training_file_name:
-        shutil.move(training_file, os.path.join(new_file_folder, new_name))
+        robust_move(training_file, os.path.join(new_file_folder, new_name))
     else:
         try:
             event: Event = Event.get(Event.id == event_id)
@@ -432,11 +437,11 @@ def reclassify_face_image(request: Request, name: str, body: dict = None):
     target_filename = f"{new_name}-{datetime.datetime.now().timestamp()}.webp"
 
     os.makedirs(target_folder, exist_ok=True)
-    shutil.move(source_file, os.path.join(target_folder, target_filename))
+    robust_move(source_file, os.path.join(target_folder, target_filename))
 
     # Clean up empty source folder
     if os.path.exists(source_folder) and not os.listdir(source_folder):
-        os.rmdir(source_folder)
+        robust_rmdir(source_folder)
 
     context: EmbeddingsContext = request.app.embeddings
     context.clear_face_classifier()
@@ -894,11 +899,11 @@ def delete_classification_dataset_images(
         file_path = safe_join(folder, id)
 
         if file_path and os.path.isfile(file_path):
-            os.unlink(file_path)
+            robust_remove(file_path)
             deleted_count += 1
 
     if os.path.exists(folder) and not os.listdir(folder) and category.lower() != "none":
-        os.rmdir(folder)
+        robust_rmdir(folder)
 
     # Update training metadata to reflect deleted images
     # This ensures the dataset is marked as changed after deletion
@@ -994,7 +999,7 @@ def reclassify_classification_image(
 
     img = cv2.imread(source_file)
     cv2.imwrite(os.path.join(target_folder, new_name), img)
-    os.unlink(source_file)
+    robust_remove(source_file)
 
     # Clean up empty source folder (unless it is "none")
     if (
@@ -1002,7 +1007,7 @@ def reclassify_classification_image(
         and not os.listdir(source_folder)
         and category.lower() != "none"
     ):
-        os.rmdir(source_folder)
+        robust_rmdir(source_folder)
 
     # Mark dataset as changed so UI knows retraining is needed
     write_training_metadata(sanitized_name, 0)
@@ -1171,7 +1176,7 @@ def categorize_classification_image(request: Request, name: str, body: dict = No
     # use opencv because webp images can not be used to train
     img = cv2.imread(training_file)
     cv2.imwrite(os.path.join(new_file_folder, new_name), img)
-    os.unlink(training_file)
+    robust_remove(training_file)
 
     return JSONResponse(
         content=({"success": True, "message": "Successfully categorized image."}),
@@ -1253,7 +1258,7 @@ def delete_classification_train_images(request: Request, name: str, body: dict =
         file_path = safe_join(folder, id)
 
         if file_path and os.path.isfile(file_path):
-            os.unlink(file_path)
+            robust_remove(file_path)
 
     return JSONResponse(
         content=({"success": True, "message": "Successfully deleted images."}),

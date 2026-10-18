@@ -233,7 +233,7 @@ class FFMpegConverter(threading.Thread):
         # unlink files from cache
         # don't delete last frame as it will be used as first frame in next segment
         for t in self.frame_times[0:-1]:
-            Path(get_cache_image_name(self.config.name, t)).unlink(missing_ok=True)
+            robust_remove(get_cache_image_name(self.config.name, t), missing_ok=True)
 
 
 class PreviewRecorder:

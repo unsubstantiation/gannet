@@ -4,7 +4,6 @@ import datetime as dt
 import logging
 from datetime import datetime, timedelta
 from functools import reduce
-from pathlib import Path
 from urllib.parse import unquote
 
 from fastapi import APIRouter, Depends, Request
@@ -32,6 +31,7 @@ from frigate.const import (
     STREAM_TYPE_SUB,
 )
 from frigate.models import Event, Recordings
+from frigate.util.file import robust_remove
 from frigate.util.recording_coverage import (
     coverage_spans,
     known_video_codecs,
@@ -577,7 +577,7 @@ async def delete_recordings(
         recording_ids.append(recording["id"])
 
         try:
-            Path(recording["path"]).unlink(missing_ok=True)
+            robust_remove(recording["path"], missing_ok=True)
             deleted_count += 1
         except Exception as e:
             logger.error(f"Failed to delete recording file {recording['path']}: {e}")

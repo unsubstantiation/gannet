@@ -26,6 +26,7 @@ from frigate.util.audio import (
     get_audio_from_recording,
     resolve_language,
 )
+from frigate.util.file import robust_remove
 
 from ..types import DataProcessorMetrics
 from .api import PostProcessorApi
@@ -205,7 +206,7 @@ class AudioTranscriptionPostProcessor(PostProcessorApi):
                 beam_size=5,
             )
 
-            os.remove(temp_wav)
+            robust_remove(temp_wav)
 
             # Combine all segment texts
             text = " ".join(segment.text.strip() for segment in segments)

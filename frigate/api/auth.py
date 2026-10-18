@@ -378,10 +378,9 @@ def get_jwt_secret() -> str:
             )
             jwt_secret = secrets.token_hex(64)
             try:
-                fd = os.open(
-                    jwt_secret_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600
-                )
-                with os.fdopen(fd, "w", encoding="utf-8") as f:
+                # "x" creates exclusively: a secret another startup generated
+                # is never overwritten
+                with open(jwt_secret_file, "x", encoding="utf-8") as f:
                     f.write(str(jwt_secret))
             except Exception:
                 logger.warning(

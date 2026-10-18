@@ -16,6 +16,7 @@ from frigate.const import (
     REDACTED_CREDENTIAL_SENTINEL,
 )
 from frigate.util.builtin import deep_merge
+from frigate.util.file import robust_move
 from frigate.util.platform import EXECUTABLE_SUFFIX, find_executable
 from frigate.util.services import get_video_properties
 
@@ -165,7 +166,7 @@ def migrate_frigate_config(config_file: str):
                     continue
 
                 new_name = file.replace("@", "_")
-                os.rename(
+                robust_move(
                     os.path.join(EXPORT_DIR, file), os.path.join(EXPORT_DIR, new_name)
                 )
 

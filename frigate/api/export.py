@@ -79,6 +79,7 @@ from frigate.record.export import (
     export_video_path,
     validate_ffmpeg_args,
 )
+from frigate.util.file import robust_remove
 from frigate.util.path import is_same_path, rename_path, sanitize_contained_path
 from frigate.util.platform import is_subpath
 from frigate.util.time import is_current_hour
@@ -612,9 +613,9 @@ def delete_export_case(case_id: str, request: Request, delete_exports: bool = Fa
 
         exports = list(Export.select().where(Export.export_case == case_id))
         for export in exports:
-            Path(export.video_path).unlink(missing_ok=True)
+            robust_remove(export.video_path, missing_ok=True)
             if export.thumb_path:
-                Path(export.thumb_path).unlink(missing_ok=True)
+                robust_remove(export.thumb_path, missing_ok=True)
             export.delete_instance()
     else:
         # Unassign exports from this case but keep the exports themselves
@@ -1277,9 +1278,9 @@ def bulk_delete_exports(body: ExportBulkDeleteBody):
             )
 
     for export in exports:
-        Path(export.video_path).unlink(missing_ok=True)
+        robust_remove(export.video_path, missing_ok=True)
         if export.thumb_path:
-            Path(export.thumb_path).unlink(missing_ok=True)
+            robust_remove(export.thumb_path, missing_ok=True)
 
     Export.delete().where(Export.id << body.ids).execute()
 

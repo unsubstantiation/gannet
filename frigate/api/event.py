@@ -59,7 +59,11 @@ from frigate.const import CLIPS_DIR
 from frigate.embeddings import EmbeddingsContext
 from frigate.models import Event, ReviewSegment, Timeline, Trigger
 from frigate.track.object_processing import TrackedObject
-from frigate.util.file import get_event_thumbnail_bytes, load_event_snapshot_image
+from frigate.util.file import (
+    get_event_thumbnail_bytes,
+    load_event_snapshot_image,
+    robust_remove,
+)
 from frigate.util.path import get_trigger_thumbnail_path, safe_join
 from frigate.util.time import get_dst_transitions, get_tz_modifiers
 
@@ -1698,7 +1702,7 @@ async def delete_single_event(event_id: str, request: Request) -> dict:
             Path(f"{os.path.join(CLIPS_DIR, media_name)}-clean.webp"),
         ]
         for media in snapshot_paths:
-            media.unlink(missing_ok=True)
+            robust_remove(media, missing_ok=True)
 
     event.delete_instance()
     Timeline.delete().where(Timeline.source_id == event_id).execute()
@@ -2135,7 +2139,7 @@ def update_trigger_embedding(
                             f"Invalid trigger thumbnail path for {trigger.data}"
                         )
 
-                    os.remove(old_path)
+                    robust_remove(old_path)
                     logger.debug(
                         f"Deleted thumbnail for trigger with data {trigger.data} in {camera_name}."
                     )
@@ -2251,7 +2255,7 @@ def delete_trigger_embedding(
             if thumbnail_path is None:
                 raise ValueError(f"Invalid trigger thumbnail path for {trigger.data}")
 
-            os.remove(thumbnail_path)
+            robust_remove(thumbnail_path)
             logger.debug(
                 f"Deleted thumbnail for trigger with data {trigger.data} in {camera_name}."
             )

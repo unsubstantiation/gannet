@@ -27,6 +27,7 @@ from frigate.jobs.manager import job_is_running, set_current_job
 from frigate.models import Export, Recordings
 from frigate.types import JobStatusTypesEnum
 from frigate.util.ffmpeg import run_ffmpeg_with_progress
+from frigate.util.file import robust_remove
 
 if TYPE_CHECKING:
     from frigate.debug_replay import DebugReplayManager
@@ -421,8 +422,7 @@ class DebugReplayJobRunner(threading.Thread):
 
 def _remove_silent(path: str) -> None:
     try:
-        if os.path.exists(path):
-            os.remove(path)
+        robust_remove(path, missing_ok=True)
     except OSError:
         pass
 

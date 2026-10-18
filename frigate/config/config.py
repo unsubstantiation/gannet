@@ -39,6 +39,7 @@ from frigate.util.config import (
     migrate_frigate_config,
 )
 from frigate.util.env import EnvVars, reload_sources
+from frigate.util.file import robust_remove
 from frigate.util.image import create_mask
 from frigate.util.live_streams import (
     default_transcode_source,
@@ -182,7 +183,7 @@ def _ensure_default_cpu_model(model_path: str) -> None:
         )
     finally:
         try:
-            os.unlink(temp_path)
+            robust_remove(temp_path, missing_ok=True)
         except OSError:
             pass
 

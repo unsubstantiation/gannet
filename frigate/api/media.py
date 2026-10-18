@@ -11,7 +11,6 @@ import time
 from collections.abc import Iterator
 from datetime import datetime, timedelta
 from enum import Enum
-from pathlib import Path as FilePath
 from typing import IO, Any
 from urllib.parse import unquote
 from zoneinfo import ZoneInfo
@@ -55,6 +54,7 @@ from frigate.util.file import (
     get_event_snapshot_path,
     get_event_thumbnail_bytes,
     load_event_snapshot_image,
+    robust_remove,
 )
 from frigate.util.image import get_image_from_recording, get_image_quality_params
 from frigate.util.object import create_empty_regions_grid
@@ -531,7 +531,7 @@ def _run_clip_download(ffmpeg_cmd: list[str], file_path: str) -> Iterator[bytes]
         if stderr_file is not None:
             stderr_file.close()
 
-        FilePath(file_path).unlink(missing_ok=True)
+        robust_remove(file_path, missing_ok=True)
 
 
 @router.get(
@@ -1853,8 +1853,6 @@ async def preview_mp4(
         "Cache-Control": f"private, max-age={_resolve_cache_age(max_cache_age)}",
         "Content-Type": "video/mp4",
         "Content-Length": str(os.path.getsize(path)),
-        # nginx: https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_ignore_headers
-        "X-Accel-Redirect": f"/cache/{file_name}",
     }
 
     return FileResponse(

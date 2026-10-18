@@ -88,6 +88,7 @@ from frigate.storage import StorageMaintainer
 from frigate.timeline import TimelineProcessor
 from frigate.track.object_processing import TrackedObjectProcessor
 from frigate.util.builtin import empty_and_close_queue
+from frigate.util.file import robust_remove
 from frigate.util.go2rtc_config import (
     build_go2rtc_config,
     go2rtc_config_path,
@@ -246,8 +247,7 @@ class FrigateApp:
         # go2rtc reads the config once at startup, so a stale file from a
         # previous run has to go before a new one is dumped
         try:
-            if os.path.exists(path):
-                os.remove(path)
+            robust_remove(path, missing_ok=True)
         except OSError as err:
             logger.warning("Unable to remove the stale go2rtc config: %s", err)
 

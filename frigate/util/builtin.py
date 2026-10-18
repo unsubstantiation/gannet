@@ -25,6 +25,7 @@ from frigate.const import (
     STREAM_TYPE_MAIN,
     STREAM_TYPE_SUB,
 )
+from frigate.util.file import clear_read_only, robust_remove
 from frigate.util.platform import split_ffmpeg_command
 
 if TYPE_CHECKING:
@@ -403,10 +404,11 @@ def clear_and_unlink(file: Path, missing_ok: bool = True) -> None:
         raise FileNotFoundError()
 
     # empty contents of file before unlinking https://github.com/blakeblackshear/frigate/issues/4769
-    with open(file, "w"):
+    clear_read_only(file)
+    with open(file, "wb"):
         pass
 
-    file.unlink(missing_ok=missing_ok)
+    robust_remove(file, missing_ok=missing_ok)
 
 
 def empty_and_close_queue(q):
