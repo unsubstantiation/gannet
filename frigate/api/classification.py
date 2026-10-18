@@ -43,7 +43,12 @@ from frigate.util.classification import (
     write_training_metadata,
 )
 from frigate.util.file import get_event_snapshot
-from frigate.util.path import safe_join, sanitize_path_component
+from frigate.util.path import (
+    is_same_path,
+    rename_path,
+    safe_join,
+    sanitize_path_component,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -1064,7 +1069,9 @@ def rename_classification_category(
             status_code=404,
         )
 
-    if os.path.exists(new_folder):
+    # Windows resolves a name that differs only in letter case to the same
+    # folder, so a case-only rename must not be reported as a collision.
+    if os.path.exists(new_folder) and not is_same_path(old_folder, new_folder):
         return JSONResponse(
             content=(
                 {
@@ -1076,7 +1083,7 @@ def rename_classification_category(
         )
 
     try:
-        os.rename(old_folder, new_folder)
+        rename_path(old_folder, new_folder)
 
         # Mark dataset as ready to train by resetting training metadata
         # This ensures the dataset is marked as changed after renaming
