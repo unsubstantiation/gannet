@@ -89,10 +89,15 @@ def needs_auth(path: str) -> bool:
     if path in AUTH_EXEMPT:
         return False
 
-    if path in PROTECTED_EXACT or path.startswith(PROTECTED_EXACT):
+    # a protected exact path is always authenticated on its own; a subpath
+    # also requires auth, but only when it is actually below it (the path
+    # either is the root or starts with the root followed by a slash).
+    if path in PROTECTED_EXACT:
         return True
 
-    return path.startswith(PROTECTED_PREFIXES)
+    return any(
+        path == root or path.startswith(f"{root}/") for root in PROTECTED_EXACT
+    ) or path.startswith(PROTECTED_PREFIXES)
 
 
 # ---------------------------------------------------------------------------

@@ -279,25 +279,40 @@ def extract_members(
     dest_dir.mkdir(parents=True, exist_ok=True)
     extracted: list[Path] = []
 
-    with zipfile.ZipFile(archive) as bundle:
-        names = bundle.namelist()
+    try:
+        with zipfile.ZipFile(archive) as bundle:
+            names = bundle.namelist()
 
+            for member in members:
+                if member not in names:
+                    raise BootstrapError(
+                        f"{archive.name} does not contain {member}; the build's "
+                        "layout changed and the pin in bootstrap_windows.py needs "
+                        "updating"
+                    )
+
+                target = dest_dir / Path(member).name
+                with bundle.open(member) as source, open(target, "wb") as out:
+                    out.write(source.read())
+
+                # the executable bit does not exist on Windows, but extracting on
+                # a POSIX host (tests, CI) should still produce a usable file
+                target.chmod(target.stat().st_mode | 0o111)
+                extracted.append(target)
+    except BaseException:
+        # a member that was written before a later member raised is left in
+        # place, and `install_artifact` treats any existing file as installed,
+        # so partial extraction would be reused on the next run as if it were
+        # complete. Drop anything we did not finish writing.
+        completed_names = {path.name for path in extracted}
         for member in members:
-            if member not in names:
-                raise BootstrapError(
-                    f"{archive.name} does not contain {member}; the build's "
-                    "layout changed and the pin in bootstrap_windows.py needs "
-                    "updating"
-                )
-
-            target = dest_dir / Path(member).name
-            with bundle.open(member) as source, open(target, "wb") as out:
-                out.write(source.read())
-
-            # the executable bit does not exist on Windows, but extracting on
-            # a POSIX host (tests, CI) should still produce a usable file
-            target.chmod(target.stat().st_mode | 0o111)
-            extracted.append(target)
+            candidate = dest_dir / Path(member).name
+            if candidate.exists() and candidate.name not in completed_names:
+                try:
+                    candidate.unlink()
+                except OSError:
+                    pass
+        raise
 
     return extracted
 

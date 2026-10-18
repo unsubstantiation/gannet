@@ -74,8 +74,14 @@ def prepare_homekit_config(path: str | None = None) -> str:
     normalized = output.getvalue()
     if normalized != content:
         temporary = config_path.with_suffix(config_path.suffix + ".tmp")
-        temporary.write_text(normalized, encoding="utf-8")
-        os.replace(temporary, config_path)
+        try:
+            temporary.write_text(normalized, encoding="utf-8")
+            os.replace(temporary, config_path)
+        finally:
+            try:
+                temporary.unlink()
+            except OSError:
+                pass
     elif not config_path.exists():
         config_path.touch()
 
