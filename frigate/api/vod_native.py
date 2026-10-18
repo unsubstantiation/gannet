@@ -19,8 +19,10 @@ import os
 import re
 import shutil
 import time
+import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
+from typing import Any
 
 from starlette.responses import FileResponse, JSONResponse, PlainTextResponse, Response
 
@@ -44,6 +46,9 @@ MIN_SEGMENT_DURATION = 0.5
 # how long to wait for ffmpeg to remux one segment
 SEGMENT_TIMEOUT = 60
 
+# how long a remux that overran its budget gets to exit after being killed
+SEGMENT_TERMINATE_TIMEOUT = 10
+
 SEGMENT_PATTERN = re.compile(r"^seg-(\d{5})\.ts$")
 
 
@@ -55,6 +60,9 @@ class VodSegment:
     path: str
     start: float
     duration: float
+    #: start time of the recording file itself, which a playlist entry that
+    #: begins part way into a range is clipped forward from
+    file_start: float
 
     @property
     def name(self) -> str:
@@ -63,6 +71,11 @@ class VodSegment:
     @property
     def end(self) -> float:
         return self.start + self.duration
+
+    @property
+    def offset(self) -> float:
+        """Seconds into the recording file this entry starts at."""
+        return max(self.start - self.file_start, 0.0)
 
 
 @dataclass
@@ -193,7 +206,8 @@ def build_playlist(
     index = 0
 
     for row in rows:
-        row_start = max(float(row["start_time"]), start)
+        file_start = float(row["start_time"])
+        row_start = max(file_start, start)
         row_end = min(float(row["end_time"]), end)
 
         if row_end - row_start < MIN_SEGMENT_DURATION:
@@ -211,6 +225,7 @@ def build_playlist(
                 path=path,
                 start=row_start,
                 duration=row_end - row_start,
+                file_start=file_start,
             )
         )
         index += 1
@@ -259,6 +274,12 @@ async def _sweep_cache_periodically() -> None:
         await asyncio.to_thread(_sweep_cache)
 
 
+#: strong references to the sweep tasks this module starts. An event loop holds
+#: only a weak reference to a task, so a task whose result is discarded can be
+#: collected while it sleeps and the cache would never be swept again.
+_SWEEP_TASKS: set[asyncio.Task] = set()
+
+
 def start_cache_maintenance() -> asyncio.Task | None:
     """Start the background sweep of stale vod cache directories."""
     try:
@@ -267,24 +288,77 @@ def start_cache_maintenance() -> asyncio.Task | None:
         logger.warning("Unable to create the vod cache directory: %s", err)
         return None
 
-    return asyncio.create_task(_sweep_cache_periodically())
+    task = asyncio.create_task(_sweep_cache_periodically())
+    _SWEEP_TASKS.add(task)
+    task.add_done_callback(_SWEEP_TASKS.discard)
+    return task
+
+
+def _refresh(path: str) -> None:
+    """Record that a cached path is still in use."""
+    try:
+        os.utime(path, None)
+    except OSError:
+        pass
+
+
+def _discard(path: str) -> None:
+    """Remove a partial file, which is never a reason to fail a request."""
+    try:
+        os.unlink(path)
+    except OSError:
+        pass
+
+
+async def _terminate(process: Any) -> None:
+    """Stop an ffmpeg that outlived its remux budget."""
+    if process.returncode is not None:
+        return
+
+    try:
+        process.kill()
+    except (ProcessLookupError, OSError) as err:
+        logger.debug("Unable to kill the ffmpeg remux: %s", err)
+        return
+
+    try:
+        await asyncio.wait_for(process.wait(), SEGMENT_TERMINATE_TIMEOUT)
+    except TimeoutError:
+        logger.warning("ffmpeg did not exit after being killed")
 
 
 async def render_segment(playlist: VodPlaylist, segment: VodSegment) -> str | None:
     """Remux one playlist entry into an MPEG-TS file, returning its path.
 
-    The file is written next to the playlist and reused on later requests.
+    The file is written next to the playlist and reused on later requests. It is
+    remuxed under a temporary name and moved into place only when ffmpeg
+    finished: a cached segment is served without being checked again, so a file
+    left half written by a timeout or a failure would stay broken until the
+    whole cache directory expired.
     """
-    os.makedirs(playlist.directory, exist_ok=True)
+    try:
+        os.makedirs(playlist.directory, exist_ok=True)
+    except OSError as err:
+        logger.warning(
+            "Unable to create the vod cache directory %s: %s",
+            playlist.directory,
+            err,
+        )
+        return None
+
     output = os.path.join(playlist.directory, segment.name)
 
     if os.path.isfile(output) and os.path.getsize(output) > 0:
-        os.utime(output, None)
+        _refresh(output)
+        # the sweep expires whole directories by their own modification time,
+        # which re-serving a segment inside one does not update
+        _refresh(playlist.directory)
         return output
 
     # cut relative to the start of the recording file, so the first frame is
     # the keyframe at or before the requested position
-    offset = max(segment.start - _segment_file_start(playlist, segment), 0)
+    offset = segment.offset
+    temporary = f"{output}.{uuid.uuid4().hex}.part"
 
     command = [
         resolve_ffmpeg_binary("ffmpeg"),
@@ -306,7 +380,7 @@ async def render_segment(playlist: VodPlaylist, segment: VodSegment) -> str | No
         "-f",
         "mpegts",
         "-y",
-        output,
+        temporary,
     ]
 
     try:
@@ -315,12 +389,21 @@ async def render_segment(playlist: VodPlaylist, segment: VodSegment) -> str | No
             stdout=asyncio.subprocess.DEVNULL,
             stderr=asyncio.subprocess.PIPE,
         )
+    except FileNotFoundError:
+        logger.error("ffmpeg was not found, unable to serve recordings")
+        return None
+    except OSError as err:
+        logger.warning("Unable to start ffmpeg to remux %s: %s", segment.path, err)
+        return None
+
+    try:
         _, stderr = await asyncio.wait_for(process.communicate(), SEGMENT_TIMEOUT)
     except TimeoutError:
         logger.warning("Timed out remuxing %s", segment.path)
-        return None
-    except FileNotFoundError:
-        logger.error("ffmpeg was not found, unable to serve recordings")
+        # a remux left running keeps the recording file open, which on Windows
+        # is what stops the recording maintainer from moving it
+        await _terminate(process)
+        _discard(temporary)
         return None
 
     if process.returncode != 0:
@@ -329,10 +412,19 @@ async def render_segment(playlist: VodPlaylist, segment: VodSegment) -> str | No
             segment.path,
             stderr.decode(errors="replace").strip() if stderr else "no output",
         )
+        _discard(temporary)
         return None
 
-    if not os.path.isfile(output) or os.path.getsize(output) == 0:
+    if not os.path.isfile(temporary) or os.path.getsize(temporary) == 0:
         logger.warning("ffmpeg produced no data for %s", segment.path)
+        _discard(temporary)
+        return None
+
+    try:
+        os.replace(temporary, output)
+    except OSError as err:
+        logger.warning("Unable to move the remuxed segment into place: %s", err)
+        _discard(temporary)
         return None
 
     return output
@@ -346,15 +438,6 @@ def _needs_annexb(path: str) -> bool:
     """
     lowered = path.lower()
     return lowered.endswith((".mp4", ".m4v"))
-
-
-def _segment_file_start(playlist: VodPlaylist, segment: VodSegment) -> float:
-    """Start time of the recording file a segment came from."""
-    for candidate in playlist.segments:
-        if candidate.path == segment.path:
-            return candidate.start
-
-    return segment.start
 
 
 def parse_segment_name(name: str) -> int | None:
