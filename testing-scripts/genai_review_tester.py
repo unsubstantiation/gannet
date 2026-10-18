@@ -80,7 +80,7 @@ class TesterSettings:
     def load(cls) -> "TesterSettings":
         if SETTINGS_FILE.is_file():
             try:
-                data = json.loads(SETTINGS_FILE.read_text())
+                data = json.loads(SETTINGS_FILE.read_text(encoding="utf-8"))
                 return cls(
                     **{k: v for k, v in data.items() if k in cls.__annotations__}
                 )
@@ -90,7 +90,7 @@ class TesterSettings:
 
     def save(self) -> None:
         EXAMPLES_DIR.mkdir(parents=True, exist_ok=True)
-        SETTINGS_FILE.write_text(json.dumps(asdict(self), indent=2))
+        SETTINGS_FILE.write_text(json.dumps(asdict(self), indent=2), encoding="utf-8")
 
     def describe(self) -> str:
         if not self.provider:
@@ -485,7 +485,7 @@ def run_example(settings: TesterSettings) -> None:
     if not prompt_file.is_file():
         print(f"{example.name} has no prompt.txt, cannot run")
         return
-    prompt = apply_style(prompt_file.read_text(), style)
+    prompt = apply_style(prompt_file.read_text(encoding="utf-8"), style)
 
     frames = load_frames(example)
     if not frames:

@@ -221,6 +221,8 @@ class TestLauncher(unittest.TestCase):
         self.assertIn("-m frigate", script)
         self.assertIn("$env:FRIGATE_BASE_DIR", script)
         self.assertIn("$env:FRIGATE_CONFIG_DIR", script)
+        # UTF-8 mode so non-ASCII camera names survive the console and files
+        self.assertIn('$env:PYTHONUTF8 = "1"', script)
         # the marker is consumed so a later manual stop is not mistaken
         # for another restart request
         self.assertIn("Remove-Item $marker", script)

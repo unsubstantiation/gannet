@@ -214,6 +214,10 @@ class FrigateService(win32serviceutil.ServiceFramework if IS_SERVICE else object
         # environment the launcher would have activated.
         env = os.environ.copy()
         env["FRIGATE_SERVICE_MODE"] = "1"
+        # Match the console launcher: Python's UTF-8 mode keeps the child's
+        # stdio and default text encoding on UTF-8 regardless of the service
+        # account's ANSI code page.
+        env.setdefault("PYTHONUTF8", "1")
         env[SERVICE_STOP_EVENT_VAR] = self.stop_event_name
 
         while True:

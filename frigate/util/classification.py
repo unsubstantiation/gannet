@@ -61,7 +61,7 @@ def write_training_metadata(model_name: str, image_count: int) -> None:
     }
 
     try:
-        with open(metadata_path, "w") as f:
+        with open(metadata_path, "w", encoding="utf-8") as f:
             json.dump(metadata, f, indent=2)
         logger.info(f"Wrote training metadata for {model_name}: {image_count} images")
     except Exception as e:
@@ -86,7 +86,7 @@ def read_training_metadata(model_name: str) -> dict[str, any] | None:
         return None
 
     try:
-        with open(metadata_path) as f:
+        with open(metadata_path, encoding="utf-8") as f:
             metadata = json.load(f)
         return metadata
     except Exception as e:
@@ -251,7 +251,9 @@ class ClassificationTrainingProcess(FrigateProcess):
             class_indices = train_gen.class_indices
             index_to_class = {v: k for k, v in class_indices.items()}
             sorted_classes = [index_to_class[i] for i in range(len(index_to_class))]
-            with open(os.path.join(model_dir, "labelmap.txt"), "w") as f:
+            with open(
+                os.path.join(model_dir, "labelmap.txt"), "w", encoding="utf-8"
+            ) as f:
                 for class_name in sorted_classes:
                     f.write(f"{class_name}\n")
 

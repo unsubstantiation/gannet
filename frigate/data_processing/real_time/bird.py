@@ -93,7 +93,9 @@ class BirdRealTimeProcessor(RealTimeProcessorApi):
 
         i = 0
 
-        with open(os.path.join(MODEL_CACHE_DIR, "bird/birdmap.txt")) as f:
+        with open(
+            os.path.join(MODEL_CACHE_DIR, "bird/birdmap.txt"), encoding="utf-8"
+        ) as f:
             line = f.readline()
             while line:
                 start = line.find("(")

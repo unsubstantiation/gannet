@@ -195,7 +195,7 @@ class FrigateApp:
             db.execute_sql("VACUUM;")
 
             try:
-                with open(f"{CONFIG_DIR}/.vacuum", "w") as f:
+                with open(f"{CONFIG_DIR}/.vacuum", "w", encoding="utf-8") as f:
                     f.write(str(datetime.datetime.now().timestamp()))
             except PermissionError:
                 logger.error("Unable to write to %s to save DB state", CONFIG_DIR)
@@ -218,7 +218,7 @@ class FrigateApp:
 
         # check if vacuum needs to be run
         if os.path.exists(f"{CONFIG_DIR}/.vacuum"):
-            with open(f"{CONFIG_DIR}/.vacuum") as f:
+            with open(f"{CONFIG_DIR}/.vacuum", encoding="utf-8") as f:
                 try:
                     timestamp = round(float(f.readline()))
                 except Exception:
@@ -322,7 +322,7 @@ class FrigateApp:
         # check if vacuum needs to be run
         if not os.path.exists(f"{CONFIG_DIR}/.exports"):
             try:
-                with open(f"{CONFIG_DIR}/.exports", "w") as f:
+                with open(f"{CONFIG_DIR}/.exports", "w", encoding="utf-8") as f:
                     f.write(str(datetime.datetime.now().timestamp()))
             except PermissionError:
                 logger.error(

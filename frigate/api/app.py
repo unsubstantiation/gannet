@@ -519,7 +519,7 @@ def config_raw():
             status_code=404,
         )
 
-    with open(config_file) as f:
+    with open(config_file, encoding="utf-8") as f:
         raw_config = f.read()
         f.close()
 
@@ -664,7 +664,7 @@ def config_save(save_option: str, body: Any = Body(media_type="text/plain")):
     config_file = find_config_file()
 
     try:
-        with open(config_file) as f:
+        with open(config_file, encoding="utf-8") as f:
             old_raw_config = f.read()
     except OSError:
         old_raw_config = ""
@@ -677,7 +677,7 @@ def config_save(save_option: str, body: Any = Body(media_type="text/plain")):
 
     # Save the config to file
     try:
-        with open(config_file, "w") as f:
+        with open(config_file, "w", encoding="utf-8") as f:
             f.write(new_config)
             f.close()
     except Exception:
@@ -904,7 +904,7 @@ def config_set(request: Request, body: AppConfigSetBody):
 
     try:
         with lock:
-            with open(config_file) as f:
+            with open(config_file, encoding="utf-8") as f:
                 old_raw_config = f.read()
 
             try:
@@ -964,13 +964,13 @@ def config_set(request: Request, body: AppConfigSetBody):
                 update_yaml_file_bulk(config_file, updates)
 
                 # validate the updated config
-                with open(config_file) as f:
+                with open(config_file, encoding="utf-8") as f:
                     new_raw_config = f.read()
 
                 try:
                     config = FrigateConfig.parse(new_raw_config)
                 except ValidationError as e:
-                    with open(config_file, "w") as f:
+                    with open(config_file, "w", encoding="utf-8") as f:
                         f.write(old_raw_config)
                         f.close()
                     logger.error(
@@ -998,7 +998,7 @@ def config_set(request: Request, body: AppConfigSetBody):
                         status_code=400,
                     )
                 except Exception:
-                    with open(config_file, "w") as f:
+                    with open(config_file, "w", encoding="utf-8") as f:
                         f.write(old_raw_config)
                         f.close()
                     logger.error(f"\nConfig Error:\n\n{str(traceback.format_exc())}")
@@ -1015,7 +1015,7 @@ def config_set(request: Request, body: AppConfigSetBody):
                     old_raw_config, new_raw_config
                 )
                 if restricted_response is not None:
-                    with open(config_file, "w") as f:
+                    with open(config_file, "w", encoding="utf-8") as f:
                         f.write(old_raw_config)
                     return restricted_response
             except Exception as e:
@@ -1149,7 +1149,7 @@ async def logs(
 
     def download_logs(service_location: str):
         try:
-            file = open(service_location)
+            file = open(service_location, encoding="utf-8", errors="replace")
             contents = file.read()
             file.close()
             return JSONResponse(jsonable_encoder(contents))
@@ -1164,7 +1164,9 @@ async def logs(
         """Asynchronously stream log lines."""
         buffer = ""
         try:
-            async with aiofiles.open(file_path) as file:
+            async with aiofiles.open(
+                file_path, encoding="utf-8", errors="replace"
+            ) as file:
                 await file.seek(0, 2)
                 while True:
                     line = await file.readline()
@@ -1201,7 +1203,9 @@ async def logs(
 
     # For full logs initially
     try:
-        async with aiofiles.open(service_location) as file:
+        async with aiofiles.open(
+            service_location, encoding="utf-8", errors="replace"
+        ) as file:
             contents = await file.read()
 
         total_lines, log_lines = process_logs(contents, service, start, end)

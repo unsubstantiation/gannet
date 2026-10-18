@@ -64,7 +64,9 @@ def service_log_handler() -> logging.Handler | None:
         os.makedirs(os.path.dirname(path), exist_ok=True)
 
         # bound the file: a long running install must not fill the disk
-        handler = RotatingFileHandler(path, maxBytes=5 * 1024 * 1024, backupCount=2)
+        handler = RotatingFileHandler(
+            path, maxBytes=5 * 1024 * 1024, backupCount=2, encoding="utf-8"
+        )
         handler.setFormatter(LOG_HANDLER.formatter)
         return handler
     except OSError as err:
@@ -140,7 +142,7 @@ class LogPipe(threading.Thread):
         self.level = level
         self.deque: deque[str] = deque(maxlen=100)
         self.fdRead, self.fdWrite = os.pipe()
-        self.pipeReader = os.fdopen(self.fdRead)
+        self.pipeReader = os.fdopen(self.fdRead, encoding="utf-8", errors="replace")
         self.start()
 
     def cleanup_log(self, log: str) -> str:
@@ -241,7 +243,7 @@ def __redirect_fd_to_queue(queue: Queue[str]) -> Generator[None, None, None]:
     def reader() -> None:
         """Read from pipe and put lines in queue until stop_event is set."""
         try:
-            with os.fdopen(read_fd, "r") as pipe:
+            with os.fdopen(read_fd, "r", encoding="utf-8", errors="replace") as pipe:
                 while not stop_event.is_set():
                     line = pipe.readline()
                     if not line:  # EOF

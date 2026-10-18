@@ -537,6 +537,9 @@ def build_launcher_script(venv_dir: Path, layout: BaseLayout) -> str:
 $ErrorActionPreference = "Stop"
 $python = {powershell_literal(python)}
 {environment}
+# Frigate reads and writes its text files as UTF-8; UTF-8 mode makes the
+# console and anything that still relies on the default encoding agree.
+if (-not $env:PYTHONUTF8) {{ $env:PYTHONUTF8 = "1" }}
 $marker = Join-Path $env:FRIGATE_TMP_DIR "{RESTART_MARKER_NAME}"
 
 while ($true) {{
