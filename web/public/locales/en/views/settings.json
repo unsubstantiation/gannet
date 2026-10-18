@@ -1784,7 +1784,11 @@
     },
     "audioTranscriptionModelSize": {
       "notApplicable": "Not applicable for GenAI providers"
-    }
+    },
+    "advancedSettingsCount_one": "Advanced Settings ({{count}})",
+    "advancedSettingsCount_other": "Advanced Settings ({{count}})",
+    "advancedCount_one": "Advanced ({{count}})",
+    "advancedCount_other": "Advanced ({{count}})"
   },
   "globalConfig": {
     "title": "Global Configuration",

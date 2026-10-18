@@ -17,6 +17,7 @@ from frigate.util.platform import (
     ffmpeg_stdin_input,
     get_fs_type,
     get_process_priority_class,
+    get_web_host,
     get_web_port,
     install_service_stop_watcher,
     ipc_endpoint,
@@ -201,6 +202,48 @@ class TestWebPort(unittest.TestCase):
     def test_a_non_numeric_port_falls_back(self):
         with patch.dict(os.environ, {"FRIGATE_WEB_PORT": "https"}):
             self.assertEqual(get_web_port(5000), 5000)
+
+
+class TestWebHost(unittest.TestCase):
+    def test_ipv4_is_the_default(self):
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(get_web_host(), "0.0.0.0")
+
+    def test_the_ipv6_config_option_selects_the_dual_stack_wildcard(self):
+        """``networking.ipv6.enabled`` has to reach the listener.
+
+        The option was accepted by the config, shown in the UI, and then read by
+        nothing: the public listener always bound the IPv4 wildcard, so an
+        installation that enabled IPv6 still could not be reached over it.
+        """
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(get_web_host(ipv6_enabled=True), "::")
+
+    def test_an_explicit_host_wins_over_the_config_option(self):
+        for value in ("127.0.0.1", "::1", "2001:db8::5"):
+            with (
+                self.subTest(value=value),
+                patch.dict(os.environ, {"FRIGATE_WEB_HOST": value}),
+                patch("frigate.util.platform.logger"),
+            ):
+                self.assertEqual(get_web_host(), value)
+                self.assertEqual(get_web_host(ipv6_enabled=True), value)
+
+    def test_an_ipv6_host_without_the_config_option_is_reported(self):
+        with (
+            patch.dict(os.environ, {"FRIGATE_WEB_HOST": "::"}),
+            self.assertLogs("frigate.util.platform", level="WARNING") as logs,
+        ):
+            self.assertEqual(get_web_host(ipv6_enabled=False), "::")
+
+        self.assertIn("networking.ipv6.enabled", "\n".join(logs.output))
+
+    def test_a_hostname_is_not_an_ipv6_address(self):
+        with patch.dict(os.environ, {"FRIGATE_WEB_HOST": "nvr.local"}):
+            with patch("frigate.util.platform.logger") as logger:
+                self.assertEqual(get_web_host(), "nvr.local")
+
+            logger.warning.assert_not_called()
 
 
 class TestIpcEndpoints(unittest.TestCase):

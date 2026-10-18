@@ -49,8 +49,9 @@ def main() -> None:
     threading.current_thread().name = "frigate"
     stop_event = mp.Event()
 
-    # Ctrl+C and, where the platform has them, SIGTERM and SIGBREAK stop the app
-    install_signal_handlers(stop_event, sys.exit)
+    # Ctrl+C and, where the console provides it, Ctrl+Break stop the app. The
+    # SCM service has no console, so it asks through the named event below.
+    install_signal_handlers(stop_event)
 
     # A Windows service cannot deliver a console signal to this process, so it
     # asks through a named event instead (see frigate/util/platform.py)

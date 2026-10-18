@@ -704,6 +704,7 @@ class FrigateApp:
                 self.config.networking.listen.internal_port,
                 self.config.networking.listen.external_port,
                 self.stop_event,
+                ipv6_enabled=self.config.networking.ipv6.enabled,
                 tls_enabled=self.config.tls.enabled,
                 tls_cert_file=self.config.tls.cert_file,
                 tls_key_file=self.config.tls.key_file,

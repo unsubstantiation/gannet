@@ -18,10 +18,6 @@ import {
 import { RecordingsSummary } from "@/types/review";
 import { useTranslation } from "react-i18next";
 import { TZDate } from "react-day-picker";
-import { Link } from "react-router-dom";
-import { useDocDomain } from "@/hooks/use-doc-domain";
-import { LuExternalLink } from "react-icons/lu";
-import { FaExclamationTriangle } from "react-icons/fa";
 import ActivityIndicator from "@/components/indicators/activity-indicator";
 
 type StorageMetricsProps = {
@@ -37,7 +33,6 @@ export default function StorageMetrics({
   });
   const { t } = useTranslation(["views/system"]);
   const timezone = useTimezone(config);
-  const { getLocaleDocUrl } = useDocDomain();
 
   const totalStorage = useMemo(() => {
     if (!cameraStorage || !stats) {
@@ -120,11 +115,6 @@ export default function StorageMetrics({
     };
   }, [stats, config]);
 
-  // on Windows and macOS shared memory is backed by the page file, so it
-  // grows on demand and there is no fixed size the user can raise
-  const pageFileBacked =
-    stats?.service.storage["memory"]?.page_file_backed ?? false;
-
   if (!cameraStorage || !stats || !totalStorage || !config) {
     return (
       <div className="flex size-full items-center justify-center">
@@ -178,18 +168,16 @@ export default function StorageMetrics({
           )}
         </div>
         <div className="flex-col rounded-lg bg-background_alt p-2.5 md:rounded-2xl">
-          <div className="mb-5">/tmp/cache</div>
+          <div className="mb-5">{t("storage.cache.title")}</div>
           <StorageGraph
             graphId="general-cache"
-            used={stats.service.storage["/tmp/cache"]["used"]}
-            total={stats.service.storage["/tmp/cache"]["total"]}
+            used={stats.service.storage["cache"]["used"]}
+            total={stats.service.storage["cache"]["total"]}
           />
         </div>
         <div className="flex-col rounded-lg bg-background_alt p-2.5 md:rounded-2xl">
           <div className="mb-5 flex flex-row items-center justify-between">
-            {pageFileBacked
-              ? t("storage.shm.pageFile")
-              : t("storage.shm.devShm")}
+            {t("storage.shm.pageFile")}
             <div className="flex flex-row items-center gap-2">
               {shmFrameLifetime && (
                 <Popover>
@@ -214,44 +202,6 @@ export default function StorageMetrics({
                   </PopoverContent>
                 </Popover>
               )}
-              {!pageFileBacked &&
-                stats.service.storage["memory"]["total"] <
-                  (stats.service.storage["memory"]["min_shm"] ?? 0) && (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button
-                        className="focus:outline-none"
-                        aria-label={t("storage.shm.title")}
-                      >
-                        <FaExclamationTriangle
-                          className="size-5 text-danger"
-                          aria-label={t("storage.shm.title")}
-                        />
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-80">
-                      <div className="space-y-2">
-                        {t("storage.shm.warning", {
-                          total: stats.service.storage["memory"]["total"],
-                          min_shm: stats.service.storage["memory"]["min_shm"],
-                        })}
-                        <div className="mt-2 flex items-center text-primary">
-                          <Link
-                            to={getLocaleDocUrl(
-                              "frigate/installation#calculating-required-shm-size",
-                            )}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline"
-                          >
-                            {t("readTheDocumentation", { ns: "common" })}
-                            <LuExternalLink className="ml-2 inline-flex size-3" />
-                          </Link>
-                        </div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                )}
             </div>
           </div>
           <StorageGraph

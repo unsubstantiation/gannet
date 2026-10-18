@@ -49,7 +49,6 @@ IPC_PORT_BASE_VAR = "FRIGATE_IPC_PORT_BASE"
 WEB_HOST_VAR = "FRIGATE_WEB_HOST"
 WEB_PORT_VAR = "FRIGATE_WEB_PORT"
 
-INTERNAL_API_PORT = 5001
 MEDIA_URL_COMPONENTS = ("clips", "recordings", "exports")
 CACHE_URL_COMPONENT = "cache"
 
@@ -185,8 +184,44 @@ def serves_web_app() -> bool:
     return True
 
 
-def get_web_host() -> str:
-    return os.environ.get(WEB_HOST_VAR, "").strip() or "0.0.0.0"
+IPV4_ANY = "0.0.0.0"
+IPV6_ANY = "::"
+
+
+def is_ipv6_address(value: str) -> bool:
+    """Whether an address is IPv6, so an override can be checked against config."""
+    import ipaddress
+
+    try:
+        return ipaddress.ip_address(value).version == 6
+    except ValueError:
+        return False
+
+
+def get_web_host(ipv6_enabled: bool = False) -> str:
+    """Address the public listener binds.
+
+    ``FRIGATE_WEB_HOST`` is an explicit operator override and always wins. With
+    no override, ``networking.ipv6.enabled`` decides between the dual-stack
+    wildcard (``::``, which Windows also accepts IPv4 connections on) and the
+    IPv4-only one. An IPv6 override while IPv6 is disabled in the config is
+    bound as asked for, but the disagreement is reported: the firewall rule and
+    the documented port behaviour both assume the config is what is in effect.
+    """
+    override = os.environ.get(WEB_HOST_VAR, "").strip()
+
+    if override:
+        if is_ipv6_address(override) and not ipv6_enabled:
+            logger.warning(
+                "%s is the IPv6 address %s, but networking.ipv6.enabled is "
+                "false. Binding it anyway; enable IPv6 in the config to keep "
+                "the two in agreement.",
+                WEB_HOST_VAR,
+                override,
+            )
+        return override
+
+    return IPV6_ANY if ipv6_enabled else IPV4_ANY
 
 
 def get_web_port(default_port: int) -> int:
@@ -450,8 +485,15 @@ def set_process_priority(priority: int) -> None:
         logger.debug("Unable to set process priority: %s", err)
 
 
-def install_signal_handlers(stop_event, exit_callback) -> None:
-    """Install handlers for Windows console control events."""
+def install_signal_handlers(stop_event) -> None:
+    """Ask Frigate to stop when the console asks it to.
+
+    Windows delivers two console control events to a process that has a
+    console: Ctrl+C, which CPython reports as ``SIGINT``, and Ctrl+Break or a
+    closing console window, which it reports as ``SIGBREAK``. There is no
+    ``SIGTERM`` delivery, so the SCM service path uses the named event that
+    :func:`install_service_stop_watcher` waits on instead.
+    """
     import signal
 
     try:

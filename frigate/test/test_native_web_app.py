@@ -11,12 +11,17 @@ from starlette.responses import Response
 
 from frigate.api.auth import deny_response_for_go2rtc_stream
 from frigate.api.web import (
+    GO2RTC_URL,
+    JSMEPEG_URL,
+    MQTT_WS_URL,
     InProcessAuth,
     NativeAuthMiddleware,
     _serve,
     build_auth_scope,
     create_native_web_app,
+    log_startup_banner,
     needs_auth,
+    upstream_for,
 )
 
 
@@ -207,6 +212,84 @@ class TestNativeProxyIdentity(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn(b"remote-user", names)
         self.assertNotIn(b"remote-role", names)
         self.assertIn(b"x-auth-user", names)
+
+    def test_client_supplied_listener_headers_are_removed(self) -> None:
+        """The gateway states which listener a request arrived on.
+
+        ``x-server-port`` is how the auth endpoint recognises the loopback
+        listener it trusts, and ``x-original-url`` is what the go2rtc stream
+        check reads, so a client that could set either could describe its own
+        request as an internal one.
+        """
+        scope = self._scope("proxy-secret")
+        scope["headers"].extend(
+            [
+                (b"x-server-port", b"5000"),
+                (b"x-original-url", b"http://127.0.0.1:5000/api/config"),
+                (b"x-original-method", b"DELETE"),
+            ]
+        )
+
+        names = {
+            name.lower()
+            for name, _value in NativeAuthMiddleware._strip_proxy_headers(scope)
+        }
+
+        self.assertNotIn(b"x-server-port", names)
+        self.assertNotIn(b"x-original-url", names)
+        self.assertNotIn(b"x-original-method", names)
+        self.assertIn(b"host", names)
+
+
+class TestUpstreamRouting(unittest.TestCase):
+    """Which loopback child service a live request belongs to."""
+
+    def test_jsmpeg_reaches_the_frigate_jsmpeg_server(self):
+        """JSMpeg is served by the output process, not by go2rtc.
+
+        A camera that is not restreamed falls back to the jsmpeg player, so
+        routing it to go2rtc left that player connecting to a service that does
+        not speak jsmpeg at all.
+        """
+        self.assertEqual(
+            upstream_for("/live/jsmpeg/front_door"),
+            (JSMEPEG_URL, "/front_door"),
+        )
+
+    def test_the_mqtt_websocket_reaches_the_comms_server(self):
+        self.assertEqual(upstream_for("/ws"), (MQTT_WS_URL, "/"))
+
+    def test_mse_and_webrtc_reach_go2rtc(self):
+        for path, expected in (
+            ("/live/mse/api/ws", (GO2RTC_URL, "/api/ws")),
+            ("/live/webrtc/api/ws", (GO2RTC_URL, "/api/ws")),
+            ("/live/webrtc/webrtc.html", (GO2RTC_URL, "/webrtc.html")),
+            ("/go2rtc/api/streams", (GO2RTC_URL, "/api/streams")),
+            ("/api/go2rtc/webrtc", (GO2RTC_URL, "/api/webrtc")),
+        ):
+            with self.subTest(path=path):
+                self.assertEqual(upstream_for(path), expected)
+
+    def test_a_path_no_child_service_serves_is_not_proxied(self):
+        self.assertIsNone(upstream_for("/api/config"))
+
+
+class TestStartupBanner(unittest.TestCase):
+    def test_the_loopback_listener_is_reported(self):
+        """The internal port is unauthenticated, so it has to be visible."""
+        with self.assertLogs("frigate.api.web", level="INFO") as logs:
+            log_startup_banner("0.0.0.0", 8971, 5000)
+
+        text = "\n".join(logs.output)
+
+        self.assertIn("127.0.0.1:5000", text)
+        self.assertIn("8971", text)
+
+    def test_a_dual_stack_bind_says_it_accepts_both_families(self):
+        with self.assertLogs("frigate.api.web", level="INFO") as logs:
+            log_startup_banner("::", 8971, 5000)
+
+        self.assertIn("IPv6", "\n".join(logs.output))
 
 
 class TestNeedsAuth(unittest.TestCase):

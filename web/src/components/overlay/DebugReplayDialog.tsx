@@ -56,6 +56,15 @@ export function DebugReplayContent({
 }: DebugReplayContentProps) {
   const { t } = useTranslation(["views/replay"]);
 
+  // resolved up front with literal keys: a template built from the option union
+  // makes the i18n extractor emit keys like dialog.preset.customm
+  const optionLabels: Record<ReplayTimeOption, string> = {
+    "1": t("dialog.preset.1m"),
+    "5": t("dialog.preset.5m"),
+    timeline: t("dialog.preset.timeline"),
+    custom: t("dialog.preset.custom"),
+  };
+
   return (
     <div className="w-full">
       {isDesktop && (
@@ -89,11 +98,7 @@ export function DebugReplayContent({
                 value={opt}
               />
               <Label className="cursor-pointer" htmlFor={`replay-${opt}`}>
-                {opt === "custom"
-                  ? t("dialog.preset.custom")
-                  : opt === "timeline"
-                    ? t("dialog.preset.timeline")
-                    : t(`dialog.preset.${opt}m`)}
+                {optionLabels[opt]}
               </Label>
             </div>
           ))}

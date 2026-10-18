@@ -110,6 +110,16 @@ const DEBUG_OPTION_I18N_KEY: Record<keyof DebugOptions, string> = {
   paths: "paths",
 };
 
+// only these options have an explanation, and the keys stay literal so the i18n
+// extractor does not invent a debug.<option>.tips entry for every option
+const DEBUG_OPTION_TIPS_KEY = {
+  motion: "debug.motion.tips",
+  regions: "debug.regions.tips",
+  paths: "debug.paths.tips",
+} as const;
+
+type DebugOptionTipsKey = keyof typeof DEBUG_OPTION_TIPS_KEY;
+
 export default function Replay() {
   const { t } = useTranslation(["views/replay", "views/settings", "common"]);
   const navigate = useNavigate();
@@ -508,11 +518,16 @@ export default function Replay() {
                                         </Trans>
                                       </ul>
                                     </>
-                                  ) : (
-                                    <Trans ns="views/settings">
-                                      {`debug.${i18nKey}.tips`}
-                                    </Trans>
-                                  )}
+                                  ) : i18nKey in DEBUG_OPTION_TIPS_KEY ? (
+                                    <Trans
+                                      ns="views/settings"
+                                      i18nKey={
+                                        DEBUG_OPTION_TIPS_KEY[
+                                          i18nKey as DebugOptionTipsKey
+                                        ]
+                                      }
+                                    />
+                                  ) : null}
                                 </PopoverContent>
                               </Popover>
                             )}

@@ -285,12 +285,25 @@ class NativeAuthMiddleware:
 
     @staticmethod
     def _strip_proxy_headers(scope: dict) -> list[tuple[bytes, bytes]]:
-        """Drop client-supplied identity headers and proxy credentials."""
+        """Drop client-supplied identity headers and proxy credentials.
+
+        ``x-server-port``, ``x-original-url`` and ``x-original-method`` are how
+        the gateway tells the auth endpoint which listener a request arrived on
+        and what it was really for. A client that could set them itself could
+        claim the loopback listener, so they are removed from what reaches the
+        API application along with the identity headers.
+        """
+        dropped = (
+            b"x-proxy-secret",
+            b"x-server-port",
+            b"x-original-url",
+            b"x-original-method",
+        )
+
         return [
             (key, value)
             for key, value in scope.get("headers", [])
-            if not key.lower().startswith(b"remote-")
-            and key.lower() != b"x-proxy-secret"
+            if not key.lower().startswith(b"remote-") and key.lower() not in dropped
         ]
 
     async def _deny(
@@ -610,7 +623,10 @@ def upstream_for(path: str) -> tuple[str, str] | None:
         return MQTT_WS_URL, "/"
 
     if path.startswith("/live/jsmpeg/"):
-        return GO2RTC_URL, path[len("/live/jsmpeg") :]
+        # Frigate's own jsmpeg websocket server, started by the output process
+        # (see frigate/output/output.py). go2rtc does not serve jsmpeg, so a
+        # camera that is not restreamed has no live view through go2rtc.
+        return JSMEPEG_URL, path[len("/live/jsmpeg") :]
 
     if path.startswith("/live/mse/"):
         return GO2RTC_URL, path[len("/live/mse") :]
@@ -791,7 +807,8 @@ def _forwarded_headers(scope: dict, websocket: bool = False) -> dict[str, str]:
 
 async def _startup() -> None:
     """Start the background work the native server needs."""
-    # stale vod cache directories are swept while the server runs
+    # stale vod cache directories are swept while the server runs. The sweep
+    # keeps its own strong reference to the task it creates.
     vod_native.start_cache_maintenance()
 
 
@@ -905,6 +922,7 @@ def run_native_web_server(
     public_port: int,
     stop_event: Any | None = None,
     *,
+    ipv6_enabled: bool = False,
     tls_enabled: bool = False,
     tls_cert_file: str | None = None,
     tls_key_file: str | None = None,
@@ -915,7 +933,9 @@ def run_native_web_server(
 
     - the authenticated web interface, on ``FRIGATE_WEB_HOST`` and the port
       from ``FRIGATE_WEB_PORT``, which defaults to the configured public port;
-      TLS is applied to this listener when enabled
+      ``networking.ipv6`` decides which wildcard address is bound when
+      ``FRIGATE_WEB_HOST`` does not name one, and TLS is applied to this
+      listener when enabled
     - the internal port itself, on loopback, because Frigate's own consumers
       (export, motion search, debug replay) fetch VOD playlists from it with
       FFmpeg and cannot authenticate
@@ -926,7 +946,7 @@ def run_native_web_server(
     """
     import uvicorn
 
-    host = get_web_host()
+    host = get_web_host(ipv6_enabled)
     port = get_web_port(public_port)
 
     if port == internal_port:
@@ -980,7 +1000,21 @@ def log_startup_banner(
     """Explain how the web interface is exposed."""
     logger.info("Serving the Frigate web interface on %s://%s:%s", scheme, host, port)
 
-    if host not in ("127.0.0.1", "::1", "localhost"):
+    # the internal listener is unauthenticated, so an operator who cannot find
+    # out which port it took cannot check that it stayed on loopback
+    logger.info(
+        "Serving trusted internal media requests on http://127.0.0.1:%s "
+        "(loopback only, never publish this port)",
+        internal_port,
+    )
+
+    if host in ("::", "::0"):
+        logger.info(
+            "Binding to %s accepts IPv6 and IPv4 connections. Set "
+            "FRIGATE_WEB_HOST=127.0.0.1 to restrict Frigate to this computer.",
+            host,
+        )
+    elif host not in ("127.0.0.1", "::1", "localhost"):
         logger.info(
             "Binding to %s makes Frigate reachable from other devices on your "
             "network. Set FRIGATE_WEB_HOST=127.0.0.1 to restrict it to this "

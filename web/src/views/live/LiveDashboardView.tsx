@@ -725,8 +725,9 @@ function NoCameraView({ cameraGroup }: { cameraGroup?: string }) {
         title={t(`noCameras.${type}.title`)}
         description={t(`noCameras.${type}.description`)}
         buttonText={
+          // isDefault and not restricted always means type === "default"
           type !== "restricted" && isDefault
-            ? t(`noCameras.${type}.buttonText`)
+            ? t("noCameras.default.buttonText")
             : undefined
         }
         link={

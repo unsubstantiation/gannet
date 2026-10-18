@@ -630,6 +630,28 @@ def resolve_role(
 
 
 # Endpoints
+def _header_port(request: Request) -> int | None:
+    """The listener port the request arrived on, or None when unusable.
+
+    The native gateway sets ``x-server-port`` itself and drops a client
+    supplied one, so this is normally the port Frigate is listening on. A
+    malformed value still has to answer as a failed login rather than as an
+    unhandled error.
+    """
+    raw = request.headers.get("x-server-port")
+
+    if raw is None:
+        return None
+
+    # strict on purpose: int() also accepts surrounding whitespace, underscores
+    # and non-ASCII digits, none of which the gateway ever writes
+    if not raw.isascii() or not raw.isdigit():
+        logger.debug("Ignoring a non-numeric x-server-port header: %r", raw)
+        return None
+
+    return int(raw)
+
+
 @router.get(
     "/auth",
     dependencies=[Depends(allow_public())],
@@ -673,10 +695,7 @@ def auth(request: Request):
     # Do not require a session on the loopback-only internal listener. The
     # native gateway sets this header itself, and the boot-time snapshot keeps
     # an in-memory config edit from moving the trust boundary before restart.
-    if (
-        int(request.headers.get("x-server-port", default=0))
-        == request.app.auth_internal_port
-    ):
+    if _header_port(request) == request.app.auth_internal_port:
         success_response.headers["remote-user"] = "anonymous"
         success_response.headers["remote-role"] = "admin"
         return success_response

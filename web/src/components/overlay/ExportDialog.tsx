@@ -441,6 +441,17 @@ export function ExportContent({
 }: ExportContentProps) {
   const { t } = useTranslation(["components/dialog"]);
   const isAdmin = useIsAdmin();
+  // resolved up front with literal keys: a template built from the option union
+  // makes the i18n extractor emit keys like export.time.timeline
+  const optionLabels: Record<ExportOption, string> = {
+    "1": t("export.time.lastHour", { count: 1 }),
+    "4": t("export.time.lastHour", { count: 4 }),
+    "8": t("export.time.lastHour", { count: 8 }),
+    "12": t("export.time.lastHour", { count: 12 }),
+    "24": t("export.time.lastHour", { count: 24 }),
+    timeline: t("export.time.fromTimeline"),
+    custom: t("export.time.custom"),
+  };
   const [selectedOption, setSelectedOption] = useState<ExportOption>("1");
   const { data: cases } = useSWR<ExportCase[]>(isAdmin ? "cases" : null);
   const { data: config } = useSWR<FrigateConfig>("config");
@@ -1007,13 +1018,7 @@ export function ExportContent({
                   className="cursor-pointer smart-capitalize"
                   htmlFor={opt}
                 >
-                  {isNaN(parseInt(opt))
-                    ? opt == "timeline"
-                      ? t("export.time.fromTimeline")
-                      : t(`export.time.${opt}`)
-                    : t("export.time.lastHour", {
-                        count: parseInt(opt),
-                      })}
+                  {optionLabels[opt]}
                 </Label>
               </div>
             ))}
