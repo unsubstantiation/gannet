@@ -136,6 +136,8 @@ changed, how the result is verified, and what is deliberately still open.
 | Child lifetime | The supervisor reaped orphans | A kill-on-close Job Object (`frigate/util/job_object.py`) |
 | Shutdown | `SIGTERM` | Console control events, plus a named event for the SCM service |
 | Ownership | UID, GID and `chown` | Windows ACLs inherited from the parent directory |
+| Text files | Locale default encoding (UTF-8 on the image) | Explicit UTF-8 for the config, go2rtc config, state files, labelmaps and logs; the launcher and service set `PYTHONUTF8=1` |
+| File removal | `rm -rf` semantics | `frigate.util.file.robust_remove`/`robust_move`/`robust_rmtree`, which clear the read-only attribute and retry sharing violations |
 | Detectors | Coral, Hailo, TensorRT, RKNN and other appliance SDKs | CPU TFLite, ONNX Runtime (CPU or DirectML), OpenVINO (CPU, GPU or NPU) and ZMQ |
 | Acceleration | VAAPI, DRM, V4L2, RKMPP, Jetson and VideoToolbox | D3D11VA, DXVA2, Intel QSV, NVIDIA NVENC and CUDA, AMD AMF, Vulkan and software |
 | Storage statistics | A `/dev/shm` quota and a root check | Page-file backed shared memory and the Win32 APIs |
@@ -148,7 +150,9 @@ The unit suite is the main gate: `frigate/test/windows_suite_denylist.txt` is
 empty, so no test is known to be unable to run on Windows, and a test that
 fails there fails the build. The platform behaviour itself is covered by
 `frigate/test/test_platform_windows.py`, `test_windows_service.py`,
-`test_job_object.py`, `test_go2rtc_windows.py` and `test_native_e2e.py`.
+`test_job_object.py`, `test_go2rtc_windows.py`, `test_native_e2e.py`,
+`test_windows_gpu_info.py`, `test_file.py` (read-only and held-file removal)
+and `http_api/test_http_config_encoding.py` (UTF-8 config round trips).
 
 ### What is still open
 
