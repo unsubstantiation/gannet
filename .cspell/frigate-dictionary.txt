@@ -26,6 +26,7 @@ autotracking
 backchannel
 balena
 Beelink
+behaviour
 BGRA
 BHWC
 blackshear
@@ -33,6 +34,7 @@ blakeblackshear
 bottombar
 buildx
 castable
+cbreak
 cdist
 Celeron
 cgroups
@@ -46,6 +48,7 @@ codeproject
 colormap
 colorspace
 comms
+compileall
 cooldown
 coro
 ctypeslib
@@ -58,9 +61,11 @@ deci
 defragment
 devcontainer
 DEVICEMAP
+DirectML
 discardcorrupt
 dpkg
 dsize
+DXVA
 dtype
 ECONNRESET
 edgetpu
@@ -88,6 +93,7 @@ genai
 generativeai
 genpts
 getpid
+getwch
 gpuload
 HACS
 Hailo
@@ -126,9 +132,11 @@ joserfc
 jsmpeg
 jsonify
 Kalman
+kbhit
 keepalive
 keepdims
 labelmap
+llamacpp
 letsencrypt
 levelname
 LIBAVFORMAT
@@ -139,6 +147,7 @@ libwebp
 libx
 libyolo
 linalg
+LOCALAPPDATA
 localzone
 logpipe
 Loryta
@@ -164,6 +173,7 @@ mpegts
 mqtt
 mse
 msenc
+msvcrt
 muxing
 namedtuples
 nbytes
@@ -180,6 +190,7 @@ NONBLOCK
 noninteractive
 noprint
 Norfair
+normcase
 nptype
 NTSC
 numpy
@@ -269,13 +280,18 @@ stylelint
 subclassing
 substream
 superfast
+supervisord
 surveillance
 svscan
 Swipeable
 sysconf
 tailscale
 Tapo
+tcgetattr
+TCSADRAIN
+tcsetattr
 tensorrt
+termios
 tflite
 thresholded
 timelapse
@@ -284,6 +300,7 @@ tmpfs
 tobytes
 toggleable
 traefik
+tty
 tzlocal
 Ubiquiti
 udev
@@ -302,6 +319,7 @@ vaapi
 vainfo
 variations
 vbios
+venv
 vconcat
 vitb
 vstream
@@ -313,6 +331,7 @@ webrtc
 websockets
 webui
 werkzeug
+winget
 workdir
 WRONLY
 wsgirefserver

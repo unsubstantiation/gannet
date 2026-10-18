@@ -1,6 +1,7 @@
 """The native web server, which replaces nginx on Windows."""
 
 import asyncio
+import ntpath
 import threading
 import unittest
 from types import SimpleNamespace
@@ -19,6 +20,7 @@ from frigate.api.web import (
     _serve,
     build_auth_scope,
     create_native_web_app,
+    is_contained_in,
     log_startup_banner,
     needs_auth,
     upstream_for,
@@ -68,6 +70,24 @@ class TestNativeWebServerShutdown(unittest.IsolatedAsyncioTestCase):
         await asyncio.wait_for(_serve(servers), timeout=2)
 
         self.assertTrue(all(server.should_exit for server in servers))
+
+
+class TestWebPathContainment(unittest.TestCase):
+    def test_windows_paths_are_case_insensitive_but_component_aware(self):
+        """A casing difference must not hide a valid web root or allow a sibling."""
+        with patch("frigate.api.web.os.path", ntpath):
+            self.assertTrue(
+                is_contained_in(
+                    r"C:\Frigate\web\assets\app.js",
+                    r"c:\frigate\web",
+                )
+            )
+            self.assertFalse(
+                is_contained_in(
+                    r"C:\Frigate\web_evil\assets\app.js",
+                    r"c:\frigate\web",
+                )
+            )
 
 
 class TestNativeWebApp(unittest.TestCase):

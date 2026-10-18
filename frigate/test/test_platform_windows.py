@@ -1,5 +1,6 @@
 """Platform helper tests for Windows command and path handling."""
 
+import ntpath
 import os
 import tempfile
 import threading
@@ -21,6 +22,7 @@ from frigate.util.platform import (
     get_web_port,
     install_service_stop_watcher,
     ipc_endpoint,
+    is_subpath,
     long_path_warning,
     longest_recording_path,
     quote_ffmpeg_arg,
@@ -134,7 +136,7 @@ class TestWindowsLongPaths(unittest.TestCase):
         with (
             patch("frigate.util.platform.IS_WINDOWS", True),
             patch(
-                "frigate.util.platform.get_media_dir", return_value="D:\\Frigate\\media"
+                "frigate.util.platform.get_media_dir", return_value="D:\Frigate\media"
             ),
         ):
             short = longest_recording_path(["driveway", "front_door"])
@@ -149,7 +151,7 @@ class TestWindowsLongPaths(unittest.TestCase):
         with (
             patch("frigate.util.platform.IS_WINDOWS", True),
             patch("frigate.util.platform.long_paths_enabled", return_value=False),
-            patch("frigate.util.platform.get_base_dir", return_value="D:\\Frigate"),
+            patch("frigate.util.platform.get_base_dir", return_value="D:\Frigate"),
             patch(
                 "frigate.util.platform.get_media_dir",
                 return_value="D:\\" + "nested\\" * 30 + "Frigate\\media",
@@ -177,7 +179,7 @@ class TestWindowsLongPaths(unittest.TestCase):
             patch("frigate.util.platform.IS_WINDOWS", True),
             patch("frigate.util.platform.long_paths_enabled", return_value=False),
             patch(
-                "frigate.util.platform.get_media_dir", return_value="C:\\Frigate\\media"
+                "frigate.util.platform.get_media_dir", return_value="C:\Frigate\media"
             ),
         ):
             self.assertIsNone(long_path_warning(["driveway"]))
@@ -296,6 +298,28 @@ class TestMediaUrlPaths(unittest.TestCase):
                 "/cache/previews/front_door/1.jpg",
             )
 
+    def test_windows_media_path_mapping_ignores_case(self):
+        """Persisted Windows paths may use different casing than the config."""
+        with (
+            patch("frigate.util.platform.os.path", ntpath),
+            patch(
+                "frigate.util.platform.get_media_dir",
+                return_value=r"C:\Frigate\Media",
+            ),
+            patch(
+                "frigate.util.platform.get_cache_dir",
+                return_value=r"C:\Frigate\Cache",
+            ),
+        ):
+            self.assertEqual(
+                to_media_url_path(r"c:\frigate\media\recordings\front_door\00.00.mp4"),
+                "/recordings/front_door/00.00.mp4",
+            )
+            self.assertEqual(
+                to_media_url_path(r"c:\frigate\cache\model.bin"),
+                "/cache/model.bin",
+            )
+
     def test_media_paths_round_trip(self):
         media_dir = str(Path(tempfile.gettempdir()) / "frigate-media")
 
@@ -357,6 +381,46 @@ class TestFsType(unittest.TestCase):
             )
             self.assertEqual(
                 get_fs_type(os.path.join(mountpoint, "recordings")), "NTFS"
+            )
+
+
+class TestIsSubpath(unittest.TestCase):
+    """The containment check has to agree with the filesystem it runs on."""
+
+    def test_a_child_is_a_subpath(self):
+        base = os.path.join(tempfile.gettempdir(), "frigate-media")
+        self.assertTrue(is_subpath(os.path.join(base, "clips", "a.webp"), base))
+
+    def test_a_sibling_is_not_a_subpath(self):
+        base = os.path.join(tempfile.gettempdir(), "frigate-media")
+        self.assertFalse(
+            is_subpath(os.path.join(tempfile.gettempdir(), "frigate-media2"), base)
+        )
+
+    def test_case_follows_the_platform(self):
+        """Windows resolves a path that differs only in case to the same file."""
+        base = os.path.join(tempfile.gettempdir(), "frigate-media")
+        path = os.path.join(tempfile.gettempdir(), "Frigate-Media", "clips", "a.webp")
+
+        if os.name == "nt":
+            self.assertTrue(is_subpath(path, base))
+        else:
+            self.assertFalse(is_subpath(path, base))
+
+    def test_windows_paths_are_case_insensitive_but_component_aware(self):
+        """Exercise ntpath semantics even when this test runs on POSIX."""
+        with patch("frigate.util.platform.os.path", ntpath):
+            self.assertTrue(
+                is_subpath(
+                    r"C:\Frigate\Media\clips\a.webp",
+                    r"c:\frigate\media\clips",
+                )
+            )
+            self.assertFalse(
+                is_subpath(
+                    r"C:\Frigate\Media\clips_evil\a.webp",
+                    r"c:\frigate\media\clips",
+                )
             )
 
 

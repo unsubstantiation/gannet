@@ -12,10 +12,11 @@ folders are written to `clips/genai-requests/<review_id>/` and contain:
 - `response.txt` with the provider's response (not used by the tester)
 
 Copy folders in, optionally rename them to something memorable (for example
-`driveway-night-delivery`), then run the tester from the repo root:
+`driveway-night-delivery`), activate the repository's virtual environment, then
+run the tester from the repo root:
 
-```bash
-python3 testing-scripts/genai_review_tester.py
+```powershell
+python testing-scripts/genai_review_tester.py
 ```
 
 Everything in this folder except this README is gitignored, since the frames

@@ -91,6 +91,46 @@ results are not accepted as evidence for this runtime.
 These checks also run automatically in the `Windows Python` and `Windows Web`
 GitHub Actions workflows on every pull request and push to `dev`.
 
+## Port audit
+
+What the conversion from the Linux image to a native Windows application
+changed, how the result is verified, and what is deliberately still open.
+
+### What changed
+
+| Area | Before | Now |
+| --- | --- | --- |
+| Process model | An image with nginx, supervisord and a Frigate container | One process; `frigate/api/web.py` serves the UI, the API, media and live streams |
+| Multiprocessing | `fork` | `spawn` (`frigate.util.platform.get_mp_start_method`) |
+| Writable paths | `/config`, `/media`, `/cache` | `%LOCALAPPDATA%\Frigate`, relocatable with `FRIGATE_*_DIR` |
+| Executables | `ffmpeg` and `go2rtc` on `PATH` | `ffmpeg.exe` and `go2rtc.exe` installed by `bootstrap_windows.py` with verified SHA-256 digests |
+| Local IPC | Unix domain sockets and FIFOs | Loopback TCP (`frigate.util.platform.ipc_endpoint`) and named shared memory |
+| Child lifetime | The supervisor reaped orphans | A kill-on-close Job Object (`frigate/util/job_object.py`) |
+| Shutdown | `SIGTERM` | Console control events, plus a named event for the SCM service |
+| Ownership | UID, GID and `chown` | Windows ACLs inherited from the parent directory |
+| Detectors | Coral, Hailo, TensorRT, RKNN and other appliance SDKs | CPU TFLite, ONNX Runtime (CPU or DirectML), OpenVINO (CPU, GPU or NPU) and ZMQ |
+| Acceleration | VAAPI, DRM, V4L2, RKMPP, Jetson and VideoToolbox | D3D11VA, DXVA2, Intel QSV, NVIDIA NVENC and CUDA, AMD AMF, Vulkan and software |
+| Storage statistics | A `/dev/shm` quota and a root check | Page-file backed shared memory and the Win32 APIs |
+
+### What is verified
+
+The repository checks above run on a Windows x64 host for every pull request.
+The unit suite is the main gate: `frigate/test/windows_suite_denylist.txt` is
+empty, so no test is known to be unable to run on Windows, and a test that
+fails there fails the build. The platform behaviour itself is covered by
+`frigate/test/test_platform_windows.py`, `test_windows_service.py`,
+`test_job_object.py`, `test_go2rtc_windows.py` and `test_native_e2e.py`.
+
+### What is still open
+
+- The Windows installer is not published, so the winget manifest stays a
+  template (see below).
+- PowerShell, SCM and Win32 process behaviour can only be validated on a
+  Windows x64 host; results from another operating system are not evidence.
+- The hardware presets need the matching device: QSV, NVENC and AMF are
+  verified by configuration and by the presets themselves, not on every
+  vendor's silicon.
+
 ## Release limitation
 
 `winget-manifest/Frigate.FrigateWindows.yaml` remains a template until a signed

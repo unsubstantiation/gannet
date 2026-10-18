@@ -44,6 +44,7 @@ from frigate.models import Recordings, ReviewSegment
 from frigate.review.types import SeverityEnum
 from frigate.util.file import async_robust_remove, robust_remove
 from frigate.util.media import get_keyframe_offsets
+from frigate.util.platform import is_subpath
 from frigate.util.services import get_video_properties
 
 logger = logging.getLogger(__name__)
@@ -124,9 +125,9 @@ def cache_files_in_use(cache_dir: str) -> set[str]:
                 continue
 
             for opened in process.open_files():
-                if opened.path.startswith(cache_dir):
-                    # the path is spelled with backslashes on Windows, and a
-                    # POSIX basename would return all of it
+                if is_subpath(opened.path, cache_dir):
+                    # normalize separators so basename also works on POSIX
+                    # unit-test hosts when they exercise Windows-style paths
                     in_use.add(os.path.basename(opened.path.replace("\\", "/")))
         except psutil.Error:
             continue

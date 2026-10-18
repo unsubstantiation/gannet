@@ -1,4 +1,5 @@
 import datetime
+import ntpath
 import os
 import sys
 import tempfile
@@ -327,9 +328,10 @@ class TestCacheFilesInUse(unittest.TestCase):
     def test_a_windows_ffmpeg_is_recognised(self):
         process = self._process("ffmpeg.exe", [r"C:\cache\e2e@20260101000000+0000.mp4"])
 
-        self.assertEqual(
-            self._in_use(r"C:\cache", [process]), {"e2e@20260101000000+0000.mp4"}
-        )
+        with patch("frigate.util.platform.os.path", ntpath):
+            self.assertEqual(
+                self._in_use(r"C:\cache", [process]), {"e2e@20260101000000+0000.mp4"}
+            )
 
     def test_a_posix_ffmpeg_is_recognised(self):
         process = self._process(
@@ -339,6 +341,16 @@ class TestCacheFilesInUse(unittest.TestCase):
         self.assertEqual(
             self._in_use(_tmp_path("cache"), [process]), {"e2e@20260101000000+0000.mp4"}
         )
+
+    def test_windows_paths_match_case_and_not_prefix(self):
+        """Use Windows path rules on every host, including for sibling dirs."""
+        process = self._process(
+            "ffmpeg.exe",
+            [r"c:\cache\e2e@1.mp4", r"C:\cache-other\e2e@2.mp4"],
+        )
+
+        with patch("frigate.util.platform.os.path", ntpath):
+            self.assertEqual(self._in_use(r"C:\Cache", [process]), {"e2e@1.mp4"})
 
     def test_other_processes_and_other_files_are_ignored(self):
         processes = [

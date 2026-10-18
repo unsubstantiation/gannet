@@ -603,10 +603,12 @@ def to_media_url_path(path: str | None) -> str | None:
         (get_media_dir(), ""),
         (get_cache_dir(), f"/{CACHE_URL_COMPONENT}"),
     ):
-        base_normalized = str(base).replace("\\", "/").rstrip("/")
-        if normalized.startswith(f"{base_normalized}/"):
-            return f"{prefix}{normalized[len(base_normalized) :]}"
-
+        if is_subpath(path, base):
+            relative = os.path.relpath(path, base)
+            if relative == os.curdir:
+                continue
+            relative_url = relative.replace("\\", "/")
+            return f"{prefix}/{relative_url}"
     for component in MEDIA_URL_COMPONENTS:
         index = normalized.rfind(f"/{component}/")
         if index != -1:
@@ -642,12 +644,21 @@ def resolve_media_url_path(url_path: str) -> str | None:
 
 
 def is_subpath(path: str, base: str) -> bool:
+    """Whether a path sits inside a base directory.
+
+    The comparison is case insensitive where the platform is: Windows resolves
+    a path that differs only in letter case to the same file, and
+    ``os.path.commonpath`` reports the case of the path it was given rather
+    than a canonical one.
+    """
     root = os.path.abspath(base)
     resolved = os.path.abspath(path)
     try:
-        return os.path.commonpath([resolved, root]) == root
+        common = os.path.commonpath([resolved, root])
     except ValueError:
         return False
+
+    return os.path.normcase(common) == os.path.normcase(root)
 
 
 def get_fs_type(path: str) -> str:

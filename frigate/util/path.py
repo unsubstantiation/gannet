@@ -1,6 +1,7 @@
 """Helpers for building filesystem paths out of user supplied values."""
 
 import os
+import uuid
 
 from pathvalidate import ValidationError, sanitize_filename, sanitize_filepath
 
@@ -45,6 +46,11 @@ def is_contained_in(path: str, base: str) -> bool:
 
     Compares whole path components, so a sibling directory that merely shares a
     name prefix with base is not treated as contained.
+
+    The comparison is case insensitive where the platform is, because Windows
+    resolves a path that differs only in letter case to the same file, and
+    ``os.path.commonpath`` reports the case of the path it was given rather
+    than a canonical one.
     """
     resolved = os.path.normpath(path)
     root = os.path.normpath(base)
@@ -52,11 +58,63 @@ def is_contained_in(path: str, base: str) -> bool:
     try:
         # commonpath compares components, and unlike a prefix test it stays
         # correct for a base that already ends in a separator such as "/".
-        return os.path.commonpath([resolved, root]) == root
+        common = os.path.commonpath([resolved, root])
     except ValueError:
         # Raised when the paths cannot be compared, such as one relative and
         # one absolute, or two different Windows drives.
         return False
+
+    return os.path.normcase(common) == os.path.normcase(root)
+
+
+def is_same_path(path: str, other: str) -> bool:
+    """Whether two paths name the same location.
+
+    The comparison is case insensitive where the platform is, because Windows
+    resolves a path that differs only in letter case to the same file.
+    """
+    return os.path.normcase(os.path.abspath(path)) == os.path.normcase(
+        os.path.abspath(other)
+    )
+
+
+def rename_path(source: str, destination: str) -> None:
+    """Rename a path, preserving case-only renames on Windows.
+
+    Windows may treat a case-only rename as a move onto an existing path. Move
+    the source to a unique sibling name first, then to the requested spelling;
+    if the second move fails, restore the original name before re-raising.
+    """
+    source_absolute = os.path.abspath(source)
+    destination_absolute = os.path.abspath(destination)
+
+    if source_absolute == destination_absolute:
+        return
+
+    if os.name != "nt" or not is_same_path(source, destination):
+        os.rename(source, destination)
+        return
+
+    parent = os.path.dirname(source_absolute)
+    for _ in range(10):
+        temporary = os.path.join(parent, f".frigate-rename-{uuid.uuid4().hex}")
+        if not os.path.lexists(temporary):
+            break
+    else:
+        raise FileExistsError(f"Unable to find a temporary name to rename {source}")
+
+    os.rename(source, temporary)
+    try:
+        os.rename(temporary, destination)
+    except OSError as err:
+        try:
+            os.rename(temporary, source)
+        except OSError as restore_error:
+            err.add_note(
+                f"The original path could not be restored; it may remain at {temporary}: "
+                f"{restore_error}"
+            )
+        raise
 
 
 def safe_join(base: str, *parts: str | None) -> str | None:
