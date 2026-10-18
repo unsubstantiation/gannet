@@ -21,7 +21,10 @@ filelock == 4.2.*
 httpx == 0.28.*
 Pillow == 13.0.*
 regex == 2026.9.*
-rich == 15.0.*
+# rich stays below 15: norfair 2.3.0 (see the numpy note under "Image
+# processing") requires rich<15.0.0, so a 15.x pin makes the whole file
+# unresolvable. Keep this in step with norfair's requires_dist.
+rich == 14.*
 
 # Classification model training (Windows x86-64 CPU wheel)
 tensorflow-cpu == 2.21.*
