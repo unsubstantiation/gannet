@@ -72,6 +72,14 @@ Video acceleration presets cover D3D11VA, DXVA2, Intel QSV, NVIDIA CUDA/NVENC,
 AMD AMF, Vulkan, and software fallback. Hardware statistics use `psutil` and,
 when installed and enabled, NVIDIA NVML.
 
+The System page's "Hardware Info" button calls `/api/gpuinfo`, the native
+replacement for the Linux `vainfo` output. It reports the active display
+adapters (Win32 `EnumDisplayDevices`), the processor, the acceleration methods
+compiled into the installed `ffmpeg.exe` (`ffmpeg -hwaccels`), the accelerators
+go2rtc could open, and the `preset-windows-*` families Frigate recommends.
+`/api/nvinfo` still returns NVML driver details when an NVIDIA adapter is
+polled.
+
 Accelerators that require Unix device nodes or vendor Linux SDKs are not part
 of the codebase or configuration schema.
 
@@ -131,6 +139,7 @@ changed, how the result is verified, and what is deliberately still open.
 | Detectors | Coral, Hailo, TensorRT, RKNN and other appliance SDKs | CPU TFLite, ONNX Runtime (CPU or DirectML), OpenVINO (CPU, GPU or NPU) and ZMQ |
 | Acceleration | VAAPI, DRM, V4L2, RKMPP, Jetson and VideoToolbox | D3D11VA, DXVA2, Intel QSV, NVIDIA NVENC and CUDA, AMD AMF, Vulkan and software |
 | Storage statistics | A `/dev/shm` quota and a root check | Page-file backed shared memory and the Win32 APIs |
+| GPU diagnostics | `vainfo` (libva) via `/api/vainfo` | `/api/gpuinfo`: display adapters, `ffmpeg -hwaccels`, go2rtc accelerators and the recommended `preset-windows-*` family |
 
 ### What is verified
 

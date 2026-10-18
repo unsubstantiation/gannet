@@ -86,7 +86,7 @@ export type NpuStats = {
   temp?: number;
 };
 
-export type GpuInfo = "vainfo" | "nvinfo";
+export type GpuInfo = "gpuinfo" | "nvinfo";
 
 export type ServiceStats = {
   last_updated: number;
@@ -135,10 +135,15 @@ export type PotentialProblem = {
   relevantLink?: string;
 };
 
-export type Vainfo = {
-  return_code: number;
-  stdout: string;
-  stderr: string;
+export type WindowsGpuInfo = {
+  adapters: string[];
+  vendors: string[];
+  cpu: string;
+  ffmpeg_hwaccels: string[];
+  go2rtc_hardware: { name: string; url: string }[];
+  decoders: { key: string; presets: { [codec: string]: string } }[];
+  recommended: string;
+  nvidia?: Nvinfo;
 };
 
 export type Nvinfo = {

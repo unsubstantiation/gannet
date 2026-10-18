@@ -81,6 +81,7 @@ from frigate.util.services import (
     Go2rtcStreamIssue,
     find_restricted_go2rtc_stream_changes,
     get_nvidia_driver_info,
+    get_windows_gpu_info,
     process_logs,
     restart_frigate,
 )
@@ -1114,19 +1115,17 @@ def config_set(request: Request, body: AppConfigSetBody):
         )
 
 
-@router.get("/vainfo", dependencies=[Depends(allow_any_authenticated())])
-def vainfo():
-    """Explain why the legacy libva diagnostic is absent on Windows."""
-    return JSONResponse(
-        content={
-            "return_code": 1,
-            "stderr": (
-                "vainfo and libva are not part of the native Windows runtime. "
-                "Use the FFmpeg preset and hardware diagnostics instead."
-            ),
-            "stdout": "",
-        }
-    )
+@router.get("/gpuinfo", dependencies=[Depends(allow_any_authenticated())])
+def gpuinfo(request: Request):
+    """Describe the video hardware Windows exposes to Frigate.
+
+    Reports the active display adapters, the processor, the hardware
+    acceleration methods compiled into the installed FFmpeg, the accelerators
+    go2rtc could open, and the ``preset-windows-*`` decoder families Frigate
+    recommends. This is the native replacement for the Linux ``vainfo`` output.
+    """
+    config: FrigateConfig = request.app.frigate_config
+    return JSONResponse(content=get_windows_gpu_info(config.ffmpeg.ffmpeg_path))
 
 
 @router.get("/nvinfo", dependencies=[Depends(allow_any_authenticated())])

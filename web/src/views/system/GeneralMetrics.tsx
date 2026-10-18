@@ -35,7 +35,7 @@ export default function GeneralMetrics({
 }: GeneralMetricsProps) {
   // extra info
   const { t } = useTranslation(["views/system"]);
-  const [showVainfo, setShowVainfo] = useState(false);
+  const [showGpuInfo, setShowGpuInfo] = useState(false);
 
   // stats
 
@@ -93,19 +93,16 @@ export default function GeneralMetrics({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive]);
 
+  // Windows only polls usage counters for NVIDIA adapters, so the native
+  // hardware report (display adapters, FFmpeg hwaccels, go2rtc accelerators
+  // and the recommended preset-windows-* family) is always offered; the NVML
+  // driver view is used when NVIDIA counters are present.
   const [canGetGpuInfo, gpuType] = useMemo<[boolean, GpuInfo]>(() => {
-    let vaCount = 0;
-    let nvCount = 0;
+    const hasNvidia = Object.values(statsHistory[0]?.gpu_usages ?? {}).some(
+      (stats) => stats.vendor === "nvidia",
+    );
 
-    Object.values(statsHistory[0]?.gpu_usages ?? {}).forEach((stats) => {
-      if (stats.vendor === "nvidia") {
-        nvCount += 1;
-      } else if (stats.vendor === "intel" || stats.vendor === "amd") {
-        vaCount += 1;
-      }
-    });
-
-    return [vaCount > 0 || nvCount > 0, nvCount > 0 ? "nvinfo" : "vainfo"];
+    return [statsHistory.length > 0, hasNvidia ? "nvinfo" : "gpuinfo"];
   }, [statsHistory]);
 
   // timestamps
@@ -653,9 +650,9 @@ export default function GeneralMetrics({
   return (
     <>
       <GPUInfoDialog
-        showGpuInfo={showVainfo}
+        showGpuInfo={showGpuInfo}
         gpuType={gpuType}
-        setShowGpuInfo={setShowVainfo}
+        setShowGpuInfo={setShowGpuInfo}
       />
 
       <div className="scrollbar-container mt-4 flex size-full flex-col overflow-y-auto">
@@ -772,7 +769,8 @@ export default function GeneralMetrics({
 
         {(statsHistory.length == 0 ||
           gpuSeries.length > 0 ||
-          npuSeries.length > 0) && (
+          npuSeries.length > 0 ||
+          canGetGpuInfo) && (
           <>
             <div className="mt-4 flex items-center justify-between">
               <div className="text-sm font-medium text-muted-foreground">
@@ -783,7 +781,7 @@ export default function GeneralMetrics({
                   className="cursor-pointer"
                   aria-label={t("general.hardwareInfo.title")}
                   size="sm"
-                  onClick={() => setShowVainfo(true)}
+                  onClick={() => setShowGpuInfo(true)}
                 >
                   {t("general.hardwareInfo.title")}
                 </Button>

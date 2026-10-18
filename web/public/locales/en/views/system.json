@@ -180,18 +180,24 @@
       "gpuDecoder": "GPU Decoder",
       "gpuTemperature": "GPU Temperature",
       "gpuInfo": {
-        "vainfoOutput": {
-          "title": "Vainfo Output",
-          "returnCode": "Return Code: {{code}}",
-          "processOutput": "Process Output:",
-          "processError": "Process Error:"
+        "windowsOutput": {
+          "title": "Windows Video Hardware",
+          "adapters": "Display adapters: {{adapters}}",
+          "cpu": "Processor: {{cpu}}",
+          "recommended": "Recommended decoding preset: {{preset}}",
+          "decoders": "Available decoding presets: {{decoders}}",
+          "ffmpegHwaccels": "FFmpeg hardware acceleration methods: {{hwaccels}}",
+          "go2rtcHardware": "go2rtc accelerators: {{sources}}",
+          "none": "none detected",
+          "software": "software decoding (no supported GPU detected)"
         },
         "nvidiaSMIOutput": {
-          "title": "Nvidia SMI Output",
+          "title": "NVIDIA Driver Info",
           "name": "Name: {{name}}",
           "driver": "Driver: {{driver}}",
           "cudaComputerCapability": "CUDA Compute Capability: {{cuda_compute}}",
-          "vbios": "VBios Info: {{vbios}}"
+          "vbios": "VBios Info: {{vbios}}",
+          "unavailable": "The NVIDIA driver did not return device information. Check that the NVIDIA driver and NVML (nvml.dll) are installed."
         },
         "closeInfo": {
           "label": "Close GPU info"
