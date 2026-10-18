@@ -26,7 +26,7 @@ from starlette.staticfiles import StaticFiles
 
 from frigate.api import vod_native
 from frigate.api.auth import auth as auth_check
-from frigate.const import CACHE_DIR, CLIPS_DIR, EXPORT_DIR, RECORD_DIR
+from frigate.const import CLIPS_DIR, EXPORT_DIR, RECORD_DIR
 from frigate.models import Event
 from frigate.util.platform import (
     get_web_dir,
@@ -52,6 +52,8 @@ PROTECTED_PREFIXES = (
     "/clips/",
     "/recordings/",
     "/exports/",
+    # nothing is mounted at /cache any more; it stays protected so a future
+    # mount cannot be reached without signing in
     "/cache/",
     "/live/",
     "/go2rtc/",
@@ -867,7 +869,10 @@ def create_native_web_app(api_app: Any, port: int) -> Starlette:
         Mount("/clips", app=StaticFiles(directory=CLIPS_DIR, check_dir=False)),
         Mount("/recordings", app=StaticFiles(directory=RECORD_DIR, check_dir=False)),
         Mount("/exports", app=StaticFiles(directory=EXPORT_DIR, check_dir=False)),
-        Mount("/cache", app=StaticFiles(directory=CACHE_DIR, check_dir=False)),
+        # CACHE_DIR is deliberately not served. It holds in-progress recording
+        # segments, preview frames, and VOD remux output for every camera, and
+        # nothing in the web app reads it over HTTP; exposing it would let any
+        # signed-in viewer bypass the per-camera media checks.
         # live view and the websocket servers
         Route("/live/webrtc/webrtc.html", proxy_http, methods=["GET"]),
         WebSocketRoute("/ws", websocket_endpoint),

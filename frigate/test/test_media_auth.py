@@ -205,6 +205,55 @@ class TestResolveMediaUri(unittest.TestCase):
     def test_exports_listing(self):
         self._assert("/exports/", MediaAuthResolution.LISTING_MULTI_CAMERA)
 
+    def test_vod_listing(self):
+        self._assert("/vod", MediaAuthResolution.LISTING_MULTI_CAMERA)
+        self._assert("/vod/", MediaAuthResolution.LISTING_MULTI_CAMERA)
+
+    def test_vod_camera_routes(self):
+        # the shapes the web player and Frigate's own media jobs request from
+        # the native gateway; the camera is the first segment after /vod
+        for uri in (
+            "/vod/back_door/start/1700000000.5/end/1700003600.25/index.m3u8",
+            "/vod/back_door/start/1700000000.5/end/1700003600.25/master.m3u8",
+            "/vod/back_door/main/start/1700000000/end/1700003600/index.m3u8",
+            "/vod/back_door/sub/start/1700000000/end/1700003600/master.m3u8",
+            "/vod/back_door/start/1700000000/end/1700003600/seg-00003.ts",
+            "/vod/back_door/sub/start/1700000000/end/1700003600/seg-00003.ts",
+        ):
+            with self.subTest(uri=uri):
+                self._assert(uri, MediaAuthResolution.CAMERA, "back_door")
+
+    def test_vod_clip_route(self):
+        self._assert(
+            "/vod/clip/back_door/start/1700000000/end/1700000030/master.m3u8",
+            MediaAuthResolution.CAMERA,
+            "back_door",
+        )
+        self._assert("/vod/clip", MediaAuthResolution.UNRESOLVED_MEDIA)
+
+    def test_vod_hour_routes(self):
+        # /vod/{YYYY-MM}/{day}/{hour}/{camera}[/{tz}]/index.m3u8 names the
+        # camera after the date, not before it
+        self._assert(
+            "/vod/2026-05/11/14/back_door/index.m3u8",
+            MediaAuthResolution.CAMERA,
+            "back_door",
+        )
+        self._assert(
+            "/vod/2026-05/11/14/back_door/America,Anchorage/index.m3u8",
+            MediaAuthResolution.CAMERA,
+            "back_door",
+        )
+
+    def test_vod_hour_route_lookalike_is_a_camera_route(self):
+        # a camera whose name is not a year-month cannot reach the hour
+        # routes, so it is classified the way the gateway routes it
+        self._assert(
+            "/vod/front_door/11/14/back_door/index.m3u8",
+            MediaAuthResolution.CAMERA,
+            "front_door",
+        )
+
 
 class TestExportResolution(unittest.TestCase):
     """Export resolution requires a DB lookup."""
@@ -263,6 +312,48 @@ class TestExportResolution(unittest.TestCase):
         resolution, _ = resolve_media_uri("/exports/clip.mp4", self.config)
         self.assertEqual(resolution, MediaAuthResolution.UNRESOLVED_MEDIA)
 
+    def test_vod_event_resolves_camera_from_the_event(self):
+        # /vod/event/{id}/... does not name the camera; it comes from the DB
+        Event.insert(
+            id="1700000000.123456-abcdef",
+            label="person",
+            camera="back_door",
+            start_time=1700000000.0,
+            end_time=1700000030.0,
+            top_score=0.9,
+            score=0.9,
+            false_positive=False,
+            zones=[],
+            thumbnail="",
+            has_clip=True,
+            has_snapshot=False,
+            region=[],
+            box=[],
+            area=0,
+            retain_indefinitely=False,
+            ratio=1.0,
+            plus_id=None,
+            model_hash="",
+            detector_type="cpu",
+            model_type="ssd",
+            data={},
+        ).execute()
+
+        resolution, camera = resolve_media_uri(
+            "/vod/event/1700000000.123456-abcdef/start/1700000000/end/1700000030/index.m3u8",
+            self.config,
+        )
+        self.assertEqual(resolution, MediaAuthResolution.CAMERA)
+        self.assertEqual(camera, "back_door")
+
+    def test_vod_unknown_event_is_unresolved(self):
+        resolution, camera = resolve_media_uri(
+            "/vod/event/missing/start/1700000000/end/1700000030/index.m3u8",
+            self.config,
+        )
+        self.assertEqual(resolution, MediaAuthResolution.UNRESOLVED_MEDIA)
+        self.assertIsNone(camera)
+
 
 class TestDenyResponseForMediaUri(unittest.TestCase):
     """End-to-end decision check used by /auth."""
@@ -294,6 +385,32 @@ class TestDenyResponseForMediaUri(unittest.TestCase):
         )
         self.assertIsNone(
             self._deny("/clips/thumbs/front_door/abc.webp", "limited_user")
+        )
+
+    def test_restricted_role_vod_follows_the_camera(self):
+        # recordings playback goes through the native /vod routes, which must
+        # be gated by camera exactly like the files under /recordings
+        self.assertIsNone(
+            self._deny(
+                "/vod/front_door/start/1700000000/end/1700003600/master.m3u8",
+                "limited_user",
+            )
+        )
+        for uri in (
+            "/vod/back_door/start/1700000000/end/1700003600/master.m3u8",
+            "/vod/back_door/sub/start/1700000000/end/1700003600/seg-00000.ts",
+            "/vod/clip/back_door/start/1700000000/end/1700000030/index.m3u8",
+            "/vod/2026-05/11/14/back_door/index.m3u8",
+            "/vod/",
+        ):
+            with self.subTest(uri=uri):
+                self.assertEqual(self._deny(uri, "limited_user"), 403)
+
+        self.assertIsNone(
+            self._deny(
+                "/vod/back_door/start/1700000000/end/1700003600/master.m3u8",
+                "admin",
+            )
         )
 
     def test_restricted_role_blocked_other_camera(self):
@@ -341,6 +458,14 @@ class TestDenyResponseForMediaUri(unittest.TestCase):
             self.assertEqual(self._deny(uri, "limited_user"), 403, uri)
             self.assertEqual(self._deny(uri, "admin"), 403, uri)
             self.assertEqual(self._deny(uri, "viewer"), 403, uri)
+
+    def test_traversal_in_vod_uri_denied_for_all_roles(self):
+        self.assertEqual(
+            self._deny(
+                "/vod/front_door/../back_door/start/1/end/2/index.m3u8", "admin"
+            ),
+            403,
+        )
 
     def test_traversal_outside_media_passes_through(self):
         # `..` in non-media URIs is not our problem; the backend handles it.

@@ -13,6 +13,7 @@ from aiohttp import web as aiohttp_web
 from fastapi import FastAPI
 from starlette.requests import Request
 from starlette.responses import Response
+from starlette.routing import Mount
 
 from frigate.api.auth import deny_response_for_go2rtc_stream
 from frigate.api.vod_native import VodPlaylist, VodSegment
@@ -287,6 +288,23 @@ class TestGatewayRoutes(unittest.TestCase):
                 self.assertEqual(media.status_code, 200, media.text)
                 self.assertIn("#EXTINF:", media.text)
                 self.assertIn("seg-00000.ts", media.text)
+
+    def test_the_cache_directory_is_not_served(self):
+        """CACHE_DIR holds every camera's in-progress recordings and previews.
+
+        The web app never reads it over HTTP, so publishing it only gave any
+        signed-in viewer a way around the per-camera media checks.
+        """
+        client = self._client()
+        app = client.app
+
+        self.assertFalse(
+            any(
+                isinstance(route, Mount) and route.path == "/cache"
+                for route in app.routes
+            )
+        )
+        self.assertTrue(needs_auth("/cache/preview.jpg"))
 
 
 class TestProxyHttp(unittest.IsolatedAsyncioTestCase):
