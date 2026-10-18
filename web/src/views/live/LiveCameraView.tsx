@@ -1332,7 +1332,7 @@ function FrigateCameraFeatures({
           variant={fullscreen ? "overlay" : "primary"}
           Icon={isRecording ? TbRecordMail : TbRecordMailOff}
           isActive={isRecording}
-          title={t("manualRecording." + (isRecording ? "stop" : "start"))}
+          title={t("manualRecording." + (isRecording ? "end" : "start"))}
           onClick={handleEventButtonClick}
           disabled={!cameraEnabled || debug}
         />

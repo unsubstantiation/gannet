@@ -179,7 +179,8 @@
       "name": {
         "mse": "MSE",
         "webrtc": "WebRTC",
-        "jsmpeg": "JSMpeg"
+        "jsmpeg": "JSMpeg",
+        "debug": "Debug"
       },
       "tips": {
         "mse": "Recommended default, broad compatibility and smooth playback",
