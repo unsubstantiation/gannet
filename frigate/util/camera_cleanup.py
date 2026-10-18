@@ -15,7 +15,7 @@ from frigate.models import (
     Timeline,
     Trigger,
 )
-from frigate.util.file import robust_rmtree
+from frigate.util.file import robust_remove, robust_rmtree
 
 logger = logging.getLogger(__name__)
 
@@ -129,19 +129,19 @@ def cleanup_camera_files(
     # Remove event snapshot files
     for snapshot in glob.glob(os.path.join(CLIPS_DIR, f"{camera_name}-*.jpg")):
         try:
-            os.remove(snapshot)
+            robust_remove(snapshot)
         except Exception as e:
             logger.error("Failed to remove snapshot %s: %s", snapshot, e)
 
     for snapshot in glob.glob(os.path.join(CLIPS_DIR, f"{camera_name}-*-clean.webp")):
         try:
-            os.remove(snapshot)
+            robust_remove(snapshot)
         except Exception as e:
             logger.error("Failed to remove snapshot %s: %s", snapshot, e)
 
     for snapshot in glob.glob(os.path.join(CLIPS_DIR, f"{camera_name}-*-clean.png")):
         try:
-            os.remove(snapshot)
+            robust_remove(snapshot)
         except Exception as e:
             logger.error("Failed to remove snapshot %s: %s", snapshot, e)
 
@@ -150,7 +150,7 @@ def cleanup_camera_files(
         os.path.join(CLIPS_DIR, "review", f"thumb-{camera_name}-*.webp")
     ):
         try:
-            os.remove(thumb)
+            robust_remove(thumb)
         except Exception as e:
             logger.error("Failed to remove review thumbnail %s: %s", thumb, e)
 
@@ -159,7 +159,7 @@ def cleanup_camera_files(
         for path in export_paths:
             if path and os.path.exists(path):
                 try:
-                    os.remove(path)
+                    robust_remove(path)
                     logger.debug("Removed export file: %s", path)
                 except Exception as e:
                     logger.error("Failed to remove export file %s: %s", path, e)

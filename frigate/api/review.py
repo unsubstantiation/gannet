@@ -3,7 +3,6 @@
 import datetime
 import logging
 from functools import reduce
-from pathlib import Path
 
 import pandas as pd
 from fastapi import APIRouter, Request
@@ -37,6 +36,7 @@ from frigate.const import STREAM_TYPE_MAIN
 from frigate.embeddings import EmbeddingsContext
 from frigate.models import Recordings, ReviewSegment, UserReviewStatus
 from frigate.review.types import SeverityEnum
+from frigate.util.file import robust_remove
 from frigate.util.time import get_dst_transitions
 
 logger = logging.getLogger(__name__)
@@ -599,7 +599,7 @@ def delete_reviews(body: ReviewModifyMultipleBody):
         )
 
         for recording in recordings:
-            Path(recording["path"]).unlink(missing_ok=True)
+            robust_remove(recording["path"], missing_ok=True)
             recording_ids.append(recording["id"])
 
     # delete recordings and review segments

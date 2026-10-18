@@ -17,7 +17,6 @@ import hashlib
 import logging
 import os
 import re
-import shutil
 import time
 import uuid
 from dataclasses import dataclass
@@ -28,6 +27,7 @@ from starlette.responses import FileResponse, JSONResponse, PlainTextResponse, R
 
 from frigate.const import CACHE_DIR
 from frigate.models import Event, Recordings
+from frigate.util.file import robust_remove, robust_rmtree
 from frigate.util.platform import resolve_ffmpeg_binary
 
 logger = logging.getLogger(__name__)
@@ -275,7 +275,12 @@ def _sweep_cache() -> None:
     for entry in os.scandir(VOD_CACHE_ROOT):
         try:
             if entry.is_dir() and entry.stat().st_mtime < cutoff:
-                shutil.rmtree(entry.path, ignore_errors=True)
+                try:
+                    robust_rmtree(entry.path)
+                except OSError:
+                    # a segment still open for a live request keeps its
+                    # directory until the next sweep
+                    continue
         except OSError:
             continue
 
@@ -317,7 +322,7 @@ def _refresh(path: str) -> None:
 def _discard(path: str) -> None:
     """Remove a partial file, which is never a reason to fail a request."""
     try:
-        os.unlink(path)
+        robust_remove(path, missing_ok=True)
     except OSError:
         pass
 

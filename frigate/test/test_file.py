@@ -302,7 +302,7 @@ class TestRobustRmtree(TestCase):
                 error = PermissionError(13, "in use", path)
                 error.winerror = 32
                 raise error
-            real_rmtree(path, onexc=onexc, **kwargs)
+            real_rmtree(path)
 
         with tempfile.TemporaryDirectory() as folder:
             root = self._tree(folder)
@@ -350,6 +350,253 @@ class TestRobustRmtree(TestCase):
                     os.path.join(folder, "missing"),
                 )
             sleep.assert_not_called()
+
+
+class TestRobustRemoveAttributes(TestCase):
+    """Single files are removed despite Windows read-only and hold errors."""
+
+    def test_clear_read_only_restores_the_write_attribute(self):
+        import stat
+
+        with tempfile.TemporaryDirectory() as folder:
+            path = os.path.join(folder, "clip.mp4")
+            open(path, "wb").close()
+            os.chmod(path, stat.S_IREAD)
+            try:
+                self.assertTrue(file_util.clear_read_only(path))
+                self.assertTrue(os.stat(path).st_mode & stat.S_IWRITE)
+            finally:
+                os.chmod(path, stat.S_IREAD | stat.S_IWRITE)
+
+    def test_removes_read_only_files(self):
+        """os.remove raises PermissionError for a read-only file on Windows."""
+        import stat
+
+        with tempfile.TemporaryDirectory() as folder:
+            path = os.path.join(folder, "clip.mp4")
+            open(path, "wb").close()
+            os.chmod(path, stat.S_IREAD)
+            try:
+                file_util.robust_remove(path)
+            finally:
+                if os.path.exists(path):
+                    os.chmod(path, stat.S_IREAD | stat.S_IWRITE)
+            self.assertFalse(os.path.exists(path))
+
+    def test_a_permission_error_clears_the_attribute_and_retries(self):
+        calls = {"count": 0}
+        real_remove = os.remove
+
+        def flaky_remove(path):
+            calls["count"] += 1
+
+            if calls["count"] == 1:
+                error = PermissionError(13, "read-only", path)
+                error.winerror = 5
+                raise error
+
+            real_remove(path)
+
+        with tempfile.TemporaryDirectory() as folder:
+            path = os.path.join(folder, "clip.mp4")
+            open(path, "w").close()
+
+            with (
+                patch.object(file_util.os, "remove", side_effect=flaky_remove),
+                patch.object(
+                    file_util, "clear_read_only", return_value=True
+                ) as clearer,
+                patch.object(file_util.time, "sleep") as sleep,
+            ):
+                file_util.robust_remove(path)
+
+            self.assertEqual(calls["count"], 2)
+            clearer.assert_called_once()
+            # the retry happened inside the attempt, not after another back-off
+            sleep.assert_not_called()
+            self.assertFalse(os.path.exists(path))
+
+    def test_missing_ok_silences_a_missing_file(self):
+        with tempfile.TemporaryDirectory() as folder:
+            file_util.robust_remove(os.path.join(folder, "gone.mp4"), missing_ok=True)
+
+    def test_missing_raises_by_default(self):
+        with tempfile.TemporaryDirectory() as folder:
+            with patch.object(file_util.time, "sleep") as sleep:
+                self.assertRaises(
+                    FileNotFoundError,
+                    file_util.robust_remove,
+                    os.path.join(folder, "gone.mp4"),
+                )
+            sleep.assert_not_called()
+
+    def test_async_remove_clears_read_only_and_honours_missing_ok(self):
+        import asyncio
+        import stat
+
+        with tempfile.TemporaryDirectory() as folder:
+            path = os.path.join(folder, "segment.mp4")
+            open(path, "wb").close()
+            os.chmod(path, stat.S_IREAD)
+            try:
+                asyncio.run(file_util.async_robust_remove(path))
+                asyncio.run(
+                    file_util.async_robust_remove(
+                        os.path.join(folder, "gone.mp4"), missing_ok=True
+                    )
+                )
+            finally:
+                if os.path.exists(path):
+                    os.chmod(path, stat.S_IREAD | stat.S_IWRITE)
+            self.assertFalse(os.path.exists(path))
+
+
+class TestRobustRmdir(TestCase):
+    """Empty directories are removed despite Windows hold and not-empty errors."""
+
+    def test_removes_an_empty_directory(self):
+        with tempfile.TemporaryDirectory() as folder:
+            target = os.path.join(folder, "dataset", "cat")
+            os.makedirs(target)
+            file_util.robust_rmdir(target)
+            self.assertFalse(os.path.exists(target))
+
+    def test_held_directory_is_retried(self):
+        calls = {"count": 0}
+        real_rmdir = os.rmdir
+
+        def flaky_rmdir(path):
+            calls["count"] += 1
+
+            if calls["count"] < 3:
+                error = PermissionError(13, "in use", path)
+                error.winerror = 5
+                raise error
+
+            real_rmdir(path)
+
+        with tempfile.TemporaryDirectory() as folder:
+            target = os.path.join(folder, "cat")
+            os.makedirs(target)
+
+            with (
+                patch.object(file_util.os, "rmdir", side_effect=flaky_rmdir),
+                patch.object(file_util.time, "sleep"),
+            ):
+                file_util.robust_rmdir(target)
+
+            self.assertEqual(calls["count"], 3)
+            self.assertFalse(os.path.exists(target))
+
+    def test_transient_not_empty_is_retried(self):
+        """A file still in delete-pending keeps the directory entry briefly."""
+        import errno
+
+        calls = {"count": 0}
+        real_rmdir = os.rmdir
+
+        def flaky_rmdir(path):
+            calls["count"] += 1
+
+            if calls["count"] < 2:
+                error = OSError(errno.ENOTEMPTY, "The directory is not empty", path)
+                error.winerror = 145
+                raise error
+
+            real_rmdir(path)
+
+        with tempfile.TemporaryDirectory() as folder:
+            target = os.path.join(folder, "cat")
+            os.makedirs(target)
+
+            with (
+                patch.object(file_util.os, "rmdir", side_effect=flaky_rmdir),
+                patch.object(file_util.time, "sleep"),
+            ):
+                file_util.robust_rmdir(target)
+
+            self.assertEqual(calls["count"], 2)
+            self.assertFalse(os.path.exists(target))
+
+    def test_a_missing_directory_raises_by_default(self):
+        with tempfile.TemporaryDirectory() as folder:
+            with patch.object(file_util.time, "sleep") as sleep:
+                self.assertRaises(
+                    FileNotFoundError,
+                    file_util.robust_rmdir,
+                    os.path.join(folder, "missing"),
+                )
+            sleep.assert_not_called()
+
+    def test_missing_ok_silences_a_missing_directory(self):
+        with tempfile.TemporaryDirectory() as folder:
+            file_util.robust_rmdir(os.path.join(folder, "missing"), missing_ok=True)
+
+    def test_a_non_empty_directory_raises_after_the_retries(self):
+        with tempfile.TemporaryDirectory() as folder:
+            target = os.path.join(folder, "cat")
+            os.makedirs(target)
+            open(os.path.join(target, "frame.webp"), "w").close()
+
+            with patch.object(file_util.time, "sleep"):
+                self.assertRaises(OSError, file_util.robust_rmdir, target)
+
+
+class TestClearAndUnlink(TestCase):
+    """Recording cleanup must delete files even when they are read-only."""
+
+    def test_clears_and_removes_a_read_only_file(self):
+        import stat
+
+        from frigate.util.builtin import clear_and_unlink
+
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "recording.mp4"
+            path.write_bytes(b"x" * 16)
+            os.chmod(path, stat.S_IREAD)
+            try:
+                clear_and_unlink(path)
+            finally:
+                if path.exists():
+                    os.chmod(path, stat.S_IREAD | stat.S_IWRITE)
+            self.assertFalse(path.exists())
+
+    def test_truncates_before_removing(self):
+        from frigate.util.builtin import clear_and_unlink
+
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "recording.mp4"
+            path.write_bytes(b"x" * 64)
+
+            truncated = []
+
+            real_remove = file_util.os.remove
+
+            def watch_remove(target, *args, **kwargs):
+                truncated.append(path.stat().st_size)
+                real_remove(target, *args, **kwargs)
+
+            with patch.object(file_util.os, "remove", side_effect=watch_remove):
+                clear_and_unlink(path)
+
+            self.assertEqual(truncated, [0])
+
+    def test_missing_ok_remains_silent(self):
+        from frigate.util.builtin import clear_and_unlink
+
+        with tempfile.TemporaryDirectory() as folder:
+            clear_and_unlink(Path(folder) / "gone.mp4")
+
+    def test_missing_raises_when_asked(self):
+        from frigate.util.builtin import clear_and_unlink
+
+        with tempfile.TemporaryDirectory() as folder:
+            self.assertRaises(
+                FileNotFoundError,
+                clear_and_unlink,
+                Path(folder) / "gone.mp4",
+                missing_ok=False,
+            )
 
 
 @skipUnless(file_util.msvcrt is not None, "msvcrt locking requires native Windows")

@@ -27,7 +27,7 @@ from frigate.db.sqlitevecq import SqliteVecQueueDatabase
 from frigate.models import Event, Trigger
 from frigate.types import ModelStatusTypesEnum
 from frigate.util.builtin import EventsPerSecond, InferenceSpeed, serialize
-from frigate.util.file import get_event_thumbnail_bytes
+from frigate.util.file import get_event_thumbnail_bytes, robust_remove
 
 from .genai_embedding import GenAIEmbedding
 from .onnx.jina_v1_embedding import JinaV1ImageEmbedding, JinaV1TextEmbedding
@@ -326,8 +326,7 @@ class Embeddings:
         logger.debug("Created embeddings tables.")
 
         # Delete the saved stats file
-        if os.path.exists(os.path.join(CONFIG_DIR, ".search_stats.json")):
-            os.remove(os.path.join(CONFIG_DIR, ".search_stats.json"))
+        robust_remove(os.path.join(CONFIG_DIR, ".search_stats.json"), missing_ok=True)
 
         st = time.time()
 
@@ -615,7 +614,9 @@ class Embeddings:
     def remove_trigger_thumbnail(self, camera: str, event_id: str) -> None:
         """Write the thumbnail to the trigger directory."""
         try:
-            os.remove(os.path.join(TRIGGER_DIR, camera, f"{event_id}.webp"))
+            robust_remove(
+                os.path.join(TRIGGER_DIR, camera, f"{event_id}.webp"), missing_ok=True
+            )
             logger.debug(
                 f"Deleted thumbnail for trigger with data {event_id} in {camera}."
             )

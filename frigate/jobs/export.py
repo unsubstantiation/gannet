@@ -2,12 +2,10 @@
 
 import logging
 import os
-import shutil
 import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
-from pathlib import Path
 from queue import Full, Queue
 from typing import Any
 
@@ -25,6 +23,7 @@ from frigate.record.export import (
     RecordingExporter,
 )
 from frigate.types import JobStatusTypesEnum
+from frigate.util.file import robust_remove, robust_rmtree
 
 logger = logging.getLogger(__name__)
 
@@ -417,7 +416,12 @@ def reap_stale_exports() -> None:
     of the sweep, and a failure in the top-level query will log and return.
     """
     # staged stream runs live on disk, so a killed export leaves them behind
-    shutil.rmtree(EXPORT_STAGING_DIR, ignore_errors=True)
+    try:
+        robust_rmtree(EXPORT_STAGING_DIR)
+    except FileNotFoundError:
+        pass
+    except OSError:
+        logger.warning("Unable to clear the export staging directory", exc_info=True)
 
     try:
         stale_exports = list(Export.select().where(Export.in_progress == True))  # noqa: E712
@@ -459,9 +463,9 @@ def reap_stale_exports() -> None:
                 continue
 
             if export.thumb_path:
-                Path(export.thumb_path).unlink(missing_ok=True)
+                robust_remove(export.thumb_path, missing_ok=True)
             if video_path:
-                Path(video_path).unlink(missing_ok=True)
+                robust_remove(video_path, missing_ok=True)
             Export.delete().where(Export.id == export.id).execute()
             deleted += 1
             logger.info(

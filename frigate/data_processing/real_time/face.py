@@ -5,7 +5,6 @@ import datetime
 import json
 import logging
 import os
-import shutil
 from typing import Any
 
 import cv2
@@ -27,7 +26,7 @@ from frigate.data_processing.common.face.recognizer import (
 )
 from frigate.types import TrackedObjectUpdateTypesEnum
 from frigate.util.builtin import EventsPerSecond, InferenceSpeed
-from frigate.util.file import trim_oldest_files
+from frigate.util.file import robust_move, trim_oldest_files
 from frigate.util.image import area
 from frigate.util.path import safe_join, sanitize_path_component
 
@@ -393,7 +392,7 @@ class FaceRealTimeProcessor(RealTimeProcessorApi):
                 new_file = os.path.join(
                     folder, f"{id}-{timestamp}-{sub_label}-{score}.webp"
                 )
-                shutil.move(current_file, new_file)
+                robust_move(current_file, new_file)
 
             return {
                 "message": f"Successfully reprocessed face. Result: {sub_label} (score: {score:.2f})",

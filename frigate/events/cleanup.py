@@ -12,7 +12,11 @@ from frigate.config import FrigateConfig
 from frigate.const import CLIPS_DIR
 from frigate.db.sqlitevecq import SqliteVecQueueDatabase
 from frigate.models import Event, Timeline
-from frigate.util.file import delete_event_snapshot, delete_event_thumbnail
+from frigate.util.file import (
+    delete_event_snapshot,
+    delete_event_thumbnail,
+    robust_remove,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -231,17 +235,17 @@ class EventCleanup(threading.Thread):
             media_path = Path(f"{os.path.join(CLIPS_DIR, media_name)}.{file_extension}")
 
             try:
-                media_path.unlink(missing_ok=True)
+                robust_remove(media_path, missing_ok=True)
                 if file_extension == "jpg":
                     media_path = Path(  # type: ignore[unreachable]
                         f"{os.path.join(CLIPS_DIR, media_name)}-clean.webp"
                     )
-                    media_path.unlink(missing_ok=True)
+                    robust_remove(media_path, missing_ok=True)
                     # Also delete clean.png (legacy) for backward compatibility
                     media_path = Path(
                         f"{os.path.join(CLIPS_DIR, media_name)}-clean.png"
                     )
-                    media_path.unlink(missing_ok=True)
+                    robust_remove(media_path, missing_ok=True)
             except OSError as e:
                 logger.warning(f"Unable to delete event images: {e}")
 

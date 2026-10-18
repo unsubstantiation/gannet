@@ -301,13 +301,9 @@ def write_go2rtc_config(config: dict[str, Any], path: str | None = None) -> str:
     with open(path, "w", encoding="utf-8") as file:
         yaml.dump(config, file)
 
-    # the config contains camera credentials; do not leave it world-readable
-    if hasattr(os, "chmod"):
-        try:
-            os.chmod(path, 0o640)
-        except OSError as err:  # pragma: no cover - depends on the filesystem
-            logger.debug("Unable to restrict permissions on %s: %s", path, err)
-
+    # The config contains camera credentials. It lives under the user's
+    # profile, where inherited Windows ACLs keep it private; there is no
+    # POSIX mode layer to apply.
     return path
 
 

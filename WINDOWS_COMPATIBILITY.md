@@ -137,7 +137,7 @@ changed, how the result is verified, and what is deliberately still open.
 | Shutdown | `SIGTERM` | Console control events, plus a named event for the SCM service |
 | Ownership | UID, GID and `chown` | Windows ACLs inherited from the parent directory |
 | Text files | Locale default encoding (UTF-8 on the image) | Explicit UTF-8 for the config, go2rtc config, state files, labelmaps and logs; the launcher and service set `PYTHONUTF8=1` |
-| File removal | `rm -rf` semantics | `frigate.util.file.robust_remove`/`robust_move`/`robust_rmtree`, which clear the read-only attribute and retry sharing violations |
+| File removal | `rm -rf` semantics | `frigate.util.file.robust_remove`/`robust_move`/`robust_rmdir`/`robust_rmtree`, which clear the read-only attribute and retry sharing violations |
 | Detectors | Coral, Hailo, TensorRT, RKNN and other appliance SDKs | CPU TFLite, ONNX Runtime (CPU or DirectML), OpenVINO (CPU, GPU or NPU) and ZMQ |
 | Acceleration | VAAPI, DRM, V4L2, RKMPP, Jetson and VideoToolbox | D3D11VA, DXVA2, Intel QSV, NVIDIA NVENC and CUDA, AMD AMF, Vulkan and software |
 | Storage statistics | A `/dev/shm` quota and a root check | Page-file backed shared memory and the Win32 APIs |

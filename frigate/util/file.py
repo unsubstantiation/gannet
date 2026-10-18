@@ -3,6 +3,7 @@
 import asyncio
 import base64
 import errno
+import inspect
 import logging
 import os
 import shutil
@@ -256,12 +257,12 @@ def delete_event_snapshot(event: Event) -> bool:
     media_path = Path(f"{os.path.join(CLIPS_DIR, media_name)}.jpg")
 
     try:
-        media_path.unlink(missing_ok=True)
+        robust_remove(media_path, missing_ok=True)
         media_path = Path(f"{os.path.join(CLIPS_DIR, media_name)}-clean.webp")
-        media_path.unlink(missing_ok=True)
+        robust_remove(media_path, missing_ok=True)
         # also delete clean.png (legacy) for backward compatibility
         media_path = Path(f"{os.path.join(CLIPS_DIR, media_name)}-clean.png")
-        media_path.unlink(missing_ok=True)
+        robust_remove(media_path, missing_ok=True)
         return True
     except OSError:
         return False
@@ -271,8 +272,8 @@ def delete_event_thumbnail(event: Event) -> bool:
     if event.thumbnail:
         return True
     else:
-        Path(os.path.join(THUMB_DIR, event.camera, f"{event.id}.webp")).unlink(
-            missing_ok=True
+        robust_remove(
+            os.path.join(THUMB_DIR, event.camera, f"{event.id}.webp"), missing_ok=True
         )
         return True
 
@@ -307,7 +308,7 @@ def trim_oldest_files(folder: str, max_files: int) -> None:
 
     for _, path in files[max_files:]:
         try:
-            os.unlink(path)
+            robust_remove(path)
         except OSError:
             logger.debug("Unable to delete training image %s", path)
 
@@ -342,12 +343,12 @@ class FileLock:
     Example:
         ```python
         # Using as a context manager (recommended)
-        with FileLock("/path/to/resource.lock", timeout=60):
+        with FileLock(r"C:\path\to\resource.lock", timeout=60):
             # Critical section
             do_something()
 
         # Manual acquisition and release
-        lock = FileLock("/path/to/resource.lock")
+        lock = FileLock(r"C:\path\to\resource.lock")
         if lock.acquire(timeout=60):
             try:
                 do_something()
@@ -405,7 +406,7 @@ class FileLock:
                     logger.warning(
                         f"Removing stale lock file: {self.lock_path} (age: {lock_age:.1f}s)"
                     )
-                    self.lock_path.unlink()
+                    robust_remove(self.lock_path, missing_ok=True)
                     return True
         except Exception as e:
             logger.error(f"Error cleaning up stale lock: {e}")
@@ -508,13 +509,9 @@ class FileLock:
                     self._fd = None
 
             # Remove lock file
-            if self.lock_path.exists():
-                self.lock_path.unlink()
-                logger.debug(f"Released lock: {self.lock_path}")
+            robust_remove(self.lock_path, missing_ok=True)
+            logger.debug(f"Released lock: {self.lock_path}")
 
-        except FileNotFoundError:
-            # Lock file already removed, that's fine
-            pass
         except Exception as e:
             logger.error(f"Error releasing lock: {e}")
         finally:
@@ -540,6 +537,12 @@ class FileLock:
 ### Retrying file operations
 
 
+#: ``shutil.rmtree`` gained ``onexc`` in Python 3.12, the pinned runtime.
+#: Older interpreters still run this module as import-time tooling and get
+#: the deprecated ``onerror`` entry point instead.
+_RMTREE_ACCEPTS_ONEXC = "onexc" in inspect.signature(shutil.rmtree).parameters
+
+
 #: Windows error codes another process holding a file produces: access denied,
 #: sharing violation and lock violation. Antivirus real time scanning and the
 #: search indexer open every file Frigate writes for a moment after it appears,
@@ -559,14 +562,20 @@ def is_held_by_another_process(err: OSError) -> bool:
     return err.errno in (errno.EACCES, errno.EBUSY)
 
 
-def _run_with_retry(operation, attempts: int, delay: float, description: str) -> None:
-    """Run a file operation, retrying while another process holds the file."""
+def _run_with_retry(
+    operation,
+    attempts: int,
+    delay: float,
+    description: str,
+    retryable=is_held_by_another_process,
+) -> None:
+    """Run a file operation, retrying while the error is transient."""
     for attempt in range(1, attempts + 1):
         try:
             operation()
             return
         except OSError as err:
-            if attempt == attempts or not is_held_by_another_process(err):
+            if attempt == attempts or not retryable(err):
                 raise
 
             logger.debug(
@@ -579,18 +588,43 @@ def _run_with_retry(operation, attempts: int, delay: float, description: str) ->
             time.sleep(delay * attempt)
 
 
+def _remove_once(path: str | os.PathLike) -> None:
+    """Remove one file, clearing the read-only attribute Windows refuses to delete."""
+    try:
+        os.remove(path)
+    except OSError as err:
+        if not (is_held_by_another_process(err) and clear_read_only(path)):
+            raise
+        os.remove(path)
+
+
 def robust_remove(
-    path: str,
+    path: str | os.PathLike,
     attempts: int = FILE_OPERATION_ATTEMPTS,
     delay: float = FILE_OPERATION_DELAY,
+    missing_ok: bool = False,
 ) -> None:
-    """Remove a file, retrying while another process holds it open."""
-    _run_with_retry(lambda: os.remove(path), attempts, delay, f"removal of {path}")
+    """Remove a file, retrying while another process holds it open.
+
+    ``missing_ok`` suppresses ``FileNotFoundError``, mirroring
+    ``Path.unlink(missing_ok=True)``. A file carrying the Windows read-only
+    attribute is made writable first; ``os.remove`` cannot delete it
+    otherwise.
+    """
+
+    def operation() -> None:
+        try:
+            _remove_once(path)
+        except FileNotFoundError:
+            if not missing_ok:
+                raise
+
+    _run_with_retry(operation, attempts, delay, f"removal of {path}")
 
 
 def robust_move(
-    src: str,
-    dst: str,
+    src: str | os.PathLike,
+    dst: str | os.PathLike,
     attempts: int = FILE_OPERATION_ATTEMPTS,
     delay: float = FILE_OPERATION_DELAY,
 ) -> None:
@@ -600,7 +634,7 @@ def robust_move(
     )
 
 
-def _clear_read_only(path: str) -> bool:
+def clear_read_only(path: str | os.PathLike) -> bool:
     """Clear the Windows read-only attribute; True when it was set."""
     try:
         mode = os.stat(path).st_mode
@@ -629,7 +663,7 @@ def _rmtree_once(path: str) -> None:
         if not isinstance(err, OSError):
             raise err
         if is_held_by_another_process(err):
-            if _clear_read_only(failed_path):
+            if clear_read_only(failed_path):
                 try:
                     function(failed_path)
                     return
@@ -643,7 +677,14 @@ def _rmtree_once(path: str) -> None:
             return
         raise err
 
-    shutil.rmtree(path, onexc=onexc)
+    if _RMTREE_ACCEPTS_ONEXC:
+        shutil.rmtree(path, onexc=onexc)
+    else:  # pragma: no cover - the pinned runtime accepts onexc; tooling can be older
+
+        def onerror(function, failed_path, exc_info):
+            onexc(function, failed_path, exc_info[1])
+
+        shutil.rmtree(path, onerror=onerror)
     if held:
         raise held[0]
 
@@ -661,15 +702,75 @@ def robust_rmtree(
     _run_with_retry(lambda: _rmtree_once(path), attempts, delay, f"removal of {path}")
 
 
-async def async_robust_remove(
-    path: str,
+#: ERROR_DIR_NOT_EMPTY, which Windows also reports transiently while another
+#: process still holds a find handle on the directory.
+WINDOWS_DIR_NOT_EMPTY_ERRORS = (145,)
+
+
+def _rmdir_is_transient(err: OSError) -> bool:
+    """Whether an rmdir failure will succeed on a later attempt.
+
+    The search indexer and antivirus briefly hold find handles on new
+    directories, so rmdir can fail with "access is denied" or "the directory
+    is not empty" on a directory that is already empty.
+    """
+    return (
+        is_held_by_another_process(err)
+        or err.errno
+        in (
+            errno.ENOTEMPTY,
+            errno.EEXIST,
+        )
+        or getattr(err, "winerror", None) in WINDOWS_DIR_NOT_EMPTY_ERRORS
+    )
+
+
+def robust_rmdir(
+    path: str | os.PathLike,
     attempts: int = FILE_OPERATION_ATTEMPTS,
     delay: float = FILE_OPERATION_DELAY,
+    missing_ok: bool = False,
 ) -> None:
-    """Remove a file without blocking the event loop while it retries."""
+    """Remove an empty directory, retrying while Windows holds it open.
+
+    ``missing_ok`` suppresses ``FileNotFoundError``, mirroring
+    ``Path.rmdir`` call sites that already checked for existence.
+    """
+
+    def operation() -> None:
+        try:
+            os.rmdir(path)
+        except FileNotFoundError:
+            if not missing_ok:
+                raise
+
+    _run_with_retry(
+        operation,
+        attempts,
+        delay,
+        f"removal of {path}",
+        retryable=_rmdir_is_transient,
+    )
+
+
+async def async_robust_remove(
+    path: str | os.PathLike,
+    attempts: int = FILE_OPERATION_ATTEMPTS,
+    delay: float = FILE_OPERATION_DELAY,
+    missing_ok: bool = False,
+) -> None:
+    """Remove a file without blocking the event loop while it retries.
+
+    Like :func:`robust_remove`, a read-only file is made writable first and
+    ``missing_ok`` suppresses ``FileNotFoundError``.
+    """
     for attempt in range(1, attempts + 1):
         try:
-            os.remove(path)
+            _remove_once(path)
+            return
+        except FileNotFoundError:
+            if not missing_ok:
+                raise
             return
         except OSError as err:
             if attempt == attempts or not is_held_by_another_process(err):

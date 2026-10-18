@@ -40,6 +40,7 @@ from frigate.models import Export, Previews, Recordings, ReviewSegment
 from frigate.output.preview import is_camera_preview_frame
 from frigate.util.config import default_ffmpeg_binary
 from frigate.util.ffmpeg import run_ffmpeg_with_progress
+from frigate.util.file import robust_remove
 from frigate.util.platform import (
     ffmpeg_concat_file_line,
     ffmpeg_stdin_input,
@@ -767,7 +768,7 @@ class RecordingExporter(threading.Thread):
     def _cleanup_staged_runs(self) -> None:
         """Remove any temp files left behind by staging."""
         for path in self.staged_runs:
-            Path(path).unlink(missing_ok=True)
+            robust_remove(path, missing_ok=True)
 
         self.staged_runs = []
 
@@ -1494,9 +1495,9 @@ class RecordingExporter(threading.Thread):
 
     def _discard_failed_export(self, video_path: str, thumb_path: str) -> None:
         """Drop the partial output and the row that promised it."""
-        Path(video_path).unlink(missing_ok=True)
+        robust_remove(video_path, missing_ok=True)
         Export.delete().where(Export.id == self.export_id).execute()
-        Path(thumb_path).unlink(missing_ok=True)
+        robust_remove(thumb_path, missing_ok=True)
 
     def _run_export(self, video_path: str, thumb_path: str) -> None:
         try:
@@ -1562,7 +1563,7 @@ class RecordingExporter(threading.Thread):
                 ffmpeg_cmd, playlist_lines, step="encoding_retry"
             )
 
-        Path(self._chapter_metadata_path()).unlink(missing_ok=True)
+        robust_remove(self._chapter_metadata_path(), missing_ok=True)
 
         if returncode != 0:
             logger.error(

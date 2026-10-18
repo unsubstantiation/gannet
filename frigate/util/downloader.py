@@ -10,7 +10,7 @@ from frigate.comms.inter_process import InterProcessRequestor
 from frigate.const import UPDATE_MODEL_STATE
 from frigate.notices import raise_notice, resolve_notice
 from frigate.types import ModelStatusTypesEnum
-from frigate.util.file import FileLock
+from frigate.util.file import FileLock, robust_move
 
 logger = logging.getLogger(__name__)
 
@@ -136,7 +136,10 @@ class ModelDownloader:
                     for chunk in r.iter_content(chunk_size=8192):
                         f.write(chunk)
 
-            temporary_filename.rename(save_path)
+            # os.rename would raise FileExistsError on Windows when the
+            # destination is already present; a move replaces it as the
+            # POSIX rename it replaced did
+            robust_move(temporary_filename, save_path)
         except Exception as e:
             logger.error(f"Error downloading model: {str(e)}")
             last_download_error[save_path] = _first_line(e)
