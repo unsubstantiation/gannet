@@ -414,35 +414,38 @@ async def render_segment(playlist: VodPlaylist, segment: VodSegment) -> str | No
         return None
 
     try:
-        _, stderr = await asyncio.wait_for(process.communicate(), SEGMENT_TIMEOUT)
-    except TimeoutError:
-        logger.warning("Timed out remuxing %s", segment.path)
-        # a remux left running keeps the recording file open, which on Windows
-        # is what stops the recording maintainer from moving it
-        await _terminate(process)
-        _discard(temporary)
-        return None
+        try:
+            _, stderr = await asyncio.wait_for(process.communicate(), SEGMENT_TIMEOUT)
+        except TimeoutError:
+            logger.warning("Timed out remuxing %s", segment.path)
+            # a remux left running keeps the recording file open, which on Windows
+            # is what stops the recording maintainer from moving it
+            await _terminate(process)
+            return None
 
-    if process.returncode != 0:
-        logger.warning(
-            "ffmpeg failed to remux %s: %s",
-            segment.path,
-            stderr.decode(errors="replace").strip() if stderr else "no output",
-        )
-        _discard(temporary)
-        return None
+        if process.returncode != 0:
+            logger.warning(
+                "ffmpeg failed to remux %s: %s",
+                segment.path,
+                stderr.decode(errors="replace").strip() if stderr else "no output",
+            )
+            return None
 
-    if not os.path.isfile(temporary) or os.path.getsize(temporary) == 0:
-        logger.warning("ffmpeg produced no data for %s", segment.path)
-        _discard(temporary)
-        return None
+        if not os.path.isfile(temporary) or os.path.getsize(temporary) == 0:
+            logger.warning("ffmpeg produced no data for %s", segment.path)
+            return None
 
-    try:
-        os.replace(temporary, output)
-    except OSError as err:
-        logger.warning("Unable to move the remuxed segment into place: %s", err)
-        _discard(temporary)
-        return None
+        try:
+            os.replace(temporary, output)
+        except OSError as err:
+            logger.warning("Unable to move the remuxed segment into place: %s", err)
+            return None
+    finally:
+        # any path that does not return the live segment to the caller has
+        # to clear the half-written temp file, otherwise it lingers in the
+        # cache until the directory sweep picks it up
+        if os.path.isfile(temporary):
+            _discard(temporary)
 
     return output
 

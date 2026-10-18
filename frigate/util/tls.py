@@ -126,13 +126,23 @@ def _write_new_certificate(cert_file: Path, key_file: Path) -> None:
 
     # Replace complete files so an interrupted write cannot leave uvicorn with
     # a truncated key pair. The containing config directory is ACL-protected by
-    # the Windows installer.
+    # the Windows installer. Both files land on disk before either replaces the
+    # live pair, so a half-finished write leaves the running pair intact, and
+    # any leftover temp files are cleared whether or not the move succeeded.
     cert_temp = cert_file.with_suffix(cert_file.suffix + ".tmp")
     key_temp = key_file.with_suffix(key_file.suffix + ".tmp")
-    cert_temp.write_bytes(cert_bytes)
-    key_temp.write_bytes(key_bytes)
-    os.replace(cert_temp, cert_file)
-    os.replace(key_temp, key_file)
+
+    try:
+        cert_temp.write_bytes(cert_bytes)
+        key_temp.write_bytes(key_bytes)
+        os.replace(cert_temp, cert_file)
+        os.replace(key_temp, key_file)
+    finally:
+        for temporary in (cert_temp, key_temp):
+            try:
+                temporary.unlink()
+            except OSError:
+                pass
 
 
 def is_generated_certificate(certificate: x509.Certificate) -> bool:
