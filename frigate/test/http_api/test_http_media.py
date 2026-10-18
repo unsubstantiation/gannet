@@ -932,6 +932,34 @@ class TestHttpMedia(BaseTestHttp):
             assert body["success"] is False
             assert body["message"] == "No recordings found."
 
+    def test_vod_hour_uses_the_offset_in_force_on_the_requested_day(self):
+        """The hour form of the route is local to the zone on that day.
+
+        The start used to be shifted by the zone's *current* UTC offset, so
+        an hour on the other side of a daylight saving change from today was
+        requested an hour early or late and returned the wrong recordings.
+        """
+        # 2024-01-15 10:00 in Anchorage is 19:00 UTC (AKST, -9); in July the
+        # same wall-clock hour is 18:00 UTC (AKDT, -8). Whatever today's
+        # offset is, only one of the two could come out right the old way.
+        winter = datetime(2024, 1, 15, 19, tzinfo=UTC).timestamp()
+        summer = datetime(2024, 7, 15, 18, tzinfo=UTC).timestamp()
+
+        with AuthTestClient(self.app) as client:
+            self._insert_recording("winter", winter, winter + 10, "main")
+            self._insert_recording("summer", summer, summer + 10, "main")
+
+            for year_month, expected in (("2024-01", "winter"), ("2024-07", "summer")):
+                response = client.get(
+                    f"/vod/{year_month}/15/10/front_door/America,Anchorage"
+                )
+
+                assert response.status_code == 200, response.text
+                clips = response.json()["sequences"][0]["clips"]
+                assert [c["path"] for c in clips] == [
+                    f"/media/recordings/{expected}.mp4"
+                ]
+
     def test_vod_clip_route_always_single_sequence(self):
         """The tracking-details clip route stays single-sequence with dual coverage.
 
