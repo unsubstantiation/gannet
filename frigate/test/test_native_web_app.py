@@ -7,6 +7,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
+from aiohttp import web as aiohttp_web
 from starlette.requests import Request
 from starlette.responses import Response
 
@@ -148,6 +149,105 @@ class TestNativeWebApp(unittest.TestCase):
 
             with TestClient(app):
                 sweep.assert_called_once()
+
+
+class TestProxyHttp(unittest.IsolatedAsyncioTestCase):
+    """The plain HTTP proxy in front of go2rtc."""
+
+    async def _serve_upstream(self, handler):
+        """Start a loopback upstream, returning its base URL and runner."""
+        app = aiohttp_web.Application()
+        app.router.add_route("*", "/{tail:.*}", handler)
+        runner = aiohttp_web.AppRunner(app)
+        await runner.setup()
+        site = aiohttp_web.TCPSite(runner, "127.0.0.1", 0)
+        await site.start()
+        port = site._server.sockets[0].getsockname()[1]
+        return f"http://127.0.0.1:{port}", runner
+
+    async def test_the_upstream_status_and_body_reach_the_browser(self):
+        """WebRTC signalling answers through this proxy.
+
+        The upstream status was read from an attribute aiohttp responses do
+        not have, so every proxied request ended in a 500 before the body or
+        status reached the browser.
+        """
+        from frigate.api.web import proxy_http
+
+        seen: dict[str, object] = {}
+
+        async def upstream(request: aiohttp_web.Request):
+            seen["path"] = request.path_qs
+            seen["method"] = request.method
+            seen["body"] = await request.text()
+            return aiohttp_web.Response(
+                status=201,
+                text='{"type":"answer"}',
+                content_type="application/json",
+                headers={"X-Upstream": "go2rtc"},
+            )
+
+        base, runner = await self._serve_upstream(upstream)
+        self.addAsyncCleanup(runner.cleanup)
+
+        scope = {
+            "type": "http",
+            "method": "POST",
+            "scheme": "http",
+            "path": "/api/go2rtc/webrtc",
+            "raw_path": b"/api/go2rtc/webrtc",
+            "query_string": b"src=front_door",
+            "headers": [(b"host", b"frigate.local"), (b"content-type", b"text/plain")],
+            "server": ("127.0.0.1", 8971),
+        }
+
+        async def receive():
+            return {"type": "http.request", "body": b"v=0 offer", "more_body": False}
+
+        with patch("frigate.api.web.GO2RTC_URL", base):
+            response = await proxy_http(Request(scope, receive))
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.body, b'{"type":"answer"}')
+        self.assertEqual(response.headers["x-upstream"], "go2rtc")
+        self.assertTrue(response.headers["content-type"].startswith("application/json"))
+        self.assertEqual(
+            seen,
+            {
+                "path": "/api/webrtc?src=front_door",
+                "method": "POST",
+                "body": "v=0 offer",
+            },
+        )
+
+    async def test_an_unreachable_upstream_is_a_bad_gateway(self):
+        from frigate.api.web import proxy_http
+
+        async def upstream(request: aiohttp_web.Request):
+            return aiohttp_web.Response()
+
+        base, runner = await self._serve_upstream(upstream)
+        # the server is closed again before the request is made
+        await runner.cleanup()
+
+        scope = {
+            "type": "http",
+            "method": "GET",
+            "scheme": "http",
+            "path": "/go2rtc/api/streams",
+            "raw_path": b"/go2rtc/api/streams",
+            "query_string": b"",
+            "headers": [(b"host", b"frigate.local")],
+            "server": ("127.0.0.1", 8971),
+        }
+
+        async def receive():
+            return {"type": "http.request", "body": b"", "more_body": False}
+
+        with patch("frigate.api.web.GO2RTC_URL", base):
+            response = await proxy_http(Request(scope, receive))
+
+        self.assertEqual(response.status_code, 502)
 
 
 class TestNativeProxyIdentity(unittest.IsolatedAsyncioTestCase):

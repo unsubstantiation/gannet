@@ -775,7 +775,10 @@ async def proxy_http(request: Request) -> Response:
 
             return Response(
                 content,
-                status_code=upstream_response.status_code,
+                # aiohttp reports the code as ``status``; ``status_code`` is the
+                # Starlette name, and reading it here raised AttributeError
+                # for every proxied request, which broke WebRTC signalling
+                status_code=upstream_response.status,
                 headers=headers,
                 media_type=upstream_response.headers.get("Content-Type"),
             )
