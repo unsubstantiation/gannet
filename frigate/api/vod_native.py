@@ -119,13 +119,25 @@ class VodPlaylist:
         lines.append("#EXT-X-ENDLIST")
         return "\n".join(lines) + "\n"
 
-    def master_m3u8(self, base: str) -> str:
-        """Render a one variant master playlist pointing at the media playlist."""
+    def master_m3u8(self) -> str:
+        """Render a one variant master playlist pointing at the media playlist.
+
+        The variant URI is relative. HLS clients resolve it against the URL
+        the master playlist was fetched from, so the media playlist always
+        sits next to the master whatever path, prefix, or timestamp
+        formatting the player used to ask for it. Rebuilding the absolute
+        path here is what used to break playback: the ``start``/``end``
+        numbers were re-rendered in a different notation to the one the
+        routes accept, so the variant 404'd.
+
+        ``BANDWIDTH`` is mandatory in a variant entry; recordings are a
+        single quality so the value only needs to be plausible.
+        """
         return (
             "#EXTM3U\n"
             "#EXT-X-VERSION:3\n"
-            f"#EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1280x720\n"
-            f"{base}/index.m3u8\n"
+            "#EXT-X-STREAM-INF:BANDWIDTH=2000000\n"
+            "index.m3u8\n"
         )
 
 
@@ -375,8 +387,9 @@ async def render_segment(playlist: VodPlaylist, segment: VodSegment) -> str | No
         f"{segment.duration:.3f}",
         "-c",
         "copy",
-        "-bsf:v",
-        "h264_mp4toannexb" if _needs_annexb(segment.path) else "null",
+        # no explicit bitstream filter: the mpegts muxer inserts the matching
+        # mp4toannexb filter for H.264 and HEVC itself. Forcing
+        # h264_mp4toannexb here made ffmpeg refuse every HEVC recording.
         "-f",
         "mpegts",
         "-y",
@@ -428,16 +441,6 @@ async def render_segment(playlist: VodPlaylist, segment: VodSegment) -> str | No
         return None
 
     return output
-
-
-def _needs_annexb(path: str) -> bool:
-    """Whether the mp4 to annexb bitstream filter is needed for a file.
-
-    Only H.264 in MP4 needs the conversion to the MPEG-TS packet format; other
-    codecs are copied as they are.
-    """
-    lowered = path.lower()
-    return lowered.endswith((".mp4", ".m4v"))
 
 
 def parse_segment_name(name: str) -> int | None:
@@ -506,13 +509,16 @@ def hour_range(
         tz = UTC
 
     try:
-        start_date = (
-            datetime(int(parts[0]), int(parts[1]), day, hour, tzinfo=UTC)
-            - datetime.now(tz).utcoffset()
-        )
+        # the hour is local to the requested zone, so build it there and let
+        # the zone supply the offset in force at that moment. Subtracting the
+        # zone's *current* offset instead returned the wrong hour for any day
+        # on the other side of a daylight saving change.
+        start_date = datetime(int(parts[0]), int(parts[1]), day, hour, tzinfo=tz)
     except (ValueError, TypeError):
         return None
 
-    end_date = start_date + timedelta(hours=1) - timedelta(milliseconds=1)
-
-    return start_date.timestamp(), end_date.timestamp()
+    # one real hour of recordings, worked out on the timeline rather than the
+    # wall clock so a range that straddles a daylight saving change is still
+    # sixty minutes long
+    start = start_date.timestamp()
+    return start, start + timedelta(hours=1).total_seconds() - 0.001

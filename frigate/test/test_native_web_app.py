@@ -6,12 +6,14 @@ import threading
 import unittest
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
+from urllib.parse import urljoin
 
 from aiohttp import web as aiohttp_web
 from starlette.requests import Request
 from starlette.responses import Response
 
 from frigate.api.auth import deny_response_for_go2rtc_stream
+from frigate.api.vod_native import VodPlaylist, VodSegment
 from frigate.api.web import (
     GO2RTC_URL,
     JSMEPEG_URL,
@@ -149,6 +151,100 @@ class TestNativeWebApp(unittest.TestCase):
 
             with TestClient(app):
                 sweep.assert_called_once()
+
+
+def _admin_auth(request: Request) -> Response:
+    """Stand-in for the auth endpoint that lets everything through as admin."""
+    return Response(
+        status_code=202,
+        headers={"remote-user": "admin", "remote-role": "admin"},
+    )
+
+
+def _fake_playlist(camera: str, start: float, end: float, stream: str | None):
+    """A playlist for a range, without touching the recordings table."""
+    return VodPlaylist(
+        camera=camera,
+        stream_type=stream or "main",
+        start=start,
+        end=end,
+        segments=[
+            VodSegment(
+                index=0,
+                path=f"/recordings/{camera}/00.00.mp4",
+                start=start,
+                duration=end - start,
+                file_start=start,
+            )
+        ],
+    )
+
+
+class TestGatewayRoutes(unittest.TestCase):
+    """Requests through the whole gateway stack with a permissive auth check."""
+
+    def _client(self, api_app=None):
+        from starlette.testclient import TestClient
+
+        self.enterContext(patch("frigate.api.web.vod_native.start_cache_maintenance"))
+        self.enterContext(patch("frigate.api.web.auth_check", side_effect=_admin_auth))
+        api_app = api_app or SimpleNamespace(
+            frigate_config=SimpleNamespace(
+                auth=SimpleNamespace(enabled=True),
+                proxy=SimpleNamespace(
+                    auth_secret=None,
+                    header_map=SimpleNamespace(user=None, role=None),
+                ),
+            )
+        )
+        return TestClient(create_native_web_app(api_app, 8971))
+
+    def test_the_master_playlist_variant_resolves_to_a_served_playlist(self):
+        """``master.m3u8`` is a master playlist whose variant can be fetched.
+
+        The web player asks for ``master.m3u8`` for every recordings range.
+        Two things were wrong with it: the route compared the ``{playlist}``
+        parameter against ``master.m3u8`` although the pattern strips the
+        suffix, so the branch never ran, and had it run it would have built
+        the variant URL with ``:g`` formatting, which renders ``1700000000.5``
+        as ``1.7e+09`` and is not a path the float routes accept.
+        """
+        for master_url in (
+            "/vod/front_door/start/1700000000.5/end/1700003600.25/master.m3u8",
+            "/vod/front_door/sub/start/1700000000.5/end/1700003600.25/master.m3u8",
+            "/vod/clip/front_door/start/1700000000.5/end/1700000030/master.m3u8",
+        ):
+            with (
+                self.subTest(master_url=master_url),
+                patch(
+                    "frigate.api.web.vod_native.build_playlist",
+                    side_effect=_fake_playlist,
+                ),
+            ):
+                client = self._client()
+                master = client.get(master_url)
+
+                self.assertEqual(master.status_code, 200)
+                self.assertEqual(
+                    master.headers["content-type"].split(";")[0],
+                    "application/vnd.apple.mpegurl",
+                )
+
+                lines = master.text.splitlines()
+                self.assertEqual(lines[0], "#EXTM3U")
+                self.assertTrue(
+                    any(line.startswith("#EXT-X-STREAM-INF:") for line in lines),
+                    master.text,
+                )
+                self.assertNotIn("#EXTINF:", master.text)
+                variant_uri = [line for line in lines if not line.startswith("#")][-1]
+
+                # resolve the way an HLS client does, against the master URL
+                media = client.get(urljoin(master_url, variant_uri))
+
+                self.assertEqual(media.status_code, 200, media.text)
+                self.assertIn("#EXTINF:", media.text)
+                self.assertIn("seg-00000.ts", media.text)
 
 
 class TestProxyHttp(unittest.IsolatedAsyncioTestCase):

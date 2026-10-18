@@ -456,28 +456,29 @@ def _media_playlist(
 
 
 def _master_playlist(
-    camera: str, start: float, end: float, stream: str | None, base: str
+    camera: str, start: float, end: float, stream: str | None
 ) -> Response:
+    """A one variant master whose media playlist is the sibling ``index.m3u8``.
+
+    The variant URI is relative, so whatever route shape the player used to
+    fetch the master (``/vod/{camera}/...``, ``/vod/clip/...``, with or
+    without a stream name) resolves to the matching ``index.m3u8`` beside it.
+    """
     playlist = _playlist_or_error(camera, start, end, stream)
 
     if isinstance(playlist, Response):
         return playlist
 
     return PlainTextResponse(
-        playlist.master_m3u8(base),
+        playlist.master_m3u8(),
         media_type="application/vnd.apple.mpegurl",
         headers={"Cache-Control": "no-store"},
     )
 
 
-def _clone_base(camera: str, start: float, end: float, stream: str | None) -> str:
-    """The URL prefix the master playlist points its variant at."""
-    numbers = f"start/{start:g}/end/{end:g}"
-
-    if stream:
-        return f"/vod/{camera}/{stream}/{numbers}"
-
-    return f"/vod/{camera}/{numbers}"
+#: the ``{playlist}`` route parameter names the file without its ``.m3u8``
+#: suffix, which the route pattern matches separately
+MASTER_PLAYLIST = "master"
 
 
 async def vod_playlist(request: Request) -> Response:
@@ -491,12 +492,9 @@ async def vod_playlist(request: Request) -> Response:
     start = float(request.path_params["start"])
     end = float(request.path_params["end"])
     stream = request.path_params.get("stream")
-    name = request.path_params["playlist"]
 
-    if name == "master.m3u8":
-        return _master_playlist(
-            camera, start, end, stream, _clone_base(camera, start, end, stream)
-        )
+    if request.path_params["playlist"] == MASTER_PLAYLIST:
+        return _master_playlist(camera, start, end, stream)
 
     return _media_playlist(camera, start, end, stream)
 
@@ -510,17 +508,15 @@ async def vod_clip(request: Request) -> Response:
     camera = request.path_params["camera"]
     start = float(request.path_params["start"])
     end = float(request.path_params["end"])
-    name = request.path_params["playlist"]
 
-    if name == "master.m3u8":
-        base = f"/vod/clip/{camera}/start/{start:g}/end/{end:g}"
-        return _master_playlist(camera, start, end, None, base)
+    if request.path_params["playlist"] == MASTER_PLAYLIST:
+        return _master_playlist(camera, start, end, None)
 
     return _media_playlist(camera, start, end, None)
 
 
 async def vod_event(request: Request) -> Response:
-    """``/vod/event/{event_id}/start/{start}/end/{end}/index.m3u8``."""
+    """``/vod/event/{event_id}/start/{start}/end/{end}/{index,master}.m3u8``."""
     event_id = request.path_params["event_id"]
     start = float(request.path_params["start"])
     end = float(request.path_params["end"])
@@ -530,12 +526,10 @@ async def vod_event(request: Request) -> Response:
     except Event.DoesNotExist:
         return Response(status_code=404)
 
-    playlist = _playlist_or_error(event.camera, start, end, None)
+    if request.path_params["playlist"] == MASTER_PLAYLIST:
+        return _master_playlist(event.camera, start, end, None)
 
-    if isinstance(playlist, Response):
-        return playlist
-
-    return vod_native.playlist_response(playlist)
+    return _media_playlist(event.camera, start, end, None)
 
 
 async def vod_hour(request: Request) -> Response:
