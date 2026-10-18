@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Tests for the exports an FFmpeg process still has open.
 
 Frigate refuses to delete an export that is still being written, and the

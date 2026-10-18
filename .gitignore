@@ -35,3 +35,7 @@ docs/src/components/DockerComposeGenerator/config/ports.ts
 # GenAI review prompt tester local data (frames from real cameras)
 testing-scripts/genai-review-examples/*
 !testing-scripts/genai-review-examples/README.md
+
+# Registry metadata cache written by scripts/license_audit.py; regenerable,
+# so it is not part of the tree.
+scripts/license_audit_cache.json

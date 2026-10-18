@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Print Windows unit-suite failures from suite.log as GitHub annotations.
 
 The Windows CI job tees the unit suite output to ``suite.log`` and runs this

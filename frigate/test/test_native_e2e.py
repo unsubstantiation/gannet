@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """End to end test for a native (non container) Frigate install.
 
 This runs the real ``python -m frigate`` against a synthetic camera, waits for

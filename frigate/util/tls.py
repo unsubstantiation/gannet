@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """TLS certificate handling for the native Windows web gateway."""
 
 from __future__ import annotations

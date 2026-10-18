@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Tests for the Windows requirements checker.
 
 The checker is the gate that stops a ``requirements.txt`` change from

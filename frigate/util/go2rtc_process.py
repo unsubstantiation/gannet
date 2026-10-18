@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Run go2rtc as a managed Windows child process.
 
 Frigate starts the installed executable, writes its output to the native log

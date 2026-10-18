@@ -1,0 +1,384 @@
+# Gannet Noncommercial License, version 1.0
+
+**SPDX identifier:** `LicenseRef-GNCL-1.0`
+**Effective:** 18 October 2026. These terms apply to the Gannet Material (Section
+1.1) of every commit, tag, and release of this repository dated on or after that
+date.
+**License version:** 1.0
+
+> **This is a source-available license, not an open-source license.** It does not
+> meet the Open Source Definition, the Debian Free Software Guidelines, or the
+> Free Software Definition, because it restricts the field of endeavor for which
+> the software may be used and the tools that may be used on it. Nobody should
+> describe this software as "open source", and the licensor does not. If you are
+> looking for terms that permit commercial use, see Section 15 instead.
+
+Required Notice: Copyright (c) 2026 unsubstantiation (fairuniversal.com)
+
+---
+
+## 1. What these terms cover, and what they do not
+
+**1.1 Gannet Material.** The **Gannet Material** is the material in this
+repository that unsubstantiation and their contributors authored and that the
+repository attributes to these terms. The authoritative list is the mapping in
+[`REUSE.toml`](REUSE.toml): every file whose `SPDX-License-Identifier` resolves
+to `LicenseRef-GNCL-1.0`, whether by an explicit entry or by inheritance from a
+path pattern, is Gannet Material. Files the mapping marks as `MIT` are not.
+
+**1.2 Upstream Material.** Most of this repository came from
+[Frigate](https://github.com/blakeblackshear/frigate) and is licensed by its
+copyright holders under the MIT License, reproduced in
+[`LICENSES/MIT.txt`](LICENSES/MIT.txt). That license is not changed by, and
+cannot be changed by, this document. The upstream copyright holders granted the
+public a royalty-free, worldwide, perpetual, commercial-use-permitting license,
+and that grant runs to you directly from them. You may take the Upstream
+Material from the upstream project and use it under MIT terms, and a fork of
+that project is not infringing by doing so. Nothing in these terms purports to
+stop you.
+
+**1.3 Files that contain both.** Where the mapping marks a file
+`MIT AND LicenseRef-GNCL-1.0`, the file holds upstream-authored code and
+Gannet-authored code together. The MIT License governs the upstream-authored
+code in it, and these terms govern the code unsubstantiation and their contributors
+wrote. The two licenses attach to different parts of the same file rather than
+competing over it: you may take, use, and commercially redistribute the
+upstream-authored code, including by lifting it back out into your own tree, and
+you may not do those things with the Gannet-authored code. When you redistribute
+the file as it stands in this repository, you redistribute it under both.
+`REUSE.toml` is how to tell which parts are which, and `THIRD_PARTY.md` covers
+what is neither.
+
+**1.4 Third-party material.** Dependencies and runtime components are licensed
+by their own authors. They are listed with their reported terms in
+[`THIRD_PARTY.md`](THIRD_PARTY.md). These terms neither grant you rights in them
+nor take rights away from you. Notably, the bundled FFmpeg build is GPL, and
+some model weights carry noncommercial or acceptable-use terms of their own
+independent of this license.
+
+**1.5 No rights beyond the licensor's own.** A license can only convey what its
+grantor holds. The licensor licenses the Gannet Material and its own
+documentation, and nothing else.
+
+**1.6 Brand assets, and what a fork must do about them.** The Gannet name, the
+Gannet NVR name, the logo, and other brand assets are not licensed here at all;
+see [`TRADEMARK.md`](TRADEMARK.md). Brand assets that belong to Frigate, Inc. are
+not licensed by either document, and the notices in `web/images/branding/LICENSE`
+and `docs/static/img/branding/LICENSE.md` require a fork that distributes a
+modified version to replace them with its own. A fork of this repository must do
+the same for ours: remove the Gannet name and logo from your presentation, do not
+describe your version as Gannet or as an official Gannet distribution, and do not
+imply endorsement by the licensor. That obligation is about identity, not about the
+code, and it does not narrow the rights in Section 4.
+
+## 2. Acceptance
+
+In order to get any license under these terms, you must agree to them as both
+strict obligations and conditions of all your licenses.
+
+## 3. Copyright license
+
+The licensor grants you a copyright license for the Gannet Material to do
+everything you might do with it that would otherwise infringe the licensor's
+copyright in it, for any permitted purpose. However, you may only distribute it
+according to Section 7, only make changes and new works according to Section 6,
+and only do any of these things for a noncommercial purpose as defined in
+Section 4.
+
+## 4. Noncommercial purposes
+
+**4.1** Any noncommercial purpose is a permitted purpose.
+
+**4.2 Personal and community uses.** Personal use for research, experiment, and
+testing for the benefit of public knowledge, personal study, private
+entertainment, hobby projects, amateur pursuits, home-lab and personal-property
+monitoring, or religious observance, without any anticipated commercial
+application, is use for a permitted purpose.
+
+**4.3 Noncommercial organizations.** Use by any charitable organization,
+educational institution, public research organization, public safety or health
+organization, environmental protection organization, or government institution
+is use for a permitted purpose, regardless of the source of funding or
+obligations resulting from the funding.
+
+**4.4 Teaching and coursework.** Use in teaching a course, in a student project,
+or in published academic work is use for a permitted purpose, provided the work
+is not sold or used to market a product or service.
+
+## 5. Commercial purposes
+
+**5.1** A commercial purpose is not a permitted purpose. The **Gannet Material**
+is used for a commercial purpose when the use is primarily intended for or
+directed toward commercial advantage or monetary compensation for you or for
+anyone else, including any of the following:
+
+a. using the Gannet Material inside, alongside, or on behalf of a for-profit
+   business, including for that business's own internal operations, facilities,
+   staff, or customers, whether or not any fee is charged for the software;
+b. selling, renting, leasing, or licensing the Gannet Material, with or without
+   changes;
+c. bundling the Gannet Material with, embedding it in, or shipping it as part of
+   any hardware or software product, appliance, camera, recorder, subscription,
+   or service that generates revenue, including advertising-supported or
+   freemium offerings;
+d. providing the Gannet Material, or a service built on it, to third parties for
+   a fee, including hosted, cloud, remote-installation, monitoring, integration,
+   support, or consulting engagements, and including cases where the fee is
+   charged for something else and the Gannet Material is provided at no charge;
+e. using the Gannet Material to advertise, market, or promote a business, or to
+   build a portfolio or demonstration that solicits paying work;
+f. use by, or on behalf of, an entity whose purpose includes earning a profit for
+   its owners, members, or shareholders.
+
+**5.2 Cost recovery is not commercial.** Charging a fee that only recovers your
+documented out-of-pocket costs of hosting, media, hardware, or distribution,
+without profit or compensation for the software or for your labor, does not make
+the use commercial.
+
+**5.3 Derived commercial benefit.** You may not use the Gannet Material in a way
+that results in commercial use by another party. Section 17 defines **your
+company**; use on behalf of your company is commercial use by you, and a use that
+is noncommercial for you is still commercial for the purposes of these terms if
+you enable, supply, or knowingly participate in a recipient's commercial use.
+This is about what the material is used for, not about who the user is: a person
+who is employed may self-host and tinker with the Gannet Material at home for
+their own purposes, and Section 5.1(a) is what they may not do with it at work.
+
+**5.4 No implied commercial license.** Nothing in these terms grants a commercial
+license by implication. If you need one, see Section 15.
+
+## 6. Changes and new works
+
+The licensor grants you an additional copyright license to make changes and new
+works based on the Gannet Material, for any permitted purpose. Your license to
+make changes does not depend on whether you distribute them, and the licensor
+cannot and does not attempt to police what you do privately.
+
+## 7. Distribution and same terms
+
+**7.1 Distribution license.** The licensor grants you an additional copyright
+license to distribute copies of the Gannet Material, for a permitted purpose
+only. Your license to distribute covers distributing it with changes and new
+works permitted by Section 6.
+
+**7.2 Same terms.** When you distribute the Gannet Material, or a work that
+incorporates it, is derived from it, or is an extension or a port of a
+substantial part of it, you must license the entire work you distribute, in
+source form, under these exact terms, version 1.0 or later. You may not offer or
+impose any further restriction on the recipients' exercise of the rights granted
+by these terms, and you may not license any part of the Gannet Material under
+terms that permit commercial use, permit the uses Section 8 forbids, or let a
+recipient strip these terms. A rewrite from memory does not escape this section
+by being typed again: Section 17 defines a derivative work by what it reproduces,
+and a work that copies this expression is one however it was produced.
+
+**7.3 Source form.** Distribute the work you license under Section 7.2 in source
+form, or together with a written offer, valid for at least three years, to give
+any recipient the corresponding source for no more than a reasonable cost of
+physical distribution. Distributing only object code, containers, installers,
+firmware, or packaged builds without the source does not satisfy this section,
+and no commercial use of the Gannet Material is licensed in any event.
+
+**7.4 Copyleft does not reach the Upstream Material.** Section 7.2 applies to the
+Gannet Material. You may license the Upstream Material in the same work under
+MIT, as its own terms allow, and doing so is not an added restriction on anyone.
+
+**7.5 Notices travel.** Each copy you distribute must carry a copy of these
+terms, the `Required Notice` line, the notices in Section 9, and
+`REUSE.toml` or an equivalent statement of which files are Gannet Material.
+
+## 8. Machine-learning restrictions
+
+These restrictions apply to the Gannet Material, the Gannet documentation, and
+the brand assets the licensor owns. They do not apply to the Upstream Material,
+which the licensor cannot restrict.
+
+**8.1 No training use.** You may not use any of that material, in whole or in
+part, as input to train, fine-tune, align, distill, evaluate, benchmark, or
+validate any machine-learning model or artificial-intelligence system, nor
+compile, distribute, or authorize anyone else to compile it into a dataset or
+corpus for those purposes, nor reproduce or maintain it in model weights,
+embeddings, retrieval indexes, or caches kept for those purposes.
+
+**8.2 No machine-generated derivative works.** You may not prepare, publish, or
+distribute a derivative work of the Gannet Material to the extent that work was
+generated by a machine-learning system without substantial human authorship and
+review. This is a limit on what you may publish, not on what you may
+build for yourself: AI-authored forks, ports, and reimplementations may not be
+published as a package, template, hosted instance, or repository, whether or not
+a fee is charged, and your own local changes made with AI help are outside it.
+
+**8.3 What these sections do not reach.** These terms do not forbid: running the
+software and the detection, transcription, embedding, and generative features it
+implements on your own video and audio; using an AI assistant to read, explain,
+debug, review, or extend code locally, including the AI-assisted workflow this
+project itself documents in `AGENTS.md`; or asking a model a question about this
+software. They also cannot reach conduct that copyright law permits regardless of
+license, and they do not claim to. A reservation of rights for machine-readable
+enforcement is expressed separately, in `docs/static/robots.txt` and
+`docs/static/.well-known/tdmrep.json`, and it covers the licensor's own material
+only.
+
+**8.4 Note on enforceability.** Whether a use restriction like this binds someone
+who never dealt with the licensor depends on the jurisdiction and on how the work
+reached them. The licensor treats Section 8 as both a license condition and a
+contractual promise, and expresses the equivalent reservation by the
+machine-readable means named above, but makes no representation that either will
+be enforceable everywhere.
+
+**8.5 This section does not reach the upstream project.** These restrictions bind
+you only as conditions of the licenses the licensor grants you here. They do not
+apply to Frigate's own repository, to anyone who takes the same code from
+Frigate, Inc. under the MIT License, or to a work built only from material
+Section 1 marks as outside the Gannet Material. Someone who wants to train a
+model on Frigate's code does not need unsubstantiation's permission and will not be
+told otherwise.
+
+## 9. Notices
+
+You must ensure that anyone who gets a copy of any part of the Gannet Material
+from you also gets a copy of these terms or the URL for them, and copies of any
+plain-text lines beginning with `Required Notice:` that the licensor provided with
+the software. You must not remove, move, obscure, or alter any copyright notice,
+permission notice, or attribution in the Gannet Material or in the Upstream
+Material, including the MIT permission notice and the Frigate, Inc. copyright
+notice that the MIT License requires to be kept.
+
+## 10. Patents
+
+**10.1 Patent license.** The licensor grants you a patent license for the Gannet
+Material that covers patent claims the licensor can license, or becomes able to
+license, that you would infringe by using it for a permitted purpose.
+
+**10.2 Patent defense.** If you make any written claim that the Gannet Material
+infringes or contributes to infringement of any patent, your patent license for
+the Gannet Material granted under these terms ends immediately. If your company
+makes such a claim, your patent license ends immediately for work on behalf of
+your company.
+
+## 11. No trademarks
+
+These terms do not grant any right to use the names, trademarks, service marks,
+or logos of the licensor or of any contributor, except as needed to describe the
+origin of the software. See `TRADEMARK.md`.
+
+## 12. Fair use and statutory rights
+
+You may have rights in the Gannet Material that these terms cannot limit: fair
+use and fair dealing, private and research copying, interoperability, quotation
+and parody, and the rights of contributors in their own contributions. Where a
+statute makes a restriction here unenforceable against you, that restriction is
+read down as little as possible and the rest of these terms stand.
+
+**12.1 Text and data mining.** The licensor reserves its text-and-data-mining
+rights in the material it owns, to the fullest extent the law allows, and
+expresses that reservation in the machine-readable ways named in Section 8.3.
+Where a statute conditions a text-and-data-mining exception on respecting a
+reservation — Article 4 of Directive (EU) 2019/790 in the EU, read with Article
+53(1)(c) of Regulation (EU) 2024/1689 — this paragraph and those signals are the
+reservation. Where the same statute forbids contracting it away or limits
+contractual override of an exception, this document does not attempt to.
+
+## 13. No other rights
+
+These terms do not allow you to sublicense or transfer any of your licenses to
+anyone else, except as Section 7 requires you to pass these same terms to your
+recipients, and do not prevent the licensor from granting licenses to anyone
+else, including commercial licenses and including licenses to later versions of
+these terms. These terms do not imply any other license.
+
+## 14. Termination
+
+**14.1 Cure period.** The first time you are notified in writing that you have
+violated any of these terms, or done anything with the Gannet Material not
+covered by your licenses, your licenses can nonetheless continue if you come into
+full compliance with these terms, and take practical steps to correct past
+violations, within 32 days of receiving notice.
+
+**14.2 Otherwise.** Otherwise, all your licenses under these terms end
+immediately. Two things survive that. The licenses the upstream copyright holders
+granted you under the MIT License are unaffected — they were never this
+licensor's to end. And the MIT license that covered this whole repository before
+18 October 2026 is not revoked by this document: rights already granted under it,
+in copies already distributed under it, are irrevocable. That is why the boundary
+in Section 1 is worth more than any wording in this section.
+
+## 15. Waivers, commercial licensing, and dual licensing
+
+The licensor may grant you additional or different rights in writing. A
+commercial license, an educational- or enterprise-support agreement, a waiver of
+Section 8, or a dual license under which some material is offered under an
+open-source license can be arranged; write to the maintainers of this repository
+and name the versions, the material, and the use you need. No permission granted
+in writing by the licensor is limited to later versions of these terms.
+
+## 16. No liability
+
+***As far as the law allows, the software comes as is, without any warranty or
+condition, and the licensor will not be liable to you for any damages arising out
+of these terms or the use or nature of the software, under any kind of legal
+claim.*** This software controls cameras and is relied on for security; no term
+here should be read as a warranty that it works.
+
+## 17. Definitions
+
+The **licensor** is the person who maintains this repository and publishes under
+the name **unsubstantiation** (website: fairuniversal.com), being the individual or
+entity offering these terms. No company or other legal entity stands behind this
+software: the copyright in the Gannet Material, the trademarks named in
+`TRADEMARK.md`, and every right granted here are held personally by that individual,
+and any notice in this repository naming a corporate entity is a defect to be
+reported, not a grant of additional rights. The **Gannet Material** is the material
+the licensor makes available under these terms, as Section 1.1 determines.
+
+**You** refers to the individual or entity agreeing to these terms.
+
+**Your company** is any legal entity, sole proprietorship, or other kind of
+organization that you work for, plus all organizations that have control over,
+are under the control of, or are under common control with that organization.
+**Control** means ownership of substantially all the assets of an entity, or the
+power to direct its management and policies by vote, contract, or otherwise.
+Control can be direct or indirect.
+
+**Your licenses** are all the licenses granted to you for the Gannet Material
+under these terms.
+
+**Use** means anything you do with the Gannet Material requiring one of your
+licenses.
+
+**Distribute** means to provide a copy of the Gannet Material, in any form and by
+any means, to anyone else, including by making it available from a server, an
+image registry, a package index, an app store, a container, a firmware update, or
+a network share. Offering a modified version for download is distribution even
+when nothing is charged for it. Running the software so that it serves video,
+events, or an API to other people on your own or your household's network, or for
+a nonprofit, school, club, or mutual-aid group you belong to without paying
+yourself, is not distribution and is not a commercial purpose.
+
+**Machine-learning system** means any model or algorithm trained, fine-tuned, or
+configured by statistical or optimization methods on data, including neural
+networks, large language models, retrieval-augmented and agentic systems,
+classifiers, detectors, embedding models, and any system that generates code,
+text, images, or predictions.
+
+**Derivative work** means a work based on the Gannet Material, including a
+modified version of it, a port, an
+extension, a plugin that incorporates it, and any work that reproduces a
+substantial part of its expression. It does not include a work that reimplements
+the same ideas, interfaces, configuration schema, or behavior without copying
+that expression.
+
+**Source form** means the preferred form for making changes, with the
+`REUSE.toml` mapping and the notices required by Section 9.
+
+## 18. Interpretation
+
+These terms are to be read so that the exclusions in Sections 1.2, 1.3, 1.4,
+7.4, and 8 remain effective rather than illusory. If any provision is held
+invalid or unenforceable, the remaining provisions stay in effect, and the
+invalid provision is replaced with the closest enforceable term that keeps the
+commercial and machine-learning restrictions intact. These terms are written in
+English; any translation is for convenience and does not modify them. A summary, banner, badge, or
+human-readable description of this repository that states these terms more
+broadly than this document does does not bind anyone, and the licensor does not
+rely on the broader reading.

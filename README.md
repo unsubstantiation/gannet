@@ -1,10 +1,11 @@
 <p align="center">
-  <img align="center" alt="logo" src="docs/static/img/branding/frigate.png">
+  <img align="center" alt="Gannet NVR logo" src="web/images/branding/logo.png" width="420">
 </p>
 
 # Gannet NVR™ - Realtime Object Detection for IP Cameras
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Source-available, non-commercial](https://img.shields.io/badge/License-Non--commercial-red.svg)](LICENSING.md)
+[![Upstream Frigate code: MIT](https://img.shields.io/badge/Upstream_Frigate_code-MIT-yellow.svg)](LICENSES/MIT.txt)
 
 \[English\] | [简体中文](README_CN.md)
 
@@ -29,7 +30,7 @@ This distribution is designed exclusively for native 64-bit Windows. Frigate run
 Install from an ordinary PowerShell window:
 
 ```powershell
-git clone https://github.com/nuipona/gannet.git
+git clone https://github.com/unsubstantiation/gannet.git
 cd gannet
 py -3.12 bootstrap_windows.py
 powershell -ExecutionPolicy Bypass -File .\run_frigate.ps1
@@ -50,22 +51,45 @@ Read the [Windows installation guide](docs/docs/frigate/installation.md#windows)
 
 View the documentation at https://docs.frigate.video. To build this fork's docs locally, see [docs/README.md](docs/README.md).
 
+## License
+
+This project is **source-available and non-commercial**. It is not open source, and the
+terms are deliberately narrower and more specific than a badge can carry:
+
+- **Code this fork wrote** — the Windows bootstrap, the native platform, service and
+  job-object layers, the PowerShell tooling, the Gannet theme, and the Windows test
+  suite — is under the [Gannet Noncommercial License 1.0](LICENSE): free to use,
+  study, modify, and fork for personal, educational, and noncommercial use, under the
+  same terms; **not** for commercial use of any kind, including free-of-charge
+  internal use by a business; and not for training AI models or publishing
+  AI-generated forks.
+- **Code inherited from [Frigate](https://github.com/blakeblackshear/frigate)** stays
+  under its [MIT License](LICENSES/MIT.txt), unaltered, because a fork cannot take
+  rights back from the people upstream granted them. That includes commercial use of
+  those files, and it is most of this repository.
+- **[THIRD_PARTY.md](THIRD_PARTY.md)** lists what belongs to neither.
+
+[`REUSE.toml`](REUSE.toml) says which files are which, and
+[`LICENSING.md`](LICENSING.md) explains the boundaries, the reasoning, and how to ask
+for a commercial license if you need one.
+
+**Trademarks are not licenses.** The "Gannet" and "Gannet NVR" names and logo are
+trademarks of unsubstantiation and are not licensed here; the "Frigate" name and logo
+belong to Frigate, Inc. and are covered by neither license. A fork must replace both
+sets of brand assets and rename itself — see [TRADEMARK.md](TRADEMARK.md) and the
+notices in `web/images/branding/`.
+
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md). Contributions are
+accepted under these same terms; there is no CLA and no copyright assignment.
 
 ## Donations
 
-If you would like to make a donation to support development, please use [Github Sponsors](https://github.com/sponsors/blakeblackshear).
-
-## License
-
-This project is licensed under the **MIT License**.
-
-- **Code:** The source code, configuration files, and documentation in this repository are available under the [MIT License](LICENSE). You are free to use, modify, and distribute the code as long as you include the original copyright notice.
-- **Trademarks:** The "Frigate" name, the "Frigate NVR" brand, and the Frigate logo are **trademarks of Frigate, Inc.** and are **not** covered by the MIT License.
-
-Please see our [Trademark Policy](TRADEMARK.md) for details on acceptable use of our brand assets.
+If you would like to support development, donations go to upstream Frigate via
+[Github Sponsors](https://github.com/sponsors/blakeblackshear); this fork has no
+donation channel of its own and is funded by commercial licenses under Section 15 of
+[LICENSE](LICENSE).
 
 ## Screenshots
 
@@ -103,4 +127,6 @@ We use [Weblate](https://hosted.weblate.org/projects/frigate-nvr/) to support la
 
 ---
 
-**Copyright © 2026 Frigate, Inc.**
+**Copyright © 2026 Frigate, Inc.** for the Frigate code in this repository, under the
+MIT License. **Copyright © 2026 unsubstantiation** for the material this fork authored,
+under the Gannet Noncommercial License. See [LICENSING.md](LICENSING.md).

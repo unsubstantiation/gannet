@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LicenseRef-GNCL-1.0
 const MEDIA_ROUTE_ROOTS = ["clips", "exports", "recordings", "cache"];
 
 /** Convert a database filesystem path into a path served by the web gateway. */

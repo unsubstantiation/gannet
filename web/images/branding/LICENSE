@@ -1,33 +1,40 @@
-# COPYRIGHT AND TRADEMARK NOTICE
+## Gannet Brand Assets
 
-The images, logos, and icons contained in this directory (the "Brand Assets") are
-proprietary to Frigate, Inc. and are NOT covered by the MIT License governing the
-rest of this repository.
+The files in this directory are the Gannet mark and icon set, owned by
+**unsubstantiation** (fairuniversal.com), the individual who maintains this fork.
+They are brand material and are **not** part of the software license. Software
+licenses license code; names and logos are governed by trademark law, and
+trademark rights do not transfer just because code does.
 
-1. TRADEMARK STATUS
-   The "Frigate" name and the accompanying logo are common law trademarks™ of
-   Frigate, Inc. Frigate, Inc. reserves all rights to these marks.
+### You may
 
-2. LIMITED PERMISSION FOR USE
-   Permission is hereby granted to display these Brand Assets strictly for the
-   following purposes:
-   a. To execute the software interface on a local machine.
-   b. To identify the software in documentation or reviews (nominative use).
+- display these assets to identify this fork and its documentation, and
+- keep them in place in an unmodified copy that you are evaluating.
 
-3. RESTRICTIONS
-   You may NOT:
-   a. Use these Brand Assets to represent a derivative work (fork) as an official
-   product of Frigate, Inc.
-   b. Use these Brand Assets in a way that implies endorsement, sponsorship, or
-   commercial affiliation with Frigate, Inc.
-   c. Modify or alter the Brand Assets.
+### You may not
 
-If you fork this repository with the intent to distribute a modified or competing
-version of the software, you must replace these Brand Assets with your own
-original content.
+- use these assets in a way that suggests affiliation with, sponsorship by, or
+  endorsement from this fork or its author, or
+- present these assets as your own, or register them (or anything confusingly
+  similar) as a trademark, service mark, or other source indicator, or
+- include these assets in your own version of this software.
 
-For full usage guidelines, strictly see the TRADEMARK.md file in the
-repository root.
+### If you fork or otherwise modify this software, replace these assets
 
-ALL RIGHTS RESERVED.
-Copyright (c) 2026 Frigate, Inc.
+If you distribute a version of this software that you modified, you must use your
+own name, logo, and visual identity — including for the icons and other files in
+this directory — and must remove ours entirely. That rule is not a restriction we
+impose on you for our benefit; it is the boundary that keeps us from asserting
+rights over your project and keeps you from asserting ours. Modifying the colors,
+proportions, or other details of our assets is not enough: create original assets
+or use assets you have the right to distribute. You may still state accurately
+that your version derives from this one, in plain text, without our assets.
+
+### Upstream note
+
+The upstream project (Frigate) has its own brand terms — see
+[TRADEMARK.md](../../../TRADEMARK.md) at the repository root. **Frigate's name, logo, and
+icon set are not covered by this fork's permission to reuse anything in this
+directory.** This fork has removed Frigate's logo, wordmark, and icon assets from
+the documentation site and the shipped UI; if you find one still present, that is a
+defect to report, not a licence to use it.

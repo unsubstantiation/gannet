@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Bootstrap a native Windows Frigate install.
 
 Sets up everything the manual recipe in the installation docs asks for, in

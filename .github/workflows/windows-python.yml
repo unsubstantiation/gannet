@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 name: Windows Python
 
 # This is a native Windows-only application, so the checks that gate a change

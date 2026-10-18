@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Run the unit suite on Windows with a visible list of known failures.
 
 The Windows CI job used to run a handful of hand picked tests, which meant

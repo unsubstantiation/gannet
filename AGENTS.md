@@ -31,6 +31,25 @@ and review rules are in [CONTRIBUTING.md](CONTRIBUTING.md).
   additions must have a maintained native Windows runtime and CPython 3.12
   x64 wheels where Python packages are required.
 
+## Licensing rules an agent must follow
+
+This repository is source-available and non-commercial, not open source; the
+boundaries are in [LICENSING.md](LICENSING.md). Concretely:
+
+- Do not add or remove copyright lines, and do not touch `LICENSE`,
+  `LICENSES/MIT.txt`, `TRADEMARK.md`, or `REUSE.toml` by hand. `REUSE.toml` is
+  generated (`scripts/generate_reuse_toml.py`), and `LICENSES/MIT.txt` is Frigate's
+  notice, which the MIT License requires to stay intact and unmodified.
+- New files must carry `SPDX-License-Identifier: LicenseRef-GNCL-1.0` in a file-header
+  comment. Frigate-authored files keep their existing identifiers; a mixed file is
+  `MIT AND LicenseRef-GNCL-1.0` and is recorded in `REUSE.toml`, not in the header.
+- Do not copy code from AGPL or GPL-licensed projects into this tree. It cannot be
+  relabeled as Gannet Material, and the resulting terms are unmanageable here.
+- Never propose replacing these terms with MIT or Apache on the Gannet Material, and
+  never propose adding a noncommercial or field-of-use restriction to the Upstream
+  Material — the first is the point of the license, the second is not ours to do.
+- `frigate/test/test_licensing.py` fails when any of the above is violated.
+
 ## Required checks
 
 From the repository root, on Windows:

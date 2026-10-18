@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
+# Winget manifest for Gannet NVR. This describes *this fork*, not Frigate: the
+# publisher is the person who maintains this repository, and the license is not
+# MIT (see LICENSING.md). Before submitting upstream, run `winget validate` and
+# confirm the license string and the installer asset name below.
+PackageIdentifier: unsubstantiation.GannetNVR
+PackageVersion: 0.1.0
+PackageLocale: en-US
+Publisher: unsubstantiation
+PublisherUrl: https://fairuniversal.com
+PublisherSupportUrl: https://github.com/unsubstantiation/gannet/issues
+PackageName: Gannet NVR (Windows)
+PackageUrl: https://github.com/unsubstantiation/gannet
+License: GNCL-1.0 AND MIT
+LicenseUrl: https://raw.githubusercontent.com/unsubstantiation/gannet/dev/LICENSE
+ShortDescription: Non-commercial NVR with realtime local object detection for IP cameras, built to run natively on 64-bit Windows.
+Copyright: Copyright (c) 2026 unsubstantiation. Portions copyright the Frigate authors, used under the MIT license.
+ReleaseNotesUrl: https://github.com/unsubstantiation/gannet/releases
+Tags:
+  - gannet
+  - frigate
+  - nvr
+  - camera
+  - ip-camera
+  - object-detection
+  - windows
+ManifestType: version
+ManifestVersion: 1.12.0
+Installers:
+  - Architecture: x64
+    InstallerType: exe
+    # FIXME(release): this asset is still named for upstream. Rename the built
+    # artifact to gannet-windows-installer.exe in the release workflow and
+    # update this URL in the same change; a stale URL fails `winget validate`.
+    InstallerUrl: https://github.com/unsubstantiation/gannet/releases/download/v0.1.0/frigate-windows-installer.exe
+    InstallerSha256: PLACEHOLDER_SHA256
+    Scope: user
+    Silent: False
+    SilentWithProgress: False
+    InstallLocation: C:\Program Files\Gannet

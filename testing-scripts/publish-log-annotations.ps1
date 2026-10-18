@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 # Publish a CI log file as GitHub annotations.
 #
 # A failing Windows step has nowhere to show its output: job logs and their

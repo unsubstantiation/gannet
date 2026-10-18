@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Tests for file-descriptor-level log suppression."""
 
 import os

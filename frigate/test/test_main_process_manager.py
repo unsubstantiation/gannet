@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Process containment is installed before Frigate spawns its manager."""
 
 import unittest

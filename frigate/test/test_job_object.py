@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Tests for the Windows job object helper.
 
 The job object itself only exists on Windows, so :func:`install` cannot be

@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
+# Rights reservation for automated readers. Covers what this fork owns: its own
+# documentation, brand assets, and the Gannet Material. It claims nothing about
+# upstream Frigate content, which is MIT and none of our business to restrict.
+#
+# Two conventions are expressed here because crawlers implement different ones:
+# the classic robots.txt disallow list, and Content Signals (content-signals.dev),
+# which is the vocabulary AI crawlers and the EU AI Act's training-data
+# transparency work have converged on.
+#
+# Content-Signal: general-use=yes, search=yes, ai-train=no, tdmReservation=yes
+#
+# Read that line as: ordinary use and search indexing are fine, training on this
+# content is not, and the TDM reservation stands. general-use=yes is deliberate —
+# LICENSE Section 8.3 permits AI inference (reading, explaining, debugging), so a
+# blanket none here would claim more than the license does. The rules below are
+# the form pre-Content-Signal crawlers understand; they say the same thing.
+
+User-agent: *
+Disallow:
+
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: OAI-SearchBot
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-Web
+User-agent: anthropic-ai
+User-agent: Google-Extended
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Applebot-Extended
+User-agent: Amazonbot
+User-agent: Bytespider
+User-agent: CCBot
+User-agent: CohereaiBot
+User-agent: Diffbot
+User-agent: FacebookBot
+User-agent: meta-externalagent
+User-agent: meta-externalfetcher
+User-agent: MistralAI-Bot
+User-agent: YouBot
+User-agent: Timpibot
+User-agent: VelenPublicWebCrawler
+User-agent: Webzio-Extended
+User-agent: ai-training-bot
+User-agent: GPTSearchBot
+Disallow: /
+
+# Text-and-data-mining reservation in the W3C TDMRep format: see
+# /.well-known/tdmrep.json and the TDM Reservation Protocol spec. Some agents read
+# the meta tag instead of the file; both are published, and neither is a license.
+#
+# Sitemap: https://docs.frigate.video/sitemap.xml

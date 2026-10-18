@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Windows-specific loading tests for the sqlite-vec extension."""
 
 import sys
