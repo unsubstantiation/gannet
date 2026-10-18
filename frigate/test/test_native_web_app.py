@@ -4,11 +4,13 @@ import asyncio
 import ntpath
 import threading
 import unittest
+from contextlib import asynccontextmanager
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 from urllib.parse import urljoin
 
 from aiohttp import web as aiohttp_web
+from fastapi import FastAPI
 from starlette.requests import Request
 from starlette.responses import Response
 
@@ -178,6 +180,46 @@ def _fake_playlist(camera: str, start: float, end: float, stream: str | None):
             )
         ],
     )
+
+
+class TestMountedApiLifespan(unittest.TestCase):
+    """The FastAPI app's lifespan has to run even though it is mounted.
+
+    Starlette only drives the lifespan of the outermost application, so the
+    background work FastAPI starts on startup (the debug replay auto-stop
+    watchdog) silently never ran on a native install.
+    """
+
+    def test_the_api_lifespan_is_entered_and_left_with_the_gateway(self):
+        from starlette.testclient import TestClient
+
+        events: list[str] = []
+
+        @asynccontextmanager
+        async def api_lifespan(app: FastAPI):
+            events.append("startup")
+            yield
+            events.append("shutdown")
+
+        api_app = FastAPI(lifespan=api_lifespan)
+
+        with patch("frigate.api.web.vod_native.start_cache_maintenance"):
+            app = create_native_web_app(api_app, 5000)
+
+            with TestClient(app):
+                self.assertEqual(events, ["startup"])
+
+        self.assertEqual(events, ["startup", "shutdown"])
+
+    def test_an_api_app_without_a_lifespan_is_tolerated(self):
+        """Tests and tooling hand the gateway stand-ins for the API app."""
+        from starlette.testclient import TestClient
+
+        with patch("frigate.api.web.vod_native.start_cache_maintenance"):
+            app = create_native_web_app(MagicMock(), 5000)
+
+            with TestClient(app):
+                pass
 
 
 class TestGatewayRoutes(unittest.TestCase):

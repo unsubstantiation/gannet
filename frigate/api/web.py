@@ -13,7 +13,7 @@ import asyncio
 import logging
 import os
 import secrets
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Mapping
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -815,11 +815,28 @@ async def _startup() -> None:
     vod_native.start_cache_maintenance()
 
 
-@asynccontextmanager
-async def _lifespan(app: Starlette) -> AsyncIterator[None]:
-    """Run native gateway startup work through Starlette's lifespan API."""
-    await _startup()
-    yield
+def _lifespan_for(api_app: Any) -> Any:
+    """Build the gateway lifespan, which also runs the mounted API's lifespan.
+
+    Starlette only drives the lifespan of the outermost application. The
+    FastAPI app is mounted under ``/api`` here, so its own lifespan (which
+    starts the debug replay auto-stop watchdog) would otherwise never be
+    entered on a native install, even though it runs when FastAPI is served
+    directly.
+    """
+
+    @asynccontextmanager
+    async def _lifespan(app: Starlette) -> AsyncIterator[Mapping[str, Any] | None]:
+        await _startup()
+
+        if not isinstance(api_app, Starlette):
+            yield None
+            return
+
+        async with api_app.router.lifespan_context(api_app) as api_state:
+            yield api_state if isinstance(api_state, Mapping) else None
+
+    return _lifespan
 
 
 def create_native_web_app(api_app: Any, port: int) -> Starlette:
@@ -862,7 +879,7 @@ def create_native_web_app(api_app: Any, port: int) -> Starlette:
         Mount("/", app=SpaFiles(web_dir)),
     ]
 
-    app = Starlette(routes=routes, lifespan=_lifespan)
+    app = Starlette(routes=routes, lifespan=_lifespan_for(api_app))
     app.add_middleware(NativeAuthMiddleware, api_app=api_app, port=port)
     return app
 
