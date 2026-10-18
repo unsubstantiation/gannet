@@ -3,7 +3,6 @@
 import io
 import logging
 import os
-import shutil
 import threading
 
 import numpy as np
@@ -17,6 +16,7 @@ from frigate.detectors.detection_runners import get_optimized_runner
 from frigate.embeddings.types import EnrichmentModelTypeEnum
 from frigate.types import ModelStatusTypesEnum
 from frigate.util.downloader import ModelDownloader
+from frigate.util.file import robust_rmtree
 
 from .base_embedding import BaseEmbedding
 
@@ -67,7 +67,7 @@ class JinaV2Embedding(BaseEmbedding):
         if os.path.isdir(tokenizer_path) and not os.path.exists(
             os.path.join(tokenizer_path, "tokenizer_config.json")
         ):
-            shutil.rmtree(tokenizer_path)
+            robust_rmtree(tokenizer_path)
 
         if not all(
             os.path.exists(os.path.join(self.download_path, n)) for n in files_names

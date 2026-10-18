@@ -259,6 +259,99 @@ async def _noop_sleep(*_args, **_kwargs) -> None:
     return
 
 
+class TestRobustRmtree(TestCase):
+    """Directory trees are removed despite Windows read-only and sharing errors."""
+
+    def _tree(self, folder: str) -> str:
+        root = os.path.join(folder, "model")
+        os.makedirs(os.path.join(root, "dataset", "cat"))
+        for name in ("a.jpg", os.path.join("dataset", "cat", "b.jpg")):
+            with open(os.path.join(root, name), "wb") as f:
+                f.write(b"x")
+        return root
+
+    def test_removes_a_plain_tree(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = self._tree(folder)
+            file_util.robust_rmtree(root)
+            self.assertFalse(os.path.exists(root))
+
+    def test_removes_read_only_files(self):
+        """A read-only file makes shutil.rmtree raise PermissionError on
+        Windows; the tree must still go away."""
+        import stat
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = self._tree(folder)
+            locked = os.path.join(root, "dataset", "cat", "b.jpg")
+            os.chmod(locked, stat.S_IREAD)
+            try:
+                file_util.robust_rmtree(root)
+            finally:
+                if os.path.exists(locked):
+                    os.chmod(locked, stat.S_IREAD | stat.S_IWRITE)
+            self.assertFalse(os.path.exists(root))
+
+    def test_sharing_violation_is_retried(self):
+        calls = {"count": 0}
+        real_rmtree = file_util.shutil.rmtree
+
+        def flaky_rmtree(path, onexc=None, **kwargs):
+            calls["count"] += 1
+            if calls["count"] < 3:
+                error = PermissionError(13, "in use", path)
+                error.winerror = 32
+                raise error
+            real_rmtree(path, onexc=onexc, **kwargs)
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = self._tree(folder)
+            with (
+                patch.object(file_util.shutil, "rmtree", side_effect=flaky_rmtree),
+                patch.object(file_util.time, "sleep"),
+            ):
+                file_util.robust_rmtree(root)
+
+            self.assertEqual(calls["count"], 3)
+            self.assertFalse(os.path.exists(root))
+
+    def test_held_file_inside_the_tree_is_retried(self):
+        """shutil.rmtree reports a held file through onexc; the first such
+        error must surface so the retry loop waits instead of leaving a
+        half-removed tree behind silently."""
+        attempts = {"count": 0}
+        real_unlink = os.unlink
+
+        def flaky_unlink(path, *args, **kwargs):
+            if path.endswith("b.jpg") and attempts["count"] < 2:
+                attempts["count"] += 1
+                error = PermissionError(13, "in use", path)
+                error.winerror = 32
+                raise error
+            real_unlink(path, *args, **kwargs)
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = self._tree(folder)
+            with (
+                patch.object(file_util.os, "unlink", side_effect=flaky_unlink),
+                patch.object(file_util.time, "sleep"),
+            ):
+                file_util.robust_rmtree(root)
+
+            self.assertEqual(attempts["count"], 2)
+            self.assertFalse(os.path.exists(root))
+
+    def test_a_missing_tree_raises_immediately(self):
+        with tempfile.TemporaryDirectory() as folder:
+            with patch.object(file_util.time, "sleep") as sleep:
+                self.assertRaises(
+                    FileNotFoundError,
+                    file_util.robust_rmtree,
+                    os.path.join(folder, "missing"),
+                )
+            sleep.assert_not_called()
+
+
 @skipUnless(file_util.msvcrt is not None, "msvcrt locking requires native Windows")
 class TestFileLockAcrossProcesses(TestCase):
     """FileLock against a genuinely separate interpreter process.

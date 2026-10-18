@@ -5,7 +5,6 @@ import json
 import logging
 import os
 import random
-import shutil
 from collections import defaultdict
 
 import cv2
@@ -26,7 +25,11 @@ from frigate.models import Event, Recordings, ReviewSegment
 from frigate.types import ModelStatusTypesEnum
 from frigate.util.config import default_ffmpeg_binary
 from frigate.util.downloader import ModelDownloader
-from frigate.util.file import get_event_thumbnail_bytes, load_event_snapshot_image
+from frigate.util.file import (
+    get_event_thumbnail_bytes,
+    load_event_snapshot_image,
+    robust_rmtree,
+)
 from frigate.util.image import (
     calculate_region,
     get_image_from_recording,
@@ -407,7 +410,7 @@ def collect_state_classification_examples(
     # Step 5: Save to train directory for later classification
     train_dir = os.path.join(CLIPS_DIR, model_name, "train")
     if os.path.exists(train_dir):
-        shutil.rmtree(train_dir)
+        robust_rmtree(train_dir)
     os.makedirs(train_dir, exist_ok=True)
 
     saved_count = 0
@@ -423,7 +426,7 @@ def collect_state_classification_examples(
             logger.error(f"Failed to save image {image_path}: {e}")
 
     try:
-        shutil.rmtree(temp_dir)
+        robust_rmtree(temp_dir)
     except Exception as e:
         logger.warning(f"Failed to clean up temp directory: {e}")
 
@@ -767,7 +770,7 @@ def collect_object_classification_examples(
     # Step 5: Save to train directory for later classification
     train_dir = os.path.join(CLIPS_DIR, model_name, "train")
     if os.path.exists(train_dir):
-        shutil.rmtree(train_dir)
+        robust_rmtree(train_dir)
     os.makedirs(train_dir, exist_ok=True)
 
     saved_count = 0
@@ -783,7 +786,7 @@ def collect_object_classification_examples(
             logger.error(f"Failed to save image {image_path}: {e}")
 
     try:
-        shutil.rmtree(temp_dir)
+        robust_rmtree(temp_dir)
     except Exception as e:
         logger.warning(f"Failed to clean up temp directory: {e}")
 

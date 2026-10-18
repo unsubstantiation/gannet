@@ -42,7 +42,7 @@ from frigate.util.classification import (
     read_training_metadata,
     write_training_metadata,
 )
-from frigate.util.file import get_event_snapshot
+from frigate.util.file import get_event_snapshot, robust_rmtree
 from frigate.util.path import (
     is_same_path,
     rename_path,
@@ -1334,7 +1334,7 @@ def delete_classification_model(request: Request, name: str):
     # Delete the classification model's data directory in clips
     if os.path.exists(data_dir):
         try:
-            shutil.rmtree(data_dir)
+            robust_rmtree(data_dir)
             logger.info(f"Deleted classification data directory for {name}")
         except Exception as e:
             logger.debug(f"Failed to delete data directory for {name}: {e}")
@@ -1342,7 +1342,7 @@ def delete_classification_model(request: Request, name: str):
     # Delete the classification model's files in model_cache
     if os.path.exists(model_dir):
         try:
-            shutil.rmtree(model_dir)
+            robust_rmtree(model_dir)
             logger.info(f"Deleted classification model directory for {name}")
         except Exception as e:
             logger.debug(f"Failed to delete model directory for {name}: {e}")
