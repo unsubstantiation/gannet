@@ -47,9 +47,16 @@ unidecode == 1.4.*
 titlecase == 2.4.*
 
 # Image processing
-numpy == 2.5.*
-opencv-contrib-python == 5.0.0.*
-scipy == 1.18.*
+# numpy stays below 2.0: norfair 2.3.0, which frigate/ptz/autotrack.py uses for
+# camera motion estimation, requires numpy<2.0.0 and has no newer release. The
+# three packages below are the ones whose current releases require numpy>=2
+# (scipy 1.18, librosa 1.0, opencv-contrib-python 4.12 and later), so they are
+# pinned to the newest versions that still accept numpy 1.26. Bumping any of
+# them without dropping norfair makes `pip install -r requirements.txt`
+# unresolvable.
+numpy == 1.26.*
+opencv-contrib-python == 4.11.0.*
+scipy == 1.17.*
 
 # OpenVINO and ONNX Runtime
 openvino == 2026.4.*
@@ -97,7 +104,8 @@ sqlite-vec == 0.1.9
 # Audio transcription
 sherpa-onnx == 1.13.*
 faster-whisper == 1.2.*
-librosa == 1.0.*
+# librosa 1.0 requires numpy>=2.1; see the numpy note under "Image processing"
+librosa == 0.11.*
 soundfile == 0.14.*
 
 
