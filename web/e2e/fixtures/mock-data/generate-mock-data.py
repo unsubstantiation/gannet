@@ -1,7 +1,18 @@
 """Generate E2E mock data from backend Pydantic and Peewee models.
 
-Run from the repo root:
-    PYTHONPATH=/workspace/frigate python3 web/e2e/fixtures/mock-data/generate-mock-data.py
+Run from an activated virtual environment, from anywhere:
+
+    python web\\e2e\\fixtures\\mock-data\\generate-mock-data.py
+
+The repository root is added to ``sys.path`` below, so the script does not
+depend on a PYTHONPATH set to a fixed checkout (upstream's instructions
+hard-coded its Linux container's /workspace/frigate).
+
+Regenerate on Windows. Frigate is a native Windows application and the config
+snapshot embeds paths from the host's data layout, so running this anywhere
+else bakes that host's directories into a fixture that is meant to describe a
+Windows install. Rewriting the JSON also refreshes the wall-clock timestamps in
+the review and event fixtures, so review any diff before committing it.
 
 Strategy:
   - FrigateConfig: instantiate the Pydantic config model, then model_dump()
@@ -20,6 +31,12 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 warnings.filterwarnings("ignore")
+
+# The Frigate package lives at the repository root, not beside this script.
+# .../web/e2e/fixtures/mock-data/generate-mock-data.py -> parents[4] is the root.
+REPO_ROOT = Path(__file__).resolve().parents[4]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 OUTPUT_DIR = Path(__file__).parent
 NOW = time.time()
