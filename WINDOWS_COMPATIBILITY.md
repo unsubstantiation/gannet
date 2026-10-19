@@ -142,6 +142,7 @@ changed, how the result is verified, and what is deliberately still open.
 | Acceleration | VAAPI, DRM, V4L2, RKMPP, Jetson and VideoToolbox | D3D11VA, DXVA2, Intel QSV, NVIDIA NVENC and CUDA, AMD AMF, Vulkan and software |
 | Storage statistics | A `/dev/shm` quota and a root check | Page-file backed shared memory and the Win32 APIs |
 | GPU diagnostics | `vainfo` (libva) via `/api/vainfo` | `/api/gpuinfo`: display adapters, `ffmpeg -hwaccels`, go2rtc accelerators and the recommended `preset-windows-*` family |
+| Bandwidth statistics | `nethogs` (root, `CAP_NET_ADMIN`/`CAP_NET_RAW`) | A real-time ETW kernel-logger session (`frigate/util/bandwidth.py`); the `telemetry.stats.network_bandwidth` collector reports the bytes each camera `ffmpeg.exe` and `go2rtc.exe` moves, so it needs an elevated Frigate and is off by default |
 
 ### What is verified
 
@@ -163,6 +164,13 @@ and `http_api/test_http_config_encoding.py` (UTF-8 config round trips).
 - The hardware presets need the matching device: QSV, NVENC and AMF are
   verified by configuration and by the presets themselves, not on every
   vendor's silicon.
+- The bandwidth collector opens the NT Kernel Logger session, so it runs
+  only when Frigate is elevated and reports nothing (with one warning)
+  otherwise, exactly as upstream reports nothing when it is not root. The
+  ETW parsing is covered by unit tests and the MOF layouts are pinned by
+  structure-layout tests, but the live capture was not exercised on every
+  network adapter; a non-elevated run degrades to no stat rather than an
+  error.
 - Only NVIDIA adapters report usage counters. `stats.gpu_usages` can therefore
   only ever carry entries polled through NVML; there is no utilization counter
   for an Intel or AMD GPU, or for an Intel NPU, in the Windows runtimes Frigate

@@ -19,7 +19,7 @@ from frigate.object_detection.base import ObjectDetectProcess
 from frigate.stats.hardware import HardwareStats
 from frigate.types import StatsTrackingTypes
 from frigate.util.platform import get_fs_type, storage_stat_key
-from frigate.util.services import calculate_shm_requirements
+from frigate.util.services import calculate_shm_requirements, get_bandwidth_stats
 from frigate.util.version import VERSION
 
 if TYPE_CHECKING:
@@ -321,6 +321,12 @@ def stats_snapshot(
     )
 
     hardware_stats.update_stats(stats)
+
+    if config.telemetry.stats.network_bandwidth:
+        bandwidth_stats = get_bandwidth_stats(config)
+
+        if bandwidth_stats:
+            stats["bandwidth_usages"] = bandwidth_stats
 
     storage_maintainer = stats_tracking.get("storage_maintainer")
 

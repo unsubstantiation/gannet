@@ -265,12 +265,21 @@ mqtt:
   qos: 0
 
 telemetry:
+  # Optional: Network interface name prefixes to monitor for bandwidth
+  # stats (default: empty list, monitor every interface)
+  network_interfaces: []
   stats:
+    # Optional: Enable NVIDIA GPU stats (default: shown below)
     nvidia_gpu_stats: true
+    # Optional: Enable per-process network bandwidth stats for the
+    # camera ffmpeg processes and go2rtc (default: shown below)
+    # NOTE: Frigate must run elevated; the collector opens the
+    # NT Kernel Logger ETW session, which needs administrator rights.
+    network_bandwidth: false
   version_check: true
 ```
 
-MQTT TLS certificate paths may be absolute Windows paths. Native GPU telemetry is provided through NVIDIA NVML when available; Intel and AMD adapters are still discovered for configuration and acceleration but do not report invented utilization values.
+MQTT TLS certificate paths may be absolute Windows paths. Native GPU telemetry is provided through NVIDIA NVML when available; Intel and AMD adapters are still discovered for configuration and acceleration but do not report invented utilization values. Network bandwidth stats read the bytes each camera ffmpeg process and go2rtc moves through a real-time ETW kernel session, so they need an elevated Frigate and are off by default; a non-elevated run logs one warning and reports nothing.
 
 ## Validate
 

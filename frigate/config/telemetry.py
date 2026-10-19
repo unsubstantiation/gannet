@@ -11,9 +11,19 @@ class StatsConfig(FrigateBaseModel):
         title="NVIDIA GPU stats",
         description="Collect utilization, encoder, decoder, memory, and temperature through NVML when an NVIDIA GPU is present.",
     )
+    network_bandwidth: bool = Field(
+        default=False,
+        title="Network bandwidth",
+        description="Enable per-process network bandwidth monitoring for camera ffmpeg processes and go2rtc (requires an elevated session).",
+    )
 
 
 class TelemetryConfig(FrigateBaseModel):
+    network_interfaces: list[str] = Field(
+        default=[],
+        title="Network interfaces",
+        description="List of network interface name prefixes to monitor for bandwidth statistics. Empty monitors every interface.",
+    )
     stats: StatsConfig = Field(
         default_factory=StatsConfig,
         title="System stats",

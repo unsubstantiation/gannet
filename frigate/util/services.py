@@ -19,6 +19,10 @@ import py3nvml.py3nvml as nvml
 import requests
 
 from frigate.const import SHM_FRAMES_VAR
+from frigate.util.bandwidth import (
+    get_network_bandwidth_monitor,
+    packed_interface_addresses,
+)
 from frigate.util.builtin import clean_camera_user_pass, escape_special_characters
 from frigate.util.env import UnknownVariableError, substitute_frigate_vars
 from frigate.util.file import robust_remove
@@ -30,6 +34,11 @@ from frigate.util.platform import (
 logger = logging.getLogger(__name__)
 RESTART_MARKER_NAME = "restart.requested"
 PROCESS_KEYWORDS = ("ffmpeg", "go2rtc", "frigate.", "python.exe")
+# The processes that move camera bytes over the network. Detector
+# processes read frames from shared memory, so they are not part of
+# the bandwidth picture on Windows.
+BANDWIDTH_PROCESS_KEYWORDS = ("ffmpeg", "go2rtc")
+_bandwidth_warning_logged = False
 
 
 def _stop_self() -> None:
@@ -113,6 +122,55 @@ def get_cpu_stats() -> dict[str, dict]:
         except (psutil.Error, OSError, TypeError, ValueError):
             continue
     return usages
+
+
+def get_bandwidth_stats(config) -> dict[str, dict]:
+    """Get per-process bandwidth usages for the camera pipeline.
+
+    The Windows equivalent of upstream's ``nethogs`` read: a real-time
+    ETW kernel session reports the bytes each process moves, and only
+    the ffmpeg and go2rtc processes that carry camera traffic are
+    reported. The session needs elevation, so a non-elevated Frigate
+    reports nothing and warns once, exactly like upstream reports
+    nothing when it is not root.
+    """
+    global _bandwidth_warning_logged
+
+    if not config.telemetry.stats.network_bandwidth:
+        return {}
+
+    monitor = get_network_bandwidth_monitor()
+    monitor.set_address_filter(
+        packed_interface_addresses(config.telemetry.network_interfaces)
+    )
+
+    if not monitor.start():
+        if not _bandwidth_warning_logged:
+            _bandwidth_warning_logged = True
+            logger.warning(
+                "Per-process network bandwidth stats require an elevated "
+                "Frigate session and are disabled; set "
+                "telemetry.stats.network_bandwidth to false to silence "
+                "this warning"
+            )
+        return {}
+
+    interesting: set[str] = set()
+    for process in psutil.process_iter(["pid", "name", "cmdline"]):
+        try:
+            name = str(process.info["name"] or "")
+            cmdline = " ".join(process.info["cmdline"] or [])
+            searchable = f"{name} {cmdline}".casefold()
+            if any(keyword in searchable for keyword in BANDWIDTH_PROCESS_KEYWORDS):
+                interesting.add(str(process.info["pid"]))
+        except (psutil.Error, OSError, TypeError):
+            continue
+
+    monitor.retain(interesting)
+    samples = monitor.sample()
+    if not interesting:
+        return {}
+    return {pid: stats for pid, stats in samples.items() if pid in interesting}
 
 
 def try_get_info(function, handle, default="N/A", sensor=None):
