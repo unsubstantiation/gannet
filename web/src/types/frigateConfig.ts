@@ -662,8 +662,7 @@ export interface FrigateConfig {
   telemetry: {
     network_interfaces: string[];
     stats: {
-      amd_gpu_stats: boolean;
-      intel_gpu_stats: boolean;
+      nvidia_gpu_stats: boolean;
       network_bandwidth: boolean;
     };
     version_check: boolean;

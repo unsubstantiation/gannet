@@ -222,12 +222,20 @@
   "telemetry": {
     "label": "Telemetry",
     "description": "System statistics and optional NVIDIA NVML telemetry settings.",
+    "network_interfaces": {
+      "label": "Network interfaces",
+      "description": "List of network interface name prefixes to monitor for bandwidth statistics. Empty monitors every interface."
+    },
     "stats": {
       "label": "System stats",
       "description": "Native Windows hardware-statistics options.",
       "nvidia_gpu_stats": {
         "label": "NVIDIA GPU stats",
         "description": "Collect utilization, encoder, decoder, memory, and temperature through NVML when an NVIDIA GPU is present."
+      },
+      "network_bandwidth": {
+        "label": "Network bandwidth",
+        "description": "Enable per-process network bandwidth monitoring for camera ffmpeg processes and go2rtc (requires an elevated session)."
       }
     },
     "version_check": {
