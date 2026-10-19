@@ -5,23 +5,31 @@ import multiprocessing as mp
 import os
 import subprocess as sp
 import sys
+from pathlib import Path
 
 import click
 import cv2
 import numpy as np
 
-sys.path.append("/workspace/frigate")
+# The script runs against this checkout rather than an installed package, so
+# the repository root has to be importable before the Frigate imports below.
+# Deriving it from this file keeps the script usable from any directory on any
+# drive; upstream's absolute /workspace/frigate path only resolved inside its
+# Linux container.
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT))
 
 from frigate.config import FrigateConfig  # noqa: E402
 from frigate.motion import MotionDetector  # noqa: E402
 from frigate.object_detection.base import LocalObjectDetector  # noqa: E402
 from frigate.track.centroid_tracker import CentroidTracker  # noqa: E402
 from frigate.track.object_processing import CameraState  # noqa: E402
-from frigate.util import (  # noqa: E402
-    EventsPerSecond,
+from frigate.util.builtin import EventsPerSecond  # noqa: E402
+from frigate.util.image import (  # noqa: E402
     SharedMemoryFrameManager,
     draw_box_with_label,
 )
+from frigate.util.platform import resolve_ffmpeg_binary  # noqa: E402
 from frigate.video import (  # noqa: E402
     capture_frames,
     process_frames,
@@ -35,7 +43,9 @@ logger = logging.getLogger(__name__)
 
 def get_frame_shape(source):
     ffprobe_cmd = [
-        "ffprobe",
+        # FFmpeg is a native .exe found through the install layout or PATH;
+        # a bare "ffprobe" is not resolvable on Windows.
+        resolve_ffmpeg_binary("ffprobe"),
         "-v",
         "panic",
         "-show_error",
@@ -266,7 +276,9 @@ def process(path, label, output, debug_path):
         },
     }
 
-    object_detector = LocalObjectDetector(labels="labelmap.txt")
+    # Resolve the labelmap against the repository rather than the working
+    # directory, so the script runs from anywhere.
+    object_detector = LocalObjectDetector(labels=str(REPO_ROOT / "labelmap.txt"))
 
     results = []
     for c in clips:
@@ -294,8 +306,10 @@ def process(path, label, output, debug_path):
     )
 
     if output:
-        # now we will open a file for writing
-        data_file = open(output, "w")
+        # now we will open a file for writing. The encoding is explicit because
+        # Windows would otherwise use the locale's code page, and the csv
+        # module needs to control line endings itself.
+        data_file = open(output, "w", encoding="utf-8", newline="")
 
         # create the csv writer object
         csv_writer = csv.writer(data_file)

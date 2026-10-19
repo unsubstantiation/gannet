@@ -163,6 +163,23 @@ and `http_api/test_http_config_encoding.py` (UTF-8 config round trips).
 - The hardware presets need the matching device: QSV, NVENC and AMF are
   verified by configuration and by the presets themselves, not on every
   vendor's silicon.
+- Only NVIDIA adapters report usage counters. `stats.gpu_usages` can therefore
+  only ever carry entries polled through NVML; there is no utilization counter
+  for an Intel or AMD GPU, or for an Intel NPU, in the Windows runtimes Frigate
+  uses. For the same reason `npu_usages` and `detectors.temperature` are never
+  emitted: the OpenVINO NPU is selectable and runs inference, but nothing
+  reports how busy it is, and no detector exposes a thermometer. The System
+  page treats both keys as optional and hides the panes that would show them,
+  so this degrades rather than breaks. Reporting invented numbers was
+  rejected; adding real counters means a Windows performance-counter or
+  vendor-silicon implementation with hardware to test it against.
+- The Playwright fixtures under `web/e2e/fixtures/mock-data` still describe a
+  Linux install in places. `config-schema.json` and `config-snapshot.json` are
+  generated artifacts: regenerate them on Windows with `generate-mock-data.py`,
+  which embeds the host's data-layout paths and refreshes the wall-clock
+  timestamps in the review and event fixtures. Regenerating on another
+  operating system bakes that operating system's paths into a fixture that is
+  meant to describe a Windows install.
 
 ## Release limitation
 

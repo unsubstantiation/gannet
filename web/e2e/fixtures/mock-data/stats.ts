@@ -52,25 +52,36 @@ export const BASE_STATS = {
   processes: {},
   service: {
     last_updated: Date.now() / 1000,
+    // The native Windows server reports storage under stable keys rather than
+    // filesystem paths, and shared memory is page-file backed, so there is no
+    // /dev/shm entry and no shm_too_low notice.
     storage: {
-      "/media/frigate/recordings": {
+      recordings: {
         free: 50000000000,
         total: 100000000000,
         used: 50000000000,
-        mount_type: "ext4",
+        mount_type: "NTFS",
       },
-      "/tmp/cache": {
+      clips: {
+        free: 50000000000,
+        total: 100000000000,
+        used: 50000000000,
+        mount_type: "NTFS",
+      },
+      cache: {
         free: 500000000,
         total: 1000000000,
         used: 500000000,
-        mount_type: "tmpfs",
+        mount_type: "NTFS",
       },
-      "/dev/shm": {
-        free: 98,
-        total: 128,
-        used: 30,
-        mount_type: "tmpfs",
-        min_shm: 64,
+      memory: {
+        free: 8192,
+        total: 16384,
+        used: 8192,
+        mount_type: "pagefile",
+        page_file_backed: true,
+        shm_frame_count: 50,
+        min_shm: 180,
       },
     },
     uptime: 86400,
