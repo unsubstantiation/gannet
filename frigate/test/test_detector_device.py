@@ -25,6 +25,12 @@ class TestParseDevice(unittest.TestCase):
         self.assertEqual(spec.detector, "zmq")
         self.assertEqual(spec.device, "tcp://camera-host:5555")
 
+    def test_windows_ml_provider_selector_is_preserved(self):
+        spec = parse_device("onnx:windowsml:QNNExecutionProvider")
+
+        self.assertEqual(spec.detector, "onnx")
+        self.assertEqual(spec.device, "windowsml:QNNExecutionProvider")
+
     def test_unknown_detector_reports_windows_allowlist(self):
         with self.assertRaises(DeviceParseError) as raised:
             parse_device("edgetpu:usb")

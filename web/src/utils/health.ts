@@ -441,6 +441,7 @@ export function hwaccelRows({
 const ANY_ACCELERATOR = [
   "onnx:nvidia",
   "onnx:directml",
+  "onnx:windowsml",
   "openvino:GPU",
   "openvino:NPU",
 ];
@@ -454,11 +455,17 @@ export function acceleratorKeysFor(
   requested: string,
   nvidiaOnly: boolean,
 ): string[] | undefined {
+  const upper = requested.toUpperCase();
+
   if (nvidiaOnly) {
+    if (
+      upper === "WINDOWSML:NVTENSORTRTRTXEXECUTIONPROVIDER" ||
+      upper === "WINML:NVTENSORTRTRTXEXECUTIONPROVIDER"
+    ) {
+      return ["onnx:windowsml:NvTensorRtRtxExecutionProvider"];
+    }
     return ["onnx:nvidia"];
   }
-
-  const upper = requested.toUpperCase();
 
   if (upper === "AUTO") {
     return ANY_ACCELERATOR;
@@ -467,7 +474,7 @@ export function acceleratorKeysFor(
   // ONNX Runtime puts a plain GPU request on an available Windows provider;
   // only an indexed GPU.n names OpenVINO specifically.
   if (upper === "GPU") {
-    return ["openvino:GPU", "onnx:nvidia", "onnx:directml"];
+    return ["openvino:GPU", "onnx:nvidia", "onnx:directml", "onnx:windowsml"];
   }
 
   if (/^GPU\.\d+$/.test(upper)) {
@@ -486,6 +493,11 @@ export function acceleratorKeysFor(
     return ["onnx:directml"];
   }
 
+  if (upper.startsWith("WINDOWSML:") || upper.startsWith("WINML:")) {
+    const provider = requested.slice(requested.indexOf(":") + 1);
+    return [`onnx:windowsml:${provider}`];
+  }
+
   return undefined;
 }
 
@@ -493,7 +505,11 @@ function acceleratorPresent(
   hardware: DetectionHardware[] | undefined,
   keys: string[],
 ): boolean {
-  return (hardware ?? []).some((entry) => keys.includes(entry.key));
+  return (hardware ?? []).some(
+    (entry) =>
+      keys.includes(entry.key) ||
+      entry.units.some((unit) => keys.includes(unit.device)),
+  );
 }
 
 type EnrichmentSpec = {

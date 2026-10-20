@@ -40,7 +40,7 @@ The bootstrap script needs 64-bit CPython 3.12. It creates the venv, installs th
 
 Windows-specific behaviour:
 
-- Detectors: CPU (TFLite, ONNX Runtime, OpenVINO) and Intel GPU/NPU through OpenVINO, plus AMD, Intel and Nvidia GPU inference through DirectML (`onnxruntime-directml`, installed by default). Coral, Hailo and other accelerators that need Linux-only drivers are unavailable, and a config that names one fails validation with the list Windows can run.
+- Inference: CPU (TFLite and ONNX Runtime), Intel GPU/NPU through OpenVINO, and selectable ONNX Runtime DirectML, CUDA, or Windows ML catalog providers. DirectML is installed by default; bootstrap profiles are `--directml`, `--cuda`, `--windows-ml`, and `--no-directml` (CPU). CUDA targets NVIDIA and installs the official CUDA 13/cuDNN 9 runtime extras. Windows ML vendor providers (including MIGraphX, TensorRT-RTX, OpenVINO, QNN, and Vitis AI when the catalog reports them compatible) are installed explicitly with `python scripts/manage_windows_ml.py`; see the [acceleration guide](docs/docs/configuration/hardware_acceleration_enrichments.md). The Windows ML profile uses the ONNX Runtime version pinned by Microsoft's `windowsml` package; do not mix runtime profiles in one environment. Provider, model, driver, and hardware support varies. Coral, Hailo and accelerators requiring Linux-only drivers are unavailable.
 - Video: `preset-windows-d3d11va`, `preset-windows-dxva2`, `preset-windows-qsv` and `preset-windows-nvenc`, and `ffmpeg.hwaccel_args: auto` detects which one to use.
 - Files: everything lives under one base directory, `%LOCALAPPDATA%\Frigate` by default, relocatable with `FRIGATE_BASE_DIR`.
 - Optional SCM service: `bootstrap_windows.py --install-service`.

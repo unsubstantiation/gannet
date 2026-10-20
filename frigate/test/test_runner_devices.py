@@ -54,6 +54,52 @@ class TestRunnerDeviceName(unittest.TestCase):
         self.assertEqual(runner.device_name, "OpenVINO AUTO")
 
 
+class TestWindowsMlRunner(unittest.TestCase):
+    def test_provider_device_is_attached_to_onnx_session(self) -> None:
+        ep_device = MagicMock()
+        session_options = MagicMock()
+        session = MagicMock()
+        session.get_providers.return_value = ["QNNExecutionProvider"]
+
+        with (
+            patch.object(
+                detection_runners,
+                "registered_provider_devices",
+                return_value={"QNNExecutionProvider": [ep_device]},
+            ),
+            patch.object(
+                detection_runners,
+                "get_ort_session_options",
+                return_value=session_options,
+            ),
+            patch.object(
+                detection_runners.ort, "InferenceSession", return_value=session
+            ) as create_session,
+        ):
+            runner = get_optimized_runner(
+                r"C:\Frigate\models\model.onnx",
+                "windowsml:QNNExecutionProvider",
+                "yolonas",
+            )
+
+        session_options.add_provider_for_devices.assert_called_once_with(
+            [ep_device], {}
+        )
+        self.assertIs(create_session.call_args.kwargs["sess_options"], session_options)
+        self.assertEqual(runner.device_name, "QNN")
+
+    def test_unavailable_windows_ml_device_fails_explicitly(self) -> None:
+        with patch.object(
+            detection_runners, "registered_provider_devices", return_value={}
+        ):
+            with self.assertRaisesRegex(RuntimeError, "not ready"):
+                get_optimized_runner(
+                    r"C:\Frigate\models\model.onnx",
+                    "windowsml:QNNExecutionProvider",
+                    "yolonas",
+                )
+
+
 class TestLoadRegistry(unittest.TestCase):
     def setUp(self) -> None:
         loaded_devices.clear()

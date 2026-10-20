@@ -53,6 +53,30 @@ class TestGetOrtProvidersDirectML(unittest.TestCase):
         self.assertEqual(providers, ["CPUExecutionProvider"])
         self.assertEqual(options, [{"enable_cpu_mem_arena": False}])
 
+    def test_explicit_directml_index_is_routed_to_directml(self):
+        providers, options = self._providers(
+            ["DmlExecutionProvider", "CPUExecutionProvider"], "directml:2"
+        )
+
+        self.assertEqual(providers, ["DmlExecutionProvider", "CPUExecutionProvider"])
+        self.assertEqual(options[0], {"device_id": 2})
+
+    def test_explicit_cuda_index_is_routed_to_cuda(self):
+        providers, options = self._providers(
+            ["CUDAExecutionProvider", "CPUExecutionProvider"], "cuda:1"
+        )
+
+        self.assertEqual(providers, ["CUDAExecutionProvider", "CPUExecutionProvider"])
+        self.assertEqual(options[0]["device_id"], 1)
+
+    def test_explicit_missing_provider_fails_instead_of_falling_back(self):
+        with self.assertRaisesRegex(RuntimeError, "CUDAExecutionProvider"):
+            self._providers(["CPUExecutionProvider"], "cuda:0")
+
+    def test_explicit_provider_rejects_a_non_numeric_index(self):
+        with self.assertRaisesRegex(RuntimeError, "invalid adapter index"):
+            self._providers(["CUDAExecutionProvider"], "cuda:gpu")
+
 
 class TestRunnerWithDirectML(unittest.TestCase):
     def _runner(self, session: MagicMock):

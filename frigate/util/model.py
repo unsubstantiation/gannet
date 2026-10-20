@@ -330,6 +330,46 @@ def get_ort_providers(
             ],
         )
 
+    requested = (device or "AUTO").strip()
+    lowered = requested.casefold()
+    provider_index: int | None = None
+
+    for prefix, provider_name in (
+        ("cuda", "CUDAExecutionProvider"),
+        ("directml", "DmlExecutionProvider"),
+        ("dml", "DmlExecutionProvider"),
+    ):
+        if lowered == prefix or lowered.startswith(f"{prefix}:"):
+            _, separator, suffix = requested.partition(":")
+            if separator and not suffix.isdecimal():
+                raise RuntimeError(
+                    f"The configured ONNX Runtime device '{requested}' has an "
+                    "invalid adapter index; use the provider name or a numeric index."
+                )
+            provider_index = int(suffix) if separator else 0
+            available = ort.get_available_providers()
+            if provider_name not in available:
+                raise RuntimeError(
+                    f"The configured ONNX Runtime device '{requested}' requires "
+                    f"{provider_name}, which is not installed. Select another "
+                    "device or install the matching accelerator runtime."
+                )
+            if provider_name == "CUDAExecutionProvider":
+                options = [
+                    {
+                        "arena_extend_strategy": "kSameAsRequested",
+                        "use_ep_level_unified_stream": True,
+                        "device_id": provider_index,
+                    },
+                    {"enable_cpu_mem_arena": False},
+                ]
+            else:
+                options = [
+                    {"device_id": provider_index},
+                    {"enable_cpu_mem_arena": False},
+                ]
+            return [provider_name, "CPUExecutionProvider"], options
+
     providers = []
     options = []
 
