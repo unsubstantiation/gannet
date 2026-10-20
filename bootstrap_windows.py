@@ -42,12 +42,21 @@ REQUIREMENTS = REPO_ROOT / "requirements.txt"
 LAUNCHER_NAME = "run_frigate.ps1"
 RESTART_MARKER_NAME = "restart.requested"
 
-# onnxruntime and onnxruntime-directml both provide the onnxruntime import,
-# so DirectML is a swap rather than an addition. The DirectML package lags
-# the CPU package in version; 1.24 is the newest line with a CPython 3.12
-# Windows wheel.
-ONNXRUNTIME_PACKAGE = "onnxruntime"
+# These packages all provide the onnxruntime import and must be installed as
+# mutually exclusive alternatives. DirectML currently trails upstream ORT; the
+# CUDA package tracks the pinned CPU ONNX Runtime and bundles its CUDA 13/cuDNN
+# runtime dependencies through its official PyPI extras.
+ONNXRUNTIME_PACKAGES = (
+    "onnxruntime",
+    "onnxruntime-directml",
+    "onnxruntime-gpu",
+    "onnxruntime-windowsml",
+    "windowsml",
+)
+ONNXRUNTIME_CPU_PACKAGE = "onnxruntime==1.31.*"
 DIRECTML_PACKAGE = "onnxruntime-directml==1.24.*"
+CUDA_PACKAGE = "onnxruntime-gpu[cuda,cudnn]==1.31.*"
+WINDOWS_ML_PACKAGE = "windowsml[with-ort]==2.4.*"
 
 
 @dataclass(frozen=True)
@@ -482,21 +491,29 @@ def run(command: list[str], *, cwd: Path | None = None) -> None:
         )
 
 
-def install_requirements(python: Path, directml: bool) -> None:
+def install_requirements(python: Path, accelerator: str = "directml") -> None:
+    if accelerator not in {"cpu", "directml", "cuda", "windows-ml"}:
+        raise BootstrapError(
+            "Unknown ONNX Runtime accelerator "
+            f"{accelerator!r}; choose cpu, directml, cuda, or windows-ml"
+        )
+
     run([str(python), "-m", "pip", "install", "--upgrade", "pip"])
     run([str(python), "-m", "pip", "install", "-r", str(REQUIREMENTS)])
     run(
         [str(python), "-m", "pip", "install", "--editable", str(REPO_ROOT), "--no-deps"]
     )
 
-    if directml:
-        logger.info(
-            "Swapping %s for %s for GPU inference through DirectML",
-            ONNXRUNTIME_PACKAGE,
-            DIRECTML_PACKAGE,
-        )
-        run([str(python), "-m", "pip", "uninstall", "-y", ONNXRUNTIME_PACKAGE])
-        run([str(python), "-m", "pip", "install", DIRECTML_PACKAGE])
+    package = {
+        "cpu": ONNXRUNTIME_CPU_PACKAGE,
+        "directml": DIRECTML_PACKAGE,
+        "cuda": CUDA_PACKAGE,
+        "windows-ml": WINDOWS_ML_PACKAGE,
+    }[accelerator]
+    for installed in ONNXRUNTIME_PACKAGES:
+        run([str(python), "-m", "pip", "uninstall", "-y", installed])
+    logger.info("Installing ONNX Runtime for %s inference: %s", accelerator, package)
+    run([str(python), "-m", "pip", "install", package])
 
 
 ### Web interface
@@ -740,18 +757,39 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="do not create the Start Menu shortcut",
     )
-    parser.add_argument(
+    accelerator_group = parser.add_mutually_exclusive_group()
+    accelerator_group.add_argument(
         "--directml",
-        action="store_true",
-        default=True,
-        help="use onnxruntime-directml for GPU inference on AMD, Intel and Nvidia (default)",
+        action="store_const",
+        const="directml",
+        dest="accelerator",
+        help="use ONNX Runtime DirectML for AMD, Intel and Nvidia GPUs (default)",
     )
-    parser.add_argument(
+    accelerator_group.add_argument(
+        "--cuda",
+        action="store_const",
+        const="cuda",
+        dest="accelerator",
+        help="use ONNX Runtime CUDA 13 for NVIDIA GPU inference",
+    )
+    accelerator_group.add_argument(
+        "--windows-ml",
+        action="store_const",
+        const="windows-ml",
+        dest="accelerator",
+        help=(
+            "use the Windows ML catalog runtime (installs its matching ONNX Runtime; "
+            "install vendor EPs separately)"
+        ),
+    )
+    accelerator_group.add_argument(
         "--no-directml",
-        action="store_false",
-        dest="directml",
-        help="use CPU-only onnxruntime instead of DirectML",
+        action="store_const",
+        const="cpu",
+        dest="accelerator",
+        help="use CPU ONNX Runtime instead of an ONNX GPU provider",
     )
+    parser.set_defaults(accelerator="directml")
     parser.add_argument(
         "--add-defender-exclusion",
         action="store_true",
@@ -787,7 +825,7 @@ def main(argv: list[str] | None = None) -> int:
             python = ensure_venv(Path(args.venv))
 
         if not args.skip_deps:
-            install_requirements(python, args.directml)
+            install_requirements(python, args.accelerator)
 
         if not args.skip_binaries:
             install_artifact(FFMPEG_ARTIFACT, layout, download_dir)

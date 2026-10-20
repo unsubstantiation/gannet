@@ -20,10 +20,14 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-# onnxruntime and onnxruntime-directml both provide the onnxruntime import,
-# so this extra replaces the package pinned in requirements.txt instead of
-# adding to it. bootstrap_windows.py --directml performs the swap.
+# These runtime distributions all provide the onnxruntime import and are
+# mutually exclusive. The bootstrap script replaces the base requirement when
+# a non-CPU profile is selected. Windows ML's supported extra pins the ORT
+# build required by windowsml 2.4.x (1.27.1), which intentionally differs from
+# the general 1.31 line until cross-version compatibility is verified.
 windows-directml = ["onnxruntime-directml == 1.24.*"]
+windows-cuda = ["onnxruntime-gpu[cuda,cudnn] == 1.31.*"]
+windows-ml = ["windowsml[with-ort] == 2.4.*"]
 
 [tool.setuptools.packages.find]
 include = ["frigate*"]

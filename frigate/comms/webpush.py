@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from multiprocessing.synchronize import Event as MpEvent
 from typing import Any
 
+import requests
 from py_vapid import Vapid01
 from pywebpush import WebPusher
 from titlecase import titlecase
@@ -25,8 +26,20 @@ from frigate.config.camera.updater import (
 )
 from frigate.const import BASE_DIR, CONFIG_DIR
 from frigate.models import User
+from frigate.util.webpush import validate_subscription, vapid_audience
 
 logger = logging.getLogger(__name__)
+
+
+class _NoRedirectSession(requests.Session):
+    """Do not let a stored subscription redirect sends to an internal URL."""
+
+    def request(self, *args: Any, **kwargs: Any) -> requests.Response:
+        kwargs["allow_redirects"] = False
+        return super().request(*args, **kwargs)
+
+
+_push_session = _NoRedirectSession()
 
 
 @dataclass
@@ -46,9 +59,17 @@ def _build_web_pushers(user: str, subs: list[dict[str, Any]]) -> list[WebPusher]
     pushers: list[WebPusher] = []
 
     for sub in subs:
-        # WebPusher decodes the stored keys and raises on malformed ones
+        # Registration validation does not cover rows already persisted in the
+        # database, so check the endpoint again before constructing a sender.
+        reason = validate_subscription(sub)
+        if reason:
+            logger.warning(
+                "Skipping notification subscription for %s: %s", user, reason
+            )
+            continue
+
         try:
-            pushers.append(WebPusher(sub))
+            pushers.append(WebPusher(sub, requests_session=_push_session))
         except Exception:
             logger.warning("Skipping invalid notification subscription for %s", user)
 
@@ -131,7 +152,7 @@ class WebPushClient(Communicator):
             for pushers in self.web_pushers.values():
                 for push in pushers:
                     endpoint: str = push.subscription_info["endpoint"]
-                    endpoints.add(endpoint[0 : endpoint.index("/", 10)])
+                    endpoints.add(vapid_audience(endpoint))
 
             # create new claim
             for endpoint in endpoints:
@@ -320,9 +341,7 @@ class WebPushClient(Communicator):
 
                 for pusher in self.web_pushers[notification.user]:
                     endpoint = pusher.subscription_info["endpoint"]
-                    headers = self.claim_headers[
-                        endpoint[: endpoint.index("/", 10)]
-                    ].copy()
+                    headers = self.claim_headers[vapid_audience(endpoint)].copy()
                     headers["urgency"] = "high"
 
                     resp = pusher.send(

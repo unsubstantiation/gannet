@@ -1,5 +1,6 @@
 """Tests for native Windows detection-hardware discovery."""
 
+import sys
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -61,7 +62,10 @@ class TestDirectMlHardware(unittest.TestCase):
         gpu = hardware.detect_directml_gpu()
 
         self.assertEqual(gpu.key, "onnx:directml")
-        self.assertEqual([unit.device for unit in gpu.units], ["onnx:0", "onnx:1"])
+        self.assertEqual(
+            [unit.device for unit in gpu.units],
+            ["onnx:directml:0", "onnx:directml:1"],
+        )
         self.assertEqual(
             [unit.label for unit in gpu.units], ["Intel Arc", "AMD Radeon"]
         )
@@ -82,6 +86,32 @@ class TestDirectMlHardware(unittest.TestCase):
     )
     def test_directml_is_ignored_without_display_adapters(self, _providers, _adapters):
         self.assertIsNone(hardware.detect_directml_gpu())
+
+
+class TestWindowsMlHardware(unittest.TestCase):
+    @patch(
+        "frigate.detectors.hardware.registered_provider_devices",
+        return_value={"QNNExecutionProvider": [object()]},
+    )
+    def test_catalog_providers_are_available_as_selectable_onnx_units(self, _devices):
+        with patch.dict(sys.modules, {"onnxruntime": MagicMock()}):
+            detected = hardware.detect_windows_ml()
+
+        self.assertEqual(detected.key, "onnx:windowsml")
+        self.assertEqual(detected.detector, "onnx")
+        self.assertEqual(
+            detected.units[0].device,
+            "onnx:windowsml:QNNExecutionProvider",
+        )
+        self.assertEqual(detected.units[0].label, "Qualcomm QNN")
+
+    @patch(
+        "frigate.detectors.hardware.registered_provider_devices",
+        return_value={},
+    )
+    def test_no_ready_catalog_providers_are_ignored(self, _devices):
+        with patch.dict(sys.modules, {"onnxruntime": MagicMock()}):
+            self.assertIsNone(hardware.detect_windows_ml())
 
 
 class TestNvidiaHardware(unittest.TestCase):
@@ -107,7 +137,10 @@ class TestNvidiaHardware(unittest.TestCase):
 
         self.assertEqual(gpu.key, "onnx:nvidia")
         self.assertEqual(gpu.name, "NVIDIA GPU")
-        self.assertEqual([unit.device for unit in gpu.units], ["onnx:0", "onnx:1"])
+        self.assertEqual(
+            [unit.device for unit in gpu.units],
+            ["onnx:cuda:0", "onnx:cuda:1"],
+        )
         self.assertEqual([unit.label for unit in gpu.units], ["RTX 3060", "RTX 4090"])
 
     @patch(

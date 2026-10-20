@@ -9,6 +9,11 @@ from typing import Any
 import numpy as np
 import onnxruntime as ort
 
+from frigate.detectors.windows_ml import (
+    provider_from_device,
+    provider_label,
+    registered_provider_devices,
+)
 from frigate.util.model import get_ort_providers
 
 logger = logging.getLogger(__name__)
@@ -230,9 +235,7 @@ class ONNXModelRunner(BaseModelRunner):
             return "CPU"
 
         provider = providers[0]
-        return _PROVIDER_LABELS.get(
-            provider, provider.removesuffix("ExecutionProvider")
-        )
+        return _PROVIDER_LABELS.get(provider, provider_label(provider))
 
 
 class CudaGraphRunner(BaseModelRunner):
@@ -576,6 +579,35 @@ def get_optimized_runner(
 ) -> BaseModelRunner:
     """Get an optimized runner for the hardware."""
     device = device or "AUTO"
+
+    windows_ml_provider = provider_from_device(device)
+    if windows_ml_provider:
+        devices = registered_provider_devices(ort).get(windows_ml_provider, [])
+        if not devices:
+            raise RuntimeError(
+                f"Windows ML provider {windows_ml_provider!r} is not ready on this "
+                "PC. Run `python scripts/manage_windows_ml.py install "
+                f"{windows_ml_provider}` and retry."
+            )
+
+        session_options = get_ort_session_options(model_type, cpu=False)
+        session_options = session_options or ort.SessionOptions()
+        add_provider = getattr(session_options, "add_provider_for_devices", None)
+        if add_provider is None:
+            raise RuntimeError(
+                "This ONNX Runtime build does not support plugin execution "
+                "providers. Install the Windows ML compatible ONNX Runtime "
+                "version from the Frigate requirements."
+            )
+        add_provider(devices, {})
+        return _record_runner(
+            model_path,
+            model_type,
+            ONNXModelRunner(
+                ort.InferenceSession(model_path, sess_options=session_options),
+                model_type=model_type,
+            ),
+        )
 
     providers, options = get_ort_providers(device == "CPU", device, **kwargs)
 

@@ -238,6 +238,47 @@ class TestLauncher(unittest.TestCase):
         self.assertIn(str(venv.resolve()), script)
 
 
+class TestAcceleratorInstall(unittest.TestCase):
+    def test_cpu_profile_replaces_any_existing_gpu_runtime(self):
+        calls = []
+        with patch.object(
+            bootstrap, "run", side_effect=lambda command: calls.append(command)
+        ):
+            bootstrap.install_requirements(Path(r"C:\venv\python.exe"), "cpu")
+
+        self.assertEqual(calls[-1][-1], bootstrap.ONNXRUNTIME_CPU_PACKAGE)
+        self.assertTrue(any("onnxruntime-directml" in call for call in calls))
+
+    def test_cuda_profile_replaces_runtime_and_installs_cuda_extras(self):
+        calls = []
+        with patch.object(
+            bootstrap, "run", side_effect=lambda command: calls.append(command)
+        ):
+            bootstrap.install_requirements(Path(r"C:\venv\python.exe"), "cuda")
+
+        packages = [call[-1] for call in calls if "pip" in call and len(call) > 4]
+        self.assertEqual(packages[-1], bootstrap.CUDA_PACKAGE)
+        self.assertIn("onnxruntime-gpu", packages)
+        self.assertIn("onnxruntime-directml", packages)
+        self.assertIn("onnxruntime-windowsml", packages)
+
+    def test_windows_ml_profile_uses_its_declared_compatible_runtime_extra(self):
+        calls = []
+        with patch.object(
+            bootstrap, "run", side_effect=lambda command: calls.append(command)
+        ):
+            bootstrap.install_requirements(Path(r"C:\venv\python.exe"), "windows-ml")
+
+        self.assertEqual(calls[-1][-1], bootstrap.WINDOWS_ML_PACKAGE)
+
+    def test_unknown_profile_is_rejected_before_running_pip(self):
+        with patch.object(bootstrap, "run") as run:
+            with self.assertRaises(bootstrap.BootstrapError):
+                bootstrap.install_requirements(Path("python"), "bogus")
+
+        run.assert_not_called()
+
+
 class TestInstallArtifact(unittest.TestCase):
     def test_existing_binaries_short_circuit_the_download(self):
         with tempfile.TemporaryDirectory() as tmp:

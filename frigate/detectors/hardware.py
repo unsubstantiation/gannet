@@ -10,6 +10,10 @@ import logging
 from pydantic import BaseModel, Field
 
 from frigate.detectors.detector_types import config_types
+from frigate.detectors.windows_ml import (
+    provider_label,
+    registered_provider_devices,
+)
 from frigate.util.platform import get_display_adapters
 
 logger = logging.getLogger(__name__)
@@ -113,7 +117,7 @@ def detect_directml_gpu() -> DetectionHardware | None:
         return None
 
     units = [
-        HardwareUnit(device=f"onnx:{index}", label=label)
+        HardwareUnit(device=f"onnx:directml:{index}", label=label)
         for index, label in enumerate(adapters)
     ]
     return _hardware("onnx:directml", "onnx", "DirectML GPU", units)
@@ -135,7 +139,7 @@ def detect_nvidia_gpu() -> DetectionHardware | None:
             label = nvml.nvmlDeviceGetName(handle)
             if isinstance(label, bytes):
                 label = label.decode("utf-8", errors="replace")
-            units.append(HardwareUnit(device=f"onnx:{index}", label=label))
+            units.append(HardwareUnit(device=f"onnx:cuda:{index}", label=label))
     except Exception:
         logger.debug("Could not enumerate NVIDIA GPUs through NVML", exc_info=True)
         return None
@@ -145,6 +149,30 @@ def detect_nvidia_gpu() -> DetectionHardware | None:
 
     name = units[0].label if len(units) == 1 else "NVIDIA GPU"
     return _hardware("onnx:nvidia", "onnx", name, units)
+
+
+def detect_windows_ml() -> DetectionHardware | None:
+    """Expose Windows ML vendor execution providers available on this PC."""
+    try:
+        import onnxruntime as ort
+
+        devices_by_provider = registered_provider_devices(ort)
+    except Exception:
+        logger.debug("Windows ML providers are unavailable", exc_info=True)
+        return None
+
+    units = [
+        HardwareUnit(
+            device=f"onnx:windowsml:{name}",
+            label=provider_label(name),
+        )
+        for name, devices in sorted(devices_by_provider.items())
+        if devices
+    ]
+    if not units:
+        return None
+
+    return _hardware("onnx:windowsml", "onnx", "Windows ML", units)
 
 
 def detect_cpu() -> DetectionHardware:
@@ -160,6 +188,7 @@ def detect_cpu() -> DetectionHardware:
 WINDOWS_PROBES = (
     detect_intel_npu,
     detect_intel_gpu,
+    detect_windows_ml,
     detect_nvidia_gpu,
     detect_directml_gpu,
     detect_cpu,

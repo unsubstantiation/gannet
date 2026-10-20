@@ -51,6 +51,16 @@ def get_current_job(job_type: str) -> Job | None:
         return _current_jobs.get(job_type)
 
 
+def remove_job_by_id(job_type: str, job_id: str) -> None:
+    """Remove a completed job once its polling retention period has elapsed."""
+    lock = _get_lock(job_type)
+    with lock:
+        _completed_jobs.pop((job_type, job_id), None)
+        current = _current_jobs.get(job_type)
+        if current and current.id == job_id:
+            _current_jobs[job_type] = None
+
+
 def get_job_by_id(job_type: str, job_id: str) -> Job | None:
     """Get job by ID. Checks current job first, then completed jobs."""
     lock = _get_lock(job_type)

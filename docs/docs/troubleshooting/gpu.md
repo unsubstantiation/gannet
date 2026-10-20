@@ -5,7 +5,7 @@ title: GPU Troubleshooting
 
 # GPU troubleshooting on Windows
 
-Frigate discovers display adapters with Windows APIs, OpenVINO devices with the OpenVINO runtime, DirectML through ONNX Runtime, and NVIDIA telemetry through NVML. A GPU visible in Task Manager is not automatically available to every runtime.
+Frigate discovers display adapters with Windows APIs, OpenVINO devices with OpenVINO, DirectML through ONNX Runtime, Windows ML catalog execution providers through ONNX Runtime plugin APIs, CUDA devices through NVML, and NVIDIA telemetry through NVML. A GPU visible in Task Manager is not automatically available to every runtime.
 
 ## Basic checks
 
@@ -49,13 +49,17 @@ Only one ONNX Runtime package should be installed in the environment. Confirm `D
 
 ## NVIDIA CUDA and telemetry
 
-CUDA inference requires a CUDA-enabled ONNX Runtime build compatible with the installed driver. Video decode uses Frigate's FFmpeg build and does not require ONNX CUDA. NVML statistics require the NVIDIA driver and may be unavailable even when video decoding works.
+Install the supported NVIDIA ONNX Runtime profile with `py -3.12 bootstrap_windows.py --cuda`; this selects the 1.31 GPU runtime and its CUDA 13/cuDNN 9 extras. The NVIDIA driver must support that runtime. Video decode uses Frigate's FFmpeg build and does not require ONNX CUDA. NVML statistics require the NVIDIA driver and may be unavailable even when video decoding works.
+
+## Windows ML vendor providers
+
+The Windows ML profile uses the ORT build specifically pinned by Microsoft's `windowsml[with-ort]` extra, not the repository's general 1.31 runtime. On Windows 11 24H2 or later, run `py -3.12 bootstrap_windows.py --windows-ml`, then `python scripts/manage_windows_ml.py list` and explicitly install a compatible provider. Frigate only registers providers that are ready and visible to ONNX Runtime. Model/operator support is provider-specific; test the selected model and inspect logs. Choose one ONNX Runtime profile at a time.
 
 If multiple NVIDIA adapters exist, keep detector, FFmpeg, and enrichment device indices explicit and confirm each tool uses the intended adapter.
 
 ## AMD
 
-Use D3D11VA or DXVA2 for decoding and AMF where encoding is needed. ONNX GPU inference on AMD/Intel uses DirectML in this Windows build; ROCm providers are not supported.
+Use D3D11VA or DXVA2 for decoding and AMF where encoding is needed. ONNX inference on AMD/Intel may use DirectML or a compatible Windows ML catalog provider such as MIGraphX, Vitis AI, OpenVINO, or QNN. ROCm/Linux providers are not supported. Video acceleration remains a separate FFmpeg configuration.
 
 ## Reporting a failure
 
