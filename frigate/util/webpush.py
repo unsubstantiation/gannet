@@ -53,6 +53,8 @@ def validate_push_endpoint(endpoint: Any) -> str | None:
             return "endpoint must not use a private address"
     elif hostname == "localhost" or "." not in hostname:
         return "endpoint must use a fully qualified hostname"
+    elif "" in hostname.split("."):
+        return "endpoint hostname must not contain empty labels"
     elif hostname.endswith(INTERNAL_HOST_SUFFIXES):
         return "endpoint must not use an internal hostname"
 

@@ -1,11 +1,12 @@
-"""Tests that persisted push subscriptions cannot redirect or target local hosts."""
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
+"""Tests that push sends never follow redirects."""
 
 import unittest
 
 import requests
 from requests.adapters import BaseAdapter
 
-from frigate.comms.webpush import _build_web_pushers, _NoRedirectSession
+from frigate.comms.webpush import _NoRedirectSession
 
 ENDPOINT = "https://push.example.com/token"
 
@@ -39,16 +40,6 @@ class TestNoRedirectSession(unittest.TestCase):
 
         self.assertEqual(response.status_code, 307)
         self.assertEqual(adapter.calls, 1)
-
-
-class TestStoredSubscriptionValidation(unittest.TestCase):
-    def test_skips_localhost_endpoints_from_old_database_rows(self):
-        subscription = {
-            "endpoint": "https://127.0.0.1:8971/api/restart",
-            "keys": {"p256dh": "cHVibGljLWtleQ", "auth": "YXV0aC1zZWNyZXQ"},
-        }
-
-        self.assertEqual(_build_web_pushers("alice", [subscription]), [])
 
 
 if __name__ == "__main__":

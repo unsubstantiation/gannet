@@ -28,8 +28,10 @@ class AuthConfig(FrigateBaseModel):
         default=True,
         title="Secure cookie flag",
         description=(
-            "Set the Secure flag on the authentication cookie. Disable only "
-            "when the public listener intentionally uses plain HTTP."
+            "Always set the Secure flag on the authentication cookie. The "
+            "native server already sets it when serving TLS; enable this when "
+            "a reverse proxy terminates TLS in front of plain-HTTP Frigate. A "
+            "proxy on the TLS port must serve Frigate to browsers over HTTPS."
         ),
     )
     session_length: int = Field(

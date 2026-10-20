@@ -1,4 +1,3 @@
-# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Tests for the ETW per-process bandwidth collector.
 
 The kernel logger session only exists on Windows, so the native

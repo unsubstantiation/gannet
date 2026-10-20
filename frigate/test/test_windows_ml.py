@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Windows ML execution-provider registration and selection helpers."""
 
 import tempfile

@@ -21,6 +21,16 @@ Publish Frigate at the root of a dedicated hostname. The native gateway does not
 
 If the proxy connects to Frigate over HTTPS with its generated certificate, configure the proxy to trust that certificate. Alternatively, bind Frigate's public listener to loopback with `FRIGATE_WEB_HOST=127.0.0.1`, disable Frigate TLS, and let the local proxy provide TLS. Do not use plain HTTP across an untrusted network.
 
+## WebSocket origin checks
+
+Frigate rejects a browser WebSocket or go2rtc stream connection opened from a
+page on another site, because the internal listener trusts any request that
+reaches it. The check compares the browser's `Origin` host with the request's
+`Host` and `X-Forwarded-Host`, ignoring ports. A proxy must therefore preserve
+the original `Host` header or send the original host in `X-Forwarded-Host`;
+otherwise Frigate cannot tell that the connection came from its own UI. Requests
+with no `Origin` header, such as non-browser clients, are still accepted.
+
 ## Forwarded client addresses
 
 Frigate ignores caller-supplied forwarding data unless the immediate proxy is listed under `auth.trusted_proxies`. Add only the proxy's address or a narrow network:

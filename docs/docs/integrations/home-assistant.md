@@ -33,6 +33,10 @@ The Home Assistant `media_source` integration must be enabled for Frigate's Medi
 
 The current integration supports Frigate's native JWT login. Do not use port `5000`: it is an unauthenticated, loopback-only listener reserved for Frigate's own processes and cannot be opened to another machine.
 
+Frigate rejects browser connections to its live streams that come from another
+origin, such as a Home Assistant dashboard. Configure cards to stream through the
+integration's proxy rather than pointing them directly at Frigate's port.
+
 ## TLS
 
 Frigate generates a self-signed certificate by default. Home Assistant will reject it while certificate validation is enabled. Prefer installing a certificate whose authority Home Assistant trusts. If that is not immediately possible, the integration can disable certificate validation for this connection, but traffic should remain on a trusted network.

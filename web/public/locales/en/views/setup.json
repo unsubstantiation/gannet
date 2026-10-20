@@ -47,7 +47,12 @@
         "none": "None (software decoding)",
         "windows-nvenc": "CUDA/NVENC (NVIDIA on Windows)",
         "windows-qsv": "QuickSync (Intel on Windows)",
-        "windows-d3d11va": "D3D11VA (Windows)"
+        "windows-d3d11va": "D3D11VA (Windows)",
+        "vaapi": "VAAPI (Intel/AMD)",
+        "rkmpp": "RKMPP (Rockchip)",
+        "jetson": "NVIDIA Jetson",
+        "rpi": "V4L2 (Raspberry Pi)",
+        "apple-silicon": "Media engine (Apple Silicon)"
       }
     },
     "detector": {

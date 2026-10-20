@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 from frigate.api.auth import require_camera_access
 from frigate.api.defs.tags import Tags
+from frigate.config import FrigateConfig
 from frigate.jobs.motion_search import (
     MotionSearchCapacityError,
     MotionSearchUserBusyError,
@@ -105,6 +106,20 @@ class MotionSearchStatusResponse(BaseModel):
     metrics: MotionSearchMetricsResponse | None = None
     scanning_timestamp: float | None = None
     progress: float | None = None
+
+
+def _per_user_identity(request: Request, config: FrigateConfig) -> str | None:
+    """Return the requesting user, or None when callers share one identity.
+
+    Internal-port requests are all "anonymous", and with auth disabled and no
+    proxy user header every browser is "viewer".
+    """
+    username = request.headers.get("remote-user")
+    if not username or username == "anonymous":
+        return None
+    if config.auth.enabled or config.proxy.header_map.user:
+        return username
+    return None
 
 
 @router.post(

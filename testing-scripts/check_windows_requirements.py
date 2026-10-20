@@ -111,6 +111,9 @@ PLATFORM_ONLY = {
     "torch",
     "whisper",
     "whisper_timestamped",
+    # Windows ML is an optional onnxruntime alternative installed by
+    # bootstrap_windows.py, not a pinned requirement of its own
+    "windowsml",
     "wtpsplit",
 }
 

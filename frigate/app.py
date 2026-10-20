@@ -616,6 +616,7 @@ class FrigateApp:
                     username="admin",
                     role="admin",
                     password_hash=password_hash,
+                    password_changed_at=datetime.datetime.now(),
                     notification_tokens=[],
                 ).execute()
 
@@ -726,6 +727,7 @@ class FrigateApp:
                 self.config.networking.listen.external_port,
                 self.stop_event,
                 ipv6_enabled=self.config.networking.ipv6.enabled,
+                public_host=self.config.networking.listen.external_host,
                 tls_enabled=self.config.tls.enabled,
                 tls_cert_file=self.config.tls.cert_file,
                 tls_key_file=self.config.tls.key_file,

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Windows ML execution-provider discovery and per-process registration.
 
 The Windows ML catalog manages vendor EP installation. ONNX Runtime's Python

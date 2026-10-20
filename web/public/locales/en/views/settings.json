@@ -1041,7 +1041,8 @@
     "title": "Users",
     "management": {
       "title": "User Management",
-      "desc": "Manage this Frigate instance's user accounts."
+      "desc": "Manage this Frigate instance's user accounts.",
+      "authDisabled": "Built-in authentication is disabled. These accounts are only used to log in once it's enabled."
     },
     "addUser": "Add User",
     "updatePassword": "Reset Password",
@@ -1315,7 +1316,8 @@
         "baseModels": "Base Models",
         "fineTunedModels": "Fine-tuned Models"
       },
-      "modelSelect": "Your available models on Frigate+ can be selected here. Note that only models compatible with your current detector configuration can be selected."
+      "modelSelect": "Your available models on Frigate+ can be selected here. Note that only models compatible with your current detector configuration can be selected.",
+      "showIncompatible": "Show incompatible models"
     },
     "changeInDetectorsAndModel": "Change model",
     "unsavedChanges": "Unsaved Frigate+ settings changes",
@@ -1620,7 +1622,18 @@
         "preset-windows-qsv-h265": "Intel QuickSync H.265/HEVC (Windows)",
         "preset-windows-nvenc": "NVIDIA CUDA/NVENC (Windows)",
         "preset-windows-amf": "AMD AMF (Windows)",
-        "preset-windows-vulkan": "Vulkan (Windows)"
+        "preset-windows-vulkan": "Vulkan (Windows)",
+        "preset-rpi-64-h264": "Raspberry Pi (H.264)",
+        "preset-rpi-64-h265": "Raspberry Pi (H.265)",
+        "preset-apple-silicon-h264": "Apple Silicon (H.264)",
+        "preset-apple-silicon-h265": "Apple Silicon (H.265)",
+        "preset-vaapi": "VAAPI (Intel/AMD GPU)",
+        "preset-intel-qsv-h264": "Intel QuickSync (H.264)",
+        "preset-intel-qsv-h265": "Intel QuickSync (H.265)",
+        "preset-nvidia": "NVIDIA GPU",
+        "preset-jetson-h264": "NVIDIA Jetson (H.264)",
+        "preset-jetson-h265": "NVIDIA Jetson (H.265)",
+        "preset-rkmpp": "Rockchip RKMPP"
       }
     },
     "cameraInputs": {
@@ -1917,7 +1930,10 @@
       "hardwareDxva2": "DXVA2",
       "addVideoCodec": "Add video codec",
       "addAudioCodec": "Add audio codec",
-      "removeCodec": "Remove codec"
+      "removeCodec": "Remove codec",
+      "hardwareVaapi": "VAAPI",
+      "hardwareV4l2m2m": "V4L2 M2M",
+      "hardwareVideotoolbox": "VideoToolbox"
     }
   },
   "birdseye": {

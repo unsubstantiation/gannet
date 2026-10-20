@@ -297,10 +297,18 @@ async def latest_frame(
         and request.app.frigate_config.birdseye.enabled
         and request.app.frigate_config.birdseye.restream
     ):
-        frame = cv2.cvtColor(
-            frame_processor.get_current_frame(camera_name),
-            cv2.COLOR_YUV2BGR_I420,
-        )
+        frame = frame_processor.get_current_frame(camera_name)
+
+        # the birdseye frame is not mapped yet during startup, and its canvas
+        # shape depends on the snapped config, so a missing frame is an error
+        # response rather than a cvtColor failure
+        if frame is None:
+            return JSONResponse(
+                content={"success": False, "message": "Unable to get valid frame"},
+                status_code=500,
+            )
+
+        frame = cv2.cvtColor(frame, cv2.COLOR_YUV2BGR_I420)
 
         height = int(params.height or str(frame.shape[0]))
         width = int(height * frame.shape[1] / frame.shape[0])
