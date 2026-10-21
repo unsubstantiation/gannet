@@ -155,6 +155,43 @@ fails there fails the build. The platform behaviour itself is covered by
 `test_windows_gpu_info.py`, `test_file.py` (read-only and held-file removal)
 and `http_api/test_http_config_encoding.py` (UTF-8 config round trips).
 
+### Feature parity with upstream
+
+This fork tracks [blakeblackshear/frigate](https://github.com/blakeblackshear/frigate)
+feature for feature. The port is audited against upstream `dev` at `91e91c68`
+(2026-10-21); the licensing map in `REUSE.toml` pins the merge point at
+`5bb2cde8`. Five surfaces are compared: the Python modules and their
+functions and classes, the API routes, the configuration schema, and the web
+application (files and English locale keys). `frigate/models.py` and
+`frigate/api/defs` are byte-identical to upstream. Every difference is either
+the same feature with a Windows implementation or one of the exclusions
+below; there is no dropped product feature.
+
+Re-run the audit against any upstream checkout after every merge:
+
+```powershell
+git clone --depth 1 --branch dev https://github.com/blakeblackshear/frigate C:\src\frigate
+python testing-scripts/check_upstream_parity.py --upstream-dir C:\src\frigate
+```
+
+The tool fails when upstream grows a surface the fork does not carry and no
+exclusion covers, and reports exclusions that no longer match anything so the
+list shrinks instead of rotting. Every exclusion is a pattern with a written
+reason in the tool itself.
+
+| Upstream feature not carried | Why | What the fork does instead |
+| --- | --- | --- |
+| Detector plugins for Coral/Edge TPU, TensorRT (TF-TRT), Hailo, RKNN, DeepX, Axelera, AxEngine, MemryX, Synaptics and Teflon | Unix device nodes and vendor Linux SDKs with no maintained native Windows runtime | `cpu` TFLite, `onnx` (DirectML, CUDA, Windows ML catalog), `openvino`, `zmq` |
+| Detector runtime auto-installer (`ensure_dependencies`, `util/runtime_deps.py`) | Installs those Linux SDKs at startup | `bootstrap_windows.py` installs the supported Windows runtimes |
+| Async detector API (`AsyncDetectorRunner`) | Its only implementers are the Axelera and MemryX Linux plugins | The synchronous `DetectorRunner` serves every supported backend |
+| libva diagnostics and GPU selection (`vainfo`, `LibvaGpuSelector`) | libva/DRM | `/api/gpuinfo` and the `preset-windows-*` families |
+| AMD, Intel, Jetson, Rockchip and Raspberry Pi GPU/NPU statistics and thermal-zone temperatures | DRM fdinfo, sysfs, tegrastats | NVML for NVIDIA; panes without a counter are hidden rather than filled with invented numbers |
+| The `/dev/shm` sizing notice | Windows frame memory is page-file backed and has no shm quota | `stats.service.storage` reports the page file |
+| UID/GID ownership, POSIX shm `unlink`, `os.register_at_fork`, memray, SIGUSR1 stack dumps | POSIX-only facilities | ACLs, named mappings, spawn-only multiprocessing |
+| Docker secrets (`CREDENTIALS_DIRECTORY`), the `/run/secrets` JWT lookup and the Home Assistant add-on `/data/options.json` | Container facilities; the native build reads the process environment, `secrets.yaml` and `environment_vars` only | The same three sources, enforced by `frigate/test/test_env.py` |
+| nethogs bandwidth accounting | Needs root and `CAP_NET_ADMIN`/`CAP_NET_RAW` | The ETW kernel-logger collector (elevated Frigate) |
+| `RemoteUserPlugin` | Defined upstream but never registered or read there | Proxy identity uses `proxy_config.header_map` with the shared-secret check |
+
 ### What is still open
 
 - The Windows installer is not published, so the winget manifest stays a
