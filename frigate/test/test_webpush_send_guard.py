@@ -1,4 +1,3 @@
-# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Tests that push sends never follow redirects."""
 
 import unittest

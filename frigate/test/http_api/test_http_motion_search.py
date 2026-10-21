@@ -1,4 +1,3 @@
-# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Tests for motion search job limits."""
 
 from datetime import datetime

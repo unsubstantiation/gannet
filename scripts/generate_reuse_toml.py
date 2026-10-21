@@ -57,8 +57,8 @@ ROOT = Path(__file__).resolve().parent.parent
 REUSE_TOML = ROOT / "REUSE.toml"
 
 UPSTREAM_PROJECT = "blakeblackshear/frigate"
-UPSTREAM_COMMIT = "ee2ae1a957c3c19556240b54520ee8631cbd0c9f"
-UPSTREAM_COMMIT_DATE = "2026-10-18T17:50:05Z"
+UPSTREAM_COMMIT = "5bb2cde8b39b682e5b583f224bd58cc9ea975608"
+UPSTREAM_COMMIT_DATE = "2026-10-20T06:19:40Z"
 
 FRIGATE_NOTICE = "Copyright (c) 2026 Frigate, Inc. and Frigate contributors"
 GANNET_NOTICE = "Copyright (c) 2026 unsubstantiation and the Gannet contributors"
