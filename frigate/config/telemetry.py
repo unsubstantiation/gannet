@@ -11,6 +11,16 @@ class StatsConfig(FrigateBaseModel):
         title="NVIDIA GPU stats",
         description="Collect utilization, encoder, decoder, memory, and temperature through NVML when an NVIDIA GPU is present.",
     )
+    intel_gpu_stats: bool = Field(
+        default=True,
+        title="Intel GPU stats",
+        description="Collect utilization and memory through Windows WMI performance counters when an Intel GPU is present.",
+    )
+    amd_gpu_stats: bool = Field(
+        default=True,
+        title="AMD GPU stats",
+        description="Collect utilization and memory through Windows WMI performance counters when an AMD GPU is present.",
+    )
     network_bandwidth: bool = Field(
         default=False,
         title="Network bandwidth",
