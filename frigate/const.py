@@ -136,7 +136,19 @@ WINDOWS_RESERVED_NAMES = frozenset(
     | {f"lpt{index}" for index in range(10)}
 )
 REGEX_RTSP_CAMERA_USER_PASS = r":\/\/[a-zA-Z0-9_-]+:[\S]+@"
-REGEX_HTTP_CAMERA_USER_PASS = r"user=[a-zA-Z0-9_-]+&password=[\S]+"
+# A "user:" userinfo may hold "/", "#" or "@" in the password, so it runs to the
+# last "@" before the next URL. Anything else stops at the authority end. Group 1
+# is the userinfo and group 2 the rest of the URL.
+REGEX_URL_USERINFO = (
+    r"://((?:[^\s/?#:\[\]]*:(?:(?!://)\S)*|[^\s/?#]+))@((?:(?!://)\S)*)"
+)
+_CREDENTIAL_QUERY_KEYS = (
+    r"(?:user(?:name)?|usr|login|pass(?:word|wd)?|pwd"
+    r"|(?:[a-z_]*_)?token|(?:[a-z_]*_)?secret|client_private|api_?key)"
+)
+REGEX_CREDENTIAL_QUERY_KEY = rf"(?i)[?&]{_CREDENTIAL_QUERY_KEYS}="
+REGEX_CREDENTIAL_QUERY_PARAM = rf"(?i)([?&]{_CREDENTIAL_QUERY_KEYS}=)[^&\s]*"
+REGEX_MASKED_CREDENTIAL = rf"(?i)://\*:\*@|[?&]{_CREDENTIAL_QUERY_KEYS}=\*(?![^&\s])"
 REGEX_JSON = re.compile(r"^\s*\{")
 
 # Preview Values

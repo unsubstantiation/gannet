@@ -13,7 +13,7 @@ from frigate.api.auth import allow_any_authenticated
 from frigate.api.defs.tags import Tags
 from frigate.const import CONFIG_DIR
 from frigate.models import User
-from frigate.util.webpush import validate_push_endpoint as _validate_push_endpoint
+from frigate.util.webpush import validate_push_endpoint
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ def _validate_subscription(sub: Any) -> str | None:
     if not isinstance(sub, dict):
         return "subscription must be an object"
 
-    reason = _validate_push_endpoint(sub.get("endpoint"))
+    reason = validate_push_endpoint(sub.get("endpoint"))
 
     if reason:
         return reason

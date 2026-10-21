@@ -1,4 +1,6 @@
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
+
+from frigate.util.config import parse_listen_address
 
 from .base import FrigateBaseModel
 
@@ -14,38 +16,74 @@ class IPv6Config(FrigateBaseModel):
 
 
 class ListenConfig(FrigateBaseModel):
-    internal: int = Field(
+    internal: int | str = Field(
         default=5000,
-        ge=1,
-        le=65535,
         title="Internal port",
         description=(
             "Loopback-only port for Frigate media jobs. Requests on this port "
-            "are trusted and never exposed to the LAN."
+            'are trusted and never exposed to the LAN. A "host:port" value '
+            "is accepted for compatibility, but the internal listener always "
+            "binds 127.0.0.1."
         ),
     )
-    external: int = Field(
+    external: int | str = Field(
         default=8971,
-        ge=1,
-        le=65535,
         title="External port",
-        description="Authenticated Windows web-interface port.",
+        description=(
+            'Authenticated Windows web-interface port. A "host:port" value '
+            "sets the address the public listener binds; FRIGATE_WEB_HOST "
+            "takes precedence when it is set."
+        ),
     )
+
+    # Runs before pydantic coerces a bool to an int port, which the address
+    # parser rejects: a config typo must fail loudly instead of listening on 1
+    @field_validator("internal", "external", mode="before")
+    @classmethod
+    def validate_listen(cls, value: int | str) -> int | str:
+        return parse_listen_address(value)[0]
 
     @property
     def internal_port(self) -> int:
-        return self.internal
+        return parse_listen_address(self.internal)[1]
 
     @property
     def external_port(self) -> int:
-        return self.external
+        return parse_listen_address(self.external)[1]
+
+    @property
+    def internal_host(self) -> str | None:
+        """Address named by the internal value, if any.
+
+        The native internal listener is loopback-only by contract, so an
+        address here is never used to widen it.
+        """
+        return _listen_host(self.internal)
+
+    @property
+    def external_host(self) -> str | None:
+        """Address the public listener should bind, or None for the default."""
+        return _listen_host(self.external)
 
     @model_validator(mode="after")
     def validate_distinct_ports(self) -> "ListenConfig":
-        if self.internal == self.external:
+        if self.internal_port == self.external_port:
             raise ValueError("internal and external must listen on different ports")
 
         return self
+
+
+def _listen_host(value: int | str) -> str | None:
+    """Return the address part of a listen value, or None when it is a bare port."""
+    host, sep, _ = str(value).strip().rpartition(":")
+
+    if not sep or not host:
+        return None
+
+    if host.startswith("[") and host.endswith("]"):
+        return host[1:-1]
+
+    return host
 
 
 class NetworkingConfig(FrigateBaseModel):

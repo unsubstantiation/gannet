@@ -199,17 +199,23 @@ def is_ipv6_address(value: str) -> bool:
         return False
 
 
-def get_web_host(ipv6_enabled: bool = False) -> str:
+def get_web_host(ipv6_enabled: bool = False, configured_host: str | None = None) -> str:
     """Address the public listener binds.
 
-    ``FRIGATE_WEB_HOST`` is an explicit operator override and always wins. With
-    no override, ``networking.ipv6.enabled`` decides between the dual-stack
-    wildcard (``::``, which Windows also accepts IPv4 connections on) and the
-    IPv4-only one. An IPv6 override while IPv6 is disabled in the config is
-    bound as asked for, but the disagreement is reported: the firewall rule and
-    the documented port behaviour both assume the config is what is in effect.
+    ``FRIGATE_WEB_HOST`` is an explicit operator override and always wins. Next
+    is the address named by a ``host:port`` value in
+    ``networking.listen.external``; ``*`` there means the wildcard, the same as
+    nginx's ``listen *:port``. With neither, ``networking.ipv6.enabled`` decides
+    between the dual-stack wildcard (``::``, which Windows also accepts IPv4
+    connections on) and the IPv4-only one. An IPv6 address while IPv6 is
+    disabled in the config is bound as asked for, but the disagreement is
+    reported: the firewall rule and the documented port behaviour both assume
+    the config is what is in effect.
     """
     override = os.environ.get(WEB_HOST_VAR, "").strip()
+
+    if not override and configured_host:
+        override = "" if configured_host == "*" else configured_host
 
     if override:
         if is_ipv6_address(override) and not ipv6_enabled:

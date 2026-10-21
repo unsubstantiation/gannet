@@ -588,7 +588,7 @@ class MotionSearchRunner(threading.Thread):
 
         # Decide keyframe vs fixed-cadence sampling once from the first run's GOP
         # (keyframe structure is a per-camera constant).
-        first_pts = probe_vod_keyframe_pts(ffprobe_path, first_url)
+        first_pts = probe_vod_keyframe_pts(ffprobe_path, first_url, self._should_stop)
         self.use_keyframe = keyframe_sampling_eligible(first_pts)
 
         logger.debug(
@@ -650,7 +650,9 @@ class MotionSearchRunner(threading.Thread):
         time_map = build_segment_time_map(run)
 
         if self.use_keyframe:
-            kf_pts = probe_vod_keyframe_pts(self.ffprobe_path, vod_url)
+            kf_pts = probe_vod_keyframe_pts(
+                self.ffprobe_path, vod_url, self._should_stop
+            )
             frames = list(
                 iter_vod_frames(
                     self.ffmpeg_path,
@@ -786,13 +788,15 @@ class MotionSearchRunner(threading.Thread):
                         run_results, frames = completed.pop(next_idx)
                         if self._merge_run(runs[next_idx], run_results, frames, state):
                             self.internal_stop_event.set()
-                            for pending in futures:
-                                pending.cancel()
                             break
                         next_idx += 1
 
                     if self.internal_stop_event.is_set():
                         break
+
+                # Queued runs would otherwise still execute when the pool exits.
+                for pending in futures:
+                    pending.cancel()
         else:
             for run in runs:
                 if self._should_stop():

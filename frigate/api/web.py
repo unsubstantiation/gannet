@@ -105,12 +105,24 @@ def needs_auth(path: str) -> bool:
 # ---------------------------------------------------------------------------
 
 
+def _request_header(scope: dict, name: bytes) -> str | None:
+    """Return the first value of a request header, decoded."""
+    for key, value in scope.get("headers", []):
+        if key.lower() == name:
+            return value.decode("latin-1")
+
+    return None
+
+
 def build_auth_scope(scope: dict, port: int) -> dict:
     """Build the scope the local auth check runs against.
 
     Preserve the original method and URL, listener port, credentials, and CSRF
     marker. Only explicitly allowed request headers reach the auth endpoint, so
-    a caller cannot inject a trusted ``Remote-Role`` value.
+    a caller cannot inject a trusted ``Remote-Role`` value. The origin inputs
+    are derived the same way the container's nginx proxy derives them, and the
+    forwarded scheme comes from the listener the request actually arrived on,
+    never from a client header.
     """
     headers = [
         (key, value)
@@ -119,12 +131,7 @@ def build_auth_scope(scope: dict, port: int) -> dict:
     ]
 
     scheme = scope.get("scheme", "http")
-    host = ""
-
-    for key, value in scope.get("headers", []):
-        if key.lower() == b"host":
-            host = value.decode("latin-1")
-            break
+    host = _request_header(scope, b"host") or ""
 
     raw_path = scope.get("raw_path") or scope.get("path", "").encode("latin-1")
     query = scope.get("query_string", b"")
@@ -137,6 +144,24 @@ def build_auth_scope(scope: dict, port: int) -> dict:
     headers.append((b"x-original-url", original_url.encode("latin-1")))
     headers.append((b"x-server-port", str(port).encode()))
     headers.append((b"x-csrf-token", b"1"))
+
+    # inputs for the cross-origin check on websocket and go2rtc stream requests.
+    # nginx sets X-Forwarded-Host to the outer proxy's value when there is one
+    # and to the request Host otherwise, so mirror that instead of trusting a
+    # client value for the check.
+    forwarded_host = _request_header(scope, b"x-forwarded-host")
+    headers.append((b"x-original-host", host.encode("latin-1")))
+    headers.append((b"x-forwarded-host", (forwarded_host or host).encode("latin-1")))
+
+    if origin := _request_header(scope, b"origin"):
+        headers.append((b"origin", origin.encode("latin-1")))
+
+    if upgrade := _request_header(scope, b"upgrade"):
+        headers.append((b"x-original-upgrade", upgrade.encode("latin-1")))
+
+    # nginx passes its own scheme, which is what makes the Secure cookie flag
+    # correct behind its TLS listener without any client-supplied value
+    headers.append((b"x-forwarded-proto", scheme.encode("latin-1")))
 
     return {
         "type": "http",
@@ -295,17 +320,20 @@ class NativeAuthMiddleware:
     def _strip_proxy_headers(scope: dict) -> list[tuple[bytes, bytes]]:
         """Drop client-supplied identity headers and proxy credentials.
 
-        ``x-server-port``, ``x-original-url`` and ``x-original-method`` are how
-        the gateway tells the auth endpoint which listener a request arrived on
-        and what it was really for. A client that could set them itself could
-        claim the loopback listener, so they are removed from what reaches the
-        API application along with the identity headers.
+        ``x-server-port``, ``x-original-url``, ``x-original-method``,
+        ``x-original-host`` and ``x-original-upgrade`` are how the gateway tells
+        the auth endpoint which listener a request arrived on and what it was
+        really for. A client that could set them itself could claim the loopback
+        listener, so they are removed from what reaches the API application along
+        with the identity headers.
         """
         dropped = (
             b"x-proxy-secret",
             b"x-server-port",
             b"x-original-url",
             b"x-original-method",
+            b"x-original-host",
+            b"x-original-upgrade",
         )
 
         return [
@@ -954,6 +982,7 @@ def run_native_web_server(
     stop_event: Any | None = None,
     *,
     ipv6_enabled: bool = False,
+    public_host: str | None = None,
     tls_enabled: bool = False,
     tls_cert_file: str | None = None,
     tls_key_file: str | None = None,
@@ -965,8 +994,9 @@ def run_native_web_server(
     - the authenticated web interface, on ``FRIGATE_WEB_HOST`` and the port
       from ``FRIGATE_WEB_PORT``, which defaults to the configured public port;
       ``networking.ipv6`` decides which wildcard address is bound when
-      ``FRIGATE_WEB_HOST`` does not name one, and TLS is applied to this
-      listener when enabled
+      ``FRIGATE_WEB_HOST`` does not name one, a ``host:port`` value in
+      ``networking.listen.external`` ``public_host`` names one when the
+      environment does not, and TLS is applied to this listener when enabled
     - the internal port itself, on loopback, because Frigate's own consumers
       (export, motion search, debug replay) fetch VOD playlists from it with
       FFmpeg and cannot authenticate
@@ -977,7 +1007,9 @@ def run_native_web_server(
     """
     import uvicorn
 
-    host = get_web_host(ipv6_enabled)
+    # FRIGATE_WEB_HOST is the explicit override, so it wins over the address
+    # named by networking.listen.external
+    host = get_web_host(ipv6_enabled, public_host)
     port = get_web_port(public_port)
 
     if port == internal_port:

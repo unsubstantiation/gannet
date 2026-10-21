@@ -10,6 +10,7 @@ from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from multiprocessing.synchronize import Event as MpEvent
 from typing import Any
+from urllib.parse import urlparse
 
 import requests
 from py_vapid import Vapid01
@@ -26,7 +27,7 @@ from frigate.config.camera.updater import (
 )
 from frigate.const import BASE_DIR, CONFIG_DIR
 from frigate.models import User
-from frigate.util.webpush import validate_subscription, vapid_audience
+from frigate.util.webpush import vapid_audience
 
 logger = logging.getLogger(__name__)
 
@@ -59,15 +60,35 @@ def _build_web_pushers(user: str, subs: list[dict[str, Any]]) -> list[WebPusher]
     pushers: list[WebPusher] = []
 
     for sub in subs:
-        # Registration validation does not cover rows already persisted in the
-        # database, so check the endpoint again before constructing a sender.
-        reason = validate_subscription(sub)
-        if reason:
+        # Stored rows may predate registration validation, so only skip the
+        # endpoints that would break building the VAPID audience. The full
+        # registration validator would drop self-hosted endpoints that were
+        # accepted before, so it stays on the registration endpoint.
+        endpoint = sub.get("endpoint") if isinstance(sub, dict) else None
+
+        if not isinstance(endpoint, str):
             logger.warning(
-                "Skipping notification subscription for %s: %s", user, reason
+                "Skipping notification subscription for %s: no endpoint", user
             )
             continue
 
+        try:
+            hostname = urlparse(endpoint).hostname or ""
+        except ValueError:
+            logger.warning(
+                "Skipping notification subscription for %s: unparsable endpoint", user
+            )
+            continue
+
+        if "" in hostname.split("."):
+            logger.warning(
+                "Skipping notification subscription for %s: invalid endpoint host %r",
+                user,
+                hostname,
+            )
+            continue
+
+        # WebPusher decodes the stored keys and raises on malformed ones
         try:
             pushers.append(WebPusher(sub, requests_session=_push_session))
         except Exception:

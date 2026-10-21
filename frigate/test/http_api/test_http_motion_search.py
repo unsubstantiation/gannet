@@ -1,4 +1,5 @@
-"""Tests for motion search job concurrency limits."""
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
+"""Tests for motion search job limits."""
 
 from datetime import datetime
 from unittest.mock import patch
@@ -19,8 +20,10 @@ class TestHttpMotionSearch(BaseTestHttp):
     def setUp(self):
         super().setUp([Event, Recordings, ReviewSegment])
         self.app = self.create_app()
+
         motion_search._motion_search_jobs.clear()
         self.addCleanup(motion_search._motion_search_jobs.clear)
+
         runner_patch = patch("frigate.jobs.motion_search.MotionSearchRunner")
         self.runner = runner_patch.start()
         self.addCleanup(runner_patch.stop)
@@ -49,6 +52,7 @@ class TestHttpMotionSearch(BaseTestHttp):
                 self.assertTrue(motion_search.cancel_motion_search_job(job_id))
             job = motion_search.get_motion_search_job(job_id)
             self.assertIsNotNone(job.cancelled_at)
+            self.assertIsNone(job.end_time)
 
             self.assertEqual(self.start(client, "alice").status_code, 200)
             self.assertEqual(self.start(client, "bob").status_code, 200)
@@ -81,10 +85,12 @@ class TestHttpMotionSearch(BaseTestHttp):
             self.assertEqual(self.start(client, "viewer").status_code, 200)
 
     def test_proxy_user_header_keeps_per_user_limit_without_auth(self):
+        # the native gateway requires a shared secret before it trusts a mapped
+        # identity header, so the config carries one here too
         self.minimal_config["auth"] = {"enabled": False}
         self.minimal_config["proxy"] = {
             "header_map": {"user": "x-forwarded-user"},
-            "auth_secret": "secret",
+            "auth_secret": "proxy-secret",
         }
         app = self.create_app()
         with AuthTestClient(app) as client:

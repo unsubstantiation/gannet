@@ -507,6 +507,13 @@ class TestNativeProxyIdentity(unittest.IsolatedAsyncioTestCase):
             ]
         )
 
+        scope["headers"].extend(
+            [
+                (b"x-original-host", b"evil.example"),
+                (b"x-original-upgrade", b"websocket"),
+            ]
+        )
+
         names = {
             name.lower()
             for name, _value in NativeAuthMiddleware._strip_proxy_headers(scope)
@@ -515,7 +522,59 @@ class TestNativeProxyIdentity(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn(b"x-server-port", names)
         self.assertNotIn(b"x-original-url", names)
         self.assertNotIn(b"x-original-method", names)
+        self.assertNotIn(b"x-original-host", names)
+        self.assertNotIn(b"x-original-upgrade", names)
         self.assertIn(b"host", names)
+
+    def test_auth_scope_carries_the_origin_check_inputs(self) -> None:
+        """The gateway derives what nginx used to pass to ``/auth``.
+
+        ``/auth`` rejects a cross-origin websocket or go2rtc stream request, so
+        it needs the browser's ``Origin``, the request host, the outer proxy's
+        ``X-Forwarded-Host`` and the ``Upgrade`` header. A forwarded scheme is
+        what makes the session cookie Secure behind the TLS listener.
+        """
+        scope = {
+            "type": "websocket",
+            "method": "GET",
+            "scheme": "https",
+            "path": "/ws",
+            "raw_path": b"/ws",
+            "query_string": b"",
+            "headers": [
+                (b"host", b"frigate.lan:8971"),
+                (b"origin", b"https://frigate.lan:8971"),
+                (b"upgrade", b"websocket"),
+                (b"x-forwarded-host", b"frigate.example.com"),
+            ],
+        }
+
+        headers = dict(build_auth_scope(scope, 8971)["headers"])
+
+        self.assertEqual(headers[b"origin"], b"https://frigate.lan:8971")
+        self.assertEqual(headers[b"x-original-host"], b"frigate.lan:8971")
+        self.assertEqual(headers[b"x-forwarded-host"], b"frigate.example.com")
+        self.assertEqual(headers[b"x-original-upgrade"], b"websocket")
+        self.assertEqual(headers[b"x-forwarded-proto"], b"https")
+
+    def test_auth_scope_defaults_the_forwarded_host_to_host(self) -> None:
+        """nginx sets ``$forwarded_host`` to ``$http_host`` without an outer proxy."""
+        scope = {
+            "type": "http",
+            "method": "GET",
+            "scheme": "http",
+            "path": "/api/config",
+            "raw_path": b"/api/config",
+            "query_string": b"",
+            "headers": [(b"host", b"127.0.0.1:5000")],
+        }
+
+        headers = dict(build_auth_scope(scope, 5000)["headers"])
+
+        self.assertEqual(headers[b"x-forwarded-host"], b"127.0.0.1:5000")
+        self.assertEqual(headers[b"x-forwarded-proto"], b"http")
+        self.assertNotIn(b"origin", headers)
+        self.assertNotIn(b"x-original-upgrade", headers)
 
 
 class TestUpstreamRouting(unittest.TestCase):
