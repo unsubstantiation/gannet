@@ -253,7 +253,7 @@ EXCLUDED_DEFS: tuple[Exclusion, ...] = (
     ),
     Exclusion(
         "stats.hardware:*",
-        "Linux sysfs/DRM statistics pollers; Windows polls NVIDIA through NVML and hides the panes no counter feeds",
+        "Windows-native hardware pollers (NVML for NVIDIA, WMI for Intel/AMD) replace the Linux sysfs/DRM pollers",
     ),
     Exclusion(
         "util.hwaccel:*",
@@ -325,14 +325,6 @@ EXCLUDED_ROUTES: tuple[Exclusion, ...] = (
 #: Upstream config fields the fork replaces with Windows equivalents.
 EXCLUDED_CONFIG_FIELDS: tuple[Exclusion, ...] = (
     Exclusion(
-        "*.amd_gpu_stats",
-        "AMD DRM statistics toggle; replaced by the nvidia_gpu_stats NVML toggle",
-    ),
-    Exclusion(
-        "*.intel_gpu_stats",
-        "Intel DRM statistics toggle; replaced by the nvidia_gpu_stats NVML toggle",
-    ),
-    Exclusion(
         "*.intel_gpu_device",
         "Intel DRM device pinning; no Intel utilization counter exists in the Windows runtimes",
     ),
@@ -340,14 +332,6 @@ EXCLUDED_CONFIG_FIELDS: tuple[Exclusion, ...] = (
 
 #: Upstream English locale keys that belong to the exclusions above.
 EXCLUDED_LOCALE_KEYS: tuple[Exclusion, ...] = (
-    Exclusion(
-        "telemetry.stats.amd_gpu_stats.*",
-        "strings for the excluded AMD GPU statistics toggle",
-    ),
-    Exclusion(
-        "telemetry.stats.intel_gpu_stats.*",
-        "strings for the excluded Intel GPU statistics toggle",
-    ),
     Exclusion(
         "telemetry.stats.intel_gpu_device.*",
         "strings for the excluded Intel GPU device field",
