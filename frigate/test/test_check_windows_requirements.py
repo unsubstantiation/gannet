@@ -75,6 +75,11 @@ class TestParseRequirements(unittest.TestCase):
         self.assertNotIn("--extra-index-url", pins)
 
 
+class TestImportedDistribution(unittest.TestCase):
+    def test_pywin32_import_names_map_to_the_distribution(self):
+        self.assertEqual(checker.imported_distribution("win32com"), "pywin32")
+
+
 class TestMatchesPin(unittest.TestCase):
     def test_a_wildcard_pin_matches_by_version_component(self):
         """``1.26.*`` must not accept ``1.260.0`` just because it starts alike."""

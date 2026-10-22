@@ -79,6 +79,7 @@ IMPORT_TO_DISTRIBUTION = {
     "tensorflow": "tensorflow-cpu",
     # the pywin32 package provides the SCM modules the Windows service imports
     "servicemanager": "pywin32",
+    "win32com": "pywin32",
     "win32event": "pywin32",
     "win32service": "pywin32",
     "win32serviceutil": "pywin32",
