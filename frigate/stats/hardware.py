@@ -7,8 +7,10 @@ Windows 8 and later for all display-adapter vendors.
 """
 
 import logging
+import math
+import re
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from concurrent.futures import Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass, field
 from functools import partial
@@ -30,7 +32,23 @@ POLL_TIMEOUT_SECONDS = 10
 
 WMI_NAMESPACE = r"winmgmts:\\.\root\cimv2"
 GPU_ENGINE_WMI_CLASS = "Win32_PerfFormattedData_GpuPerformanceCounters_GpuEngine"
-GPU_MEMORY_WMI_CLASS = "Win32_PerfFormattedData_GpuPerformanceCounters_GpuMemory"
+GPU_MEMORY_WMI_CLASS = "Win32_PerfFormattedData_GpuPerformanceCounters_GpuAdapterMemory"
+DIRECTX_REGISTRY_PATH = r"SOFTWARE\Microsoft\DirectX"
+PCI_GPU_VENDORS = {
+    0x1002: "amd",
+    0x1022: "amd",
+    0x10DE: "nvidia",
+    0x8086: "intel",
+}
+GPU_ENGINE_INSTANCE_RE = re.compile(
+    r"^pid_\d+_luid_(?P<high>0x[0-9a-f]+)_(?P<low>0x[0-9a-f]+)_"
+    r"phys_(?P<phys>\d+)_eng_(?P<eng>\d+)_engtype_(?P<engine_type>.*)$",
+    re.IGNORECASE,
+)
+GPU_MEMORY_INSTANCE_RE = re.compile(
+    r"^luid_(?P<high>0x[0-9a-f]+)_(?P<low>0x[0-9a-f]+)_phys_\d+$",
+    re.IGNORECASE,
+)
 
 
 @dataclass
@@ -40,6 +58,16 @@ class HardwarePollResult:
     ok: bool = True
 
 
+@dataclass(frozen=True)
+class WindowsGpuAdapter:
+    """DirectX adapter identity shared with Windows GPU counter names."""
+
+    luid: int
+    name: str
+    vendor: str
+    dedicated_memory: int
+
+
 def _wmi_service():
     """Connect to the local WMI service, or return None when unavailable."""
     try:
@@ -47,91 +75,168 @@ def _wmi_service():
 
         return win32com.client.GetObject(WMI_NAMESPACE)
     except Exception:
-        logger.debug("WMI service is not available for hardware stats")
+        logger.debug("WMI service is not available for hardware stats", exc_info=True)
         return None
 
 
-def _gpu_vendor_indices(wmi) -> dict[str, list[int]]:
-    """Map WMI GPU instance indexes to vendors using ``Win32_VideoController``."""
-    vendors: dict[str, list[int]] = {}
+def _windows_gpu_adapters() -> dict[int, WindowsGpuAdapter]:
+    """Return DirectX adapters keyed by the LUID used by GPU counters.
+
+    Win32_VideoController enumeration indexes do not identify GPU performance
+    counter instances. The DirectX registry records contain the same adapter
+    LUID as the counter names, along with a stable name, PCI vendor, and memory
+    capacity. Reading them also avoids inventing a mapping between unrelated
+    adapter enumeration orders.
+    """
+    adapters: dict[int, WindowsGpuAdapter] = {}
     try:
-        controllers = wmi.ExecQuery(
-            "SELECT Name, VideoProcessor FROM Win32_VideoController"
-        )
-    except Exception:
-        return vendors
+        import winreg
+    except ImportError:
+        return adapters
 
-    for index, controller in enumerate(controllers):
-        name = controller.Name or ""
-        processor = controller.VideoProcessor or ""
-        combined = f"{name} {processor}".lower()
-        if "nvidia" in combined:
-            vendors.setdefault("nvidia", []).append(index)
-        elif "amd" in combined or "radeon" in combined or "advanced micro" in combined:
-            vendors.setdefault("amd", []).append(index)
-        elif "intel" in combined:
-            vendors.setdefault("intel", []).append(index)
-    return vendors
+    value_names = (
+        "AdapterLuid",
+        "Description",
+        "VendorId",
+        "DedicatedVideoMemory",
+        "DedicatedSystemMemory",
+    )
+
+    try:
+        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, DIRECTX_REGISTRY_PATH) as root:
+            for index in range(winreg.QueryInfoKey(root)[0]):
+                try:
+                    with winreg.OpenKey(root, winreg.EnumKey(root, index)) as key:
+                        values: dict[str, Any] = {}
+                        for value_name in value_names:
+                            try:
+                                values[value_name] = winreg.QueryValueEx(
+                                    key, value_name
+                                )[0]
+                            except FileNotFoundError:
+                                pass
+
+                    luid = int(values.get("AdapterLuid", 0) or 0) & 0xFFFFFFFFFFFFFFFF
+                    vendor = PCI_GPU_VENDORS.get(int(values.get("VendorId", 0) or 0))
+                    if not luid or vendor is None:
+                        continue
+
+                    name = str(
+                        values.get("Description") or f"{vendor.upper()} GPU {luid:x}"
+                    ).strip()
+                    dedicated_memory = sum(
+                        max(0, int(values.get(value_name, 0) or 0))
+                        for value_name in (
+                            "DedicatedVideoMemory",
+                            "DedicatedSystemMemory",
+                        )
+                    )
+                    adapters[luid] = WindowsGpuAdapter(
+                        luid=luid,
+                        name=name,
+                        vendor=vendor,
+                        dedicated_memory=dedicated_memory,
+                    )
+                except (OSError, TypeError, ValueError):
+                    # Individual records can be incomplete or disappear during
+                    # driver installation; other adapters remain usable.
+                    continue
+    except OSError:
+        logger.debug("Unable to enumerate DirectX GPU adapters", exc_info=True)
+
+    return adapters
 
 
-def _query_wmi_gpu_engines(wmi, vendor_indices: dict[str, list[int]]) -> dict[int, dict[str, float]]:
-    """Query per-GPU engine utilization percentages from WMI."""
-    engines: dict[int, dict[str, float]] = {}
+def _luid_from_match(match: re.Match[str]) -> int:
+    return (int(match.group("high"), 16) << 32) | int(match.group("low"), 16)
+
+
+def _query_wmi_gpu_engines(
+    wmi, adapters: Mapping[int, WindowsGpuAdapter]
+) -> dict[int, dict[str, float]] | None:
+    """Return per-adapter engine loads keyed by adapter LUID.
+
+    Each WMI row is one process on one physical engine. Sum all processes on
+    that engine, then retain the busiest engine of each type. This avoids both
+    overwriting concurrent clients and adding independent engines together.
+    """
+    totals: dict[tuple[int, int, int], float] = {}
+    engine_types: dict[tuple[int, int, int], str] = {}
+
     try:
         for entry in wmi.ExecQuery(
             f"SELECT Name, UtilizationPercentage FROM {GPU_ENGINE_WMI_CLASS}"
         ):
-            parts = (entry.Name or "").split(":", 1)
-            if len(parts) != 2:
+            match = GPU_ENGINE_INSTANCE_RE.fullmatch(str(entry.Name or ""))
+            if match is None:
                 continue
+
+            luid = _luid_from_match(match)
+            if luid not in adapters:
+                continue
+
             try:
-                gpu_idx = int(parts[0].replace("GPU", "").strip())
-            except ValueError:
+                utilization = float(entry.UtilizationPercentage)
+                engine_key = (
+                    luid,
+                    int(match.group("phys")),
+                    int(match.group("eng")),
+                )
+            except (TypeError, ValueError):
                 continue
-            engine_type = parts[1].strip()
-            for _vendor, indices in vendor_indices.items():
-                if gpu_idx in indices:
-                    engines.setdefault(gpu_idx, {})[engine_type] = float(
-                        entry.UtilizationPercentage
-                    )
-                    break
+            if not math.isfinite(utilization) or utilization < 0:
+                continue
+
+            totals[engine_key] = totals.get(engine_key, 0.0) + utilization
+            engine_type = match.group("engine_type").strip().lower()
+            if engine_type or engine_key not in engine_types:
+                engine_types[engine_key] = engine_type
     except Exception:
-        logger.debug("WMI GPU engine counters are not available")
+        logger.debug("WMI GPU engine counters are not available", exc_info=True)
+        return None
+
+    engines: dict[int, dict[str, float]] = {}
+    for engine_key, utilization in totals.items():
+        luid = engine_key[0]
+        engine_type = engine_types[engine_key] or "unknown"
+        adapter_engines = engines.setdefault(luid, {})
+        adapter_engines[engine_type] = min(
+            100.0, max(adapter_engines.get(engine_type, 0.0), utilization)
+        )
+
     return engines
 
 
-def _query_wmi_gpu_memory(wmi, vendor_indices: dict[str, list[int]]) -> dict[int, float]:
-    """Query per-GPU dedicated memory usage percentages from WMI."""
-    memories: dict[int, float] = {}
+def _query_wmi_gpu_memory(
+    wmi, adapters: Mapping[int, WindowsGpuAdapter]
+) -> dict[int, float] | None:
+    """Return adapter-wide dedicated memory usage in bytes, keyed by LUID."""
+    memory_usage: dict[int, float] = {}
     try:
         for entry in wmi.ExecQuery(
-            f"SELECT Name, DedicatedUsagePercentage FROM {GPU_MEMORY_WMI_CLASS}"
+            f"SELECT Name, DedicatedUsage FROM {GPU_MEMORY_WMI_CLASS}"
         ):
-            parts = (entry.Name or "").split(":", 1)
-            if len(parts) != 2:
+            match = GPU_MEMORY_INSTANCE_RE.fullmatch(str(entry.Name or ""))
+            if match is None:
                 continue
+
+            luid = _luid_from_match(match)
+            if luid not in adapters:
+                continue
+
             try:
-                gpu_idx = int(parts[0].replace("GPU", "").strip())
-            except ValueError:
+                usage = float(entry.DedicatedUsage)
+            except (TypeError, ValueError):
                 continue
-            for _vendor, indices in vendor_indices.items():
-                if gpu_idx in indices:
-                    memories[gpu_idx] = float(entry.DedicatedUsagePercentage)
-                    break
-    except Exception:
-        logger.debug("WMI GPU memory counters are not available")
-    return memories
+            if not math.isfinite(usage) or usage < 0:
+                continue
 
-
-def _video_controller_names(wmi) -> dict[int, str]:
-    """Return GPU index -> friendly name from ``Win32_VideoController``."""
-    names: dict[int, str] = {}
-    try:
-        for index, controller in enumerate(wmi.ExecQuery("SELECT Name FROM Win32_VideoController")):
-            names[index] = controller.Name or f"GPU {index}"
+            memory_usage[luid] = memory_usage.get(luid, 0.0) + usage
     except Exception:
-        pass
-    return names
+        logger.debug("WMI GPU memory counters are not available", exc_info=True)
+        return None
+
+    return memory_usage
 
 
 def _poll_wmi_gpu_stats(config: FrigateConfig, vendor: str) -> HardwarePollResult:
@@ -140,39 +245,75 @@ def _poll_wmi_gpu_stats(config: FrigateConfig, vendor: str) -> HardwarePollResul
     if wmi is None:
         return HardwarePollResult(ok=False)
 
-    vendor_indices = _gpu_vendor_indices(wmi)
-    indices = vendor_indices.get(vendor, [])
-    if not indices:
+    adapters = {
+        luid: adapter
+        for luid, adapter in _windows_gpu_adapters().items()
+        if adapter.vendor == vendor
+    }
+    if not adapters:
         # No matching adapter; not an error, just nothing to poll.
         return HardwarePollResult()
 
-    gpu_names = _video_controller_names(wmi)
-    engines = _query_wmi_gpu_engines(wmi, vendor_indices)
-    memories = _query_wmi_gpu_memory(wmi, vendor_indices)
+    engines = _query_wmi_gpu_engines(wmi, adapters)
+    memory_usage = _query_wmi_gpu_memory(wmi, adapters)
+    active_luids = sorted(
+        (
+            luid
+            for luid in adapters
+            if (engines is not None and luid in engines)
+            or (memory_usage is not None and luid in memory_usage)
+        ),
+        key=lambda luid: (adapters[luid].name.lower(), luid),
+    )
+    if not active_luids:
+        return HardwarePollResult(ok=False)
+
+    name_counts: dict[str, int] = {}
+    for luid in active_luids:
+        name = adapters[luid].name
+        name_counts[name] = name_counts.get(name, 0) + 1
 
     gpu: dict[str, dict[str, Any]] = {}
-    for gpu_idx in indices:
-        name = gpu_names.get(gpu_idx, f"{vendor} GPU {gpu_idx}")
-        eng = engines.get(gpu_idx, {})
-        mem = memories.get(gpu_idx, 0.0)
+    for luid in active_luids:
+        adapter = adapters[luid]
+        eng = None if engines is None else engines.get(luid, {})
+        entry: dict[str, Any] = {"vendor": vendor, "gpu": "", "mem": ""}
 
-        compute = eng.get("3D", 0.0)
-        dec = eng.get("Video Decode", 0.0)
-        enc = eng.get("Video Encode", 0.0)
+        if eng is not None:
+            # Task Manager's overall value is the busiest physical engine
+            # after summing its processes; independent engines are not added.
+            overall = max(eng.values(), default=0.0)
+            compute = min(100.0, eng.get("3d", 0.0) + eng.get("compute", 0.0))
+            dec = min(
+                100.0,
+                eng.get("videodecode", 0.0) + eng.get("videoprocessing", 0.0),
+            )
+            enc = eng.get("videoencode", 0.0)
+            entry.update(
+                {
+                    "gpu": f"{round(overall, 2)}%",
+                    "compute": f"{round(compute, 2)}%",
+                    "dec": f"{round(dec, 2)}%",
+                    "enc": f"{round(enc, 2)}%",
+                }
+            )
 
-        overall = min(100.0, compute + dec)
+        if memory_usage is not None:
+            usage = memory_usage.get(luid)
+            if usage is None or adapter.dedicated_memory <= 0:
+                entry["mem"] = "-%"
+            else:
+                memory_percent = min(100.0, usage * 100.0 / adapter.dedicated_memory)
+                entry["mem"] = f"{round(memory_percent, 2)}%"
 
-        entry: dict[str, Any] = {
-            "vendor": vendor,
-            "gpu": f"{round(overall, 2)}%",
-            "mem": f"{round(mem, 2)}%",
-        }
-        if vendor == "intel":
-            entry["compute"] = f"{round(compute, 2)}%"
-            entry["dec"] = f"{round(dec, 2)}%"
+        name = adapter.name
+        if name_counts[name] > 1:
+            name = f"{name} ({luid & 0xFFFFFFFF:08x})"
         gpu[name] = entry
 
-    return HardwarePollResult(gpu=gpu)
+    return HardwarePollResult(
+        gpu=gpu, ok=engines is not None and memory_usage is not None
+    )
 
 
 def _poll_intel_gpu(config: FrigateConfig) -> HardwarePollResult:
@@ -196,10 +337,9 @@ def _present_gpu() -> set[str]:
     # Intel GPU via OpenVINO GPU device
     if any(k.startswith("openvino:GPU") for k in hardware_keys):
         vendors.add("intel")
-    # AMD GPU via DirectML or Windows ML MIGraphX (AMD vendor provider)
-    if any(k.startswith("onnx:directml") for k in hardware_keys) or any(
-        k.startswith("onnx:windowsml:MIGraphX") for k in hardware_keys
-    ):
+    # MIGraphX is AMD-specific. DirectML is vendor-neutral, so its presence
+    # alone must not create an AMD poller on Intel or NVIDIA machines.
+    if any(k.startswith("onnx:windowsml:MIGraphX") for k in hardware_keys):
         vendors.add("amd")
     # Also use display adapter classification as a broader hint
     vendors |= get_display_adapter_vendors()
@@ -236,13 +376,12 @@ POLLERS: dict[str, Callable[[FrigateConfig], HardwarePollResult]] = {
 
 def _hwaccel_hardware(args: str) -> str | None:
     lowered = args.lower()
-    if "windows-nvenc" in lowered or "-hwaccel cuda" in lowered:
+    if "nvenc" in lowered or "-hwaccel cuda" in lowered:
         return "nvidia"
-    if "windows-qsv" in lowered:
+    if "qsv" in lowered:
         return "intel"
-    if "windows-d3d11va" in lowered or "windows-dxva2" in lowered:
-        # D3D11VA/DXVA2 can be Intel, AMD, or NVIDIA; report all detected vendors.
-        return None  # handled by display-adapter classification in _present_gpu
+    if "amf" in lowered:
+        return "amd"
     return None
 
 
@@ -351,8 +490,17 @@ class HardwareStats:
             values.extend(stream.hwaccel_args for stream in camera.ffmpeg.inputs)
             for value in values:
                 args = " ".join(value) if isinstance(value, list) else value
-                if args and (name := _hwaccel_hardware(args)):
+                if not args:
+                    continue
+                if name := _hwaccel_hardware(args):
                     names.add(name)
+                elif any(
+                    family in args.lower() for family in ("d3d11va", "dxva2", "vulkan")
+                ):
+                    # These APIs are vendor-neutral. Attribute their counters
+                    # through the adapters actually present on this machine.
+                    names |= _present_gpu()
+
         return names
 
     def _scan_detectors(self) -> set[str]:
@@ -361,7 +509,10 @@ class HardwareStats:
         for model in self.config.models:
             for spec in self.config.devices_for_model(model):
                 if spec.detector == "onnx":
-                    if spec.device.startswith("cuda") and "onnx:nvidia" in hardware_keys:
+                    if (
+                        spec.device.startswith("cuda")
+                        and "onnx:nvidia" in hardware_keys
+                    ):
                         names.add("nvidia")
                     elif spec.device.startswith("directml"):
                         # DirectML can target any vendor; rely on display-adapter classification

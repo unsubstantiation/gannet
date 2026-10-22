@@ -24,16 +24,23 @@ const config: Config = {
   // engines. These are reservations of statutory exceptions, not licenses: they
   // do not and cannot restrict the MIT-licensed upstream content, and they do not
   // change what humans may do with the code. See LICENSING.md in the repository.
-  head: [
-    ["meta", {name: "tdm-reservation", content: "1"}],
-    [
-      "meta",
-      {
+  headTags: [
+    {
+      tagName: "meta",
+      attributes: { name: "tdm-reservation", content: "1" },
+    },
+    {
+      tagName: "meta",
+      attributes: {
         name: "tdm-policy",
-        content: "https://github.com/unsubstantiation/gannet/blob/dev/LICENSING.md",
+        content:
+          "https://github.com/unsubstantiation/gannet/blob/dev/LICENSING.md",
       },
-    ],
-    ["meta", {name: "robots", content: "noai, noimageai"}],
+    },
+    {
+      tagName: "meta",
+      attributes: { name: "robots", content: "noai, noimageai" },
+    },
   ],
   organizationName: "unsubstantiation",
   projectName: "gannet",

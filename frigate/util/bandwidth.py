@@ -147,23 +147,108 @@ class _EVENT_RECORD(ctypes.Structure):
     _fields_ = [
         ("EventHeader", _EVENT_HEADER),
         ("BufferContext", ctypes.c_uint32),
-        ("ExtendedDataCount", ctypes.c_uint32),
-        ("UserDataLength", ctypes.c_uint32),
+        ("ExtendedDataCount", ctypes.c_uint16),
+        ("UserDataLength", ctypes.c_uint16),
         ("ExtendedData", ctypes.c_void_p),
         ("UserData", ctypes.c_void_p),
-        ("UserContext", ctypes.c_uint32),
+        ("UserContext", ctypes.c_void_p),
+    ]
+
+
+class _EVENT_TRACE_HEADER(ctypes.Structure):
+    """Legacy event header embedded in EVENT_TRACE_LOGFILEW."""
+
+    _fields_ = [
+        ("Size", ctypes.c_uint16),
+        ("FieldTypeFlags", ctypes.c_uint16),
+        ("Version", ctypes.c_uint32),
+        ("ThreadId", ctypes.c_uint32),
+        ("ProcessId", ctypes.c_uint32),
+        ("TimeStamp", ctypes.c_int64),
+        # GUID is the largest member of the Guid/GuidPtr union.
+        ("Guid", _GUID),
+        # This union also contains kernel/user times or client context/flags.
+        ("ProcessorTime", ctypes.c_uint64),
+    ]
+
+
+class _EVENT_TRACE(ctypes.Structure):
+    _fields_ = [
+        ("Header", _EVENT_TRACE_HEADER),
+        ("InstanceId", ctypes.c_uint32),
+        ("ParentInstanceId", ctypes.c_uint32),
+        ("ParentGuid", _GUID),
+        ("MofData", ctypes.c_void_p),
+        ("MofLength", ctypes.c_uint32),
+        ("ClientContext", ctypes.c_uint32),
+    ]
+
+
+class _SYSTEMTIME(ctypes.Structure):
+    _fields_ = [
+        (name, ctypes.c_uint16)
+        for name in (
+            "Year",
+            "Month",
+            "DayOfWeek",
+            "Day",
+            "Hour",
+            "Minute",
+            "Second",
+            "Milliseconds",
+        )
+    ]
+
+
+class _TIME_ZONE_INFORMATION(ctypes.Structure):
+    _fields_ = [
+        ("Bias", ctypes.c_int32),
+        # Use uint16 rather than c_wchar so layouts also match on test hosts.
+        ("StandardName", ctypes.c_uint16 * 32),
+        ("StandardDate", _SYSTEMTIME),
+        ("StandardBias", ctypes.c_int32),
+        ("DaylightName", ctypes.c_uint16 * 32),
+        ("DaylightDate", _SYSTEMTIME),
+        ("DaylightBias", ctypes.c_int32),
+    ]
+
+
+class _TRACE_LOGFILE_HEADER(ctypes.Structure):
+    _fields_ = [
+        ("BufferSize", ctypes.c_uint32),
+        ("Version", ctypes.c_uint32),
+        ("ProviderVersion", ctypes.c_uint32),
+        ("NumberOfProcessors", ctypes.c_uint32),
+        ("EndTime", ctypes.c_int64),
+        ("TimerResolution", ctypes.c_uint32),
+        ("MaximumFileSize", ctypes.c_uint32),
+        ("LogFileMode", ctypes.c_uint32),
+        ("BuffersWritten", ctypes.c_uint32),
+        # GUID and the four-ULONG alternative both occupy 16 bytes.
+        ("LogInstanceGuid", _GUID),
+        ("LoggerName", ctypes.c_void_p),
+        ("LogFileName", ctypes.c_void_p),
+        ("TimeZone", _TIME_ZONE_INFORMATION),
+        ("BootTime", ctypes.c_int64),
+        ("PerfFreq", ctypes.c_int64),
+        ("StartTime", ctypes.c_int64),
+        ("ReservedFlags", ctypes.c_uint32),
+        ("BuffersLost", ctypes.c_uint32),
     ]
 
 
 class _EVENT_TRACE_LOGFILEW(ctypes.Structure):
     _fields_ = [
-        ("LoggerName", ctypes.c_wchar_p),
         ("LogFileName", ctypes.c_wchar_p),
+        ("LoggerName", ctypes.c_wchar_p),
         ("CurrentTime", ctypes.c_int64),
         ("BuffersRead", ctypes.c_uint32),
         ("ProcessingMode", ctypes.c_uint32),
-        ("CurrentEvent", ctypes.c_void_p),
-        ("LogfileHeader", ctypes.c_void_p),
+        # These are inline output structures, not pointers. Their sizes affect
+        # the offsets of the callbacks supplied to OpenTraceW.
+        ("CurrentEvent", _EVENT_TRACE),
+        ("LogfileHeader", _TRACE_LOGFILE_HEADER),
+        ("BufferCallback", ctypes.c_void_p),
         ("BufferSize", ctypes.c_uint32),
         ("Filled", ctypes.c_uint32),
         ("EventsLost", ctypes.c_uint32),
@@ -357,7 +442,8 @@ class NetworkBandwidthMonitor:
         try:
             record = record_ptr.contents
             self._consume_event(
-                record.EventHeader.EventDescriptor.Id,
+                # Classic MOF events carry their event type in Opcode, not Id.
+                record.EventHeader.EventDescriptor.Opcode,
                 record.UserData,
                 record.UserDataLength,
             )
