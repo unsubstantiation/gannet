@@ -192,6 +192,39 @@ reason in the tool itself.
 | nethogs bandwidth accounting | Needs root and `CAP_NET_ADMIN`/`CAP_NET_RAW` | The ETW kernel-logger collector (elevated Frigate) |
 | `RemoteUserPlugin` | Defined upstream but never registered or read there | Proxy identity uses `proxy_config.header_map` with the shared-secret check |
 
+### Upstream feature-parity audit (2026-10-22)
+
+Compared this checkout (`830b1bc`, Frigate 0.19.0) with upstream `dev`
+(`91e91c68`, 2026-10-20; `Add Axelera Metis NPU detector plugin v.0.19`). The
+comparison is by behavior and feature surface, not a blind tree merge: this
+checkout is the native Windows runtime, and large source diffs include
+intentional Windows substitutions (paths, process/service management, FFmpeg,
+GPU reporting, and packaging). The check covered the upstream feature/test
+surfaces in `frigate/`, `web/src/`, and the compatibility exclusions above.
+
+| Upstream capability/change | Audit result | Windows disposition |
+| --- | --- | --- |
+| Login-session revocation, cross-origin websocket protection, media-auth path normalization | Present in native auth/API/websocket code and covered by Windows-side tests (`test_http_auth_jwt_role`, `test_ws_origin`, `test_media_auth`) | Portable; retained with native listener and proxy handling |
+| Camera credential redaction in config responses and safe config updates | Present in `frigate/api/app.py`, frontend credential masking, and config/API tests | Portable; retained, with raw-path handling adapted to the native server |
+| Web-push registration/send hardening and malformed-subscription handling | Present in `frigate/comms/webpush.py` and `test_webpush_registration.py` | Portable; retained |
+| Same-origin-only chat images | Present in `web/src/components/chat/ChatMessage.tsx` | Portable; retained |
+| Motion-search concurrency/resource limits | Present in `frigate/jobs/motion_search.py` and `frigate/api/motion_search.py` | Portable; retained |
+| Avoid buffering raw FFmpeg frames on watchdog reset | Present in `frigate/video/ffmpeg.py`; reset waits while the capture reader drains stdout | Portable; retained for the Windows process wrapper |
+| Autotracking tracker rebuild/selection and cropped histogram work | Present in `frigate/track/norfair_tracker.py` and `frigate/util/image.py` | Portable; retained |
+| Newer UI and application flows (auto-live, GenAI audio transcription, live/review/search/export, camera setup and settings) | Present in the corresponding frontend/backend components and config models | Portable; retained; no missing feature confirmed in this audit |
+| Axelera Metis detector plugin | Upstream-only plugin and tests; no supported native Windows driver/runtime is provided by this fork | Not ported; existing detector exclusion remains appropriate |
+| Docker/container startup, Nginx cache/proxy configuration, Linux device plugins and Linux-only metrics | Runtime-specific, not application features transferable to the native process | Not applicable; native HTTP/media server, Windows process/service, and hardware stats are used instead |
+
+**Outcome:** the reviewed portable upstream behaviors are already present in
+this checkout; the identified differences are covered by the explicit Windows
+exclusions or native replacements above. No safe, confirmed portable feature
+gap was found in this comparison, so no runtime code was changed. The audit
+found no basis for claiming bit-for-bit or exhaustive parity with all upstream
+platforms: upstream `dev` continues to move, and new hardware backends require
+a maintained Windows runtime plus hardware validation before they can be
+classified as portable. Re-run this comparison against the then-current
+upstream `dev` before each parity claim.
+
 ### What is still open
 
 - The Windows installer is not published, so the winget manifest stays a
