@@ -36,6 +36,11 @@ docs/src/components/DockerComposeGenerator/config/ports.ts
 testing-scripts/genai-review-examples/*
 !testing-scripts/genai-review-examples/README.md
 
+# Release output from scripts/build_portable.py: the ZIP, its checksums, the
+# download cache, and the staging tree. Never part of the tree, and large.
+/dist/
+/build/
+
 # Registry metadata cache written by scripts/license_audit.py; regenerable,
 # so it is not part of the tree.
 scripts/license_audit_cache.json

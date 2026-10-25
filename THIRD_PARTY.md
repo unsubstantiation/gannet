@@ -25,6 +25,14 @@ ships a bundle that includes them takes on the obligations below directly.
 | go2rtc | `AlexxIT/go2rtc` `v1.9.14` `go2rtc_win64.zip` | MIT | Keep the copyright and permission notice. go2rtc incorporates FFmpeg libraries, so check that build's terms too. |
 | Default CPU detection model | `google-coral/test_data` `release-frogfish` `ssdlite_mobiledet_coco_qat_post_process.tflite` | Apache-2.0 (repository license) | Weights, not code. Attribution and the NOTICE requirement apply. Not relicensed by anything in this repository. |
 | YAMNet audio model | `tfhub.dev/google/lite-model/yamnet/classification/tflite/1` | Apache-2.0 | As above; confirm the terms served at that URL before bundling. |
+| CPython 3.12 embeddable (portable bundle only) | `python.org/ftp/python/3.12.15` | PSF-2.0 | `scripts/build_portable.py` redistributes the interpreter unmodified so the bundle needs nothing installed. Keep `LICENSES/` and the PSF notice; the digest is recorded in `scripts/python_embed_pin.json`. |
+
+`bootstrap_windows.py` downloads the four artifacts above at install time, so
+nothing is vendored. `scripts/build_portable.py` puts the same four, plus a
+CPython embeddable interpreter and every wheel from `requirements.txt`, inside one
+archive — that archive is a redistribution, and `SOURCE-OFFER.txt` inside it is the
+written offer for the copyleft components it carries. See
+[`BUILD.md`](BUILD.md#licensing-of-what-you-redistribute).
 
 Models fetched at runtime for semantic search, audio transcription, GenAI,
 face and license-plate recognition are downloaded from their own publishers, and
@@ -33,6 +41,10 @@ terms. That is their restriction, not this project's, and it is independent of
 LICENSE. Verify the model card before shipping a build that embeds weights.
 
 ## Package dependencies
+
+Every declared package, where it is imported and why its pin cannot move is
+inventoried in [`DEPENDENCIES.md`](DEPENDENCIES.md); this section is the
+licensing half of that picture.
 
 Two things in this repository's dependency set constrain what this project can
 promise about its own license:
