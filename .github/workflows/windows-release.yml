@@ -7,10 +7,26 @@ name: Windows Release
 # runs, so a release cannot be built by a code path nobody tested.
 #
 # Trigger with a tag (`v0.19.0`) or by hand. A manual run publishes nothing; it
-# only uploads the artifact for inspection.
+# only uploads the artifact for inspection. A pull request that touches the
+# builder or its pinned inputs also gets one full build: the plan-only check in
+# windows-python.yml cannot notice that a pinned download no longer exists, and
+# this builder once merged pointing at an interpreter archive python.org never
+# published. Path-filtered so ordinary pull requests do not pay for a ~500 MiB
+# bundle, and publishing stays impossible from a pull request: the publish step
+# only runs for v* tags or an explicit workflow_dispatch input.
 on:
   push:
     tags: ["v*"]
+  pull_request:
+    paths:
+      - "scripts/build_portable.py"
+      - "scripts/build_portable.ps1"
+      - "scripts/python_embed_pin.json"
+      - "bootstrap_windows.py"
+      - "requirements.txt"
+      - "pyproject.toml"
+      - "web/package-lock.json"
+      - ".github/workflows/windows-release.yml"
   workflow_dispatch:
     inputs:
       version:
