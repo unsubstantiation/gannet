@@ -38,20 +38,33 @@ class TestBandwidthStructures(unittest.TestCase):
     def test_event_header_layout(self):
         self.assertEqual(ctypes.sizeof(bw._EVENT_HEADER), 80)
         self.assertEqual(bw._EVENT_HEADER.EventDescriptor.offset, 40)
-        # The classic event type lives in the descriptor id.
+        # Classic MOF events carry their event type in Opcode, not Id.
         header = bw._EVENT_HEADER()
-        header.EventDescriptor.Id = bw.SEND_IPV4
-        self.assertEqual(header.EventDescriptor.Id, bw.SEND_IPV4)
+        header.EventDescriptor.Opcode = bw.SEND_IPV4
+        self.assertEqual(header.EventDescriptor.Opcode, bw.SEND_IPV4)
 
     def test_event_record_layout(self):
-        self.assertEqual(ctypes.sizeof(bw._EVENT_RECORD), 120)
-        self.assertEqual(bw._EVENT_RECORD.UserDataLength.offset, 88)
-        self.assertEqual(bw._EVENT_RECORD.UserData.offset, 104)
+        self.assertEqual(ctypes.sizeof(bw._EVENT_RECORD), 112)
+        self.assertEqual(bw._EVENT_RECORD.ExtendedDataCount.offset, 84)
+        self.assertEqual(bw._EVENT_RECORD.UserDataLength.offset, 86)
+        self.assertEqual(bw._EVENT_RECORD.ExtendedData.offset, 88)
+        self.assertEqual(bw._EVENT_RECORD.UserData.offset, 96)
+        self.assertEqual(bw._EVENT_RECORD.UserContext.offset, 104)
 
     def test_event_trace_logfile_layout(self):
-        self.assertEqual(ctypes.sizeof(bw._EVENT_TRACE_LOGFILEW), 88)
+        self.assertEqual(ctypes.sizeof(bw._EVENT_TRACE_HEADER), 48)
+        self.assertEqual(ctypes.sizeof(bw._EVENT_TRACE), 88)
+        self.assertEqual(ctypes.sizeof(bw._TIME_ZONE_INFORMATION), 172)
+        self.assertEqual(ctypes.sizeof(bw._TRACE_LOGFILE_HEADER), 280)
+        self.assertEqual(ctypes.sizeof(bw._EVENT_TRACE_LOGFILEW), 448)
+        self.assertEqual(bw._EVENT_TRACE_LOGFILEW.LogFileName.offset, 0)
+        self.assertEqual(bw._EVENT_TRACE_LOGFILEW.LoggerName.offset, 8)
         self.assertEqual(bw._EVENT_TRACE_LOGFILEW.ProcessingMode.offset, 28)
-        self.assertEqual(bw._EVENT_TRACE_LOGFILEW.EventRecordCallback.offset, 64)
+        self.assertEqual(bw._EVENT_TRACE_LOGFILEW.CurrentEvent.offset, 32)
+        self.assertEqual(bw._EVENT_TRACE_LOGFILEW.LogfileHeader.offset, 120)
+        self.assertEqual(bw._EVENT_TRACE_LOGFILEW.BufferCallback.offset, 400)
+        self.assertEqual(bw._EVENT_TRACE_LOGFILEW.EventRecordCallback.offset, 424)
+        self.assertEqual(bw._EVENT_TRACE_LOGFILEW.Context.offset, 440)
 
     def test_guid_parsing(self):
         guid = bw._guid_from_string(bw.SYSTEM_TRACE_CONTROL_GUID)
@@ -82,6 +95,28 @@ class TestEventConsumption(unittest.TestCase):
         address = self._payload(7, 900)
         self.monitor._consume_event(bw.RECEIVE_IPV6, address, 8)
         self.assertEqual(self.monitor._totals, {7: 900})
+
+    def test_record_callback_reads_classic_opcode_and_payload(self):
+        record = bw._EVENT_RECORD()
+        record.EventHeader.EventDescriptor.Id = 0
+        record.EventHeader.EventDescriptor.Opcode = bw.SEND_IPV4
+        record.UserData = self._payload(4242, 1500)
+        record.UserDataLength = 8
+
+        self.monitor._on_record(ctypes.pointer(record))
+
+        self.assertEqual(self.monitor._totals, {4242: 1500})
+
+    def test_record_callback_does_not_treat_id_as_classic_event_type(self):
+        record = bw._EVENT_RECORD()
+        record.EventHeader.EventDescriptor.Id = bw.SEND_IPV4
+        record.EventHeader.EventDescriptor.Opcode = 0
+        record.UserData = self._payload(4242, 1500)
+        record.UserDataLength = 8
+
+        self.monitor._on_record(ctypes.pointer(record))
+
+        self.assertEqual(self.monitor._totals, {})
 
     def test_non_transfer_event_is_ignored(self):
         address = self._payload(4242, 1500)
