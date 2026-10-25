@@ -1,10 +1,25 @@
 # SPDX-License-Identifier: LicenseRef-GNCL-1.0
-# Winget manifest for Gannet NVR. This describes *this fork*, not Frigate: the
-# publisher is the person who maintains this repository, and the license is not
-# MIT (see LICENSING.md). Before submitting upstream, run `winget validate` and
-# confirm the license string and the installer asset name below.
+# Winget manifest TEMPLATE for Gannet NVR. This describes *this fork*, not
+# Frigate: the publisher is the person who maintains this repository, and the
+# license is not MIT (see LICENSING.md).
+#
+# Do not submit this file. `scripts/build_portable.py` fills in the tokens below
+# (__VERSION__, __URL__, __SHA256__, __BUNDLE_ROOT__) and writes the real
+# manifest next to the ZIP it describes; submit that copy, and only after:
+#
+#     winget validate --manifest <the generated file>
+#
+# Caveats before the first submission:
+#   * Windows Package Manager's `portable` nested installer expects an
+#     executable entry point. This bundle's entry point is run_gannet.cmd, a
+#     shim for run_gannet.ps1. If `winget validate` rejects the shim, the fix is
+#     a small signed .exe launcher, not a change to the ZIP layout.
+#   * `winget install` must put the extracted folder somewhere writable: the
+#     application writes to %LOCALAPPDATA%\Frigate, never into its own tree.
+#   * A tag that does not exist yet means the URL 404s. Publish the release
+#     first, then submit the manifest that points at it.
 PackageIdentifier: unsubstantiation.GannetNVR
-PackageVersion: 0.1.0
+PackageVersion: __VERSION__
 PackageLocale: en-US
 Publisher: unsubstantiation
 PublisherUrl: https://fairuniversal.com
@@ -28,13 +43,12 @@ ManifestType: version
 ManifestVersion: 1.12.0
 Installers:
   - Architecture: x64
-    InstallerType: exe
-    # FIXME(release): this asset is still named for upstream. Rename the built
-    # artifact to gannet-windows-installer.exe in the release workflow and
-    # update this URL in the same change; a stale URL fails `winget validate`.
-    InstallerUrl: https://github.com/unsubstantiation/gannet/releases/download/v0.1.0/frigate-windows-installer.exe
-    InstallerSha256: PLACEHOLDER_SHA256
+    InstallerType: zip
+    NestedInstallerType: portable
+    NestedInstallerFiles:
+      - RelativeFilePath: __BUNDLE_ROOT__\run_gannet.cmd
+        PortableCommandAlias: gannet
+    InstallerUrl: __URL__
+    InstallerSha256: __SHA256__
     Scope: user
-    Silent: False
-    SilentWithProgress: False
-    InstallLocation: C:\Program Files\Gannet
+    UpgradeBehavior: uninstallPrevious

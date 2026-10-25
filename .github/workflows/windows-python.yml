@@ -44,6 +44,12 @@ jobs:
       - name: Compile
         run: python -m compileall -q bootstrap_windows.py frigate migrations testing-scripts
 
+      # Exercises the release builder's manifest parsing and layout plan without
+      # downloading anything, so a renamed file or a broken import in the build
+      # path fails a pull request instead of the tag build.
+      - name: Portable bundle plan is valid
+        run: python scripts/build_portable.py --plan-only
+
       - name: Install requirements
         run: pip install -r requirements.txt
 
