@@ -417,6 +417,7 @@ path = [
     ".github/copilot-instructions.md",
     ".github/workflows/windows-python.yml",
     ".github/workflows/windows-web.yml",
+    "DEPENDENCIES.md",
     "LICENSE",
     "LICENSES/LicenseRef-GNCL-1.0.txt",
     "LICENSING.md",

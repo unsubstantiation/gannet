@@ -34,6 +34,10 @@ LICENSE. Verify the model card before shipping a build that embeds weights.
 
 ## Package dependencies
 
+Every declared package, where it is imported and why its pin cannot move is
+inventoried in [`DEPENDENCIES.md`](DEPENDENCIES.md); this section is the
+licensing half of that picture.
+
 Two things in this repository's dependency set constrain what this project can
 promise about its own license:
 
