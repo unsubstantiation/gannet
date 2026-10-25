@@ -7,6 +7,8 @@ the planning mode that CI gates on. Nothing here downloads or builds anything.
 """
 
 import importlib.util
+import json
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -156,11 +158,21 @@ class TestManifestInputs(unittest.TestCase):
     def test_plan_only_exits_cleanly_without_touching_the_tree(self):
         self.assertEqual(self.builder.main(["--plan-only"]), 0)
 
-    def test_unknown_python_version_is_not_silently_accepted(self):
-        # The pin file records one version; using another must not reuse the
-        # recorded digest.
-        pin = {"version": "3.12.99", "sha256": "deadbeef"}
-        self.assertNotEqual(pin["version"], self.builder.PYTHON_EMBED_VERSION)
+    def test_committed_pin_matches_the_embedded_interpreter(self):
+        # CI builds with --require-pinned, so a pin file that names another
+        # interpreter (or carries no digest) would only be discovered by a
+        # failed release build. Check the recorded digest here instead: it
+        # must name the version the builder embeds and look like a SHA-256.
+        pin = json.loads(
+            (REPO_ROOT / "scripts" / "python_embed_pin.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(pin["version"], self.builder.PYTHON_EMBED_VERSION)
+        self.assertIsNotNone(
+            re.fullmatch(r"[0-9a-f]{64}", pin["sha256"]),
+            "python_embed_pin.json must carry the pinned SHA-256 digest",
+        )
 
 
 if __name__ == "__main__":

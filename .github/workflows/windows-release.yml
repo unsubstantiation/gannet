@@ -100,6 +100,45 @@ jobs:
             dist/RELEASE-NOTES.md
             dist/unsubstantiation.GannetNVR.yaml
 
+      # The builder asserts the file layout, but only running the bundled
+      # interpreter proves the python312._pth seed, the pywin32 DLL placement,
+      # and the native wheels actually load (BUILD.md, Troubleshooting). Run
+      # it against the extracted archive, not the staging tree, because the
+      # archive is what ships. It sits after the artifact upload so a smoke
+      # failure still leaves the bundle downloadable for diagnosis; the job
+      # still fails, so the publish step below does not run. The imports run
+      # from the bundle root, where only the ._pth seed (..\app) can put the
+      # application on sys.path.
+      - name: Smoke-test the extracted bundle
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $zip = Get-ChildItem dist/*.zip | Select-Object -First 1
+          $dest = Join-Path $env:RUNNER_TEMP "bundle-smoke"
+          Expand-Archive -Path $zip.FullName -DestinationPath $dest
+          $bundle = Get-ChildItem $dest -Directory | Select-Object -First 1
+          $python = Join-Path $bundle.FullName "python\python.exe"
+          $app = Join-Path $bundle.FullName "app"
+
+          & $python --version
+          if ($LASTEXITCODE -ne 0) { throw "bundled python.exe --version failed" }
+
+          $env:PYTHONUTF8 = "1"
+          Push-Location $bundle.FullName
+          try {
+            & $python -c "import frigate.util.platform as p, frigate.util.version as v; print(v.VERSION, p.get_source_root()); assert v.VERSION != 'dev', 'frigate-nvr metadata missing'; assert p.web_dir_has_build(), 'web build not found from the bundle layout'"
+            if ($LASTEXITCODE -ne 0) { throw "bundle layout imports failed" }
+            & $python -c "import cv2, numpy, onnxruntime, win32service; print('native imports ok')"
+            if ($LASTEXITCODE -ne 0) { throw "native wheel imports failed" }
+          }
+          finally {
+            Pop-Location
+          }
+
+          $ffmpegVersion = & (Join-Path $app "ffmpeg\ffmpeg.exe") -version
+          if ($LASTEXITCODE -ne 0) { throw "bundled ffmpeg.exe -version failed" }
+          Write-Host $ffmpegVersion[0]
+
       # gh is preinstalled on the runner; using it avoids a third-party action
       # for the one step that needs write access.
       - name: Publish the release

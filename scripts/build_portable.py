@@ -34,10 +34,11 @@ Why the layout is what it is:
 
 Everything downloaded is either already pinned in ``bootstrap_windows.py`` (the
 FFmpeg/go2rtc archives and the two models, re-verified here) or the CPython
-embeddable package, whose digest is recorded on first use in
-``scripts/python_embed_pin.json`` exactly like the bootstrap's trust-on-first-use
-bookkeeping. ``--require-pinned`` turns an unrecorded digest into an error, which
-is what CI uses.
+embeddable package, whose SHA-256 is pinned in ``scripts/python_embed_pin.json``
+to the digest upstream signed in the file's Sigstore bundle on python.org.
+``--require-pinned`` turns an unrecorded digest into an error, which is what CI
+uses; without it, an empty pin is filled in from the first download so a new
+interpreter version can be adopted deliberately.
 
 This runs on Windows (the supported build host) and on POSIX as a convenience,
 because assembling wheels for a Windows target does not require Windows. It does
@@ -70,10 +71,13 @@ WINGET_TEMPLATE = ROOT / "winget-manifest" / "unsubstantiation.GannetNVR.yaml"
 
 # The interpreter the bundle embeds. 3.12 is the only supported series
 # (pyproject.toml `requires-python`), and the embeddable package is the CPython
-# distribution intended for redistribution inside an application. Security-only
-# releases get no install-manager manifest on python.org, so the digest is
-# recorded locally on first use rather than quoted from upstream.
-PYTHON_EMBED_VERSION = "3.12.15"
+# distribution intended for redistribution inside an application. 3.12.10 is
+# the last 3.12 release python.org publishes Windows binaries for: under PEP
+# 693 the 3.12.11+ security releases are source-only, so no embeddable package
+# exists for them at any URL. The pin therefore tracks 3.12.10 deliberately;
+# moving past it means building CPython from source or embedding a third-party
+# standalone build, either of which is its own change with its own provenance.
+PYTHON_EMBED_VERSION = "3.12.10"
 PYTHON_EMBED_URL = "https://www.python.org/ftp/python/{v}/python-{v}-embed-amd64.zip"
 # (implementation, abi tag) for the wheel tags pip must resolve against.
 PYTHON_EMBED_ABI = ("cp", "cp312")
