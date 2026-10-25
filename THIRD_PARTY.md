@@ -25,7 +25,7 @@ ships a bundle that includes them takes on the obligations below directly.
 | go2rtc | `AlexxIT/go2rtc` `v1.9.14` `go2rtc_win64.zip` | MIT | Keep the copyright and permission notice. go2rtc incorporates FFmpeg libraries, so check that build's terms too. |
 | Default CPU detection model | `google-coral/test_data` `release-frogfish` `ssdlite_mobiledet_coco_qat_post_process.tflite` | Apache-2.0 (repository license) | Weights, not code. Attribution and the NOTICE requirement apply. Not relicensed by anything in this repository. |
 | YAMNet audio model | `tfhub.dev/google/lite-model/yamnet/classification/tflite/1` | Apache-2.0 | As above; confirm the terms served at that URL before bundling. |
-| CPython 3.12 embeddable (portable bundle only) | `python.org/ftp/python/3.12.15` | PSF-2.0 | `scripts/build_portable.py` redistributes the interpreter unmodified so the bundle needs nothing installed. Keep `LICENSES/` and the PSF notice; the digest is recorded in `scripts/python_embed_pin.json`. |
+| CPython 3.12 embeddable (portable bundle only) | `python.org/ftp/python/3.12.10` | PSF-2.0 | `scripts/build_portable.py` redistributes the interpreter unmodified so the bundle needs nothing installed. Keep `LICENSES/` and the PSF notice; the SHA-256 from the file's upstream Sigstore bundle is pinned in `scripts/python_embed_pin.json`. 3.12.10 is the last 3.12 release with published Windows binaries (PEP 693); later 3.12 releases are source-only. |
 
 `bootstrap_windows.py` downloads the four artifacts above at install time, so
 nothing is vendored. `scripts/build_portable.py` puts the same four, plus a

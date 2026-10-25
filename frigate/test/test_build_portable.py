@@ -7,6 +7,8 @@ the planning mode that CI gates on. Nothing here downloads or builds anything.
 """
 
 import importlib.util
+import json
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -59,6 +61,31 @@ class TestLauncher(unittest.TestCase):
         self.assertIn(r"%~dp0run_gannet.ps1", shim)
         self.assertIn("%*", shim)
         self.assertIn("exit /b %ERRORLEVEL%", shim)
+
+
+class TestDownloads(unittest.TestCase):
+    def test_a_failed_download_names_its_url(self):
+        # Every pinned input arrives through download(); its failure must
+        # say which URL is wrong instead of leaving a urllib traceback.
+        builder = _load_builder()
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(builder.BuildError) as caught:
+                builder.download(
+                    "file:///definitely-missing-embed-amd64.zip",
+                    Path(tmp) / "out.zip",
+                )
+        self.assertIn("definitely-missing-embed-amd64.zip", str(caught.exception))
+
+
+class TestPowerShellWrapper(unittest.TestCase):
+    def test_host_version_variable_cannot_shadow_the_parameter(self):
+        # PowerShell variables are case-insensitive: a local $pythonVersion
+        # IS the -PythonVersion parameter. Assigning the host's "3.12" to it
+        # made the wrapper ask the builder for python-3.12-embed-amd64.zip.
+        text = (REPO_ROOT / "scripts" / "build_portable.ps1").read_text(
+            encoding="utf-8"
+        )
+        self.assertIsNone(re.search(r"\$pythonVersion\s*=", text, re.IGNORECASE))
 
 
 class TestLayoutAssertions(unittest.TestCase):
@@ -153,14 +180,53 @@ class TestManifestInputs(unittest.TestCase):
             self.assertEqual(pin, pin.strip())
             self.assertTrue(pin[0].isalnum(), pin)
 
+    def test_requirement_name_handles_extras_and_separators(self):
+        self.assertEqual(
+            self.builder.requirement_name(
+                "fastapi[standard-no-fastapi-cloud-cli] == 0.143.*"
+            ),
+            "fastapi",
+        )
+        self.assertEqual(
+            self.builder.requirement_name("ruamel.yaml == 0.19.*"), "ruamel-yaml"
+        )
+        self.assertEqual(
+            self.builder.requirement_name("titlecase == 2.4.*"), "titlecase"
+        )
+
+    def test_sdist_only_specs_agree_with_their_names(self):
+        # SDIST_ONLY_REQUIREMENTS is bookkeeping about what the index
+        # publishes. An entry without its own spec takes the version from
+        # requirements.txt, so it must be pinned there; an entry with one (a
+        # transitive constraint) must at least name the same distribution.
+        pinned = {
+            self.builder.requirement_name(pin)
+            for pin in self.builder.requirement_pins(REPO_ROOT / "requirements.txt")
+        }
+        for name, spec in self.builder.SDIST_ONLY_REQUIREMENTS.items():
+            if spec is None:
+                self.assertIn(name, pinned)
+            else:
+                self.assertEqual(self.builder.requirement_name(spec), name)
+
     def test_plan_only_exits_cleanly_without_touching_the_tree(self):
         self.assertEqual(self.builder.main(["--plan-only"]), 0)
 
-    def test_unknown_python_version_is_not_silently_accepted(self):
-        # The pin file records one version; using another must not reuse the
-        # recorded digest.
-        pin = {"version": "3.12.99", "sha256": "deadbeef"}
-        self.assertNotEqual(pin["version"], self.builder.PYTHON_EMBED_VERSION)
+    def test_committed_pin_matches_the_embedded_interpreter(self):
+        # CI builds with --require-pinned, so a pin file that names another
+        # interpreter (or carries no digest) would only be discovered by a
+        # failed release build. Check the recorded digest here instead: it
+        # must name the version the builder embeds and look like a SHA-256.
+        pin = json.loads(
+            (REPO_ROOT / "scripts" / "python_embed_pin.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(pin["version"], self.builder.PYTHON_EMBED_VERSION)
+        self.assertIsNotNone(
+            re.fullmatch(r"[0-9a-f]{64}", pin["sha256"]),
+            "python_embed_pin.json must carry the pinned SHA-256 digest",
+        )
 
 
 if __name__ == "__main__":

@@ -42,7 +42,7 @@ but is a template until someone runs `winget validate` and submits it.
 | Node.js 22 or newer | `npm ci` and `npm run build:native` | Skip with `-SkipWeb` if `web/dist` already exists |
 | Network access | PyPI, python.org, GitHub release assets | Only on the first build; `dist/.cache` keeps every download |
 | ~4 GiB free disk | wheels, staging tree, and archive | `dist/` holds the cache, the staging tree, and the ZIP |
-| Windows x64 | to *verify* the result | Building works on POSIX; running does not |
+| Windows x64 | the supported build host, and the only host that can *verify* the result | The builder also runs on POSIX, but pip evaluates dependency environment markers (`sys_platform` and friends) for the build host, so a POSIX build can resolve a different dependency set than the Windows target. Release bundles are built on Windows |
 
 ## Quick start
 
@@ -50,11 +50,11 @@ but is a template until someone runs `winget validate` and submits it.
 pwsh scripts/build_portable.ps1
 ```
 
-The first build records the CPython embeddable digest in
-`scripts/python_embed_pin.json` and prints it. **Check that digest against
-python.org and commit the file** — from then on every build verifies it. A release
-build passes `-RequirePinned`, which fails instead of trusting an unrecorded
-digest:
+Every build verifies the CPython embeddable download against the SHA-256
+committed in `scripts/python_embed_pin.json` (see
+[Supply chain and pinning](#supply-chain-and-pinning) for where that digest
+comes from). A release build passes `-RequirePinned`, which fails if the pin is
+ever blank instead of recording a fresh digest from whatever was downloaded:
 
 ```powershell
 pwsh scripts/build_portable.ps1 -RequirePinned
@@ -163,21 +163,44 @@ bytecode is tied to the interpreter's magic number, and a build host that is not
 | Input | Pinned by | Verified |
 | --- | --- | --- |
 | Python dependencies | `requirements.txt` (`== X.Y.*`) | wheel tags for cp312 win_amd64; `--only-binary=:all:` means no sdist builds |
-| CPython embeddable | `scripts/python_embed_pin.json` | SHA-256 on every build once recorded; first use records it |
+| CPython embeddable | `scripts/python_embed_pin.json` | SHA-256 verified on every build against the committed pin |
 | FFmpeg, go2rtc, models | `bootstrap_windows.py` | SHA-256 enforced from the artifact constants imported by the builder, so an install and a bundle can never disagree about which build they contain |
 | npm packages | `web/package-lock.json` | `npm ci` |
 
-The CPython digest is the one input whose upstream value python.org does not
-publish for a security-only 3.12 release: there is no install-manager manifest for
-3.12.15. `python_embed_pin.json` is therefore trust-on-first-use, exactly like the
-bootstrap's own bookkeeping for artifacts without a pinned digest. Record it once,
-commit it, and let CI fail closed from then on.
+### Why the embedded interpreter is 3.12.10
+
+Under [PEP 693](https://peps.python.org/pep-0693/), 3.12.10 is the last full
+maintenance release of the 3.12 series; 3.12.11 and later are security releases
+published **as source only**. Their python.org directories contain nothing but
+the source tarballs — there is no `python-3.12.15-embed-amd64.zip`, no Windows
+installer, and no install-manager manifest. 3.12.10 is therefore the newest
+embeddable package CPython publishes in the only series this application
+supports, and it is also what `bootstrap_windows.py` users get when they
+install 3.12 from python.org today, so the bundle and a checkout run the same
+interpreter patch level.
+
+The tradeoff should be stated plainly: the bundled interpreter does not have
+the standard-library security fixes that landed in 3.12.11–3.12.15. Closing
+that gap means building the embeddable package from the signed CPython source
+in CI, or embedding a third-party standalone build; both change who produces
+the interpreter binary and need their own provenance story, so neither is
+smuggled into a version bump here.
+
+The pinned digest is quoted from upstream, not trust-on-first-use: it is the
+SHA-256 in the Sigstore bundle python.org ships beside the file
+(`python-3.12.10-embed-amd64.zip.sigstore`, signed by the 3.12 release
+manager's `th@python.org` identity and logged in Rekor); the release page's
+MD5 for the same file is a second, weaker cross-check. The pin is committed,
+so CI fails closed if the download ever differs.
 
 ### Reproducibility
 
-The archive is deterministic: sorted entries, fixed 1980-01-01 timestamps, no
-filesystem metadata, and no bytecode. Two builds of the same tree with the same
-cache produce the same SHA-256, which was verified by building twice.
+The archive is written deterministically: sorted entries, fixed 1980-01-01
+timestamps, no filesystem metadata, and no bytecode, so two builds of the same
+tree with the same inputs are expected to produce the same SHA-256. Treat that
+as a property to spot-check (build twice, compare `SHA256SUMS.txt`) rather than
+a guarantee: nothing in CI asserts it, and a tool that embeds a build stamp in
+one of the staged files would break it silently.
 
 It is *not* bit-reproducible over time, and cannot be while `requirements.txt`
 pins minor series: `numpy == 1.26.*` installs whatever the newest 1.26 patch is on
@@ -236,7 +259,7 @@ downstream packager needs to reconstruct the obligations.
 | Symptom | Cause | Fix |
 | --- | --- | --- |
 | `does not match the pinned sha256` for CPython | upstream re-published, or a stale cached archive | delete `dist/.cache/python-*.zip`; if upstream really changed, update `python_embed_pin.json` deliberately |
-| `No matching distribution found for ...` | a pinned version does not exist on the index the build host reaches | the pins are the project's contract; check `requirements.txt` against the index before blaming the builder |
+| `No matching distribution found for ...` | the pinned version does not exist on the index, or it exists but publishes no wheel the `--only-binary` cross-install can take | check the pin against the index first; if the release is sdist-only and pure Python, it belongs in `SDIST_ONLY_REQUIREMENTS` in `scripts/build_portable.py`, which builds it a local wheel |
 | `npm is not on PATH` | Node missing or too old | install Node 22+, or pass `-SkipWeb` with an existing `web/dist` |
 | Build succeeds, UI says "web app is not built" | `web/dist` was not a production build | the builder rejects the Vite dev entry; delete `web/dist` and rebuild |
 | `import frigate` fails on first run | `python312._pth` lost its `..\app` line, or the tree was re-zipped | re-extract the original archive; this is why the builder asserts the `._pth` contents |

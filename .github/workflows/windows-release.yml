@@ -7,10 +7,26 @@ name: Windows Release
 # runs, so a release cannot be built by a code path nobody tested.
 #
 # Trigger with a tag (`v0.19.0`) or by hand. A manual run publishes nothing; it
-# only uploads the artifact for inspection.
+# only uploads the artifact for inspection. A pull request that touches the
+# builder or its pinned inputs also gets one full build: the plan-only check in
+# windows-python.yml cannot notice that a pinned download no longer exists, and
+# this builder once merged pointing at an interpreter archive python.org never
+# published. Path-filtered so ordinary pull requests do not pay for a ~500 MiB
+# bundle, and publishing stays impossible from a pull request: the publish step
+# only runs for v* tags or an explicit workflow_dispatch input.
 on:
   push:
     tags: ["v*"]
+  pull_request:
+    paths:
+      - "scripts/build_portable.py"
+      - "scripts/build_portable.ps1"
+      - "scripts/python_embed_pin.json"
+      - "bootstrap_windows.py"
+      - "requirements.txt"
+      - "pyproject.toml"
+      - "web/package-lock.json"
+      - ".github/workflows/windows-release.yml"
   workflow_dispatch:
     inputs:
       version:
@@ -58,15 +74,27 @@ jobs:
       # pywin32 is only installed into the bundle, not into this environment, so
       # no postinstall step is needed here. If the interpreter digest is not yet
       # recorded in scripts/python_embed_pin.json, this step fails on purpose:
-      # a release must verify its inputs rather than trust them.
+      # a release must verify its inputs rather than trust them. The build
+      # runs in a child pwsh so a failure leaves this shell alive to repeat
+      # the last lines of the (multi-thousand-line) build log as annotations,
+      # where the cause is visible without opening the full log.
       - name: Build the bundle
         shell: pwsh
         run: |
-          $arguments = @{ RequirePinned = $true }
+          $buildArgs = @("-NoProfile", "-File", "./scripts/build_portable.ps1", "-RequirePinned")
           if ("${{ inputs.version }}" -ne "") {
-            $arguments["Version"] = "${{ inputs.version }}"
+            $buildArgs += @("-Version", "${{ inputs.version }}")
           }
-          ./scripts/build_portable.ps1 @arguments
+          & pwsh @buildArgs 2>&1 | Tee-Object -FilePath build.log
+          $code = $LASTEXITCODE
+          if ($code -ne 0) {
+            Write-Host "--- last lines of build.log ---"
+            foreach ($line in (Get-Content build.log -Tail 10)) {
+              $escaped = $line -replace "%", "%25"
+              Write-Host "::error::build failed: $escaped"
+            }
+            exit $code
+          }
 
       - name: Record what was built
         shell: pwsh
@@ -99,6 +127,45 @@ jobs:
             dist/SHA256SUMS.txt
             dist/RELEASE-NOTES.md
             dist/unsubstantiation.GannetNVR.yaml
+
+      # The builder asserts the file layout, but only running the bundled
+      # interpreter proves the python312._pth seed, the pywin32 DLL placement,
+      # and the native wheels actually load (BUILD.md, Troubleshooting). Run
+      # it against the extracted archive, not the staging tree, because the
+      # archive is what ships. It sits after the artifact upload so a smoke
+      # failure still leaves the bundle downloadable for diagnosis; the job
+      # still fails, so the publish step below does not run. The imports run
+      # from the bundle root, where only the ._pth seed (..\app) can put the
+      # application on sys.path.
+      - name: Smoke-test the extracted bundle
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $zip = Get-ChildItem dist/*.zip | Select-Object -First 1
+          $dest = Join-Path $env:RUNNER_TEMP "bundle-smoke"
+          Expand-Archive -Path $zip.FullName -DestinationPath $dest
+          $bundle = Get-ChildItem $dest -Directory | Select-Object -First 1
+          $python = Join-Path $bundle.FullName "python\python.exe"
+          $app = Join-Path $bundle.FullName "app"
+
+          & $python --version
+          if ($LASTEXITCODE -ne 0) { throw "bundled python.exe --version failed" }
+
+          $env:PYTHONUTF8 = "1"
+          Push-Location $bundle.FullName
+          try {
+            & $python -c "import frigate.util.platform as p, frigate.util.version as v; print(v.VERSION, p.get_source_root()); assert v.VERSION != 'dev', 'frigate-nvr metadata missing'; assert p.web_dir_has_build(), 'web build not found from the bundle layout'"
+            if ($LASTEXITCODE -ne 0) { throw "bundle layout imports failed" }
+            & $python -c "import cv2, numpy, onnxruntime, win32service; print('native imports ok')"
+            if ($LASTEXITCODE -ne 0) { throw "native wheel imports failed" }
+          }
+          finally {
+            Pop-Location
+          }
+
+          $ffmpegVersion = & (Join-Path $app "ffmpeg\ffmpeg.exe") -version
+          if ($LASTEXITCODE -ne 0) { throw "bundled ffmpeg.exe -version failed" }
+          Write-Host $ffmpegVersion[0]
 
       # gh is preinstalled on the runner; using it avoids a third-party action
       # for the one step that needs write access.
