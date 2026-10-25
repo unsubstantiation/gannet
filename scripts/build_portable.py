@@ -382,6 +382,92 @@ def stage_python(python_dir: Path, archive: Path) -> str:
     return str(site_packages)
 
 
+# Distributions that publish no wheel the cross-install below can use. A
+# native install builds them from the sdist without comment, but pip requires
+# --only-binary alongside --platform/--abi because an sdist built on this host
+# would carry this host's wheel tag, so wheels for these are built locally
+# first and fed back through --find-links. That is only safe for pure-Python
+# packages, whose wheel is none-any on every host; build_sdist_only_wheels
+# asserts exactly that, so adding a compiled package here fails the build
+# instead of shipping a host-platform wheel.
+#
+# Keys are normalised distribution names. The value is the requirement spec to
+# build when the distribution is not itself a line in requirements.txt, or
+# None when it is: requirements.txt remains the single source for the versions
+# it pins, and this list only records the publishing gap. A spec is needed for
+# a transitive dependency, whose constraint lives in another package's
+# metadata; mirror it from there and say whose it is.
+SDIST_ONLY_REQUIREMENTS: dict[str, str | None] = {
+    # Direct pin in requirements.txt; 2.4.x is sdist-only (its one wheel is 2.3).
+    "titlecase": None,
+    # norfair 2.3.0 requires filterpy>=1.4.5,<2.0.0; filterpy has never
+    # published a wheel.
+    "filterpy": "filterpy>=1.4.5,<2.0.0",
+    # pywebpush requires http-ece>=1.1.0; http-ece has never published a wheel.
+    "http-ece": "http-ece>=1.1.0",
+}
+
+
+def requirement_name(pin: str) -> str:
+    """The normalised distribution name of one requirement line."""
+    name = re.split(r"[\s\[<>=!~;]", pin, maxsplit=1)[0].strip().lower()
+    return re.sub(r"[-_.]+", "-", name)
+
+
+def build_sdist_only_wheels(requirements: Path) -> Path | None:
+    """Build wheels for the sdist-only pins and return their directory.
+
+    The wheels land in the same cache ``install_project_metadata`` uses, and a
+    later build reuses them only through the same constraints, so the cache
+    cannot widen the set of acceptable versions.
+    """
+    pins_by_name = {
+        requirement_name(pin): pin for pin in requirement_pins(requirements)
+    }
+    wanted = []
+    for name, fallback_spec in SDIST_ONLY_REQUIREMENTS.items():
+        spec = pins_by_name.get(name, fallback_spec)
+        if spec:
+            wanted.append(spec)
+    if not wanted:
+        return None
+
+    wheels = CACHE / "wheels"
+    wheels.mkdir(parents=True, exist_ok=True)
+    for pin in wanted:
+        log.info("Building a wheel for %s (no wheel published for the pin)", pin)
+        run(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "wheel",
+                "--no-deps",
+                "--disable-pip-version-check",
+                "--wheel-dir",
+                str(wheels),
+                pin,
+            ]
+        )
+        dist = requirement_name(pin).replace("-", "_")
+        built = [
+            path
+            for path in wheels.glob("*.whl")
+            if path.name.lower().startswith(f"{dist}-")
+        ]
+        if not built:
+            raise BuildError(f"pip wheel produced no wheel for {pin} in {wheels}")
+        for path in built:
+            if not path.name.endswith("-none-any.whl"):
+                raise BuildError(
+                    f"{path.name} is not a pure-Python (none-any) wheel; a "
+                    "host-built binary wheel must never enter a win_amd64 "
+                    "bundle. If the distribution now ships compiled code, it "
+                    "does not belong in SDIST_ONLY_REQUIREMENTS"
+                )
+    return wheels
+
+
 def install_wheels(site_packages: Path, requirements: Path) -> None:
     """Install the pinned requirements for a Windows CPython 3.12 target.
 
@@ -391,32 +477,37 @@ def install_wheels(site_packages: Path, requirements: Path) -> None:
     """
     count = len(requirement_pins(requirements))
     log.info("Installing %s pinned requirements into site-packages", count)
+    local_wheels = build_sdist_only_wheels(requirements)
     implementation, abi = PYTHON_EMBED_ABI
-    run(
-        [
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
-            "--no-compile",
-            "--no-warn-script-location",
-            "--disable-pip-version-check",
-            "--upgrade",
-            "--target",
-            str(site_packages),
-            "--requirement",
-            str(requirements),
-            "--platform",
-            "win_amd64",
-            "--python-version",
-            PYTHON_EMBED_VERSION.rsplit(".", 1)[0],
-            "--implementation",
-            implementation,
-            "--abi",
-            abi,
-            "--only-binary=:all:",
-        ]
-    )
+    command = [
+        sys.executable,
+        "-m",
+        "pip",
+        "install",
+        "--no-compile",
+        "--no-warn-script-location",
+        "--disable-pip-version-check",
+        "--upgrade",
+        "--target",
+        str(site_packages),
+        "--requirement",
+        str(requirements),
+        "--platform",
+        "win_amd64",
+        # The full patch version, not "3.12": pip reads the latter as exactly
+        # 3.12.0 when checking Requires-Python, and the interpreter the
+        # bundle ships is the version named here.
+        "--python-version",
+        PYTHON_EMBED_VERSION,
+        "--implementation",
+        implementation,
+        "--abi",
+        abi,
+        "--only-binary=:all:",
+    ]
+    if local_wheels is not None:
+        command += ["--find-links", str(local_wheels)]
+    run(command)
 
     # Console-script shims are generated for the build host's shell and cannot
     # run on Windows from inside site-packages.

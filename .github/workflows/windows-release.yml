@@ -74,15 +74,27 @@ jobs:
       # pywin32 is only installed into the bundle, not into this environment, so
       # no postinstall step is needed here. If the interpreter digest is not yet
       # recorded in scripts/python_embed_pin.json, this step fails on purpose:
-      # a release must verify its inputs rather than trust them.
+      # a release must verify its inputs rather than trust them. The build
+      # runs in a child pwsh so a failure leaves this shell alive to repeat
+      # the last lines of the (multi-thousand-line) build log as annotations,
+      # where the cause is visible without opening the full log.
       - name: Build the bundle
         shell: pwsh
         run: |
-          $arguments = @{ RequirePinned = $true }
+          $buildArgs = @("-NoProfile", "-File", "./scripts/build_portable.ps1", "-RequirePinned")
           if ("${{ inputs.version }}" -ne "") {
-            $arguments["Version"] = "${{ inputs.version }}"
+            $buildArgs += @("-Version", "${{ inputs.version }}")
           }
-          ./scripts/build_portable.ps1 @arguments
+          & pwsh @buildArgs 2>&1 | Tee-Object -FilePath build.log
+          $code = $LASTEXITCODE
+          if ($code -ne 0) {
+            Write-Host "--- last lines of build.log ---"
+            foreach ($line in (Get-Content build.log -Tail 10)) {
+              $escaped = $line -replace "%", "%25"
+              Write-Host "::error::build failed: $escaped"
+            }
+            exit $code
+          }
 
       - name: Record what was built
         shell: pwsh

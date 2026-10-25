@@ -155,6 +155,35 @@ class TestManifestInputs(unittest.TestCase):
             self.assertEqual(pin, pin.strip())
             self.assertTrue(pin[0].isalnum(), pin)
 
+    def test_requirement_name_handles_extras_and_separators(self):
+        self.assertEqual(
+            self.builder.requirement_name(
+                "fastapi[standard-no-fastapi-cloud-cli] == 0.143.*"
+            ),
+            "fastapi",
+        )
+        self.assertEqual(
+            self.builder.requirement_name("ruamel.yaml == 0.19.*"), "ruamel-yaml"
+        )
+        self.assertEqual(
+            self.builder.requirement_name("titlecase == 2.4.*"), "titlecase"
+        )
+
+    def test_sdist_only_specs_agree_with_their_names(self):
+        # SDIST_ONLY_REQUIREMENTS is bookkeeping about what the index
+        # publishes. An entry without its own spec takes the version from
+        # requirements.txt, so it must be pinned there; an entry with one (a
+        # transitive constraint) must at least name the same distribution.
+        pinned = {
+            self.builder.requirement_name(pin)
+            for pin in self.builder.requirement_pins(REPO_ROOT / "requirements.txt")
+        }
+        for name, spec in self.builder.SDIST_ONLY_REQUIREMENTS.items():
+            if spec is None:
+                self.assertIn(name, pinned)
+            else:
+                self.assertEqual(self.builder.requirement_name(spec), name)
+
     def test_plan_only_exits_cleanly_without_touching_the_tree(self):
         self.assertEqual(self.builder.main(["--plan-only"]), 0)
 

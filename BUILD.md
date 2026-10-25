@@ -42,7 +42,7 @@ but is a template until someone runs `winget validate` and submits it.
 | Node.js 22 or newer | `npm ci` and `npm run build:native` | Skip with `-SkipWeb` if `web/dist` already exists |
 | Network access | PyPI, python.org, GitHub release assets | Only on the first build; `dist/.cache` keeps every download |
 | ~4 GiB free disk | wheels, staging tree, and archive | `dist/` holds the cache, the staging tree, and the ZIP |
-| Windows x64 | to *verify* the result | Building works on POSIX; running does not |
+| Windows x64 | the supported build host, and the only host that can *verify* the result | The builder also runs on POSIX, but pip evaluates dependency environment markers (`sys_platform` and friends) for the build host, so a POSIX build can resolve a different dependency set than the Windows target. Release bundles are built on Windows |
 
 ## Quick start
 
@@ -259,7 +259,7 @@ downstream packager needs to reconstruct the obligations.
 | Symptom | Cause | Fix |
 | --- | --- | --- |
 | `does not match the pinned sha256` for CPython | upstream re-published, or a stale cached archive | delete `dist/.cache/python-*.zip`; if upstream really changed, update `python_embed_pin.json` deliberately |
-| `No matching distribution found for ...` | a pinned version does not exist on the index the build host reaches | the pins are the project's contract; check `requirements.txt` against the index before blaming the builder |
+| `No matching distribution found for ...` | the pinned version does not exist on the index, or it exists but publishes no wheel the `--only-binary` cross-install can take | check the pin against the index first; if the release is sdist-only and pure Python, it belongs in `SDIST_ONLY_REQUIREMENTS` in `scripts/build_portable.py`, which builds it a local wheel |
 | `npm is not on PATH` | Node missing or too old | install Node 22+, or pass `-SkipWeb` with an existing `web/dist` |
 | Build succeeds, UI says "web app is not built" | `web/dist` was not a production build | the builder rejects the Vite dev entry; delete `web/dist` and rebuild |
 | `import frigate` fails on first run | `python312._pth` lost its `..\app` line, or the tree was re-zipped | re-extract the original archive; this is why the builder asserts the `._pth` contents |
