@@ -199,6 +199,11 @@ def download(url: str, dest: Path) -> None:
                     break
                 out.write(chunk)
         os.replace(partial, dest)
+    except OSError as error:
+        # HTTPError and URLError are OSErrors. A bare traceback buries which
+        # pinned input moved (or was misspelled) several frames deep; the URL
+        # is the one thing the person reading a failed build needs first.
+        raise BuildError(f"downloading {url} failed: {error}") from error
     finally:
         partial.unlink(missing_ok=True)
 

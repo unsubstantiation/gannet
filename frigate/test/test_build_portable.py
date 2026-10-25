@@ -63,6 +63,31 @@ class TestLauncher(unittest.TestCase):
         self.assertIn("exit /b %ERRORLEVEL%", shim)
 
 
+class TestDownloads(unittest.TestCase):
+    def test_a_failed_download_names_its_url(self):
+        # Every pinned input arrives through download(); its failure must
+        # say which URL is wrong instead of leaving a urllib traceback.
+        builder = _load_builder()
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(builder.BuildError) as caught:
+                builder.download(
+                    "file:///definitely-missing-embed-amd64.zip",
+                    Path(tmp) / "out.zip",
+                )
+        self.assertIn("definitely-missing-embed-amd64.zip", str(caught.exception))
+
+
+class TestPowerShellWrapper(unittest.TestCase):
+    def test_host_version_variable_cannot_shadow_the_parameter(self):
+        # PowerShell variables are case-insensitive: a local $pythonVersion
+        # IS the -PythonVersion parameter. Assigning the host's "3.12" to it
+        # made the wrapper ask the builder for python-3.12-embed-amd64.zip.
+        text = (REPO_ROOT / "scripts" / "build_portable.ps1").read_text(
+            encoding="utf-8"
+        )
+        self.assertIsNone(re.search(r"\$pythonVersion\s*=", text, re.IGNORECASE))
+
+
 class TestLayoutAssertions(unittest.TestCase):
     def setUp(self):
         self.builder = _load_builder()

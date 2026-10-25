@@ -76,9 +76,14 @@ function Get-PythonLauncher {
 # Prefer the interpreter the application targets, then fall back to whatever is
 # installed. The builder only needs a Python new enough to run pip; the
 # interpreter it bundles is downloaded separately.
+#
+# PowerShell variables are case-insensitive, so this must not be called
+# $pythonVersion: that would be the -PythonVersion parameter, and assigning
+# the host's reported "3.12" here made the wrapper pass --python-version 3.12
+# to the builder, which then looked for python-3.12-embed-amd64.zip (404).
 $pythonExe = $null
 $pythonPrefix = @()
-$pythonVersion = $null
+$detectedVersion = $null
 
 $py = Get-Command "py" -ErrorAction SilentlyContinue
 if ($py) {
@@ -86,7 +91,7 @@ if ($py) {
     if ($reported) {
         $pythonExe = $py.Source
         $pythonPrefix = @("-3.12")
-        $pythonVersion = $reported
+        $detectedVersion = $reported
     }
 }
 
@@ -97,7 +102,7 @@ if (-not $pythonExe) {
         $reported = Get-PythonLauncher -Executable $candidate.Source -Prefix @()
         if ($reported) {
             $pythonExe = $candidate.Source
-            $pythonVersion = $reported
+            $detectedVersion = $reported
             break
         }
     }
@@ -107,7 +112,7 @@ if (-not $pythonExe) {
     Write-Error "No Python interpreter found. Install 64-bit CPython 3.12 and rerun."
     exit 1
 }
-Write-Verbose "Using $pythonExe $($pythonPrefix -join ' ') (Python $pythonVersion)"
+Write-Verbose "Using $pythonExe $($pythonPrefix -join ' ') (Python $detectedVersion)"
 
 $arguments = @($Builder)
 if ($Version) { $arguments += @("--version", $Version) }
