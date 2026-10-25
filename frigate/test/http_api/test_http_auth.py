@@ -4,6 +4,8 @@ import os
 import unittest
 from unittest.mock import ANY, patch
 
+from starlette.testclient import TestClient
+
 from frigate.api.auth import (
     FAILED_LOGIN_BURST_GAP_S,
     MAX_NOTICE_USERNAME,
@@ -11,6 +13,7 @@ from frigate.api.auth import (
     FailedLoginTracker,
     hash_password,
 )
+from frigate.api.web import create_native_web_app
 from frigate.const import JWT_SECRET_ENV_VAR
 from frigate.models import User
 from frigate.test.http_api.base_http_test import AuthTestClient, BaseTestHttp
@@ -50,6 +53,74 @@ class TestHttpAuth(BaseTestHttp):
                 )
         assert response.status_code == 401
         assert any("Login failed" in m and "admin" in m for m in logs.output)
+
+
+@patch.dict(os.environ, {JWT_SECRET_ENV_VAR: "test-secret"})
+class TestNativeGatewayLogin(BaseTestHttp):
+    """The browser login sequence through the native ``/api`` mount.
+
+    Direct-to-FastAPI tests cannot see a whole class of mount bugs: Starlette
+    reports ``/api/login`` as the URL path while the global admin dependency's
+    exemptions are application paths such as ``/login``. The production
+    combination therefore returned 403 before checking a correct password,
+    which the login page surfaces as an unknown error rather than a 401.
+    """
+
+    password = "correct-horse-battery"
+
+    def setUp(self):
+        super().setUp([User])
+        User.delete().execute()
+        for username, role in (("admin", "admin"), ("viewer", "viewer")):
+            User.insert(
+                username=username,
+                password_hash=hash_password(self.password, iterations=1),
+                role=role,
+                notification_tokens=[],
+            ).execute()
+
+        # Users must exist before the app loads its in-memory session map.
+        self.api_app = super().create_app(enforce_default_admin=True)
+        # Prove the actual HTTPS scheme, not the config default, secures the
+        # native gateway's session cookie.
+        self.api_app.frigate_config.auth.cookie_secure = False
+        self.gateway = create_native_web_app(self.api_app, 8971)
+
+    def tearDown(self):
+        User.delete().execute()
+        super().tearDown()
+
+    def _client(self) -> TestClient:
+        return TestClient(self.gateway, base_url="https://frigate.local:8971")
+
+    def _login(self, client: TestClient, username: str, password: str):
+        return client.post(
+            "/api/login",
+            json={"user": username, "password": password},
+            headers={
+                "origin": "https://frigate.local:8971",
+                "x-csrf-token": "1",
+            },
+        )
+
+    def test_admin_and_viewer_can_login_through_the_native_gateway(self):
+        for username, role in (("admin", "admin"), ("viewer", "viewer")):
+            with self.subTest(username=username):
+                client = self._client()
+                login = self._login(client, username, self.password)
+
+                self.assertEqual(login.status_code, 200, login.text)
+                self.assertIn("; secure", login.headers["set-cookie"].lower())
+
+                profile = client.get("/api/profile")
+                self.assertEqual(profile.status_code, 200, profile.text)
+                self.assertEqual(profile.json()["username"], username)
+                self.assertEqual(profile.json()["role"], role)
+
+    def test_wrong_password_through_the_native_gateway_is_unauthorized(self):
+        response = self._login(self._client(), "admin", "wrong-password")
+
+        self.assertEqual(response.status_code, 401, response.text)
 
 
 @patch.dict(os.environ, {JWT_SECRET_ENV_VAR: "test-secret"})

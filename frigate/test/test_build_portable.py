@@ -209,6 +209,15 @@ class TestManifestInputs(unittest.TestCase):
             else:
                 self.assertEqual(self.builder.requirement_name(spec), name)
 
+    def test_release_notes_match_the_native_first_run(self):
+        notes = self.builder.release_notes(
+            "0.19.0", "GannetNVR-0.19.0-win64", "0" * 64, []
+        )
+
+        self.assertIn("https://localhost:8971", notes)
+        self.assertNotIn("http://localhost:8971", notes)
+        self.assertIn(r"tmp\logs\frigate\current", notes)
+
     def test_plan_only_exits_cleanly_without_touching_the_tree(self):
         self.assertEqual(self.builder.main(["--plan-only"]), 0)
 

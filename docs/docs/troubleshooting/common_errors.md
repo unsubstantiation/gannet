@@ -5,7 +5,7 @@ title: Common Errors
 
 # Common Windows errors
 
-Start with `%LOCALAPPDATA%\Frigate\logs\frigate.log` for an interactive install or `%ProgramData%\Frigate\logs\frigate.log` for the default service install. If another base directory was selected, use its `logs` folder.
+Start with `%LOCALAPPDATA%\Frigate\tmp\logs\frigate\current` for an interactive install or `%ProgramData%\Frigate\tmp\logs\frigate\current` for the default service install. If another base directory was selected, use the same `tmp\logs\frigate\current` path below that root.
 
 ## Frigate requires 64-bit Windows and CPython 3.12
 
@@ -46,7 +46,7 @@ Run these commands from an elevated shell:
 Get-Service Frigate
 Get-WinEvent -LogName Application -MaxEvents 50 |
   Where-Object ProviderName -Match 'Frigate|Python'
-Get-Content "$env:ProgramData\Frigate\logs\frigate.log" -Tail 200
+Get-Content "$env:ProgramData\Frigate\tmp\logs\frigate\current" -Tail 200
 ```
 
 Typical causes are an invalid config, a missing service environment variable, a data-directory ACL that excludes the service account, or a partial TLS certificate pair. Validate using the service installation's interpreter and environment.

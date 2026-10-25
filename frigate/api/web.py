@@ -301,7 +301,41 @@ class NativeAuthMiddleware:
         scope = dict(scope)
         scope["headers"] = self._injected(headers) + self._strip_proxy_headers(scope)
 
-        await self.app(scope, receive, send)
+        await self.app(
+            scope,
+            receive,
+            self._send_with_cookies(send, self._response_cookies(headers)),
+        )
+
+    @staticmethod
+    def _response_cookies(
+        headers: list[tuple[bytes, bytes]],
+    ) -> list[tuple[bytes, bytes]]:
+        """Cookies set by a successful auth check, notably a refreshed JWT."""
+        return [(key, value) for key, value in headers if key.lower() == b"set-cookie"]
+
+    @staticmethod
+    def _send_with_cookies(send: Any, cookies: list[tuple[bytes, bytes]]) -> Any:
+        """Attach auth-check cookies to the downstream HTTP response.
+
+        The in-process equivalent of nginx's ``auth_request_set`` copying:
+        without it, ``/auth`` can refresh an expiring session cookie but the
+        browser never receives the replacement and is logged out anyway.
+        """
+        if not cookies:
+            return send
+
+        async def send_with_cookies(message: dict) -> None:
+            if message["type"] == "http.response.start":
+                message = dict(message)
+                # Auth ran before the endpoint, so its cookies come first: a
+                # cookie the endpoint sets itself (for example after changing
+                # a password) must win over a merely refreshed session token.
+                message["headers"] = cookies + list(message.get("headers", []))
+
+            await send(message)
+
+        return send_with_cookies
 
     @staticmethod
     def _injected(headers: list[tuple[bytes, bytes]]) -> list[tuple[bytes, bytes]]:
