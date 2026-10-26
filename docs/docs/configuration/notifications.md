@@ -10,11 +10,11 @@ import FaqItem from "@site/src/components/FaqItem";
 
 # Notifications
 
-Frigate offers native notifications using the [WebPush Protocol](https://web.dev/articles/push-notifications-web-push-protocol) which uses the [VAPID spec](https://tools.ietf.org/html/draft-thomson-webpush-vapid) to deliver notifications to web apps using encryption.
+Gannet offers native notifications using the [WebPush Protocol](https://web.dev/articles/push-notifications-web-push-protocol) which uses the [VAPID spec](https://tools.ietf.org/html/draft-thomson-webpush-vapid) to deliver notifications to web apps using encryption.
 
 :::info
 
-Push notifications require internet access from the Frigate server to the browser vendor's push service (e.g., Google FCM, Mozilla autopush). See [Network Requirements](/frigate/network_requirements#push-notifications) for details.
+Push notifications require internet access from the Gannet server to the browser vendor's push service (e.g., Google FCM, Mozilla autopush). See [Network Requirements](/frigate/network_requirements#push-notifications) for details.
 
 :::
 
@@ -22,9 +22,9 @@ Push notifications require internet access from the Frigate server to the browse
 
 In order to use notifications the following requirements must be met:
 
-- Frigate must be accessed via a secure `https` connection while signed in as a Frigate user ([see the authorization docs](/configuration/authentication)).
+- Gannet must be accessed via a secure `https` connection while signed in as a Gannet user ([see the authorization docs](/configuration/authentication)).
 - A supported browser must be used. Currently Chrome, Firefox, and Safari are known to be supported.
-- In order for notifications to be usable externally, Frigate must be accessible externally.
+- In order for notifications to be usable externally, Gannet must be accessible externally.
 - For iOS devices, some users have also indicated that the Notifications switch needs to be enabled in iOS Settings --> Apps --> Safari --> Advanced --> Features.
 
 ### Configuration
@@ -86,11 +86,11 @@ cameras:
 
 ### Registration
 
-Once notifications are enabled, press the `Register This Device` button on all devices that you would like to receive notifications on. This will register the background worker. After this Frigate must be restarted and then notifications will begin to be sent.
+Once notifications are enabled, press the `Register This Device` button on all devices that you would like to receive notifications on. This will register the background worker. After this Gannet must be restarted and then notifications will begin to be sent.
 
 :::warning
 
-Each registration is attached to the Frigate user account you are signed in as, so you must register over a secure connection to the authenticated port (`8971`). Reverse proxies and tunnels should point at port `8971`.
+Each registration is attached to the Gannet user account you are signed in as, so you must register over a secure connection to the authenticated port (`8971`). Reverse proxies and tunnels should point at port `8971`.
 
 :::
 
@@ -110,27 +110,27 @@ Different platforms handle notifications differently, some settings changes may 
 
 ### Android
 
-Most Android phones have battery optimization settings. To get reliable Notification delivery the browser (Chrome, Firefox) should have battery optimizations disabled. If Frigate is running as a PWA then the Frigate app should have battery optimizations disabled as well.
+Most Android phones have battery optimization settings. To get reliable Notification delivery the browser (Chrome, Firefox) should have battery optimizations disabled. If Gannet is running as a PWA then the Gannet app should have battery optimizations disabled as well.
 
 ## Notifications FAQ
 
 <FaqItem id="how-do-i-debug-notifications-issues" question="How do I debug notifications issues?">
 
-Push notifications involve Frigate, your browser, and your browser vendor's push service, so it helps to work from the server outward.
+Push notifications involve Gannet, your browser, and your browser vendor's push service, so it helps to work from the server outward.
 
-1. Enable debug logs for the push client by adding `frigate.comms.webpush: debug` to your `logger` configuration. Restart Frigate after this change.
+1. Enable debug logs for the push client by adding `gannet.comms.webpush: debug` to your `logger` configuration. Restart Gannet after this change.
 
    ```yaml
    logger:
      default: info
      logs:
        # highlight-next-line
-       frigate.comms.webpush: debug
+       gannet.comms.webpush: debug
    ```
 
    These logs show exactly where a notification stopped, including:
    - `Email must be provided for push notifications to be sent` means the global `email` field is empty and nothing will ever be sent.
-   - `Sending test notification` and `Sending push notification for <camera>, review ID <id>` mean Frigate handed the message off to the push service.
+   - `Sending test notification` and `Sending push notification for <camera>, review ID <id>` mean Gannet handed the message off to the push service.
    - `Skipping notification for <camera> - in global cooldown period` (or `camera-specific cooldown period`) means your [cooldown](#configuration) values suppressed it.
    - `Notifications for <camera> are currently suspended` means notifications were suspended from <NavPath path="Settings > Notifications" /> or MQTT.
    - `Notification endpoint expired for <user>, received 410` means that device's subscription is no longer valid and it must be re-registered.
@@ -138,12 +138,12 @@ Push notifications involve Frigate, your browser, and your browser vendor's push
    - If you see no messages at all when an alert occurs, the notification was never queued. Confirm an actual **alert** was created (notifications are not sent for detections), and that notifications are enabled both globally and for that camera.
 
 2. Verify the basics that most reports come down to:
-   - Frigate must be reached over `https` with a certificate your device trusts. Browsers silently refuse to register a service worker otherwise, and a self-signed certificate that is not installed as trusted on the device will fail.
-   - On iOS, notifications only work when Frigate has been installed to the Home Screen via **Share > Add to Home Screen** and opened from that icon. Safari and Chrome tabs cannot receive web push on iOS.
-   - Each device must be registered individually, and Frigate must be restarted after registering before anything can be sent, including test notifications.
-   - The Frigate server needs outbound internet access to the browser vendor's push service. See [Network Requirements](/frigate/network_requirements#push-notifications).
+   - Gannet must be reached over `https` with a certificate your device trusts. Browsers silently refuse to register a service worker otherwise, and a self-signed certificate that is not installed as trusted on the device will fail.
+   - On iOS, notifications only work when Gannet has been installed to the Home Screen via **Share > Add to Home Screen** and opened from that icon. Safari and Chrome tabs cannot receive web push on iOS.
+   - Each device must be registered individually, and Gannet must be restarted after registering before anything can be sent, including test notifications.
+   - The Gannet server needs outbound internet access to the browser vendor's push service. See [Network Requirements](/frigate/network_requirements#push-notifications).
 
-3. Test from the UI. Use the `Send a test notification` button in <NavPath path="Settings > Notifications" />. If the log shows `Sending test notification` but nothing arrives on the device, the problem is between the push service and your device rather than in Frigate.
+3. Test from the UI. Use the `Send a test notification` button in <NavPath path="Settings > Notifications" />. If the log shows `Sending test notification` but nothing arrives on the device, the problem is between the push service and your device rather than in Gannet.
 
 4. Check the browser side on the device that is not receiving notifications:
    - Confirm the site's notification permission is set to **Allow** in your browser or OS settings, and that a focus/do not disturb mode is not hiding them.
@@ -154,9 +154,9 @@ Push notifications involve Frigate, your browser, and your browser vendor's push
 
 <FaqItem id="why-did-notifications-stop-arriving-after-working-for-a-while" question="Why did notifications stop arriving after working for a while?">
 
-Push subscriptions are issued by the browser vendor and can be revoked, most often after a browser update, after clearing site data, or when a device has been offline for an extended period. When this happens the device still appears registered in Frigate, but the push service rejects the message. The debug logs will show `Notification endpoint expired` with a `404` or `410` status.
+Push subscriptions are issued by the browser vendor and can be revoked, most often after a browser update, after clearing site data, or when a device has been offline for an extended period. When this happens the device still appears registered in Gannet, but the push service rejects the message. The debug logs will show `Notification endpoint expired` with a `404` or `410` status.
 
-Unregister and re-register the affected device from <NavPath path="Settings > Notifications" />, then restart Frigate.
+Unregister and re-register the affected device from <NavPath path="Settings > Notifications" />, then restart Gannet.
 
 </FaqItem>
 

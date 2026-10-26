@@ -5,7 +5,7 @@ title: GPU Troubleshooting
 
 # GPU troubleshooting on Windows
 
-Frigate discovers display adapters with Windows APIs, OpenVINO devices with OpenVINO, DirectML through ONNX Runtime, Windows ML catalog execution providers through ONNX Runtime plugin APIs, CUDA devices through NVML, and NVIDIA telemetry through NVML. A GPU visible in Task Manager is not automatically available to every runtime.
+Gannet discovers display adapters with Windows APIs, OpenVINO devices with OpenVINO, DirectML through ONNX Runtime, Windows ML catalog execution providers through ONNX Runtime plugin APIs, CUDA devices through NVML, and NVIDIA telemetry through NVML. A GPU visible in Task Manager is not automatically available to every runtime.
 
 ## Basic checks
 
@@ -15,7 +15,7 @@ Frigate discovers display adapters with Windows APIs, OpenVINO devices with Open
 4. Open **System > Hardware** and refresh the probe.
 5. Test software decoding or CPU inference before enabling acceleration.
 
-Remote Desktop, virtual machines, and Windows Sandbox can expose a synthetic adapter or suppress hardware APIs. Validate from the same account and session type used by the Frigate service.
+Remote Desktop, virtual machines, and Windows Sandbox can expose a synthetic adapter or suppress hardware APIs. Validate from the same account and session type used by the Gannet service.
 
 ## Video decoding
 
@@ -23,11 +23,11 @@ Use only native presets listed in [Video Hardware Acceleration](/configuration/h
 
 - copy the generated command from the log;
 - run it in PowerShell as the service account where possible;
-- inspect `ffmpeg -hwaccels` and `ffmpeg -decoders` from Frigate's bundled build;
+- inspect `ffmpeg -hwaccels` and `ffmpeg -decoders` from Gannet's bundled build;
 - check whether the camera's codec profile, bit depth, and chroma format are supported by the GPU;
 - try `preset-windows-d3d11va` before a vendor-specific path.
 
-An initialization error often causes the camera process to restart repeatedly. Frigate does not silently translate a non-Windows preset.
+An initialization error often causes the camera process to restart repeatedly. Gannet does not silently translate a non-Windows preset.
 
 ## Intel QSV and OpenVINO
 
@@ -49,11 +49,11 @@ Only one ONNX Runtime package should be installed in the environment. Confirm `D
 
 ## NVIDIA CUDA and telemetry
 
-Install the supported NVIDIA ONNX Runtime profile with `py -3.12 bootstrap_windows.py --cuda`; this selects the 1.31 GPU runtime and its CUDA 13/cuDNN 9 extras. The NVIDIA driver must support that runtime. Video decode uses Frigate's FFmpeg build and does not require ONNX CUDA. NVML statistics require the NVIDIA driver and may be unavailable even when video decoding works.
+Install the supported NVIDIA ONNX Runtime profile with `py -3.12 bootstrap_windows.py --cuda`; this selects the 1.31 GPU runtime and its CUDA 13/cuDNN 9 extras. The NVIDIA driver must support that runtime. Video decode uses Gannet's FFmpeg build and does not require ONNX CUDA. NVML statistics require the NVIDIA driver and may be unavailable even when video decoding works.
 
 ## Windows ML vendor providers
 
-The Windows ML profile uses the ORT build specifically pinned by Microsoft's `windowsml[with-ort]` extra, not the repository's general 1.31 runtime. On Windows 11 24H2 or later, run `py -3.12 bootstrap_windows.py --windows-ml`, then `python scripts/manage_windows_ml.py list` and explicitly install a compatible provider. Frigate only registers providers that are ready and visible to ONNX Runtime. Model/operator support is provider-specific; test the selected model and inspect logs. Choose one ONNX Runtime profile at a time.
+The Windows ML profile uses the ORT build specifically pinned by Microsoft's `windowsml[with-ort]` extra, not the repository's general 1.31 runtime. On Windows 11 24H2 or later, run `py -3.12 bootstrap_windows.py --windows-ml`, then `python scripts/manage_windows_ml.py list` and explicitly install a compatible provider. Gannet only registers providers that are ready and visible to ONNX Runtime. Model/operator support is provider-specific; test the selected model and inspect logs. Choose one ONNX Runtime profile at a time.
 
 If multiple NVIDIA adapters exist, keep detector, FFmpeg, and enrichment device indices explicit and confirm each tool uses the intended adapter.
 

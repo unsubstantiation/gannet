@@ -5,9 +5,9 @@ title: Common Errors
 
 # Common Windows errors
 
-Start with `%LOCALAPPDATA%\Frigate\tmp\logs\frigate\current` for an interactive install or `%ProgramData%\Frigate\tmp\logs\frigate\current` for the default service install. If another base directory was selected, use the same `tmp\logs\frigate\current` path below that root.
+Start with `%LOCALAPPDATA%\Gannet\tmp\logs\frigate\current` for an interactive install or `%ProgramData%\Gannet\tmp\logs\frigate\current` for the default service install. If another base directory was selected, use the same `tmp\logs\frigate\current` path below that root.
 
-## Frigate requires 64-bit Windows and CPython 3.12
+## Gannet requires 64-bit Windows and CPython 3.12
 
 The native runtime intentionally refuses unsupported operating systems, architectures, and Python versions. Verify:
 
@@ -25,7 +25,7 @@ Rerun the bootstrap from the repository root:
 py -3.12 bootstrap_windows.py --skip-web
 ```
 
-Do not rename downloaded files. Antivirus quarantine, an incomplete archive, or changing `FRIGATE_BASE_DIR` after installation are common causes. Frigate checks executable names and rejects a directory where a file is required.
+Do not rename downloaded files. Antivirus quarantine, an incomplete archive, or changing `FRIGATE_BASE_DIR` after installation are common causes. Gannet checks executable names and rejects a directory where a file is required.
 
 ## Port 8971 is already in use
 
@@ -43,34 +43,34 @@ Stop the conflicting process or change `networking.listen.external`. The externa
 Run these commands from an elevated shell:
 
 ```powershell
-Get-Service Frigate
+Get-Service Gannet
 Get-WinEvent -LogName Application -MaxEvents 50 |
-  Where-Object ProviderName -Match 'Frigate|Python'
-Get-Content "$env:ProgramData\Frigate\tmp\logs\frigate\current" -Tail 200
+  Where-Object ProviderName -Match 'Gannet|Python'
+Get-Content "$env:ProgramData\Gannet\tmp\logs\frigate\current" -Tail 200
 ```
 
 Typical causes are an invalid config, a missing service environment variable, a data-directory ACL that excludes the service account, or a partial TLS certificate pair. Validate using the service installation's interpreter and environment.
 
 ## Permission denied or database cannot be opened
 
-The service account needs Modify permission on config, media, cache, temporary, and log directories. Keep `frigate.db` on local NTFS. Mapped drive letters from an interactive user are not available to a service; use a UNC path with explicit account permissions only for non-database storage.
+The service account needs Modify permission on config, media, cache, temporary, and log directories. Keep `gannet.db` on local NTFS. Mapped drive letters from an interactive user are not available to a service; use a UNC path with explicit account permissions only for non-database storage.
 
 ## Database is locked
 
-Do not run two Frigate instances against one database. Stop the service before launching an interactive copy. Antivirus, backup, and indexing tools can hold SQLite sidecar files; configure exclusions only if permitted by your security policy. Never put the database on SMB or another network filesystem.
+Do not run two Gannet instances against one database. Stop the service before launching an interactive copy. Antivirus, backup, and indexing tools can hold SQLite sidecar files; configure exclusions only if permitted by your security policy. Never put the database on SMB or another network filesystem.
 
 ## TLS certificate or private key error
 
-`tls.cert_file` and `tls.key_file` must either both exist or both be absent. When both are absent, Frigate generates a self-signed pair. Custom files must be unencrypted PEM and readable by the service account.
+`tls.cert_file` and `tls.key_file` must either both exist or both be absent. When both are absent, Gannet generates a self-signed pair. Custom files must be unencrypted PEM and readable by the service account.
 
-If Frigate starts but a client rejects HTTPS, install a certificate with the hostname in its Subject Alternative Name and a chain trusted by that client.
+If Gannet starts but a client rejects HTTPS, install a certificate with the hostname in its Subject Alternative Name and a chain trusted by that client.
 
 ## Camera has no frames
 
-Test the exact stream from the Frigate host:
+Test the exact stream from the Gannet host:
 
 ```powershell
-& "$env:LOCALAPPDATA\Frigate\ffmpeg\bin\ffplay.exe" `
+& "$env:LOCALAPPDATA\Gannet\ffmpeg\bin\ffplay.exe" `
   'rtsp://user:password@camera/stream'
 ```
 
@@ -89,7 +89,7 @@ The configured device must be present in the hardware probe. Native Windows supp
 Validation rejects Unix device paths, sockets, unsupported detector names, and non-Windows FFmpeg backends. Replace copied configuration rather than attempting to pass a Linux device or argument through unchanged.
 
 ```powershell
-.\.venv\Scripts\python.exe -m frigate --validate-config
+.\.venv\Scripts\python.exe -m gannet --validate-config
 ```
 
 ## Long path or reserved-name error
@@ -98,4 +98,4 @@ Keep `FRIGATE_BASE_DIR` short and enable Windows long-path support. Camera names
 
 ## Recording errors
 
-See [Recording troubleshooting](./recordings.md) for timestamp, codec, disk, retention, and segment problems. Do not delete database rows or recording files while Frigate is running.
+See [Recording troubleshooting](./recordings.md) for timestamp, codec, disk, retention, and segment problems. Do not delete database rows or recording files while Gannet is running.

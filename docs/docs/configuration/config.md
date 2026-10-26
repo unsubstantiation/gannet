@@ -1,21 +1,21 @@
 ---
 id: config
-title: Frigate Configuration
+title: Gannet Configuration
 ---
 
 import NavPath from "@site/src/components/NavPath";
 
-Frigate can be configured through the **Settings UI** or by editing YAML. The Settings UI is recommended because it validates values and explains which changes require a restart.
+Gannet can be configured through the **Settings UI** or by editing YAML. The Settings UI is recommended because it validates values and explains which changes require a restart.
 
 ## Configuration file
 
 The native Windows configuration directory defaults to:
 
 ```text
-%LOCALAPPDATA%\Frigate\config
+%LOCALAPPDATA%\Gannet\config
 ```
 
-The service installer can select another data root. In that case, use its `config` subdirectory. Frigate accepts `config.yml` or `config.yaml`; if both exist, `config.yml` wins.
+The service installer can select another data root. In that case, use its `config` subdirectory. Gannet accepts `config.yml` or `config.yaml`; if both exist, `config.yml` wins.
 
 A minimal starting configuration is:
 
@@ -44,15 +44,15 @@ Pending edits are not applied until saved. **Save** writes the current section, 
 
 Before editing manually:
 
-1. stop the Frigate Windows service, or use the editor built into the UI;
-2. make a backup of `config.yml`, `secrets.yaml`, and `frigate.db`;
+1. stop the Gannet Windows service, or use the editor built into the UI;
+2. make a backup of `config.yml`, `secrets.yaml`, and `gannet.db`;
 3. preserve YAML indentation with spaces;
 4. validate before restarting.
 
 From the installation directory:
 
 ```powershell
-.\.venv\Scripts\python.exe -m frigate --validate-config
+.\.venv\Scripts\python.exe -m gannet --validate-config
 ```
 
 ## VS Code schema
@@ -133,7 +133,7 @@ For Intel inference, configure an OpenVINO model and a device such as `openvino:
 
 ## Windows-specific validation
 
-Frigate rejects:
+Gannet rejects:
 
 - detector and acceleration backends not supported by the native Windows build;
 - camera names that differ only by letter case;

@@ -7,9 +7,9 @@ import ConfigTabs from "@site/src/components/ConfigTabs";
 import TabItem from "@theme/TabItem";
 import NavPath from "@site/src/components/NavPath";
 
-Most of Frigate's configuration can be set once for all cameras and then adjusted for individual cameras. The global value acts as the default for every camera, and any camera can override it.
+Most of Gannet's configuration can be set once for all cameras and then adjusted for individual cameras. The global value acts as the default for every camera, and any camera can override it.
 
-This page explains how that inheritance works. For a tour of the Settings UI itself, see [Frigate Configuration](./config.md).
+This page explains how that inheritance works. For a tour of the Settings UI itself, see [Gannet Configuration](./config.md).
 
 ## The basics
 
@@ -84,7 +84,7 @@ A camera section that has its own values shows an **Overridden** badge. To remov
 </TabItem>
 <TabItem value="yaml">
 
-Frigate treats a camera value as an override because it is written in the config file, not because it differs from the global value. Repeating the global value under a camera still creates an override:
+Gannet treats a camera value as an override because it is written in the config file, not because it differs from the global value. Repeating the global value under a camera still creates an override:
 
 ```yaml
 snapshots:
@@ -189,7 +189,7 @@ A few things worth knowing beyond that:
 
 ## Enrichments that must be enabled globally first
 
-License plate recognition and face recognition are special: the global setting is not just a default, it is a switch that must be on before any camera can use the feature. Enabling one on a camera while it is disabled globally is a configuration error, and Frigate will refuse to start:
+License plate recognition and face recognition are special: the global setting is not just a default, it is a switch that must be on before any camera can use the feature. Enabling one on a camera while it is disabled globally is a configuration error, and Gannet will refuse to start:
 
 ```
 Camera driveway has lpr enabled but lpr is disabled at the global level of the config. You must enable lpr at the global level.
@@ -230,7 +230,7 @@ This applies only to `lpr` and `face_recognition`, because the global setting co
 
 ## Profiles
 
-[Profiles](./profiles.md) add a further layer on top of everything described above. A profile is a named set of camera overrides that you can switch on and off while Frigate is running, for example to change detection and recording behavior when you leave the house.
+[Profiles](./profiles.md) add a further layer on top of everything described above. A profile is a named set of camera overrides that you can switch on and off while Gannet is running, for example to change detection and recording behavior when you leave the house.
 
 Profiles are applied on top of a camera's already-resolved configuration, so a profile value wins over both the camera and the global value while that profile is active. Profiles cover a subset of the camera sections and do not modify your config file.
 

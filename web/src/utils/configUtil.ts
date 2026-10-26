@@ -429,7 +429,7 @@ export function sanitizeSectionData(
 // a properly nested config_data object (e.g. { cameras: { front_door: { detect: value } } }).
 // This ensures the backend's flatten_config_data function can correctly distinguish
 // between path separators (dots in the path) and literal dots in keys
-// (e.g. "frigate.foo.bar" in logger.logs).
+// (e.g. "gannet.foo.bar" in logger.logs).
 export function buildConfigDataForPath(
   path: string,
   value: unknown,
@@ -869,7 +869,7 @@ export function getSectionConfig(
  * (and replay) scope on a dedicated LPR camera (`camera.type === "lpr"`),
  * `license_plate` is treated as a regular tracked object — not an
  * attribute — to match the backend's per-camera carve-out in
- * `frigate/video/detect.py`. Returns the full attribute list at global
+ * `gannet/video/detect.py`. Returns the full attribute list at global
  * scope and for non-LPR cameras.
  */
 export function getEffectiveAttributeLabels(

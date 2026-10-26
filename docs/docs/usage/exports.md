@@ -5,9 +5,9 @@ title: Exports
 
 **Exports** are how you keep a specific piece of footage permanently.
 
-Frigate's recordings are governed by your [retention settings](/configuration/record): once footage ages past its retention window (or, depending on your configuration, once it is only kept where motion, alerts, or detections occurred), it is deleted to free up disk space. An **export** saves a copy of a chosen time range to a separate location that is **never removed by retention**, so it stays available until you delete it yourself.
+Gannet's recordings are governed by your [retention settings](/configuration/record): once footage ages past its retention window (or, depending on your configuration, once it is only kept where motion, alerts, or detections occurred), it is deleted to free up disk space. An **export** saves a copy of a chosen time range to a separate location that is **never removed by retention**, so it stays available until you delete it yourself.
 
-This is the answer to the common question _"how do I stop Frigate from deleting an important clip?"_ Instead of increasing retention for an entire camera (which uses far more storage to protect a single moment), export just the footage you want to keep.
+This is the answer to the common question _"how do I stop Gannet from deleting an important clip?"_ Instead of increasing retention for an entire camera (which uses far more storage to protect a single moment), export just the footage you want to keep.
 
 :::tip
 
@@ -22,14 +22,14 @@ There are a few ways to create an export:
 - **From Review**: select (right click or long-press) an individual review item directly, and choose Export from the header menu. You can also select multiple review items and export them all at once, optionally grouping them into a [case](#cases).
 - **From History**: open the **Actions** menu and choose **Export**. You can export a preset duration (the last 1, 4, 8, 12, or 24 hours), enter a custom start and end time, or select a range directly on the timeline. A **multi-camera** option lets you export the same time range across several cameras at once.
 
-In every case you can give the export a name. Frigate then saves the footage from your recordings as a single video file. Larger ranges take time to process; the export is marked _in progress_ until it finishes, and you can keep using Frigate while it runs.
+In every case you can give the export a name. Gannet then saves the footage from your recordings as a single video file. Larger ranges take time to process; the export is marked _in progress_ until it finishes, and you can keep using Gannet while it runs.
 
 ## Managing exports
 
 All of your exports live on the **Exports** page, reachable from the main navigation, where you can search for one by name. Each export offers the following actions:
 
 - **Play** it in the browser,
-- **Download** it to save the footage outside of Frigate,
+- **Download** it to save the footage outside of Gannet,
 - **Share** it: copies a direct link to the export (or uses your device's share sheet),
 - **Rename** it, and
 - **Delete** it: deleting is the only way an export is removed.

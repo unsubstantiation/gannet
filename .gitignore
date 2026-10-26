@@ -17,7 +17,7 @@ models
 *.db
 *.db-*
 *.csv
-frigate/version.py
+gannet/version.py
 web/build
 web/node_modules
 web/coverage

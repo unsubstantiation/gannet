@@ -7,7 +7,7 @@ export const JINA_EMBEDDING_MODELS = ["jinav1", "jinav2"] as const;
  * this value as an empty input with a "saved — leave blank to keep" hint,
  * and stripRedactedCredentials() removes any field still equal to this
  * value before sending a config/set payload so the saved YAML value is
- * preserved. Mirror of frigate.const.REDACTED_CREDENTIAL_SENTINEL.
+ * preserved. Mirror of gannet.const.REDACTED_CREDENTIAL_SENTINEL.
  */
 export const REDACTED_CREDENTIAL_SENTINEL = "__FRIGATE_SAVED_CREDENTIAL__";
 

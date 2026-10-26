@@ -1,0 +1,191 @@
+import asyncio
+import logging
+import re
+from contextlib import asynccontextmanager
+
+from fastapi import Depends, FastAPI, Request
+from fastapi.responses import JSONResponse
+from joserfc.jwk import OctKey
+from playhouse.sqliteq import SqliteQueueDatabase
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+
+from gannet.api import app as main_app
+from gannet.api import (
+    auth,
+    camera,
+    chat,
+    classification,
+    debug_replay,
+    event,
+    export,
+    hardware,
+    media,
+    motion_search,
+    notices,
+    notification,
+    preview,
+    record,
+    review,
+)
+from gannet.api.auth import get_jwt_secret, limiter, require_admin_by_default
+from gannet.comms.dispatcher import Dispatcher
+from gannet.comms.event_metadata_updater import (
+    EventMetadataPublisher,
+)
+from gannet.config import FrigateConfig
+from gannet.config.camera.updater import CameraConfigUpdatePublisher
+from gannet.config.holder import ConfigHolder
+from gannet.config.profile_manager import ProfileManager
+from gannet.debug_replay import DebugReplayManager, debug_replay_auto_stop_watchdog
+from gannet.embeddings import EmbeddingsContext
+from gannet.genai import GenAIClientManager
+from gannet.notices.registry import NoticeRegistry
+from gannet.ptz.onvif import OnvifController
+from gannet.stats.emitter import StatsEmitter
+from gannet.storage import StorageMaintainer
+
+logger = logging.getLogger(__name__)
+
+
+def check_csrf(request: Request) -> bool:
+    if request.method in ["GET", "HEAD", "OPTIONS", "TRACE"]:
+        return True
+    if "origin" in request.headers and "x-csrf-token" not in request.headers:
+        return False
+
+    return True
+
+
+def create_fastapi_app(
+    frigate_config: FrigateConfig,
+    database: SqliteQueueDatabase,
+    embeddings: EmbeddingsContext | None,
+    detected_frames_processor,
+    storage_maintainer: StorageMaintainer,
+    onvif: OnvifController,
+    stats_emitter: StatsEmitter,
+    event_metadata_updater: EventMetadataPublisher,
+    config_publisher: CameraConfigUpdatePublisher,
+    replay_manager: DebugReplayManager,
+    dispatcher: Dispatcher | None = None,
+    profile_manager: ProfileManager | None = None,
+    enforce_default_admin: bool = True,
+    config_holder: ConfigHolder | None = None,
+    notice_registry: NoticeRegistry | None = None,
+):
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        logger.info("FastAPI started")
+        asyncio.create_task(
+            debug_replay_auto_stop_watchdog(
+                replay_manager, frigate_config, config_publisher
+            )
+        )
+        yield
+
+    logger.info("Starting FastAPI app")
+    app = FastAPI(
+        debug=False,
+        lifespan=lifespan,
+        swagger_ui_parameters={"apisSorter": "alpha", "operationsSorter": "alpha"},
+        dependencies=[Depends(require_admin_by_default())]
+        if enforce_default_admin
+        else [],
+    )
+
+    # Middleware to connect to DB before and close connection after request
+    # https://github.com/fastapi/full-stack-fastapi-template/issues/224#issuecomment-737423886
+    # https://fastapi.tiangolo.com/tutorial/middleware/#before-and-after-the-response
+    @app.middleware("http")
+    async def frigate_middleware(request: Request, call_next):
+        # Before request
+        if not check_csrf(request):
+            return JSONResponse(
+                content={"success": False, "message": "Missing CSRF header"},
+                status_code=401,
+            )
+
+        if database.is_closed():
+            database.connect()
+
+        response = await call_next(request)
+
+        # After request https://stackoverflow.com/a/75487519
+        if not database.is_closed():
+            database.close()
+        return response
+
+    # Rate limiter (used for login endpoint)
+    if frigate_config.auth.failed_login_rate_limit is None:
+        limiter.enabled = False
+    else:
+        auth.rateLimiter.set_limit(frigate_config.auth.failed_login_rate_limit)
+
+    app.state.limiter = limiter
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+    app.add_middleware(SlowAPIMiddleware)
+
+    # Routes
+    # Order of include_router matters: https://fastapi.tiangolo.com/tutorial/path-params/#order-matters
+    app.include_router(auth.router)
+    app.include_router(camera.router)
+    app.include_router(chat.router)
+    app.include_router(classification.router)
+    app.include_router(review.router)
+    app.include_router(main_app.router)
+    app.include_router(preview.router)
+    app.include_router(notification.router)
+    app.include_router(export.router)
+    app.include_router(hardware.router)
+    app.include_router(notices.router)
+    app.include_router(event.router)
+    app.include_router(media.router)
+    app.include_router(motion_search.router)
+    app.include_router(record.router)
+    app.include_router(debug_replay.router)
+    # App Properties
+    app.frigate_config = frigate_config
+    # Trust is tied to the loopback listener created at process startup. A live
+    # config edit must not move that boundary until the service restarts.
+    app.auth_internal_port = frigate_config.networking.listen.internal_port
+    app.genai_manager = GenAIClientManager(frigate_config)
+    app.embeddings = embeddings
+    app.detected_frames_processor = detected_frames_processor
+    app.storage_maintainer = storage_maintainer
+    app.camera_error_image = None
+    app.onvif = onvif
+    app.stats_emitter = stats_emitter
+    app.notice_registry = notice_registry
+    app.event_metadata_updater = event_metadata_updater
+    app.config_publisher = config_publisher
+    app.replay_manager = replay_manager
+    app.dispatcher = dispatcher
+    app.profile_manager = profile_manager
+    app.config_holder = config_holder
+
+    if frigate_config.auth.enabled:
+        secret = get_jwt_secret()
+        key_bytes = None
+        if isinstance(secret, str):
+            # If the secret looks like hex (e.g., generated by secrets.token_hex), use raw bytes
+            if len(secret) % 2 == 0 and re.fullmatch(r"[0-9a-fA-F]+", secret or ""):
+                try:
+                    key_bytes = bytes.fromhex(secret)
+                except ValueError:
+                    key_bytes = secret.encode("utf-8")
+            else:
+                key_bytes = secret.encode("utf-8")
+        elif isinstance(secret, (bytes, bytearray)):
+            key_bytes = bytes(secret)
+        else:
+            key_bytes = str(secret).encode("utf-8")
+
+        app.jwt_token = OctKey.import_key(key_bytes)
+        app.user_sessions = auth.load_user_sessions()
+    else:
+        app.jwt_token = None
+        app.user_sessions = {}
+
+    return app

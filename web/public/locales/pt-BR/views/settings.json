@@ -1534,7 +1534,7 @@
       "variableNameLabel": "Nome da variável",
       "variableNamePlaceholder": "ex.: MINHA_VARIAVEL",
       "loggerNameLabel": "Nome do logger",
-      "loggerNamePlaceholder": "ex.: frigate.record",
+      "loggerNamePlaceholder": "ex.: gannet.record",
       "keyPatternError": "Use apenas letras, números, hifens e sublinhados (sem espaços)"
     },
     "timezone": {

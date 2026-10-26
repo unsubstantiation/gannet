@@ -27,10 +27,10 @@ Suggestions are converted to labels when saving, so you should remove any errant
 
 ## False positive labels
 
-False positives will be shown with a red box and the label will have a strike through. These can't be adjusted, but they can be deleted if you accidentally submit a true positive as a false positive from Frigate.
+False positives will be shown with a red box and the label will have a strike through. These can't be adjusted, but they can be deleted if you accidentally submit a true positive as a false positive from Gannet.
 ![false positive](/img/plus/false-positive.jpg)
 
-Misidentified objects should have a correct label added. For example, if a person was mistakenly detected as a cat, you should submit it as a false positive in Frigate and add a label for the person. The boxes will overlap.
+Misidentified objects should have a correct label added. For example, if a person was mistakenly detected as a cat, you should submit it as a false positive in Gannet and add a label for the person. The boxes will overlap.
 
 ![add image](/img/plus/false-positive-overlap.jpg)
 

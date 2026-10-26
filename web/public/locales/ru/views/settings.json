@@ -1481,7 +1481,7 @@
       "variableNameLabel": "Имя переменной",
       "variableNamePlaceholder": "например, MY_VARIABLE",
       "loggerNameLabel": "Имя логгера",
-      "loggerNamePlaceholder": "например, frigate.record",
+      "loggerNamePlaceholder": "например, gannet.record",
       "keyPatternError": "Используйте только буквы, цифры, дефисы и подчёркивания (без пробелов)"
     },
     "knownPlates": {

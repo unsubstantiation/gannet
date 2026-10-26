@@ -5,11 +5,11 @@ title: Reverse Proxy
 
 # Windows reverse proxy
 
-Frigate already provides an authenticated HTTPS listener on port `8971`. A reverse proxy is optional and is useful for a managed certificate, a shared hostname, or an external identity provider.
+Gannet already provides an authenticated HTTPS listener on port `8971`. A reverse proxy is optional and is useful for a managed certificate, a shared hostname, or an external identity provider.
 
 ## Safe topology
 
-Run IIS, Caddy, or another Windows proxy on the same machine or a trusted host. Forward to Frigate's **public** listener. Never publish the loopback-only internal listener on port `5000`.
+Run IIS, Caddy, or another Windows proxy on the same machine or a trusted host. Forward to Gannet's **public** listener. Never publish the loopback-only internal listener on port `5000`.
 
 The proxy must support:
 
@@ -17,23 +17,23 @@ The proxy must support:
 - WebSocket upgrades for `/ws`, `/live`, and go2rtc routes;
 - large uploads where model or configuration uploads are enabled;
 
-Publish Frigate at the root of a dedicated hostname. The native gateway does not support hosting the UI beneath a path prefix.
+Publish Gannet at the root of a dedicated hostname. The native gateway does not support hosting the UI beneath a path prefix.
 
-If the proxy connects to Frigate over HTTPS with its generated certificate, configure the proxy to trust that certificate. Alternatively, bind Frigate's public listener to loopback with `FRIGATE_WEB_HOST=127.0.0.1`, disable Frigate TLS, and let the local proxy provide TLS. Do not use plain HTTP across an untrusted network.
+If the proxy connects to Gannet over HTTPS with its generated certificate, configure the proxy to trust that certificate. Alternatively, bind Gannet's public listener to loopback with `FRIGATE_WEB_HOST=127.0.0.1`, disable Gannet TLS, and let the local proxy provide TLS. Do not use plain HTTP across an untrusted network.
 
 ## WebSocket origin checks
 
-Frigate rejects a browser WebSocket or go2rtc stream connection opened from a
+Gannet rejects a browser WebSocket or go2rtc stream connection opened from a
 page on another site, because the internal listener trusts any request that
 reaches it. The check compares the browser's `Origin` host with the request's
 `Host` and `X-Forwarded-Host`, ignoring ports. A proxy must therefore preserve
 the original `Host` header or send the original host in `X-Forwarded-Host`;
-otherwise Frigate cannot tell that the connection came from its own UI. Requests
+otherwise Gannet cannot tell that the connection came from its own UI. Requests
 with no `Origin` header, such as non-browser clients, are still accepted.
 
 ## Forwarded client addresses
 
-Frigate ignores caller-supplied forwarding data unless the immediate proxy is listed under `auth.trusted_proxies`. Add only the proxy's address or a narrow network:
+Gannet ignores caller-supplied forwarding data unless the immediate proxy is listed under `auth.trusted_proxies`. Add only the proxy's address or a narrow network:
 
 ```yaml
 auth:
@@ -84,10 +84,10 @@ Do not put the shared secret in browser JavaScript, a query string, or a public 
 
 If clients should connect only through the proxy:
 
-1. bind Frigate to loopback when the proxy is local; or
+1. bind Gannet to loopback when the proxy is local; or
 2. restrict inbound port `8971` to the remote proxy address with Windows Firewall.
 
-Keep go2rtc's management port and Frigate port `5000` off external interfaces.
+Keep go2rtc's management port and Gannet port `5000` off external interfaces.
 
 ## Validation checklist
 
@@ -95,5 +95,5 @@ Keep go2rtc's management port and Frigate port `5000` off external interfaces.
 - A mapped user receives only cameras granted to the resolved role.
 - WebSockets connect after login.
 - Live video and recorded HLS seek correctly.
-- Logout clears the Frigate session or redirects to the identity provider.
+- Logout clears the Gannet session or redirects to the identity provider.
 - Login rate-limit logs show the actual client address rather than the proxy for every request.

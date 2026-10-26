@@ -9,7 +9,7 @@ Use the [official Frigate integration](https://github.com/blakeblackshear/frigat
 
 ## Prerequisites
 
-Frigate must already be running on its Windows host. Install and configure Home Assistant's MQTT integration, then point both applications at the same broker:
+Gannet must already be running on its Windows host. Install and configure Home Assistant's MQTT integration, then point both applications at the same broker:
 
 ```yaml
 mqtt:
@@ -19,35 +19,35 @@ mqtt:
   password: "{FRIGATE_MQTT_PASSWORD}"
 ```
 
-Store the substituted values in Frigate's `secrets.yaml` or Windows service environment. MQTT supplies many entities and state updates even though API and media requests use HTTPS.
+Store the substituted values in Gannet's `secrets.yaml` or Windows service environment. MQTT supplies many entities and state updates even though API and media requests use HTTPS.
 
-The Home Assistant `media_source` integration must be enabled for Frigate's Media Browser entries.
+The Home Assistant `media_source` integration must be enabled for Gannet's Media Browser entries.
 
 ## Install
 
 1. In HACS, search for and install **Frigate**.
 2. Restart Home Assistant.
-3. Open **Settings > Devices & services > Add integration > Frigate**.
+3. Open **Settings > Devices & services > Add integration > Gannet**.
 4. Enter the native Windows URL, normally `https://<windows-host>:8971`.
-5. Enter a dedicated Frigate username and password. Assign that user only the cameras Home Assistant needs.
+5. Enter a dedicated Gannet username and password. Assign that user only the cameras Home Assistant needs.
 
-The current integration supports Frigate's native JWT login. Do not use port `5000`: it is an unauthenticated, loopback-only listener reserved for Frigate's own processes and cannot be opened to another machine.
+The current integration supports Gannet's native JWT login. Do not use port `5000`: it is an unauthenticated, loopback-only listener reserved for Gannet's own processes and cannot be opened to another machine.
 
-Frigate rejects browser connections to its live streams that come from another
+Gannet rejects browser connections to its live streams that come from another
 origin, such as a Home Assistant dashboard. Configure cards to stream through the
-integration's proxy rather than pointing them directly at Frigate's port.
+integration's proxy rather than pointing them directly at Gannet's port.
 
 ## TLS
 
-Frigate generates a self-signed certificate by default. Home Assistant will reject it while certificate validation is enabled. Prefer installing a certificate whose authority Home Assistant trusts. If that is not immediately possible, the integration can disable certificate validation for this connection, but traffic should remain on a trusted network.
+Gannet generates a self-signed certificate by default. Home Assistant will reject it while certificate validation is enabled. Prefer installing a certificate whose authority Home Assistant trusts. If that is not immediately possible, the integration can disable certificate validation for this connection, but traffic should remain on a trusted network.
 
-If a reverse proxy terminates TLS, enter its root URL and choose the matching authentication mode in the integration. Frigate does not support a URL path prefix, so use a dedicated hostname.
+If a reverse proxy terminates TLS, enter its root URL and choose the matching authentication mode in the integration. Gannet does not support a URL path prefix, so use a dedicated hostname.
 
 ## Network access
 
-Allow Home Assistant to reach TCP port `8971` on the Windows host. Limit the Windows Firewall rule to the Home Assistant address where practical. Live camera entities may also require Frigate's RTSP/WebRTC ports, depending on the configured stream method.
+Allow Home Assistant to reach TCP port `8971` on the Windows host. Limit the Windows Firewall rule to the Home Assistant address where practical. Live camera entities may also require Gannet's RTSP/WebRTC ports, depending on the configured stream method.
 
-The Windows browser client, not Home Assistant, handles normal Frigate WebRTC candidates. Never advertise `localhost` to a client on another device.
+The Windows browser client, not Home Assistant, handles normal Gannet WebRTC candidates. Never advertise `localhost` to a client on another device.
 
 ## Optional dashboard card
 
@@ -56,7 +56,7 @@ The Frigate integration and the third-party Frigate dashboard card are separate.
 ## Options
 
 ```
-Home Assistant > Configuration > Integrations > Frigate > Options
+Home Assistant > Configuration > Integrations > Gannet > Options
 ```
 
 | Option            | Description                                                                                                                                                                                                                                                                                                                              |
@@ -69,7 +69,7 @@ Home Assistant > Configuration > Integrations > Frigate > Options
 | --------------- | ------------------------------------------------------------------------------- |
 | `camera`        | Live camera stream (requires RTSP).                                             |
 | `image`         | Image of the latest detected object for each camera.                            |
-| `sensor`        | States to monitor Frigate performance, object counts for all zones and cameras. |
+| `sensor`        | States to monitor Gannet performance, object counts for all zones and cameras. |
 | `switch`        | Switch entities to toggle detection, recordings and snapshots.                  |
 | `binary_sensor` | A "motion" binary sensor entity per camera/zone/object.                         |
 
@@ -98,13 +98,13 @@ For clips to be castable to media devices, audio is required and may need to be 
 
 ## Camera API
 
-To turn a camera off (pauses Frigate's processing and persists the runtime state across restarts; see [Camera state](/configuration/live#camera-state)):
+To turn a camera off (pauses Gannet's processing and persists the runtime state across restarts; see [Camera state](/configuration/live#camera-state)):
 
 ```
 action: camera.turn_off
 data: {}
 target:
-  entity_id: camera.back_deck_cam  # your Frigate camera entity ID
+  entity_id: camera.back_deck_cam  # your Gannet camera entity ID
 ```
 
 To turn a camera back on:
@@ -113,18 +113,18 @@ To turn a camera back on:
 action: camera.turn_on
 data: {}
 target:
-  entity_id: camera.back_deck_cam  # your Frigate camera entity ID
+  entity_id: camera.back_deck_cam  # your Gannet camera entity ID
 ```
 
 :::note
 
-These actions toggle Frigate's runtime On/Off state. To permanently disable a camera, set its status to **Disabled** in **Settings → Camera Management** in the Frigate UI.
+These actions toggle Gannet's runtime On/Off state. To permanently disable a camera, set its status to **Disabled** in **Settings → Camera Management** in the Gannet UI.
 
 :::
 
 ## Notification API
 
-Many people do not want to expose Frigate to the web, so the integration creates some public API endpoints that can be used for notifications.
+Many people do not want to expose Gannet to the web, so the integration creates some public API endpoints that can be used for notifications.
 
 To load a thumbnail for a tracked object:
 
@@ -182,11 +182,11 @@ For advanced usecases, this behavior can be changed with the [RTSP URL
 template](#options) option. When set, this string will override the default stream
 address that is derived from the default behavior described above. This option supports
 [jinja2 templates](https://jinja.palletsprojects.com/) and has the `camera` dict
-variables from [Frigate API](/integrations/api/frigate-http-api)
+variables from [Gannet API](/integrations/api/frigate-http-api)
 available for the template. Note that no Home Assistant state is available to the
-template, only the camera dict from Frigate.
+template, only the camera dict from Gannet.
 
-This is potentially useful when Frigate is behind a reverse proxy, and/or when
+This is potentially useful when Gannet is behind a reverse proxy, and/or when
 the default stream port is otherwise not accessible to Home Assistant (e.g.
 firewall rules).
 
@@ -212,11 +212,11 @@ rtsp://<frigate_host>:2000/{{ name|lower }}
 
 ## Multiple Instance Support
 
-The Frigate integration seamlessly supports the use of multiple Frigate servers.
+The Frigate integration seamlessly supports the use of multiple Gannet servers.
 
 ### Requirements for Multiple Instances
 
-In order for multiple Frigate instances to function correctly, the
+In order for multiple Gannet instances to function correctly, the
 `topic_prefix` and `client_id` parameters must be set differently per server.
 See [MQTT
 configuration](mqtt)
@@ -224,8 +224,8 @@ for how to set these.
 
 #### API URLs
 
-When multiple Frigate instances are configured, [API](#notification-api) URLs should include an
-identifier to tell Home Assistant which Frigate instance to refer to. The
+When multiple Gannet instances are configured, [API](#notification-api) URLs should include an
+identifier to tell Home Assistant which Gannet instance to refer to. The
 identifier used is the MQTT `client_id` parameter included in the configuration,
 and is used like so:
 
@@ -239,9 +239,9 @@ https://HA_URL/api/frigate/<client-id>/clips/front_door-1624599978.427826-976jaa
 
 #### Default Treatment
 
-When a single Frigate instance is configured, the `client-id` parameter need not
+When a single Gannet instance is configured, the `client-id` parameter need not
 be specified in URLs/identifiers -- that single instance is assumed. When
-multiple Frigate instances are configured, the user **must** explicitly specify
+multiple Gannet instances are configured, the user **must** explicitly specify
 which server they are referring to.
 
 ## FAQ
@@ -250,6 +250,6 @@ which server they are referring to.
 
 The [HomeKit integration](https://www.home-assistant.io/integrations/homekit/) randomly links one of the binary sensors (motion sensor entities) grouped with the camera device in Home Assistant. You can specify a `linked_motion_sensor` in the Home Assistant [HomeKit configuration](https://www.home-assistant.io/integrations/homekit/#linked_motion_sensor) for each camera.
 
-#### I have set up automations based on the occupancy sensors. Sometimes the automation runs because the sensors are turned on, but then I look at Frigate I can't find the object that triggered the sensor. Is this a bug?
+#### I have set up automations based on the occupancy sensors. Sometimes the automation runs because the sensors are turned on, but then I look at Gannet I can't find the object that triggered the sensor. Is this a bug?
 
 No. The occupancy sensors have fewer checks in place because they are often used for things like turning the lights on where latency needs to be as low as possible. So false positives can sometimes trigger these sensors. If you want false positive filtering, you should use an mqtt sensor on the `frigate/events` or `frigate/reviews` topic.

@@ -1,6 +1,6 @@
 import type { FrigateConfig, LiveTranscodeConfig } from "@/types/frigateConfig";
 
-// Mirrors frigate/util/live_streams.py and apply_live_transcode_streams.
+// Mirrors gannet/util/live_streams.py and apply_live_transcode_streams.
 
 export const TRANSCODE_HEIGHTS = [1080, 720, 480, 360, 240];
 

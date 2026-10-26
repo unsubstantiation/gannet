@@ -17,14 +17,14 @@ Review items are only created for a camera when **object tracking and recording 
 
 ## Alerts, Detections, and Motion
 
-Not every segment of video captured by Frigate is of the same level of interest. The people who enter your property may be a higher priority than those just walking by on the sidewalk. For this reason, Frigate sorts **review items** by importance into **alerts** and **detections**, with a separate **Motion** category for significant motion.
+Not every segment of video captured by Gannet is of the same level of interest. The people who enter your property may be a higher priority than those just walking by on the sidewalk. For this reason, Gannet sorts **review items** by importance into **alerts** and **detections**, with a separate **Motion** category for significant motion.
 
 The toggle at the top of the page switches between these three severities. One is always selected.
 
 | Tab            | Indicator color | What it shows                                                                                                    |
 | -------------- | --------------- | ---------------------------------------------------------------------------------------------------------------- |
 | **Alerts**     | dark red        | The activity you most want to see. By default, all `person` and `car` tracked objects are alerts.                |
-| **Detections** | orange          | Everything else Frigate tracked that wasn't promoted to an alert.                                                |
+| **Detections** | orange          | Everything else Gannet tracked that wasn't promoted to an alert.                                                |
 | **Motion**     | yellow          | Periods of significant motion, with the ability to filter to periods which did **not** produce a tracked object. |
 
 This same color coding is used for the ring around a selected item and the dots on the calendar. How an object is categorized as an alert vs. a detection, and how required zones refine that, is covered in [Alerts and Detections](/configuration/review#alerts-and-detections).
@@ -84,7 +84,7 @@ Clicking a preview clip seeks the recording player to that timestamp so you can 
 
 ### Motion Search
 
-Motion Search lets you scan recorded footage for changes inside a region of interest you draw on the camera. Unlike Motion Previews, which surfaces what Frigate's motion detector flagged in real time, Motion Search re-analyzes the saved recordings, so it can find changes that were missed (for example, an object that appeared while motion detection was paused by `lightning_threshold`, or in a region that is normally motion-masked).
+Motion Search lets you scan recorded footage for changes inside a region of interest you draw on the camera. Unlike Motion Previews, which surfaces what Gannet's motion detector flagged in real time, Motion Search re-analyzes the saved recordings, so it can find changes that were missed (for example, an object that appeared while motion detection was paused by `lightning_threshold`, or in a region that is normally motion-masked).
 
 To start a search, open the Actions menu in [History](/usage/history) or click the kebab menu on a camera in the <NavPath path="Review > Motion" /> page and choose **Motion Search**. In the dialog:
 
@@ -94,23 +94,23 @@ To start a search, open the Actions menu in [History](/usage/history) or click t
 
 | Field                     | Description                                                                                                                                                                                                                                                                                                                   |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Sensitivity Threshold** | Per-pixel luminance change required to count as motion inside the ROI. Behaves like Frigate's motion detection `threshold` setting.                                                                                                                                                                                           |
+| **Sensitivity Threshold** | Per-pixel luminance change required to count as motion inside the ROI. Behaves like Gannet's motion detection `threshold` setting.                                                                                                                                                                                           |
 | **Minimum Change Area**   | Minimum size of a single moving region, as a percentage of the ROI, for a frame to count as significant. Raise it to ignore small movements (leaves, distant motion); lower it when your subject covers only a small slice of the ROI. Every result shows the percentage it scored, so you can use those values to tune this. |
 | **Maximum Results**       | Maximum number of matching timestamps to return. The search stops once it reaches this many results, so a lower value finishes sooner while a higher value scans further into the range.                                                                                                                                      |
 | **Parallel mode**         | Decode multiple recording ranges at the same time. Speeds up large time ranges at the cost of higher decoding and CPU usage.                                                                                                                                                                                                  |
 
 Motion Search samples each recording's keyframes automatically, so there is no frame-rate or sampling setting to tune.
 
-Once running, Frigate scans the recording segments that overlap the time range and reports timestamps where changes were detected inside the polygon, along with the percentage of the ROI that changed. Clicking a result seeks the player to that moment so you can review what happened.
+Once running, Gannet scans the recording segments that overlap the time range and reports timestamps where changes were detected inside the polygon, along with the percentage of the ROI that changed. Clicking a result seeks the player to that moment so you can review what happened.
 
 The results panel shows the time range being scanned, a live progress bar with the timestamp currently being analyzed, and the running result count. A collapsible **Search Metrics** section reports how many segments were scanned and processed, how many were skipped because no motion was recorded in the ROI (using the stored motion heatmap), how many frames were decoded, and the total search time. Skipping segments with no recorded motion in the selected ROI is what makes searching long time ranges practical.
 
 #### Common use cases
 
-Frigate's main use case is to record and surface tracked objects, so Motion Search is most useful for the cases where object detection produced nothing: there is no object to find in Explore, but you suspect something happened.
+Gannet's main use case is to record and surface tracked objects, so Motion Search is most useful for the cases where object detection produced nothing: there is no object to find in Explore, but you suspect something happened.
 
 - **Locating an unattributed change.** You know something appeared, disappeared, or moved in a window of footage (a package now gone, a gate left open), but no detection points to it. A search returns the candidate timestamps instead of scrubbing the timeline by hand.
-- **An object that was never detected.** Something Frigate doesn't have a model label for, an object too small or distant to be detected, or movement in a region where detection isn't running. The activity left no tracked object but did change the pixels, so a search can still find it.
+- **An object that was never detected.** Something Gannet doesn't have a model label for, an object too small or distant to be detected, or movement in a region where detection isn't running. The activity left no tracked object but did change the pixels, so a search can still find it.
 - **Activity while detection was effectively paused.** Changes that occurred while object detection was disabled, motion was suppressed by `skip_motion_threshold`, or inside an area covered by a motion mask, won't appear as review items or tracked objects but can be recovered by searching the recordings directly.
 
 #### Examples
@@ -135,6 +135,6 @@ To increase the speed of searches:
 
 ## AI review summaries
 
-When [Generative AI review](/configuration/genai/genai_review) is configured, Frigate can generate a title, description, and threat classification for review items and surface them automatically in Review and History. Clicking the summary chip opens an **AI Analysis** dialog with the generated detail and any flagged concerns.
+When [Generative AI review](/configuration/genai/genai_review) is configured, Gannet can generate a title, description, and threat classification for review items and surface them automatically in Review and History. Clicking the summary chip opens an **AI Analysis** dialog with the generated detail and any flagged concerns.
 
 In Review, an additional icon appears on unreviewed items that the AI classified as **suspicious** (Level 1) or **critical** (Level 2), so the activity that most warrants attention stands out before you open it. The icon goes away once the item has been reviewed.

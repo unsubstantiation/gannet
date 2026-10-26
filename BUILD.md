@@ -12,7 +12,6 @@ instead, see [`WINDOWS_COMPATIBILITY.md`](WINDOWS_COMPATIBILITY.md) and the
 | | |
 | --- | --- |
 | Entry point (local) | `pwsh scripts/build_portable.ps1` |
-| Entry point (CI) | `.github/workflows/windows-release.yml` calls the same script |
 | Output | `dist/GannetNVR-<version>-win64.zip` |
 | Typical size | ~875 MiB for 0.19.0 (dominated by TensorFlow, OpenVINO and ONNX Runtime) |
 | Runtime contract | Windows 10/11 or Server, x64. Nothing else runs it. |
@@ -91,7 +90,7 @@ unsubstantiation.GannetNVR.yaml        winget manifest, tokens already filled
 ```
 GannetNVR-<version>-win64/
   app/                          the source root, in its checkout layout
-    frigate/                    the application package
+    gannet/                     the application package
     migrations/                 database migrations (resolved from the cwd)
     web/dist/                   the built front end
     ffmpeg/                     ffmpeg.exe, ffprobe.exe
@@ -116,12 +115,12 @@ the bundle in a way that only shows up on Windows:
 
 | Path | Read by | Consequence if moved |
 | --- | --- | --- |
-| `app/frigate/util/platform.py` at depth 2 under the root | `get_source_root()` (`parents[2]`) | install dir, labelmaps, and web dir all resolve elsewhere |
-| `app/web/dist/index.html` | `get_web_dir()` + `web_dir_has_build()` | the UI serves "The Frigate web app is not built" and the API still works |
+| `app/gannet/util/platform.py` at depth 2 under the root | `get_source_root()` (`parents[2]`) | install dir, labelmaps, and web dir all resolve elsewhere |
+| `app/web/dist/index.html` | `get_web_dir()` + `web_dir_has_build()` | the UI serves "The Gannet web app is not built" and the API still works |
 | Working directory `app/` | peewee-migrate's `Router` | the database is created empty and startup fails on first table access |
 | `app/ffmpeg/` | `get_ffmpeg_dir()` fallback | FFmpeg is not found and streams fail |
 | `app/bin/` | `find_executable()` candidate list | go2rtc is not found and restreaming fails |
-| `python/python312._pth` | CPython's path configuration | `import frigate` fails, because `..\app` is what puts it on `sys.path` |
+| `python/python312._pth` | CPython's path configuration | `import gannet` fails, because `..\app` is what puts it on `sys.path` |
 
 `scripts/build_portable.py` asserts all of these after staging and before writing
 the archive, so a change in the application that breaks the mapping fails the
@@ -137,8 +136,8 @@ differs only in where it finds Python:
 2. seeds `model_cache/*.tflite` into `%LOCALAPPDATA%\Frigate\config\model_cache`
    when a file is absent, so an upgraded model is never overwritten;
 3. sets `PYTHONUTF8=1`, because the application reads and writes UTF-8;
-4. runs `python.exe -m frigate` **with the working directory set to `app`**;
-5. restarts only when Frigate wrote `restart.requested` in the tmp directory, so
+4. runs `python.exe -m gannet` **with the working directory set to `app`**;
+5. restarts only when Gannet wrote `restart.requested` in the tmp directory, so
    Ctrl+C and closing the window still stop it.
 
 `-BaseDir <path>` keeps the writable data somewhere other than
@@ -184,7 +183,7 @@ interpreter patch level.
 The tradeoff should be stated plainly: the bundled interpreter does not have
 the standard-library security fixes that landed in 3.12.11–3.12.15. Closing
 that gap means building the embeddable package from the signed CPython source
-in CI, or embedding a third-party standalone build; both change who produces
+on a supported build host, or embedding a third-party standalone build; both change who produces
 the interpreter binary and need their own provenance story, so neither is
 smuggled into a version bump here.
 
@@ -193,7 +192,7 @@ SHA-256 in the Sigstore bundle python.org ships beside the file
 (`python-3.12.10-embed-amd64.zip.sigstore`, signed by the 3.12 release
 manager's `th@python.org` identity and logged in Rekor); the release page's
 MD5 for the same file is a second, weaker cross-check. The pin is committed,
-so CI fails closed if the download ever differs.
+so the local build fails closed if the download ever differs.
 
 ### Reproducibility
 
@@ -201,7 +200,7 @@ The archive is written deterministically: sorted entries, fixed 1980-01-01
 timestamps, no filesystem metadata, and no bytecode, so two builds of the same
 tree with the same inputs are expected to produce the same SHA-256. Treat that
 as a property to spot-check (build twice, compare `SHA256SUMS.txt`) rather than
-a guarantee: nothing in CI asserts it, and a tool that embeds a build stamp in
+a guarantee: no automated check asserts it, and a tool that embeds a build stamp in
 one of the staged files would break it silently.
 
 It is *not* bit-reproducible over time, and cannot be while `requirements.txt`
@@ -221,14 +220,17 @@ exact pins, which is a separate decision with its own tradeoffs (see
    git push origin v0.19.0
    ```
 
-3. `.github/workflows/windows-release.yml` builds on `windows-latest` with
-   `-RequirePinned`, uploads the ZIP and checksums as a workflow artifact, and
-   attaches them plus `RELEASE-NOTES.md` and the filled winget manifest to the
-   release for that tag. Re-running the job is safe: it attaches with `--clobber`.
-4. A `workflow_dispatch` run builds without publishing unless `publish` is set.
+3. Build the bundle locally on a supported Windows host with pinned inputs:
+
+   ```powershell
+   pwsh scripts/build_portable.ps1 -RequirePinned
+   ```
+
+4. Review the bundle and checksums in `dist/`, then attach the release assets
+   manually when publishing the tag.
 
 The version comes from `pyproject.toml`, and the build fails if the built wheel
-disagrees with it. `frigate/util/version.py` reads that metadata at runtime, so the
+disagrees with it. `gannet/util/version.py` reads that metadata at runtime, so the
 version shown in the UI is the version the bundle carries.
 
 The bundle name carries the version too, so the winget manifest the build writes
@@ -249,7 +251,7 @@ obligations than running the app yourself. Everything below ships inside the ZIP
 | Unidecode | GPL-2.0-or-later | Source availability; see `DEPENDENCIES.md` §6 for the MIT alternative |
 | py-vapid, pywebpush | MPL-2.0 | Nothing unless those files are modified |
 | Everything else | permissive (MIT/Apache/BSD/ISC) | copyright and NOTICE retention |
-| Gannet Material (`frigate/`, docs) | GNCL-1.0, noncommercial | Not open source; see [`LICENSING.md`](LICENSING.md) |
+| Gannet Material (`gannet/`, docs) | GNCL-1.0, noncommercial | Not open source; see [`LICENSING.md`](LICENSING.md) |
 
 The project's own noncommercial terms never applied to FFmpeg, CPython, or any
 wheel, and cannot be used to narrow them. `BUILD-INFO.json` records every Python
@@ -264,7 +266,7 @@ downstream packager needs to reconstruct the obligations.
 | `No matching distribution found for ...` | the pinned version does not exist on the index, or it exists but publishes no wheel the `--only-binary` cross-install can take | check the pin against the index first; if the release is sdist-only and pure Python, it belongs in `SDIST_ONLY_REQUIREMENTS` in `scripts/build_portable.py`, which builds it a local wheel |
 | `npm is not on PATH` | Node missing or too old | install Node 22+, or pass `-SkipWeb` with an existing `web/dist` |
 | Build succeeds, UI says "web app is not built" | `web/dist` was not a production build | the builder rejects the Vite dev entry; delete `web/dist` and rebuild |
-| `import frigate` fails on first run | `python312._pth` lost its `..\app` line, or the tree was re-zipped | re-extract the original archive; this is why the builder asserts the `._pth` contents |
+| `import gannet` fails on first run | `python312._pth` lost its `..\app` line, or the tree was re-zipped | re-extract the original archive; this is why the builder asserts the `._pth` contents |
 | Startup fails on a missing table | extracted tree started from the wrong working directory | launch through `run_gannet.ps1`; it sets the working directory to `app` |
 | `win32service` / `pywintypes` import error | `pywintypes312.dll` is not next to `python.exe` | the builder copies it from `pywin32_system32`; a re-zipped tree that dropped it will fail |
 | Antivirus quarantines the archive | unsigned executables in a ZIP | expected for unsigned builds; ship a signature or document the exclusion |

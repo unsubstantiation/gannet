@@ -15,7 +15,7 @@ REUSE.toml is also the contract two other files have to keep up with. The
 `LicenseRef-GNCL-1.0` id it uses resolves against
 LICENSES/LicenseRef-GNCL-1.0.txt, which must stay byte-identical to LICENSE, and
 every path this script lists as Gannet Material needs a header comment naming
-that id, because the web build strips comments from bundles. frigate/test/test_
+that id, because the web build strips comments from bundles. gannet/test/test_
 licensing.py checks all of that in CI.
 
 Usage, from the repository root::
@@ -145,7 +145,7 @@ def derivation_ratio(rel: str, index: set[str]) -> float:
 # that upstream does not have at all - is Gannet Material, not a modification of
 # Frigate's artwork, and it is claimed. A branding file that is byte-identical to
 # upstream is Frigate's and stays disclaimed, and
-# `frigate.test.test_licensing` fails if one is present in the tree at all.
+# `gannet.test.test_licensing` fails if one is present in the tree at all.
 BRANDING_PREFIXES = ("web/images/branding/", "docs/static/img/branding/")
 
 

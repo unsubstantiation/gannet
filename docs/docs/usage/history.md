@@ -5,7 +5,7 @@ title: History
 
 import NavPath from "@site/src/components/NavPath";
 
-**History** is Frigate's full-resolution recording viewer. Unlike Live, Review, and Explore, there is no menu item for it. You reach it from within another view, then scrub the timeline, switch cameras, inspect a tracked object's lifecycle, and export or share any moment.
+**History** is Gannet's full-resolution recording viewer. Unlike Live, Review, and Explore, there is no menu item for it. You reach it from within another view, then scrub the timeline, switch cameras, inspect a tracked object's lifecycle, and export or share any moment.
 
 This page describes how to _use_ the History view. For how recordings are _configured_ (retention, pre/post capture), see [Recording](/configuration/record).
 
@@ -21,7 +21,7 @@ Use the **Back** button to return where you came from, or the **Live** button to
 
 :::tip
 
-If you see **"No recordings found for this time"**, the most common causes are: recording was not enabled for that camera at the time of the event; the retention window has since expired and those segments were removed; or storage ran low and Frigate deleted them early to free space. See [Recording](/configuration/record) to verify your retention settings.
+If you see **"No recordings found for this time"**, the most common causes are: recording was not enabled for that camera at the time of the event; the retention window has since expired and those segments were removed; or storage ran low and Gannet deleted them early to free space. See [Recording](/configuration/record) to verify your retention settings.
 
 :::
 
@@ -58,15 +58,15 @@ The **Detail View Settings** at the bottom let you toggle whether the active ite
 On desktop, the **Actions** menu (the film icon) collects the things you can do with the footage you are viewing:
 
 - **Export**: save a clip of a chosen time range so it is never removed by retention. The dialog pre-selects the last hour; adjust the range or drag the timeline handles, then export. See [Exports](/usage/exports) for managing and downloading exports.
-- **Share Timestamp**: generate a link to the current moment (or a custom timestamp) to share with another Frigate user. This is an internal link, not a public share URL.
+- **Share Timestamp**: generate a link to the current moment (or a custom timestamp) to share with another Gannet user. This is an internal link, not a public share URL.
 - **Motion Search**: scan this camera's recordings for changes in a region you draw. This is the same tool documented under [Reviewing Motion](/usage/review#motion-search).
-- **Debug Replay** (admins): replay a recorded range back through Frigate's detection pipeline to see how it would be processed.
+- **Debug Replay** (admins): replay a recorded range back through Gannet's detection pipeline to see how it would be processed.
 
 You can also capture an instant snapshot of the current frame, and submit a frame to [Frigate+](/integrations/plus) directly from the player (admins only).
 
 ## AI review summaries
 
-When [Generative AI review](/configuration/genai/genai_review) is configured, Frigate can generate a title, description, and threat classification for review items and surface them as you scrub through History. A review item that has an AI summary exposes its details in a few places:
+When [Generative AI review](/configuration/genai/genai_review) is configured, Gannet can generate a title, description, and threat classification for review items and surface them as you scrub through History. A review item that has an AI summary exposes its details in a few places:
 
 - **Over the video**: when the item is on screen, a popup appears over the player.
 - **In the Events side panel**: items with a summary show the title below the thumbnail.

@@ -1450,7 +1450,7 @@
       "variableNameLabel": "變數名稱",
       "variableNamePlaceholder": "例如：MY_VARIABLE",
       "loggerNameLabel": "日誌名稱",
-      "loggerNamePlaceholder": "例如：frigate.record",
+      "loggerNamePlaceholder": "例如：gannet.record",
       "keyPatternError": "僅能使用英文字母、數字、連字號（-）和底線（_），且不得包含空格"
     },
     "knownPlates": {

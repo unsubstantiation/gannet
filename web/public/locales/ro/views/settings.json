@@ -1511,7 +1511,7 @@
       "variableNameLabel": "Nume variabilă",
       "variableNamePlaceholder": "de ex., MY_VARIABLE",
       "loggerNameLabel": "Nume logger",
-      "loggerNamePlaceholder": "de ex., frigate.record",
+      "loggerNamePlaceholder": "de ex., gannet.record",
       "keyPatternError": "Folosește doar litere, cifre, cratime și linii de subliniere (fără spații)"
     },
     "timezone": {

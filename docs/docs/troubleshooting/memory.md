@@ -5,7 +5,7 @@ title: High Memory Usage
 
 # High memory usage on Windows
 
-Frigate uses memory for decoded frames, object tracking, recording buffers, model runtimes, the database, and the web application. Windows named shared memory is backed by the page file and has no separate tunable shared-memory quota.
+Gannet uses memory for decoded frames, object tracking, recording buffers, model runtimes, the database, and the web application. Windows named shared memory is backed by the page file and has no separate tunable shared-memory quota.
 
 ## Identify the process
 
@@ -44,13 +44,13 @@ Do not disable the page file for a machine running GPU runtimes and multiple spa
 
 ## Shared-memory errors
 
-A named shared-memory failure can result from address-space pressure, page-file exhaustion, stale processes, or security software. Stop the Frigate service and confirm all child Python and FFmpeg processes exit before restarting. A reboot clears orphaned Windows kernel objects if a force-terminated process left them behind.
+A named shared-memory failure can result from address-space pressure, page-file exhaustion, stale processes, or security software. Stop the Gannet service and confirm all child Python and FFmpeg processes exit before restarting. A reboot clears orphaned Windows kernel objects if a force-terminated process left them behind.
 
 ## Collecting evidence
 
 Capture:
 
-- Frigate System metrics before and after growth;
+- Gannet System metrics before and after growth;
 - process private bytes and handles;
 - enabled cameras, resolutions, and FPS;
 - configured models and detector process counts;

@@ -13,7 +13,7 @@ marked.setOptions({ gfm: true });
  * @property {string} label
  * @property {boolean} recommended
  * @property {string} download Markdown for the "download the model" step.
- * @property {string} ui Markdown for the Frigate UI configuration step.
+ * @property {string} ui Markdown for the Gannet UI configuration step.
  * @property {string} yaml Raw YAML for the configuration step.
  */
 

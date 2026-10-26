@@ -11,7 +11,7 @@ import type {
 /**
  * Camera fields the dispatcher can change at runtime from the live view, MQTT,
  * or Home Assistant. Mirrors the camera command handlers in
- * frigate/comms/dispatcher.py. Runtime changes persist across restarts and win
+ * gannet/comms/dispatcher.py. Runtime changes persist across restarts and win
  * over yaml until the field is saved again, so the settings form (which edits
  * yaml) has to show the config value and flag the divergence.
  *

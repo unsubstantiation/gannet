@@ -1455,7 +1455,7 @@
       "variableNameLabel": "ឈ្មោះអថេរ",
       "variableNamePlaceholder": "ឧ. MY_VARIABLE",
       "loggerNameLabel": "ឈ្មោះ Logger",
-      "loggerNamePlaceholder": "ឧ. frigate.record",
+      "loggerNamePlaceholder": "ឧ. gannet.record",
       "keyPatternError": "ប្រើតែអក្សរ លេខ សញ្ញា - និងសញ្ញា _ (គ្មានចន្លោះ)"
     },
     "knownPlates": {

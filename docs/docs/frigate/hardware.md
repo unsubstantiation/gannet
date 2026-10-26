@@ -5,7 +5,7 @@ title: Hardware
 
 # Windows hardware recommendations
 
-Frigate is a continuously running video and inference workload. Camera count, resolution, frame rate, recording retention, object model, and enabled enrichments determine the required hardware.
+Gannet is a continuously running video and inference workload. Camera count, resolution, frame rate, recording retention, object model, and enabled enrichments determine the required hardware.
 
 ## Supported platform
 
@@ -39,7 +39,7 @@ Windows FFmpeg acceleration supports D3D11VA, DXVA2, Intel QSV, NVIDIA CUDA/NVEN
 
 Recordings are write intensive. Use a dedicated local SSD or HDD volume with adequate sustained write speed and retention capacity. Keep `config.yml` and the SQLite database on local NTFS; do not place the database on SMB or another network filesystem. Media directories may be moved with the documented `FRIGATE_*_DIR` environment variables.
 
-Enable Windows long paths and avoid deeply nested base directories. Exclude the Frigate data directory from real-time antivirus scanning only if that is acceptable under the machine's security policy.
+Enable Windows long paths and avoid deeply nested base directories. Exclude the Gannet data directory from real-time antivirus scanning only if that is acceptable under the machine's security policy.
 
 ## Networking
 

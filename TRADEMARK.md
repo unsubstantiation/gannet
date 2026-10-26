@@ -62,7 +62,8 @@ You may **NOT** use the Marks in the following ways:
 
 ## 2a. State of the branding in this repository
 
-The rename is finished where users see it. As of October 2026 the tree ships no
+The repository and documentation branding is updated, although some inherited UI
+and runtime strings still use the upstream name. As of October 2026 the tree ships no
 Frigate logo, wordmark, or icon: `docs/static/img/branding/frigate.png`,
 `logo.svg`, and `logo-dark.svg` are deleted, `docs/static/img/branding/favicon.ico`
 is Gannet's own, `README.md` and `README_CN.md` display Gannet's logo, the
@@ -71,22 +72,24 @@ Gannet and point at this fork, and the winget manifest is published under
 `unsubstantiation.GannetNVR` rather than Frigate's identifier. A test guards the
 deleted-asset half of that so it cannot silently rot.
 
-What is left is internal, and it is a release decision rather than a branding
-claim:
+The remaining references are a mix of compatibility identifiers and inherited
+wording:
 
-- the Python package is still the `frigate/` directory, `pyproject.toml` still
-  builds a `frigate-nvr` distribution, and `frigate/util/version.py` reads that
+- the Python package is the `gannet/` directory, while `pyproject.toml` still
+  builds a `frigate-nvr` distribution and `gannet/util/version.py` reads that
   name to work out which version is running;
 - environment variables and configuration keys still use the `FRIGATE_` prefix, and
   the default data directory on Windows is still `%LOCALAPPDATA%\Frigate`;
-- startup log lines, the argparse program name, and the web UI's translation
-  catalogs still say "Frigate" in a few dozen places.
+- startup log lines, the argparse program name, and parts of the inherited web UI's
+  translation catalogs still use the upstream name. These strings do not imply that
+  this fork is the upstream project.
 
-Renaming those breaks upgrades and existing installs, so they are scheduled, not
-ignored. None of it is a trademark problem in the direction that matters: an
-accurate internal reference to the project this fork derives from is nominative use,
-and the MIT permission notice that must stay in `LICENSES/MIT.txt` is attribution,
-not branding.
+Changing compatibility-facing identifiers requires a migration plan to protect
+existing installs. Updating inherited UI or runtime wording is a separate cleanup;
+references that identify upstream, Frigate+, or official integrations remain
+intentional. None of these accurate references is a trademark problem in the
+direction that matters: the MIT permission notice that must stay in
+`LICENSES/MIT.txt` is attribution, not branding.
 
 ## 5. The Logo
 

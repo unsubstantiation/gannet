@@ -7,7 +7,7 @@ import ConfigTabs from "@site/src/components/ConfigTabs";
 import TabItem from "@theme/TabItem";
 import NavPath from "@site/src/components/NavPath";
 
-Frigate uses the bundled go2rtc to power a number of key features:
+Gannet uses the bundled go2rtc to power a number of key features:
 
 - WebRTC or MSE for live viewing with audio, higher resolutions and frame rates than the jsmpeg stream which is limited to the detect stream and does not support audio
 - Live stream support for cameras in Home Assistant Integration
@@ -29,7 +29,7 @@ Configure go2rtc to connect to your camera by adding the stream you want to use 
 
 :::tip
 
-For the best experience, set the stream name under `go2rtc` to match the name of your camera so that Frigate will automatically map it and be able to use better live view options for the camera.
+For the best experience, set the stream name under `go2rtc` to match the name of your camera so that Gannet will automatically map it and be able to use better live view options for the camera.
 
 See [the live view docs](/configuration/live#setting-streams-for-live-ui) for more information.
 
@@ -38,7 +38,7 @@ See [the live view docs](/configuration/live#setting-streams-for-live-ui) for mo
 <ConfigTabs>
 <TabItem value="ui">
 
-Navigate to <NavPath path="Settings > System > go2rtc Streams" /> and click **Add stream**. Give the stream a name (use the camera's name so Frigate can auto-map it - for example, if your camera's name is `back`, use `back` as the go2rtc stream name), then paste the camera's stream URL into the **Source** field. Save the section.
+Navigate to <NavPath path="Settings > System > go2rtc Streams" /> and click **Add stream**. Give the stream a name (use the camera's name so Gannet can auto-map it - for example, if your camera's name is `back`, use `back` as the go2rtc stream name), then paste the camera's stream URL into the **Source** field. Save the section.
 
 </TabItem>
 <TabItem value="yaml">
@@ -53,11 +53,11 @@ go2rtc:
 </TabItem>
 </ConfigTabs>
 
-After adding this to the config, restart Frigate and try to watch the live stream for a single camera by clicking on it from the dashboard. It should look much clearer and more fluent than the original jsmpeg stream.
+After adding this to the config, restart Gannet and try to watch the live stream for a single camera by clicking on it from the dashboard. It should look much clearer and more fluent than the original jsmpeg stream.
 
 ### Next steps
 
-1. If the stream you added to go2rtc is also used by Frigate for the `record` or `detect` role, you can migrate your config to pull from the RTSP restream to reduce the number of connections to your camera as shown [here](/configuration/restream#reduce-connections-to-camera).
+1. If the stream you added to go2rtc is also used by Gannet for the `record` or `detect` role, you can migrate your config to pull from the RTSP restream to reduce the number of connections to your camera as shown [here](/configuration/restream#reduce-connections-to-camera).
 2. You can [set up WebRTC](/configuration/live#webrtc-extra-configuration) if your camera supports two-way talk. Note that WebRTC only supports specific audio formats and may require opening ports on your router.
 3. If your camera supports two-way talk, you must configure your stream with `#backchannel=0` to prevent go2rtc from blocking other applications from accessing the camera's audio output. See [preventing go2rtc from blocking two-way audio](/configuration/restream#two-way-talk-restream) in the restream documentation.
 

@@ -50,7 +50,7 @@ from fnmatch import fnmatchcase
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-FORK_FRIGATE = REPO_ROOT / "frigate"
+FORK_GANNET = REPO_ROOT / "gannet"
 FORK_WEB_SRC = REPO_ROOT / "web" / "src"
 FORK_LOCALE_EN = REPO_ROOT / "web" / "public" / "locales" / "en"
 
@@ -282,7 +282,7 @@ EXCLUDED_DEFS: tuple[Exclusion, ...] = (
     ),
     Exclusion(
         "*:_load_credentials_dir",
-        "Docker/systemd credentials directory; the native build reads the process environment, secrets.yaml and environment_vars only (enforced by frigate/test/test_env.py)",
+        "Docker/systemd credentials directory; the native build reads the process environment, secrets.yaml and environment_vars only (enforced by gannet/test/test_env.py)",
     ),
     Exclusion(
         "*:_warn_ignored_ffmpeg_path",
@@ -395,14 +395,23 @@ def apply_exclusions(
 # ---------------------------------------------------------------------------
 
 
+def package_root(root: Path) -> Path:
+    """Find the app package in either this fork or an upstream checkout."""
+    for name in ("gannet", "frigate"):
+        candidate = root / name
+        if candidate.is_dir():
+            return candidate
+    return root / "gannet"
+
+
 def module_files(root: Path, excluded: tuple[Exclusion, ...] = ()) -> dict[str, str]:
-    """Map `module:like:name` -> repo-relative path for frigate modules.
+    """Map `module:like:name` -> repo-relative path for app modules.
 
     Modules matching an entry of ``excluded`` are left out, so definitions
     inside an excluded detector plugin never surface as gaps.
     """
     files: dict[str, str] = {}
-    base = root / "frigate"
+    base = package_root(root)
     for path in base.rglob("*.py"):
         rel = path.relative_to(root).as_posix()
         parts = rel.split("/")
@@ -440,7 +449,7 @@ def api_routes(root: Path) -> set[str]:
         r"@(?:router|app)\.(?:get|post|put|patch|delete)\(\s*[\"']([^\"']+)[\"']"
     )
     found: set[str] = set()
-    for path in (root / "frigate" / "api").rglob("*.py"):
+    for path in (package_root(root) / "api").rglob("*.py"):
         found.update(pattern.findall(path.read_text(encoding="utf-8")))
     return found
 
@@ -448,7 +457,7 @@ def api_routes(root: Path) -> set[str]:
 def config_surface(root: Path) -> set[str]:
     """`Class.field` pairs and class names declared under frigate/config."""
     found: set[str] = set()
-    for path in (root / "frigate" / "config").rglob("*.py"):
+    for path in (package_root(root) / "config").rglob("*.py"):
         try:
             tree = ast.parse(path.read_text(encoding="utf-8"))
         except SyntaxError:
@@ -493,11 +502,18 @@ def locale_keys(root: Path) -> set[str]:
 # ---------------------------------------------------------------------------
 
 
-def check_modules(upstream: Path, _fork: Path) -> Surface:
+def check_modules(upstream: Path, fork: Path) -> Surface:
     surface = Surface("modules")
-    up = set(module_files(upstream).values())
-    here = set(module_files(REPO_ROOT).values())
-    apply_exclusions(surface, up - here, EXCLUDED_MODULES)
+    upstream_modules = module_files(upstream)
+    fork_modules = module_files(fork)
+    # Compare module names rather than checkout-relative paths: upstream's
+    # package is still named ``frigate`` while this fork's is ``gannet``.
+    missing = upstream_modules.keys() - fork_modules.keys()
+    apply_exclusions(
+        surface,
+        {upstream_modules[module] for module in missing},
+        EXCLUDED_MODULES,
+    )
     return surface
 
 

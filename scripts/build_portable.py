@@ -10,7 +10,7 @@ nothing installed, no network, and no administrator rights.
 Layout inside ``gannet-nvr-<version>-win64.zip``::
 
     GannetNVR-<version>-win64/
-      app/                      source root: frigate/, migrations/, web/dist,
+      app/                      source root: gannet/, migrations/, web/dist,
                                 labelmap.txt, ffmpeg/, bin/, model_cache/
       python/                   CPython 3.12 embeddable + Lib/site-packages
       run_gannet.ps1            launcher (restart loop, model seeding)
@@ -21,7 +21,7 @@ Layout inside ``gannet-nvr-<version>-win64.zip``::
 
 Why the layout is what it is:
 
-* ``frigate/util/platform.py`` derives the install root from its own location
+* ``gannet/util/platform.py`` derives the install root from its own location
   (``get_source_root()`` is ``parents[2]`` of that file), so the package tree has
   to keep the checkout's shape. Third-party packages therefore live in the
   embedded interpreter's ``site-packages``, and ``python312._pth`` adds
@@ -82,7 +82,7 @@ PYTHON_EMBED_URL = "https://www.python.org/ftp/python/{v}/python-{v}-embed-amd64
 # (implementation, abi tag) for the wheel tags pip must resolve against.
 PYTHON_EMBED_ABI = ("cp", "cp312")
 
-APP_DIRS = ("frigate", "migrations", "config")
+APP_DIRS = ("gannet", "migrations", "config")
 APP_FILES = (
     "labelmap.txt",
     "audio-labelmap.txt",
@@ -100,7 +100,7 @@ APP_FILES = (
 # Not needed at runtime and large or misleading inside a bundle.
 APP_EXCLUDES = {
     "__pycache__",
-    "test",  # frigate/test
+    "test",  # gannet/test
     ".pytest_cache",
     ".mypy_cache",
 }
@@ -284,7 +284,7 @@ def stage_app(app_dir: Path) -> None:
     log.info("Staging the application tree")
     for name in APP_DIRS:
         source = ROOT / name
-        if name == "frigate":
+        if name == "gannet":
             copy_tree(source, app_dir / name, APP_EXCLUDES)
         elif name == "config":
             # Only the example: a real config is user data and never ships.
@@ -545,7 +545,7 @@ def fix_pywin32(site_packages: Path) -> None:
 def install_project_metadata(site_packages: Path, version: str) -> None:
     """Add the ``frigate-nvr`` metadata the app reads its version from.
 
-    ``frigate/util/version.py`` calls ``importlib.metadata.version``, so the
+    ``gannet/util/version.py`` calls ``importlib.metadata.version``, so the
     bundle needs a ``.dist-info`` directory. Only the metadata is copied: the
     package itself ships in ``app/`` in its checkout layout, which
     ``get_source_root()`` depends on.
@@ -751,7 +751,7 @@ $Marker = Join-Path $TmpRoot "restart.requested"
 Push-Location $App
 try {
     while ($true) {
-        & $Python -m frigate @args
+        & $Python -m gannet @args
         $code = $LASTEXITCODE
 
         if (Test-Path $Marker) {
@@ -794,7 +794,7 @@ def verify_layout(staging: Path, expect_wheels: bool, expect_artifacts: bool) ->
     required = [
         staging / "python" / "python.exe",
         staging / "python" / "Lib" / "site-packages",
-        staging / "app" / "frigate" / "__main__.py",
+        staging / "app" / "gannet" / "__main__.py",
         staging / "app" / "migrations",
         staging / "app" / "web" / "dist" / "index.html",
         staging / "app" / "labelmap.txt",

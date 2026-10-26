@@ -7,7 +7,7 @@ title: System
 
 ## Data directories
 
-Frigate defaults to `%LOCALAPPDATA%\Frigate` for an interactive install. The bootstrap creates:
+Gannet defaults to `%LOCALAPPDATA%\Gannet` for an interactive install. The bootstrap creates:
 
 - `config` — configuration, secrets, models, and database;
 - `media` — recordings, clips, previews, and exports;
@@ -18,11 +18,11 @@ Frigate defaults to `%LOCALAPPDATA%\Frigate` for an interactive install. The boo
 Override paths before startup with:
 
 ```powershell
-$env:FRIGATE_BASE_DIR = 'D:\Frigate'
-$env:FRIGATE_CONFIG_DIR = 'D:\Frigate\config'
+$env:FRIGATE_BASE_DIR = 'D:\Gannet'
+$env:FRIGATE_CONFIG_DIR = 'D:\Gannet\config'
 $env:FRIGATE_MEDIA_DIR = 'E:\FrigateMedia'
-$env:FRIGATE_CACHE_DIR = 'D:\Frigate\cache'
-$env:FRIGATE_TMP_DIR = 'D:\Frigate\tmp'
+$env:FRIGATE_CACHE_DIR = 'D:\Gannet\cache'
+$env:FRIGATE_TMP_DIR = 'D:\Gannet\tmp'
 ```
 
 The Windows service receives its own environment. Use the service installer to persist service paths rather than relying on variables in an interactive PowerShell profile.
@@ -55,7 +55,7 @@ Both values are integer TCP ports and must differ. The public gateway listens on
 Use Windows Firewall to restrict inbound access:
 
 ```powershell
-New-NetFirewallRule -DisplayName 'Frigate HTTPS' `
+New-NetFirewallRule -DisplayName 'Gannet HTTPS' `
   -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8971 `
   -RemoteAddress LocalSubnet
 ```
@@ -64,7 +64,7 @@ Adapt the profile and remote addresses to the deployment. Do not add an inbound 
 
 ## FFmpeg and go2rtc paths
 
-The bootstrap installs `ffmpeg.exe` and `ffprobe.exe` under the config directory and `go2rtc.exe` in the native data layout. Frigate also accepts explicit executable paths. Paths containing spaces are supported.
+The bootstrap installs `ffmpeg.exe` and `ffprobe.exe` under the config directory and `go2rtc.exe` in the native data layout. Gannet also accepts explicit executable paths. Paths containing spaces are supported.
 
 If executable discovery fails, rerun:
 
@@ -76,18 +76,18 @@ Downloaded archives are pinned by SHA-256. Do not replace them with an unverifie
 
 ## Process model
 
-All multiprocessing uses the Windows `spawn` method. Frigate assigns Windows process priority classes, places descendants in a Job Object, and performs graceful service shutdown through a named event. The PowerShell launcher uses a restart marker so an intentional UI restart is distinguishable from a normal stop.
+All multiprocessing uses the Windows `spawn` method. Gannet assigns Windows process priority classes, places descendants in a Job Object, and performs graceful service shutdown through a named event. The PowerShell launcher uses a restart marker so an intentional UI restart is distinguishable from a normal stop.
 
 ## Long paths
 
-Enable long path support in Windows and keep the base directory reasonably short. Frigate warns when camera and media paths approach legacy `MAX_PATH` limits.
+Enable long path support in Windows and keep the base directory reasonably short. Gannet warns when camera and media paths approach legacy `MAX_PATH` limits.
 
 ## Configuration validation
 
 Run validation from the installed environment:
 
 ```powershell
-.\.venv\Scripts\python.exe -m frigate --validate-config
+.\.venv\Scripts\python.exe -m gannet --validate-config
 ```
 
 A nonzero exit code indicates invalid configuration. Validation enforces Windows detector names, FFmpeg presets, reserved filenames, case-insensitive camera-name uniqueness, port separation, and proxy security requirements.

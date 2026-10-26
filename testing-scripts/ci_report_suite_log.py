@@ -1,10 +1,8 @@
 # SPDX-License-Identifier: LicenseRef-GNCL-1.0
-"""Print Windows unit-suite failures from suite.log as GitHub annotations.
+"""Format Windows unit-suite failures from suite.log as GitHub annotations.
 
-The Windows CI job tees the unit suite output to ``suite.log`` and runs this
-on failure, so the failing tests and their tracebacks show up in the pull
-request Checks view instead of being buried in the job log. It also leaves
-the full log available as a workflow artifact (see windows-python.yml).
+This optional helper converts a saved unit-suite log into GitHub workflow
+command annotations for users who run the suite from a GitHub-hosted job.
 
 Run from the repository root after a suite run::
 
@@ -41,7 +39,7 @@ def failure_blocks(lines: list[str]) -> tuple[str, list[tuple[str, list[str]]]]:
 
     current: tuple[str, list[str]] | None = None
     for line in lines[start:]:
-        if line.startswith("frigate.test."):
+        if line.startswith("gannet.test."):
             current = (line.strip(), [])
             blocks.append(current)
         elif current is not None:

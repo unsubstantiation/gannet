@@ -21,7 +21,7 @@ import sys
 from pathlib import Path
 from statistics import mean, median, stdev
 
-from frigate.util.platform import find_executable, get_media_dir
+from gannet.util.platform import find_executable, get_media_dir
 
 
 def resolve_ffprobe_path(override: str | None) -> str:

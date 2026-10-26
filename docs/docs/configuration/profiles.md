@@ -7,7 +7,7 @@ import ConfigTabs from "@site/src/components/ConfigTabs";
 import TabItem from "@theme/TabItem";
 import NavPath from "@site/src/components/NavPath";
 
-Profiles allow you to define named sets of camera configuration overrides that can be activated and deactivated at runtime without restarting Frigate. This is useful for scenarios like switching between "Home" and "Away" modes, daytime and nighttime configurations, or any situation where you want to quickly change how multiple cameras behave.
+Profiles allow you to define named sets of camera configuration overrides that can be activated and deactivated at runtime without restarting Gannet. This is useful for scenarios like switching between "Home" and "Away" modes, daytime and nighttime configurations, or any situation where you want to quickly change how multiple cameras behave.
 
 ## How Profiles Work
 
@@ -16,17 +16,17 @@ Profiles operate as a two-level system:
 1. **Profile definitions** are declared at the top level of your config under `profiles`. Each definition has a machine name (the key) and a `friendly_name` for display in the UI.
 2. **Camera profile overrides** are declared under each camera's `profiles` section, keyed by the profile name. Only the settings you want to change need to be specified. Everything else is inherited from the camera's base configuration.
 
-When a profile is activated, Frigate merges each camera's profile overrides on top of its base config. When the profile is deactivated, all cameras revert to their original settings. Only one profile can be active at a time.
+When a profile is activated, Gannet merges each camera's profile overrides on top of its base config. When the profile is deactivated, all cameras revert to their original settings. Only one profile can be active at a time.
 
 :::info
 
-Profile changes are applied in-memory and take effect immediately. No restart is required. The active profile is persisted across Frigate restarts in `.profiles` inside the Windows config directory.
+Profile changes are applied in-memory and take effect immediately. No restart is required. The active profile is persisted across Gannet restarts in `.profiles` inside the Windows config directory.
 
 :::
 
 ## Configuration
 
-The easiest way to define profiles is to use the Frigate UI. Profiles can also be configured manually in your configuration file.
+The easiest way to define profiles is to use the Gannet UI. Profiles can also be configured manually in your configuration file.
 
 ### Creating and Managing Profiles
 
@@ -35,13 +35,13 @@ The easiest way to define profiles is to use the Frigate UI. Profiles can also b
 
 1. **Create a profile**: Navigate to <NavPath path="Settings > Global configuration > Profiles" />. Click the **Add Profile** button, enter a name (and optionally a profile ID).
 2. **Configure overrides**: Navigate to a camera configuration section (e.g. Motion detection, Record, Notifications). In the top right, two buttons will appear - choose a camera and a profile from the profile selector to edit overrides for that camera and section. Only the fields you change will be stored as overrides. Fields that require a restart are hidden since profiles are applied at runtime. You can click the **Remove Profile Override** button to clear overrides.
-3. **Activate a profile**: Use the **Profiles** option in Frigate's main menu to choose a profile. Alternatively, in Settings, navigate to <NavPath path="Settings > Global configuration > Profiles" />, then choose a profile in the Active Profile dropdown to activate it. The active profile is also shown in the status bar at the bottom of the screen on desktop browsers.
+3. **Activate a profile**: Use the **Profiles** option in Gannet's main menu to choose a profile. Alternatively, in Settings, navigate to <NavPath path="Settings > Global configuration > Profiles" />, then choose a profile in the Active Profile dropdown to activate it. The active profile is also shown in the status bar at the bottom of the screen on desktop browsers.
 4. **Delete a profile**: Navigate to <NavPath path="Settings > Global configuration > Profiles" />, then click the trash icon for a profile. This removes the profile definition and all camera overrides associated with it.
 
 </TabItem>
 <TabItem value="yaml">
 
-First, define your profiles at the top level of your Frigate config. Every profile name referenced by a camera must be defined here.
+First, define your profiles at the top level of your Gannet config. Every profile name referenced by a camera must be defined here.
 
 ```yaml
 profiles:
@@ -126,9 +126,9 @@ Only the fields you explicitly set in a profile override are applied. All other 
 
 ## Activating Profiles
 
-Profiles can be activated and deactivated via the Frigate UI, [MQTT](/integrations/mqtt#frigateprofileset), the [HTTP API](../integrations/api/camera-set-camera-camera-name-set-feature-sub-command-put.api.mdx), or the Home Assistant integration.
+Profiles can be activated and deactivated via the Gannet UI, [MQTT](/integrations/mqtt#frigateprofileset), the [HTTP API](../integrations/api/camera-set-camera-camera-name-set-feature-sub-command-put.api.mdx), or the Home Assistant integration.
 
-In the Frigate UI, open the Settings cog and select **Profiles** from the submenu to see all defined profiles. From there you can activate any profile or deactivate the current one. The active profile is indicated in the UI so you always know which profile is in effect.
+In the Gannet UI, open the Settings cog and select **Profiles** from the submenu to see all defined profiles. From there you can activate any profile or deactivate the current one. The active profile is indicated in the UI so you always know which profile is in effect.
 
 Activating or deactivating a profile clears any [runtime toggle overrides](/configuration/live#runtime-toggle-persistence) so the profile's settings aren't silently undone by a stale toggle from before the switch.
 
@@ -142,7 +142,7 @@ A common use case is having different detection and notification settings based 
 1. Navigate to <NavPath path="Settings > Global configuration > Profiles" /> and create two profiles: **Home** and **Away**.
 2. From to the Camera configuration section in Settings, choose the **front_door** camera, and select the **Away** profile from the profile dropdown. Then, enable notifications from the Notifications pane, and set alert labels to `person` and `car` from the Review pane. Then, from the profile dropdown choose **Home** profile, then navigate to Notifications to disable notifications.
 3. For the **indoor_cam** camera, perform similar steps - configure the **Away** profile to enable the camera, detection, and recording. Configure the **Home** profile to disable the camera entirely for privacy.
-4. Activate the desired profile from <NavPath path="Settings > Global configuration > Profiles" /> or from the **Profiles** option in Frigate's main menu.
+4. Activate the desired profile from <NavPath path="Settings > Global configuration > Profiles" /> or from the **Profiles** option in Gannet's main menu.
 
 </TabItem>
 <TabItem value="yaml">
@@ -220,7 +220,7 @@ If you want a zone or mask to be active only under a specific profile, define it
 
 ### How do I revert a profile zone or mask override back to the base configuration?
 
-Delete the override. In the Frigate UI, edit the profile and use the "Revert override" action (the trash can icon) on the zone or mask. The base entry is left untouched, and once the override is removed the profile inherits the base values for that zone or mask.
+Delete the override. In the Gannet UI, edit the profile and use the "Revert override" action (the trash can icon) on the zone or mask. The base entry is left untouched, and once the override is removed the profile inherits the base values for that zone or mask.
 
 ### Can multiple profiles be active at the same time?
 
@@ -228,7 +228,7 @@ No. Only one profile can be active at a time. Activating a new profile automatic
 
 ### What happens to my profile overrides if I delete a zone or mask from the base?
 
-When you delete a base zone or mask in the Frigate UI, any profile overrides for that entry are deleted automatically as part of the same operation. If you remove a base entry by editing your config file directly and leave a profile override behind, the config will fail validation at startup until the orphaned override is removed as well.
+When you delete a base zone or mask in the Gannet UI, any profile overrides for that entry are deleted automatically as part of the same operation. If you remove a base entry by editing your config file directly and leave a profile override behind, the config will fail validation at startup until the orphaned override is removed as well.
 
 ### How do I make a YAML profile track no objects at all?
 
@@ -247,16 +247,16 @@ Leaving the `objects` section empty (or omitting `track`) does not clear the lis
 
 ### Why are some settings missing when I configure a profile override?
 
-Fields that require a Frigate restart to take effect cannot be overridden by profiles, since profiles are applied at runtime without restarting. Those fields are hidden when editing a profile override and can only be changed on the base configuration.
+Fields that require a Gannet restart to take effect cannot be overridden by profiles, since profiles are applied at runtime without restarting. Those fields are hidden when editing a profile override and can only be changed on the base configuration.
 
 ### Why can't a profile enable recording when it's disabled in the base config?
 
-Frigate only sets up a camera's recording stream at startup when recording is enabled in the base config, so enabling it later from a profile has no effect. The same applies to turning recording on from the UI or MQTT.
+Gannet only sets up a camera's recording stream at startup when recording is enabled in the base config, so enabling it later from a profile has no effect. The same applies to turning recording on from the UI or MQTT.
 
-To keep recording off by default, leave `record.enabled: true` in the base config and create a profile that sets `record.enabled: false`. Activate that profile and it will be restored automatically when Frigate starts.
+To keep recording off by default, leave `record.enabled: true` in the base config and create a profile that sets `record.enabled: false`. Activate that profile and it will be restored automatically when Gannet starts.
 
 ### Can I schedule profiles to be enabled or disabled at certain times?
 
-Not within Frigate itself. Frigate is an NVR, not an automation platform, so it intentionally does not include a scheduler for activating profiles. Instead, activate profiles from an automation platform that already handles time- and event-based triggers well, such as [Home Assistant](https://www.home-assistant.io/) or [Node-RED](https://nodered.org/). These integrate with Frigate and give you far more robust and flexible scheduling than a built-in scheduler could.
+Not within Gannet itself. Gannet is an NVR, not an automation platform, so it intentionally does not include a scheduler for activating profiles. Instead, activate profiles from an automation platform that already handles time- and event-based triggers well, such as [Home Assistant](https://www.home-assistant.io/) or [Node-RED](https://nodered.org/). These integrate with Gannet and give you far more robust and flexible scheduling than a built-in scheduler could.
 
 If you prefer something lightweight, a simple script driven by a cron job that toggles profiles on a schedule works too.

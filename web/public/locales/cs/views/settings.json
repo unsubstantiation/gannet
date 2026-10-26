@@ -1554,7 +1554,7 @@
       "variableNameLabel": "Název proměnné",
       "variableNamePlaceholder": "např. MOJE_PROMENNA",
       "loggerNameLabel": "Název loggeru",
-      "loggerNamePlaceholder": "např. frigate.record",
+      "loggerNamePlaceholder": "např. gannet.record",
       "keyPatternError": "Používejte pouze písmena, číslice, spojovníky a podtržítka (bez mezer)"
     },
     "knownPlates": {

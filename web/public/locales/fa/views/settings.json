@@ -1468,7 +1468,7 @@
       "variableNameLabel": "نام متغیر",
       "variableNamePlaceholder": "مثلاً MY_VARIABLE",
       "loggerNameLabel": "نام لاگر",
-      "loggerNamePlaceholder": "مثلاً frigate.record",
+      "loggerNamePlaceholder": "مثلاً gannet.record",
       "keyPatternError": "فقط از حروف، اعداد، خط تیره و زیرخط استفاده کنید (بدون فاصله)"
     },
     "knownPlates": {

@@ -2,7 +2,7 @@
   <img align="center" alt="Gannet NVR logo" src="web/images/branding/logo.png" width="420">
 </p>
 
-# Frigate NVR™ - 一个具有实时目标检测的本地 NVR
+# Gannet NVR™ - 一个具有实时目标检测的本地 NVR
 
 <a href="https://hosted.weblate.org/engage/frigate-nvr/-/zh_Hans/">
 <img src="https://hosted.weblate.org/widget/frigate-nvr/-/zh_Hans/svg-badge.svg" alt="翻译状态" />
@@ -30,7 +30,7 @@
 
 ## 原生 Windows 应用程序
 
-本发行版专为原生 64 位 Windows 设计。Frigate 作为普通 Windows 进程或 SCM 服务运行；不支持容器、WSL 或 Unix 运行时路径。API、媒体接口和 Web 界面均由 Frigate 自己提供。
+本发行版专为原生 64 位 Windows 设计。Gannet 作为普通 Windows 进程或 SCM 服务运行；不支持容器、WSL 或 Unix 运行时路径。API、媒体接口和 Web 界面均由 Gannet 自己提供。
 
 在普通的 PowerShell 窗口中安装：
 
@@ -41,7 +41,7 @@ py -3.12 bootstrap_windows.py
 powershell -ExecutionPolicy Bypass -File .\run_frigate.ps1
 ```
 
-引导脚本需要 64 位 CPython 3.12。它会创建虚拟环境、安装 Windows 依赖、下载固定版本的 FFmpeg、go2rtc 以及检测与音频模型、在检测到 Node.js 时构建 Web 界面，并生成一个启动脚本（Frigate 请求重启时由它负责重新拉起）。只有构建前端时才需要 Node.js；打包的发行版可以预先包含 `web/dist`。
+引导脚本需要 64 位 CPython 3.12。它会创建虚拟环境、安装 Windows 依赖、下载固定版本的 FFmpeg、go2rtc 以及检测与音频模型、在检测到 Node.js 时构建 Web 界面，并生成一个启动脚本（Gannet 请求重启时由它负责重新拉起）。只有构建前端时才需要 Node.js；打包的发行版可以预先包含 `web/dist`。
 
 Windows 相关特性：
 
@@ -52,9 +52,9 @@ Windows 相关特性：
 
 安装、端口与调优请阅读 [Windows 安装文档](docs/docs/frigate/installation.md#windows)，移植审计（改了什么、验证了什么、还缺什么）见 [WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md)。
 
-## 社区中文翻译文档
+## 上游中文社区翻译文档
 
-你可以在这里查看文档 https://docs.frigate-cn.video
+上游 Frigate 的中文社区翻译文档位于 https://docs.frigate-cn.video；本分支文档站的主机名仍待单独配置。
 
 ## 赞助
 

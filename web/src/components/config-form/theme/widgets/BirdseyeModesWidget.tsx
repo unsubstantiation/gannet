@@ -3,7 +3,7 @@ import type { WidgetProps } from "@rjsf/utils";
 import { SwitchesWidget } from "./SwitchesWidget";
 import type { FormContext } from "./SwitchesWidget";
 
-// order matches BirdseyeModeEnum in frigate/config/camera/birdseye.py
+// order matches BirdseyeModeEnum in gannet/config/camera/birdseye.py
 const BIRDSEYE_MODES: string[] = [
   "continuous",
   "motion",

@@ -1515,7 +1515,7 @@
       "variableNameLabel": "변수 이름",
       "variableNamePlaceholder": "예: MY_VARIABLE",
       "loggerNameLabel": "로거 이름",
-      "loggerNamePlaceholder": "예: frigate.record",
+      "loggerNamePlaceholder": "예: gannet.record",
       "keyPatternError": "영문자, 숫자, 하이픈(-), 밑줄(_)만 사용하세요 (공백 불가)"
     },
     "knownPlates": {

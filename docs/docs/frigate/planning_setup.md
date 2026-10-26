@@ -3,7 +3,7 @@ id: planning_setup
 title: Planning a New Installation
 ---
 
-Choosing the right hardware for your Frigate NVR setup is important for optimal performance and a smooth experience. This guide will walk you through the key considerations, focusing on the number of cameras and the hardware required for efficient object detection.
+Choosing the right hardware for your Gannet NVR setup is important for optimal performance and a smooth experience. This guide will walk you through the key considerations, focusing on the number of cameras and the hardware required for efficient object detection.
 
 ## Key Considerations
 
@@ -36,20 +36,20 @@ There are many different hardware options for object detection depending on prio
 
 ### CPU
 
-Frigate requires a CPU with AVX + AVX2 instructions. Most modern CPUs (post-2011) support AVX and AVX2, but it is generally absent in low-power or budget-oriented processors, particularly older Intel Pentium, Celeron, and Atom-based chips. Specifically, Intel Celeron and Pentium models prior to the 2020 Tiger Lake generation typically lack AVX. Older Intel Xeon models may have AVX, but may lack AVX2.
+Gannet requires a CPU with AVX + AVX2 instructions. Most modern CPUs (post-2011) support AVX and AVX2, but it is generally absent in low-power or budget-oriented processors, particularly older Intel Pentium, Celeron, and Atom-based chips. Specifically, Intel Celeron and Pentium models prior to the 2020 Tiger Lake generation typically lack AVX. Older Intel Xeon models may have AVX, but may lack AVX2.
 
 ### Storage
 
 Storage is an important consideration when planning a new installation. To get a more precise estimate of your storage requirements, you can use an IP camera storage calculator. Websites like [IPConfigure Storage Calculator](https://calculator.ipconfigure.com/) can help you determine the necessary disk space based on your camera settings.
 
-Once running, see [Understanding storage usage](/configuration/record#understanding-storage-usage) for how Frigate measures and reports disk usage, and why its numbers won't exactly match `df` or `du`.
+Once running, see [Understanding storage usage](/configuration/record#understanding-storage-usage) for how Gannet measures and reports disk usage, and why its numbers won't exactly match `df` or `du`.
 
 #### SSDs (Solid State Drives)
 
-SSDs are an excellent choice for Frigate, offering high speed and responsiveness. The older concern that SSDs would quickly "wear out" from constant video recording is largely no longer valid for modern consumer and enterprise-grade SSDs.
+SSDs are an excellent choice for Gannet, offering high speed and responsiveness. The older concern that SSDs would quickly "wear out" from constant video recording is largely no longer valid for modern consumer and enterprise-grade SSDs.
 
 - Longevity: Modern SSDs are designed with advanced wear-leveling algorithms and significantly higher "Terabytes Written" (TBW) ratings than earlier models. For typical home NVR use, a good quality SSD will likely outlast the useful life of your NVR hardware itself.
-- Performance: SSDs excel at handling the numerous small write operations that occur during continuous video recording and can significantly improve the responsiveness of the Frigate UI and clip retrieval.
+- Performance: SSDs excel at handling the numerous small write operations that occur during continuous video recording and can significantly improve the responsiveness of the Gannet UI and clip retrieval.
 - Silence and Efficiency: SSDs produce no noise and consume less power than traditional HDDs.
 
 #### HDDs (Hard Disk Drives)
@@ -70,10 +70,10 @@ The amount of storage you need will depend on several factors:
 
 #### Network Storage (NFS/SMB)
 
-While supported, using network-attached storage (NAS) for recordings can introduce latency and network dependency considerations. For optimal performance and reliability, it is generally recommended to have local storage for your Frigate recordings. If using a NAS, ensure your network connection to it is robust and fast (Gigabit Ethernet at minimum) and that the NAS itself can handle the continuous write load.
+While supported, using network-attached storage (NAS) for recordings can introduce latency and network dependency considerations. For optimal performance and reliability, it is generally recommended to have local storage for your Gannet recordings. If using a NAS, ensure your network connection to it is robust and fast (Gigabit Ethernet at minimum) and that the NAS itself can handle the continuous write load.
 
 ### RAM (Memory)
 
-- **Basic Minimum: 4GB RAM**: This is generally sufficient for a very basic Frigate setup with a few cameras and a dedicated object detection accelerator, without running any enrichments. Performance might be tight, especially with higher resolution streams or numerous detections.
-- **Minimum for Enrichments: 8GB RAM**: If you plan to utilize Frigate's enrichment features (e.g., facial recognition, license plate recognition, or other AI models that run alongside standard object detection), 8GB of RAM should be considered the minimum. Enrichments require additional memory to load and process their respective models and data.
+- **Basic Minimum: 4GB RAM**: This is generally sufficient for a very basic Gannet setup with a few cameras and a dedicated object detection accelerator, without running any enrichments. Performance might be tight, especially with higher resolution streams or numerous detections.
+- **Minimum for Enrichments: 8GB RAM**: If you plan to utilize Gannet's enrichment features (e.g., facial recognition, license plate recognition, or other AI models that run alongside standard object detection), 8GB of RAM should be considered the minimum. Enrichments require additional memory to load and process their respective models and data.
 - **Recommended: 16GB RAM**: For most users, especially those with many cameras (8+) or who plan to heavily leverage enrichments, 16GB of RAM is highly recommended. This provides ample headroom for smooth operation, reduces the likelihood of swapping to disk (which can impact performance), and allows for future expansion.

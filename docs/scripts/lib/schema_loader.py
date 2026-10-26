@@ -1,12 +1,12 @@
-"""Load JSON schema from Frigate's Pydantic config models."""
+"""Load JSON schema from Gannet's Pydantic config models."""
 
 from typing import Any
 
 
 def load_schema() -> dict[str, Any]:
     """Generate and return the full JSON schema for FrigateConfig."""
-    from frigate.config.config import FrigateConfig
-    from frigate.util.schema import get_config_schema
+    from gannet.config.config import FrigateConfig
+    from gannet.util.schema import get_config_schema
 
     return get_config_schema(FrigateConfig)
 

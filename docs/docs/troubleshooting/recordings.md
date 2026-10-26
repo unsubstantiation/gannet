@@ -61,7 +61,7 @@ Update camera firmware, use a stable RTSP transport, and test the same URL for s
 
 ## Segments are only one second long
 
-The camera is usually disconnecting or resetting timestamps. Check packet loss, PoE power, Wi-Fi quality, connection limits, and keyframe interval. Frigate cannot join a continuous recording from a stream that repeatedly restarts.
+The camera is usually disconnecting or resetting timestamps. Check packet loss, PoE power, Wi-Fi quality, connection limits, and keyframe interval. Gannet cannot join a continuous recording from a stream that repeatedly restarts.
 
 ## Recording cache maintenance error
 
@@ -71,7 +71,7 @@ Stop the service before manually clearing a stale cache. Do not delete files whi
 
 ## Media directory is not writable
 
-The default service media path is `%ProgramData%\Frigate\media`. For another volume:
+The default service media path is `%ProgramData%\Gannet\media`. For another volume:
 
 ```powershell
 $path = 'E:\FrigateMedia'
@@ -95,9 +95,9 @@ Approximate constant-bitrate use is `bitrate in Mbit/s × 10.8 GB/day` per camer
 
 ## Database and files disagree
 
-Do not move or delete recording files outside Frigate while it is running. Database repair cannot recreate missing video. If restoring a backup, restore database and media from a consistent point in time.
+Do not move or delete recording files outside Gannet while it is running. Database repair cannot recreate missing video. If restoring a backup, restore database and media from a consistent point in time.
 
-Keep `frigate.db` on local NTFS. Network filesystems and sync tools do not provide the locking semantics SQLite needs.
+Keep `gannet.db` on local NTFS. Network filesystems and sync tools do not provide the locking semantics SQLite needs.
 
 ## No preview for the current hour
 
@@ -112,8 +112,8 @@ Exports need enough free cache/media space and read access to every source segme
 From PowerShell, run the bundled probe against the reported path:
 
 ```powershell
-& 'C:\ProgramData\Frigate\ffmpeg\bin\ffprobe.exe' `
-  -v error -show_streams -show_format 'C:\ProgramData\Frigate\cache\segment.mp4'
+& 'C:\ProgramData\Gannet\ffmpeg\bin\ffprobe.exe' `
+  -v error -show_streams -show_format 'C:\ProgramData\Gannet\cache\segment.mp4'
 ```
 
 Adjust paths for the installation. Include probe output and the original camera FFmpeg error in a support request, with URLs and credentials redacted.

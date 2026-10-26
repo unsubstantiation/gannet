@@ -1,0 +1,794 @@
+"""Manages ffmpeg processes for camera frame capture."""
+
+import logging
+import queue
+import subprocess as sp
+import threading
+import time
+from collections import defaultdict, deque
+from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
+from multiprocessing import Queue, Value
+from multiprocessing.synchronize import Event as MpEvent
+from typing import Any
+
+from gannet.camera import CameraMetrics
+from gannet.comms.inter_process import InterProcessRequestor
+from gannet.comms.recordings_updater import (
+    RecordingsDataSubscriber,
+    RecordingsDataTypeEnum,
+)
+from gannet.config import CameraConfig, LoggerConfig
+from gannet.config.camera.ffmpeg import CameraRoleEnum
+from gannet.config.camera.updater import (
+    CameraConfigUpdateEnum,
+    CameraConfigUpdateSubscriber,
+)
+from gannet.const import (
+    PROCESS_PRIORITY_HIGH,
+    RECORD_STREAM_TYPES,
+    ROLE_TO_STREAM_TYPE,
+    STREAM_TYPE_MAIN,
+    STREAM_TYPE_SUB,
+    STREAM_TYPE_TO_ROLE,
+)
+from gannet.log import LogPipe
+from gannet.util.builtin import EventsPerSecond, get_record_segment_time
+from gannet.util.ffmpeg import (
+    request_ffmpeg_stop,
+    start_or_restart_ffmpeg,
+    stop_ffmpeg,
+)
+from gannet.util.image import (
+    FrameManager,
+    SharedMemoryFrameManager,
+)
+from gannet.util.process import FrigateProcess
+
+logger = logging.getLogger(__name__)
+
+RECORD_GRACE_SECONDS = 90
+
+
+def capture_frames(
+    ffmpeg_process: sp.Popen[Any],
+    config: CameraConfig,
+    shm_frame_count: int,
+    frame_index: int,
+    frame_shape: tuple[int, int],
+    frame_manager: FrameManager,
+    frame_queue,
+    fps: Value,
+    skipped_fps: Value,
+    current_frame: Value,
+    stop_event: MpEvent,
+) -> None:
+    frame_size = frame_shape[0] * frame_shape[1]
+    frame_rate = EventsPerSecond()
+    frame_rate.start()
+    skipped_eps = EventsPerSecond()
+    skipped_eps.start()
+    frame_times = frame_manager.frame_times(config.name)
+
+    while not stop_event.is_set():
+        # CameraWatchdog applies enabled updates onto this same CameraConfig
+        # before it stops ffmpeg. Do not subscribe here: it would be rebuilt per
+        # ffmpeg restart and strand a pipe in the idle main process config PUB.
+        if not config.enabled:
+            logger.debug(f"Stopping capture thread for disabled {config.name}")
+            break
+
+        fps.value = frame_rate.eps()
+        skipped_fps.value = skipped_eps.eps()
+        current_frame.value = datetime.now().timestamp()
+        frame_name = f"{config.name}_frame{frame_index}"
+        frame_buffer = frame_manager.write(frame_name)
+
+        # readinto fills the slot for the whole pipe wait, so readers must not
+        # match it until the frame is complete
+        frame_times[frame_index] = 0
+
+        try:
+            if frame_buffer is None:
+                # the segment was unlinked while it was still being written to
+                raise EOFError("the shared memory frame is not available")
+
+            # exactly one frame: a segment is mapped page aligned on Windows,
+            # so the buffer can be larger than the frame written to it, and
+            # readinto would take the start of the next frame with it and
+            # desynchronize every frame after that
+            read = ffmpeg_process.stdout.readinto(frame_buffer[:frame_size])
+
+            if read != frame_size:
+                raise EOFError(f"incomplete frame: {read} of {frame_size} bytes")
+        except Exception as err:
+            # shutdown has been initiated
+            if stop_event.is_set():
+                break
+
+            logger.error(
+                f"{config.name}: Unable to read frames from ffmpeg process: {err!r}"
+            )
+
+            if ffmpeg_process.poll() is not None:
+                logger.error(
+                    f"{config.name}: ffmpeg process is not running. exiting capture thread..."
+                )
+                break
+
+            continue
+
+        frame_times[frame_index] = current_frame.value
+        frame_rate.update()
+
+        # don't lock the queue to check, just try since it should rarely be full
+        try:
+            # add to the queue
+            frame_queue.put((frame_name, current_frame.value), False)
+        except queue.Full:
+            # nobody was told about this slot, so the next frame reuses it
+            skipped_eps.update()
+            continue
+
+        frame_index = 0 if frame_index == shm_frame_count - 1 else frame_index + 1
+
+
+@dataclass
+class RoleStatus:
+    """Publishes a role's status when it changes or the resend interval elapses."""
+
+    requestor: InterProcessRequestor
+    topic: str
+    resend_interval: float
+    last_status: str | None = None
+    last_update_time: float = 0.0
+
+    def send(self, status: str, now: float) -> None:
+        """Publish a changed status or resend it after the configured interval."""
+        if (
+            status != self.last_status
+            or (now - self.last_update_time) >= self.resend_interval
+        ):
+            self.requestor.send_data(self.topic, status)
+            self.last_status = status
+            self.last_update_time = now
+
+
+class CameraWatchdog(threading.Thread):
+    def __init__(
+        self,
+        config: CameraConfig,
+        shm_frame_count: int,
+        frame_queue: Queue,
+        camera_fps,
+        skipped_fps,
+        ffmpeg_pid,
+        stalls,
+        reconnects,
+        detection_frame,
+        stop_event,
+    ):
+        threading.Thread.__init__(self)
+        self.logger = logging.getLogger(f"watchdog.{config.name}")
+        self.config = config
+        self.shm_frame_count = shm_frame_count
+        self.capture_thread = None
+        self.ffmpeg_detect_process = None
+        self.logpipe = LogPipe(f"ffmpeg.{self.config.name}.detect")
+        self.ffmpeg_other_processes: list[dict[str, Any]] = []
+        self.camera_fps = camera_fps
+        self.skipped_fps = skipped_fps
+        self.ffmpeg_pid = ffmpeg_pid
+        self.frame_queue = frame_queue
+        self.frame_shape = self.config.frame_shape_yuv
+        self.frame_size = self.frame_shape[0] * self.frame_shape[1]
+        self.fps_overflow_count = 0
+        self.frame_index = 0
+        self.stop_event = stop_event
+        self.sleeptime = self.config.ffmpeg.retry_interval
+        self.reconnect_timestamps = deque()
+        self.stalls = stalls
+        self.reconnects = reconnects
+        self.detection_frame = detection_frame
+
+        self.config_subscriber = CameraConfigUpdateSubscriber(
+            None,
+            {config.name: config},
+            [
+                CameraConfigUpdateEnum.enabled,
+                CameraConfigUpdateEnum.ffmpeg,
+                CameraConfigUpdateEnum.record,
+            ],
+        )
+        self.requestor = InterProcessRequestor()
+        self.was_enabled = self.config.enabled
+        self.was_record_enabled_in_config = self.config.record.enabled_in_config
+        self.was_record_sub_enabled = self.config.record.sub.enabled
+
+        self.segment_subscriber = RecordingsDataSubscriber(RecordingsDataTypeEnum.all)
+        self.latest_valid_segment_time: dict[str, float] = defaultdict(float)
+        self.latest_invalid_segment_time: dict[str, float] = defaultdict(float)
+        self.latest_cache_segment_time: dict[str, float] = defaultdict(float)
+        self.record_enable_time: datetime | None = None
+        self.stream_grace_until: dict[str, datetime] = {}
+
+        # `valid` segments are published with the segment's start time, so the
+        # gap between consecutive publishes can reach 2 * segment_time. Pad the
+        # staleness threshold so it's never tighter than that worst case.
+        self.record_stale_threshold: dict[str, int] = {
+            stream_type: max(
+                120, 2 * get_record_segment_time(self.config, stream_type) + 30
+            )
+            for stream_type in RECORD_STREAM_TYPES
+        }
+
+        # the sub stream usually shares its input, and therefore its ffmpeg
+        # process, with detect, so it isn't in ffmpeg_other_processes and needs
+        # its own staleness check
+        self.detect_process_records_sub = False
+
+        # Stall tracking (based on last processed frame)
+        self._stall_timestamps: deque[float] = deque()
+        self._stall_active: bool = False
+
+        # Status caching to reduce message volume
+        self.detect_status = self._role_status("detect")
+        self.record_status = {
+            stream_type: self._role_status(role)
+            for stream_type, role in STREAM_TYPE_TO_ROLE.items()
+        }
+
+    def _role_status(self, role: str) -> RoleStatus:
+        return RoleStatus(
+            self.requestor, f"{self.config.name}/status/{role}", self.sleeptime
+        )
+
+    def _send_roles_offline(self, roles: list[CameraRoleEnum], now: float) -> None:
+        """Send offline status for each role of a restarted ffmpeg process."""
+        for role in roles:
+            # record roles go through the status cache so the recovery to
+            # online is published once the stream is healthy again
+            stream_type = ROLE_TO_STREAM_TYPE.get(role.value)
+
+            if stream_type is not None:
+                self.record_status[stream_type].send("offline", now)
+            else:
+                self.requestor.send_data(
+                    f"{self.config.name}/status/{role.value}", "offline"
+                )
+
+    def _reset_segment_times(self) -> None:
+        self.latest_valid_segment_time.clear()
+        self.latest_invalid_segment_time.clear()
+        self.latest_cache_segment_time.clear()
+        self.stream_grace_until.clear()
+
+    def _grant_restart_grace(self, stream_types: list[str], now_utc: datetime) -> None:
+        for stream_type in stream_types:
+            self.stream_grace_until[stream_type] = now_utc + timedelta(
+                seconds=RECORD_GRACE_SECONDS
+            )
+
+    def _stream_staleness(self, stream_type: str, now_utc: datetime) -> str | None:
+        """Return why the stream's segments are stale, or None if they're healthy."""
+        # ffmpeg needs time to create a first segment after recording is
+        # enabled and after a restart, per stream
+        in_grace_period = (
+            self.record_enable_time is not None
+            and (now_utc - self.record_enable_time)
+            < timedelta(seconds=RECORD_GRACE_SECONDS)
+        ) or now_utc < self.stream_grace_until.get(stream_type, now_utc)
+
+        if in_grace_period:
+            return None
+
+        latest_cache = self.latest_cache_segment_time[stream_type]
+        latest_valid = self.latest_valid_segment_time[stream_type]
+        latest_invalid = self.latest_invalid_segment_time[stream_type]
+
+        def as_dt(timestamp: float) -> datetime:
+            if timestamp > 0:
+                return datetime.fromtimestamp(timestamp, tz=UTC)
+
+            return now_utc - timedelta(seconds=1)
+
+        stale_window = timedelta(seconds=self.record_stale_threshold[stream_type])
+
+        if now_utc > (as_dt(latest_cache) + stale_window):
+            return "No new recording segments were created"
+
+        if now_utc > (as_dt(latest_valid) + stale_window):
+            return "No new valid recording segments were created"
+
+        if (
+            latest_invalid > 0
+            and now_utc > (as_dt(latest_invalid) + stale_window)
+            and latest_valid <= latest_invalid
+        ):
+            return "No valid segments created since last invalid segment"
+
+        return None
+
+    def _recorded_streams(self, roles: list[Any]) -> list[str]:
+        """Record stream types the given roles cover that are currently recording."""
+        return [
+            stream_type
+            for role, stream_type in ROLE_TO_STREAM_TYPE.items()
+            if role in roles and self.config.record.stream_enabled(stream_type)
+        ]
+
+    def _check_config_updates(self) -> dict[str, list[str]]:
+        """Check for config updates and return the update dict."""
+        return self.config_subscriber.check_for_updates()
+
+    def _update_enabled_state(self) -> bool:
+        """Fetch the latest config and update enabled state."""
+        self._check_config_updates()
+        return self.config.enabled
+
+    def reset_capture_thread(self, terminate: bool = True) -> None:
+        if terminate:
+            # The capture thread keeps draining stdout, so wait() is enough here.
+            # communicate() would also buffer every frame ffmpeg writes before it
+            # exits, which can be many duplicates after a stall. Ask ffmpeg to
+            # stop through the graceful Windows mechanisms first: a hard
+            # TerminateProcess can leave the segment this process is writing
+            # (record_sub shares the detect process) without a moov atom. The
+            # zero quit poll avoids adding a second to every stall restart, and
+            # terminate() is still the fallback where no console is available.
+            request_ffmpeg_stop(
+                self.ffmpeg_detect_process, self.logger, wait_timeout=0.0
+            )
+            try:
+                self.logger.info("Waiting for ffmpeg to exit gracefully...")
+                self.ffmpeg_detect_process.wait(timeout=30)
+            except sp.TimeoutExpired:
+                self.logger.info("FFmpeg did not exit. Force killing...")
+                self.ffmpeg_detect_process.kill()
+
+                self.ffmpeg_detect_process.wait()
+
+        # Update reconnects
+        now = datetime.now().timestamp()
+        self.reconnect_timestamps.append(now)
+        while self.reconnect_timestamps and self.reconnect_timestamps[0] < now - 3600:
+            self.reconnect_timestamps.popleft()
+        if self.reconnects:
+            self.reconnects.value = len(self.reconnect_timestamps)
+
+        # Wait for old capture thread to fully exit before starting a new one
+        if self.capture_thread is not None and self.capture_thread.is_alive():
+            self.logger.info("Waiting for capture thread to exit...")
+            self.capture_thread.join(timeout=5)
+
+            if self.capture_thread.is_alive():
+                self.logger.warning(
+                    f"Capture thread for {self.config.name} did not exit in time"
+                )
+
+        self.logpipe.dump()
+        self.logger.info("Restarting ffmpeg...")
+        self.start_ffmpeg_detect()
+
+        # this process produces the sub stream's segments too, so it gets the
+        # same startup grace however the reset was triggered
+        if self.detect_process_records_sub:
+            self._grant_restart_grace([STREAM_TYPE_SUB], datetime.now().astimezone(UTC))
+
+    def run(self) -> None:
+        if self._update_enabled_state():
+            self.start_all_ffmpeg()
+            # If recording is enabled at startup, set the grace period timer
+            if self.config.record.enabled:
+                self.record_enable_time = datetime.now().astimezone(UTC)
+
+        time.sleep(self.sleeptime)
+        last_restart_time = datetime.now().timestamp()
+
+        # 1 second watchdog loop
+        while not self.stop_event.wait(1):
+            updates = self._check_config_updates()
+
+            # Handle ffmpeg config changes by restarting all ffmpeg processes
+            if "ffmpeg" in updates and self.config.enabled:
+                self.logger.debug(
+                    "FFmpeg config updated for %s, restarting ffmpeg processes",
+                    self.config.name,
+                )
+                self.stop_all_ffmpeg()
+                self.start_all_ffmpeg()
+                self._reset_segment_times()
+                self.record_enable_time = datetime.now().astimezone(UTC)
+                last_restart_time = datetime.now().timestamp()
+                continue
+
+            enabled = self.config.enabled
+            if enabled != self.was_enabled:
+                if enabled:
+                    self.logger.debug(f"Enabling camera {self.config.name}")
+                    self.start_all_ffmpeg()
+
+                    # reset all timestamps and record the enable time for grace period
+                    self._reset_segment_times()
+                    self.record_enable_time = datetime.now().astimezone(UTC)
+                else:
+                    self.logger.debug(f"Disabling camera {self.config.name}")
+                    self.stop_all_ffmpeg()
+                    self.record_enable_time = None
+
+                    # update camera status
+                    now = datetime.now().timestamp()
+                    self.detect_status.send("disabled", now)
+                    self.record_status[STREAM_TYPE_MAIN].send("disabled", now)
+                    # cameras without a sub stream never get a record_sub topic
+                    if self.config.record.sub.enabled:
+                        self.record_status[STREAM_TYPE_SUB].send("disabled", now)
+                self.was_enabled = enabled
+                continue
+
+            record_enabled_in_config = self.config.record.enabled_in_config
+            if record_enabled_in_config != self.was_record_enabled_in_config:
+                if record_enabled_in_config and enabled:
+                    self.logger.debug(
+                        f"Record enabled in config for {self.config.name}, restarting ffmpeg"
+                    )
+                    self.stop_all_ffmpeg()
+                    self.start_all_ffmpeg()
+                    self._reset_segment_times()
+                    self.record_enable_time = datetime.now().astimezone(UTC)
+                    last_restart_time = datetime.now().timestamp()
+                self.was_record_enabled_in_config = record_enabled_in_config
+                continue
+
+            record_sub_enabled = self.config.record.sub.enabled
+            if record_sub_enabled != self.was_record_sub_enabled:
+                # adding and removing the record_sub output both require a
+                # restart, unlike the main record toggle
+                if record_enabled_in_config and enabled:
+                    self.logger.debug(
+                        f"Sub stream recording toggled in config for {self.config.name}, restarting ffmpeg"
+                    )
+                    self.stop_all_ffmpeg()
+                    self.start_all_ffmpeg()
+                    self._reset_segment_times()
+                    self.record_enable_time = datetime.now().astimezone(UTC)
+                    last_restart_time = datetime.now().timestamp()
+                self.was_record_sub_enabled = record_sub_enabled
+                continue
+
+            if not enabled:
+                continue
+
+            while True:
+                update = self.segment_subscriber.check_for_update(timeout=0)
+
+                if update == (None, None):
+                    break
+
+                raw_topic, payload = update
+                if raw_topic and payload:
+                    topic = str(raw_topic)
+                    camera, stream_type, segment_time, _ = payload
+
+                    if camera != self.config.name:
+                        continue
+
+                    if topic.endswith(RecordingsDataTypeEnum.invalid.value):
+                        self.logger.warning(
+                            f"Invalid recording segment detected for {camera} ({stream_type}) at {segment_time}"
+                        )
+                        self.latest_invalid_segment_time[stream_type] = segment_time
+                    elif topic.endswith(RecordingsDataTypeEnum.valid.value):
+                        self.logger.debug(
+                            f"Latest valid recording segment time on {camera} ({stream_type}): {segment_time}"
+                        )
+                        self.latest_valid_segment_time[stream_type] = segment_time
+                    elif topic.endswith(RecordingsDataTypeEnum.latest.value):
+                        self.latest_cache_segment_time[stream_type] = (
+                            segment_time if segment_time is not None else 0
+                        )
+
+            now = datetime.now().timestamp()
+
+            # Check if enough time has passed to allow ffmpeg restart (backoff pacing)
+            time_since_last_restart = now - last_restart_time
+            can_restart = time_since_last_restart >= self.sleeptime
+
+            if not self.capture_thread.is_alive():
+                self.detect_status.send("offline", now)
+                self.camera_fps.value = 0
+                self.logger.error(
+                    f"Ffmpeg process crashed unexpectedly for {self.config.name}."
+                )
+                if can_restart:
+                    self.reset_capture_thread(terminate=False)
+                    last_restart_time = now
+            elif self.camera_fps.value >= (self.config.detect.fps + 10):
+                self.fps_overflow_count += 1
+
+                if self.fps_overflow_count == 3:
+                    self.detect_status.send("offline", now)
+                    self.fps_overflow_count = 0
+                    self.camera_fps.value = 0
+                    self.logger.info(
+                        f"{self.config.name} exceeded fps limit. Exiting ffmpeg..."
+                    )
+                    if can_restart:
+                        self.reset_capture_thread()
+                        last_restart_time = now
+            elif now - self.capture_thread.current_frame.value > 20:
+                self.detect_status.send("offline", now)
+                self.camera_fps.value = 0
+                self.logger.info(
+                    f"No frames received from {self.config.name} in 20 seconds. Exiting ffmpeg..."
+                )
+                if can_restart:
+                    self.reset_capture_thread()
+                    last_restart_time = now
+            else:
+                # process is running normally
+                self.detect_status.send("online", now)
+                self.fps_overflow_count = 0
+
+            for p in self.ffmpeg_other_processes:
+                poll = p["process"].poll()
+
+                recorded_streams = self._recorded_streams(p["roles"])
+
+                if recorded_streams:
+                    now_utc = datetime.now().astimezone(UTC)
+
+                    # ensure segments are still being created and that they have
+                    # valid video data. each stream is tracked separately so a
+                    # healthy one can't mask a stalled one.
+                    stale_stream = None
+                    stale_reason = None
+                    for stream_type in recorded_streams:
+                        stale_reason = self._stream_staleness(stream_type, now_utc)
+
+                        if stale_reason is not None:
+                            stale_stream = stream_type
+                            break
+
+                    if stale_stream is not None and can_restart:
+                        self.logger.error(
+                            f"{stale_reason} for {self.config.name} ({stale_stream}) in the last {self.record_stale_threshold[stale_stream]}s. Restarting the ffmpeg record process..."
+                        )
+                        p["process"] = start_or_restart_ffmpeg(
+                            p["cmd"],
+                            self.logger,
+                            p["logpipe"],
+                            ffmpeg_process=p["process"],
+                        )
+
+                        self._send_roles_offline(p["roles"], now)
+
+                        self._grant_restart_grace(recorded_streams, now_utc)
+                        last_restart_time = now
+
+                        continue
+                    elif stale_stream is None:
+                        if poll is None:
+                            for stream_type in recorded_streams:
+                                self.record_status[stream_type].send("online", now)
+
+                        p["latest_segment_time"] = max(
+                            self.latest_cache_segment_time[stream_type]
+                            for stream_type in recorded_streams
+                        )
+
+                if poll is None:
+                    continue
+
+                self._send_roles_offline(p["roles"], now)
+
+                # pace reconnects: a camera that refuses connections would
+                # otherwise be retried, and its log dumped, on every pass
+                if can_restart:
+                    p["process"] = start_or_restart_ffmpeg(
+                        p["cmd"],
+                        self.logger,
+                        p["logpipe"],
+                        ffmpeg_process=p["process"],
+                    )
+                    last_restart_time = now
+
+            if self.detect_process_records_sub and self.config.record.stream_enabled(
+                STREAM_TYPE_SUB
+            ):
+                now_utc = datetime.now().astimezone(UTC)
+                stale_reason = self._stream_staleness(STREAM_TYPE_SUB, now_utc)
+
+                if self.detect_status.last_status == "offline":
+                    # the sub stream is down whenever the detect process is
+                    self.record_status[STREAM_TYPE_SUB].send("offline", now)
+                elif stale_reason is None:
+                    self.record_status[STREAM_TYPE_SUB].send("online", now)
+                elif can_restart:
+                    self.logger.error(
+                        f"{stale_reason} for {self.config.name} (sub, shared with detect) in the last {self.record_stale_threshold[STREAM_TYPE_SUB]}s. Restarting ffmpeg..."
+                    )
+                    self.record_status[STREAM_TYPE_SUB].send("offline", now)
+                    self.reset_capture_thread()
+                    last_restart_time = now
+
+            # Prune expired reconnect timestamps
+            now = datetime.now().timestamp()
+            while (
+                self.reconnect_timestamps and self.reconnect_timestamps[0] < now - 3600
+            ):
+                self.reconnect_timestamps.popleft()
+            if self.reconnects:
+                self.reconnects.value = len(self.reconnect_timestamps)
+
+            # Update stall metrics based on last processed frame timestamp
+            processed_ts = (
+                float(self.detection_frame.value) if self.detection_frame else 0.0
+            )
+            if processed_ts > 0:
+                delta = now - processed_ts
+                observed_fps = (
+                    self.camera_fps.value
+                    if self.camera_fps.value > 0
+                    else self.config.detect.fps
+                )
+                interval = 1.0 / max(observed_fps, 0.1)
+                stall_threshold = max(2.0 * interval, 2.0)
+
+                if delta > stall_threshold:
+                    if not self._stall_active:
+                        self._stall_timestamps.append(now)
+                        self._stall_active = True
+                else:
+                    self._stall_active = False
+
+                while self._stall_timestamps and self._stall_timestamps[0] < now - 3600:
+                    self._stall_timestamps.popleft()
+
+                if self.stalls:
+                    self.stalls.value = len(self._stall_timestamps)
+
+        self.stop_all_ffmpeg()
+        self.logpipe.close()
+        self.config_subscriber.stop()
+        self.segment_subscriber.stop()
+
+    def start_ffmpeg_detect(self):
+        detect_cmd = [c for c in self.config.ffmpeg_cmds if "detect" in c["roles"]][0]
+        ffmpeg_cmd = detect_cmd["cmd"]
+        self.detect_process_records_sub = "record_sub" in detect_cmd["roles"]
+        self.ffmpeg_detect_process = start_or_restart_ffmpeg(
+            ffmpeg_cmd, self.logger, self.logpipe, self.frame_size
+        )
+        self.ffmpeg_pid.value = self.ffmpeg_detect_process.pid
+        self.capture_thread = CameraCaptureRunner(
+            self.config,
+            self.shm_frame_count,
+            self.frame_index,
+            self.ffmpeg_detect_process,
+            self.frame_shape,
+            self.frame_queue,
+            self.camera_fps,
+            self.skipped_fps,
+            self.stop_event,
+        )
+        self.capture_thread.start()
+
+    def start_all_ffmpeg(self):
+        """Start all ffmpeg processes (detection and others)."""
+        logger.debug(f"Starting all ffmpeg processes for {self.config.name}")
+        self.start_ffmpeg_detect()
+        for c in self.config.ffmpeg_cmds:
+            if "detect" in c["roles"]:
+                continue
+            logpipe = LogPipe(
+                f"ffmpeg.{self.config.name}.{'_'.join(sorted(c['roles']))}"
+            )
+            self.ffmpeg_other_processes.append(
+                {
+                    "cmd": c["cmd"],
+                    "roles": c["roles"],
+                    "logpipe": logpipe,
+                    "process": start_or_restart_ffmpeg(c["cmd"], self.logger, logpipe),
+                }
+            )
+
+    def stop_all_ffmpeg(self):
+        """Stop all ffmpeg processes (detection and others)."""
+        logger.debug(f"Stopping all ffmpeg processes for {self.config.name}")
+        if self.capture_thread is not None and self.capture_thread.is_alive():
+            self.capture_thread.join(timeout=5)
+            if self.capture_thread.is_alive():
+                self.logger.warning(
+                    f"Capture thread for {self.config.name} did not stop gracefully."
+                )
+        if self.ffmpeg_detect_process is not None:
+            stop_ffmpeg(self.ffmpeg_detect_process, self.logger)
+            self.ffmpeg_detect_process = None
+        for p in self.ffmpeg_other_processes[:]:
+            if p["process"] is not None:
+                stop_ffmpeg(p["process"], self.logger)
+            p["logpipe"].close()
+        self.ffmpeg_other_processes.clear()
+
+
+class CameraCaptureRunner(threading.Thread):
+    def __init__(
+        self,
+        config: CameraConfig,
+        shm_frame_count: int,
+        frame_index: int,
+        ffmpeg_process,
+        frame_shape: tuple[int, int],
+        frame_queue: Queue,
+        fps: Value,
+        skipped_fps: Value,
+        stop_event: MpEvent,
+    ):
+        threading.Thread.__init__(self)
+        self.name = f"capture:{config.name}"
+        self.config = config
+        self.shm_frame_count = shm_frame_count
+        self.frame_index = frame_index
+        self.frame_shape = frame_shape
+        self.frame_queue = frame_queue
+        self.fps = fps
+        self.stop_event = stop_event
+        self.skipped_fps = skipped_fps
+        self.frame_manager = SharedMemoryFrameManager()
+        self.ffmpeg_process = ffmpeg_process
+        self.current_frame = Value("d", 0.0)
+        self.last_frame = 0
+
+    def run(self):
+        capture_frames(
+            self.ffmpeg_process,
+            self.config,
+            self.shm_frame_count,
+            self.frame_index,
+            self.frame_shape,
+            self.frame_manager,
+            self.frame_queue,
+            self.fps,
+            self.skipped_fps,
+            self.current_frame,
+            self.stop_event,
+        )
+
+
+class CameraCapture(FrigateProcess):
+    def __init__(
+        self,
+        config: CameraConfig,
+        shm_frame_count: int,
+        camera_metrics: CameraMetrics,
+        stop_event: MpEvent,
+        log_config: LoggerConfig | None = None,
+    ) -> None:
+        super().__init__(
+            stop_event,
+            PROCESS_PRIORITY_HIGH,
+            name=f"frigate.capture:{config.name}",
+            daemon=True,
+        )
+        self.config = config
+        self.shm_frame_count = shm_frame_count
+        self.camera_metrics = camera_metrics
+        self.log_config = log_config
+
+    def run(self) -> None:
+        self.pre_run_setup(self.log_config)
+        camera_watchdog = CameraWatchdog(
+            self.config,
+            self.shm_frame_count,
+            self.camera_metrics.frame_queue,
+            self.camera_metrics.camera_fps,
+            self.camera_metrics.skipped_fps,
+            self.camera_metrics.ffmpeg_pid,
+            self.camera_metrics.stalls_last_hour,
+            self.camera_metrics.reconnects_last_hour,
+            self.camera_metrics.detection_frame,
+            self.stop_event,
+        )
+        camera_watchdog.start()
+        camera_watchdog.join()

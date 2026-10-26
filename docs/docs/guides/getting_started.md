@@ -13,7 +13,7 @@ This guide takes a new native Windows installation from bootstrap to the first w
 
 Use 64-bit Windows 10 or Windows 11 and 64-bit CPython 3.12. Install current GPU drivers before selecting hardware acceleration. A wired network and a local NTFS media volume are strongly recommended.
 
-Open PowerShell in the Frigate source directory and run:
+Open PowerShell in the Gannet source directory and run:
 
 ```powershell
 py -3.12 bootstrap_windows.py
@@ -21,13 +21,13 @@ py -3.12 bootstrap_windows.py
 
 The bootstrap creates `.venv`, installs pinned Python packages, downloads verified Windows FFmpeg and go2rtc builds plus the detection and audio models, builds the web UI, and creates the native data directories.
 
-Start Frigate interactively for the first setup:
+Start Gannet interactively for the first setup:
 
 ```powershell
-.\scripts\start_frigate.ps1
+.\run_frigate.ps1
 ```
 
-Open `https://localhost:8971`. The generated certificate is self-signed, so the first browser visit displays a certificate warning. Retrieve the generated administrator password from `%LOCALAPPDATA%\Frigate\tmp\logs\frigate\current` and change it during setup.
+Open `https://localhost:8971`. The generated certificate is self-signed, so the first browser visit displays a certificate warning. Retrieve the generated administrator password from `%LOCALAPPDATA%\Gannet\tmp\logs\frigate\current` and change it during setup.
 
 ## 2. Add a camera
 
@@ -52,7 +52,7 @@ FRIGATE_RTSP_USER: camera-user
 FRIGATE_RTSP_PASSWORD: a-long-unique-password
 ```
 
-Test the exact URL in VLC or the installed `ffplay.exe` from the Frigate machine. Prefer a camera substream near the model's useful detection resolution and around 5 frames per second. Detection on a 4K stream wastes resources without improving most models.
+Test the exact URL in VLC or the installed `ffplay.exe` from the Gannet machine. Prefer a camera substream near the model's useful detection resolution and around 5 frames per second. Detection on a 4K stream wastes resources without improving most models.
 
 ## 3. Configure object detection
 
@@ -99,7 +99,7 @@ cameras:
           roles: [record]
 ```
 
-Media defaults to `%LOCALAPPDATA%\Frigate\media`. Set `FRIGATE_MEDIA_DIR` before installation to place it on another local NTFS volume. The Windows service account needs Modify access.
+Media defaults to `%LOCALAPPDATA%\Gannet\media`. Set `FRIGATE_MEDIA_DIR` before installation to place it on another local NTFS volume. The Windows service account needs Modify access.
 
 ## 6. Tune motion and objects
 
@@ -110,7 +110,7 @@ After detections are visible:
 3. tune object thresholds and minimum area from real examples;
 4. enable snapshots, alerts, and longer retention only after basic tracking is stable.
 
-Large motion masks can prevent Frigate from running object detection where it is needed. Object masks discard detections whose anchor point falls inside the mask; they should not be used as general privacy masks.
+Large motion masks can prevent Gannet from running object detection where it is needed. Object masks discard detections whose anchor point falls inside the mask; they should not be used as general privacy masks.
 
 ## 7. Configure live view
 
@@ -136,8 +136,8 @@ After the interactive configuration works, open an elevated PowerShell session:
 The installer records paths and environment for the service account. Verify:
 
 ```powershell
-Get-Service Frigate
-Get-Content "$env:ProgramData\Frigate\tmp\logs\frigate\current" -Tail 100
+Get-Service Gannet
+Get-Content "$env:ProgramData\Gannet\tmp\logs\frigate\current" -Tail 100
 ```
 
 If the installer was given another data root, read the log from that configured root instead.

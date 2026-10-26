@@ -6,7 +6,7 @@ every new test was Linux only by default and a Windows regression was invisible
 until a user hit it. This runs the whole suite instead.
 
 Tests that cannot pass on Windows are listed in
-``frigate/test/windows_suite_denylist.txt``, one entry per line::
+``gannet/test/windows_suite_denylist.txt``, one entry per line::
 
     module.Class.test_name  # why it cannot run on Windows
 
@@ -27,7 +27,7 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-TEST_ROOT = REPO_ROOT / "frigate" / "test"
+TEST_ROOT = REPO_ROOT / "gannet" / "test"
 DENYLIST = TEST_ROOT / "windows_suite_denylist.txt"
 
 

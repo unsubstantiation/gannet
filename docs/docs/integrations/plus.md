@@ -21,7 +21,7 @@ Free accounts can be created at [https://plus.frigate.video](https://plus.frigat
 
 ### Generate an API key
 
-Once logged in, you can generate an API key for Frigate in Settings.
+Once logged in, you can generate an API key for Gannet in Settings.
 
 ![API key](/img/plus-api-key-min.png)
 
@@ -31,7 +31,7 @@ Set `PLUS_API_KEY` in the Windows process environment to enable Frigate+ actions
 
 ```powershell
 $env:PLUS_API_KEY = '<your API key>'
-.\scripts\start_frigate.ps1
+.\run_frigate.ps1
 ```
 
 For a service, set it in the elevated PowerShell session before running `install_frigate_service.ps1 -Action Install` or `-Action Configure`. The installer copies it into the service environment.
@@ -44,7 +44,7 @@ Do not put this key in `config.yml`, source control, or a command transcript. Th
 
 ## Submit examples
 
-Once your API key is configured, you can submit examples directly from the Explore page in Frigate. From the More Filters menu, select "Has a Snapshot - Yes" and "Submitted to Frigate+ - No", and press Apply at the bottom of the pane. Then, click on a thumbnail and select the Snapshot tab.
+Once your API key is configured, you can submit examples directly from the Explore page in Gannet. From the More Filters menu, select "Has a Snapshot - Yes" and "Submitted to Frigate+ - No", and press Apply at the bottom of the pane. Then, click on a thumbnail and select the Snapshot tab.
 
 You can use your keyboard's left and right arrow keys to quickly navigate between the tracked object snapshots.
 
@@ -66,7 +66,7 @@ You can view all of your submitted images at [https://plus.frigate.video](https:
 
 Once you have [requested your first model](../plus/first_model.md) and gotten your own model ID, it can be used with a special model path. No other information needs to be configured for Frigate+ models because it fetches the remaining config from Frigate+ automatically.
 
-You can either choose the new model from the <NavPath path="Settings > System > Detection models" /> pane in the Frigate UI (on the **Frigate+** tab of the model you want to change), or set it on that model in your config:
+You can either choose the new model from the <NavPath path="Settings > System > Detection models" /> pane in the Gannet UI (on the **Frigate+** tab of the model you want to change), or set it on that model in your config:
 
 ```yaml
 models:

@@ -30,10 +30,10 @@ windows-cuda = ["onnxruntime-gpu[cuda,cudnn] == 1.31.*"]
 windows-ml = ["windowsml[with-ort] == 2.4.*"]
 
 [tool.setuptools.packages.find]
-include = ["frigate*"]
+include = ["gannet*"]
 
 [tool.setuptools.package-data]
-frigate = ["images/*.jpg", "images/*.png"]
+gannet = ["images/*.jpg", "images/*.png"]
 
 [tool.ruff]
 target-version = "py312"

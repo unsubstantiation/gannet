@@ -1389,7 +1389,7 @@
       "variableNameLabel": "变量名",
       "variableNamePlaceholder": "例如：MY_VARIABLE",
       "loggerNameLabel": "日志模块名称",
-      "loggerNamePlaceholder": "例如：frigate.record",
+      "loggerNamePlaceholder": "例如：gannet.record",
       "keyPatternError": "只能使用字母、数字、连字符和下划线（不包含空格）"
     },
     "roleMap": {

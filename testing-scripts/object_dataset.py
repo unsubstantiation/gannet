@@ -34,7 +34,7 @@ from dataclasses import dataclass
 import cv2
 import numpy as np
 
-from frigate.util.platform import get_media_dir, get_model_cache_dir
+from gannet.util.platform import get_media_dir, get_model_cache_dir
 
 try:
     from tflite_runtime.interpreter import Interpreter

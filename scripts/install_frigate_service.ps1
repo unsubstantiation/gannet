@@ -4,7 +4,7 @@
     Install, configure, start, stop or remove the Frigate Windows SCM service.
 
 .DESCRIPTION
-    Registers FrigateService (frigate.util.windows_service) with the Windows
+    Registers FrigateService (gannet.util.windows_service) with the Windows
     Service Control Manager through pywin32, and supplies the three things a
     service needs that a process started from a desktop shell gets for free.
 
@@ -166,7 +166,7 @@ function Test-FrigateImportable {
 
     Push-Location $repoRoot
     try {
-        & $Python -c "import frigate.util.windows_service" 2>&1 | Out-Null
+        & $Python -c "import gannet.util.windows_service" 2>&1 | Out-Null
         return ($LASTEXITCODE -eq 0)
     }
     finally {
@@ -284,9 +284,9 @@ function Invoke-FrigateServiceCommand {
 
     Push-Location $repoRoot
     try {
-        & $Python -m frigate.util.windows_service @Arguments
+        & $Python -m gannet.util.windows_service @Arguments
         if ($LASTEXITCODE -ne 0) {
-            throw "frigate.util.windows_service $($Arguments -join ' ') failed (exit $LASTEXITCODE)."
+            throw "gannet.util.windows_service $($Arguments -join ' ') failed (exit $LASTEXITCODE)."
         }
     }
     finally {
@@ -307,7 +307,7 @@ function Start-FrigateService {
         Write-Host "Run it in a console to see why. It needs no privileges:"
         Write-Host ""
         Write-Host "    cd $repoRoot"
-        Write-Host "    & '$Python' -m frigate.util.windows_service debug"
+        Write-Host "    & '$Python' -m gannet.util.windows_service debug"
         Write-Host ""
         exit 1
     }
@@ -385,7 +385,7 @@ function Invoke-ServiceAction {
             Install-PyWin32 -Python $python
 
             if (-not (Test-FrigateImportable -Python $python)) {
-                throw "$python cannot import frigate.util.windows_service from $repoRoot. Pass -PythonPath with the interpreter Frigate is installed in (the repository's own virtual environment by default)."
+                throw "$python cannot import gannet.util.windows_service from $repoRoot. Pass -PythonPath with the interpreter Frigate is installed in (the repository's own virtual environment by default)."
             }
 
             Initialize-BaseDirectory -Path $base

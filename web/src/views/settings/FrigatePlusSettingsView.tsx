@@ -55,7 +55,7 @@ export default function FrigatePlusSettingsView(_props: SettingsPageProps) {
                   {!getPrimaryModel(config)?.plus && (
                     <div className="mt-2 flex items-center text-primary-variant">
                       <Link
-                        to="https://frigate.video/plus"
+                        to="https://gannet.video/plus"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline"

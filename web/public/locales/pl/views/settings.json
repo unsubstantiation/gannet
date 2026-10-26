@@ -1481,7 +1481,7 @@
       "variableNameLabel": "Nazwa zmiennej",
       "variableNamePlaceholder": "np. MOJA_ZMIENNA",
       "loggerNameLabel": "Nazwa rejestratora",
-      "loggerNamePlaceholder": "np. frigate.record",
+      "loggerNamePlaceholder": "np. gannet.record",
       "keyPatternError": "Używaj tylko liter, cyfr, myślników i podkreśleń (bez spacji)"
     },
     "knownPlates": {

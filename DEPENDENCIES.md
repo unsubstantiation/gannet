@@ -25,9 +25,9 @@ Section 8 says how to refresh it.
 
 | Component | Version | Where it is enforced |
 | --- | --- | --- |
-| Operating system | Windows 10/11 or Server, x64 only | `frigate/util/platform.py` rejects every other platform at startup |
+| Operating system | Windows 10/11 or Server, x64 only | `gannet/util/platform.py` rejects every other platform at startup |
 | Python | 64-bit CPython 3.12 (`>=3.12,<3.13`) | `pyproject.toml` `requires-python`, checked again by `bootstrap_windows.py` |
-| Node.js | 20 (CI), 20.19+ for the docs site | `.github/workflows/windows-web.yml`, `docs/package.json` `engines` |
+| Node.js | 20.19+ or 22.12+ for the web build; 20.19+ for docs | Vite and the Docusaurus package metadata in the lockfiles |
 | FFmpeg / go2rtc | 8.1.2 / 1.9.14, SHA-256 pinned | Downloaded by `bootstrap_windows.py`, never vendored |
 | Package managers | `pip` + `npm` | No `uv`, `poetry`, `pnpm` or `yarn` lockfile exists |
 
@@ -53,7 +53,7 @@ deliberately narrow — the file explains inline why several of them cannot move
 
 "Import sites" counts non-test modules that import the package; it answers
 "what breaks if this goes away", not "where is it used most". The scan covers
-`frigate/`, `migrations/` and `bootstrap_windows.py`, so a package used only by
+`gannet/`, `migrations/` and `bootstrap_windows.py`, so a package used only by
 `testing-scripts/` shows as `none` even when something does use it.
 
 ### 1.1 Direct requirements (62)
@@ -154,7 +154,7 @@ into `requirements.txt` as comments; they are repeated here because they explain
 why several packages look arbitrarily old.
 
 - **`numpy == 1.26.*`** is required by `norfair 2.3.0`, which has no newer release
-  and is load-bearing for `frigate/ptz/autotrack.py` camera-motion estimation.
+  and is load-bearing for `gannet/ptz/autotrack.py` camera-motion estimation.
   Three packages cap themselves to stay installable against numpy 1.x:
   `scipy 1.17.*` (1.18 wants numpy>=2), `opencv-contrib-python 4.11.0.*`
   (4.12+ wants numpy>=2) and `librosa 0.11.*` (1.0 wants numpy>=2.1).
@@ -163,7 +163,7 @@ why several packages look arbitrarily old.
 - **`rich == 14.*`** because `norfair 2.3.0` declares `rich<15.0.0`. Keep it in
   step with `norfair`'s `requires_dist`; a 15.x pin makes the file unresolvable.
 - **`filelock`, `httpx`, `Pillow`, `regex`** are pinned even though they arrive
-  transitively, because Frigate imports them at module scope. Pinning them means
+  transitively, because Gannet imports them at module scope. Pinning them means
   an upstream extra that stops depending on one of them cannot break the import.
 - **`tensorflow-cpu`, `ai-edge-litert`, `openvino`, `onnxruntime`** each carry a
   large native wheel; they are pinned per minor series so a patch release cannot
@@ -186,7 +186,7 @@ decision, so they are listed rather than unilaterally dropped.
 | `scikit-build` | `== 0.19.*` | build tooling; no runtime import by design |
 | `python-multipart` | `== 0.0.32` | imported by FastAPI, not by this tree; required for form/file uploads |
 | `tzdata` | `== 2026.5` | consumed indirectly by `zoneinfo` on Windows |
-| `click` | `== 8.5.*` | used by `testing-scripts/process_clip.py` and the `uvicorn` CLI, not by `frigate/` |
+| `click` | `== 8.5.*` | used by `testing-scripts/process_clip.py` and the `uvicorn` CLI, not by `gannet/` |
 
 ## 2. Web UI (`web/`)
 
@@ -314,7 +314,7 @@ licenses.
 | `web/patches/@radix-ui+react-compose-refs+1.1.2.patch` | applied by `patch-package` on `postinstall`; rewrites `useComposedRefs` so the callback identity stays stable and cleanup functions returned by refs are honoured |
 | `overrides` in `web/package.json` | forces `@radix-ui/react-compose-refs` 1.1.2, `@radix-ui/react-popper` 1.2.8 and `@radix-ui/react-slot` 1.5.0 so the patch and the Radix tree stay consistent |
 
-`npm ci` in CI applies the patch automatically; a fresh `node_modules` built
+`npm ci` applies the patch automatically; a fresh `node_modules` built
 without `postinstall` is not a supported state.
 
 ## 3. Docs site (`docs/`)
@@ -380,19 +380,17 @@ Models fetched at runtime for semantic search, transcription, GenAI, face
 recognition and ALPR are downloaded from their own publishers, on their own
 terms. They are outside this file's inventory because no manifest pins them.
 
-## 5. Build, CI and test tooling not in any manifest
+## 5. Build and test tooling not in any manifest
 
 Deliberately listed: none of these appear in `requirements.txt` or a
 `package.json`, so a dependency scanner will not see them.
 
 | Tool | Pin | Where it comes from | License |
 | --- | --- | --- | --- |
-| Ruff | `0.17.1` | `pip install ruff==0.17.1` in `.github/workflows/windows-python.yml` | MIT |
-| `actions/checkout`, `actions/setup-python@v7`, `actions/setup-node` | floating major tags | GitHub-hosted actions | MIT |
-| Node.js for web CI | `20` | `actions/setup-node` | MIT |
+| Ruff | `0.17.1` | pinned local formatting and lint checks (`pip install ruff==0.17.1`) | MIT |
 | Playwright browsers | unpinned; downloaded on first `npx playwright install` | `@playwright/test` 1.64.1 | Apache-2.0 (Playwright); each browser binary keeps its vendor's terms |
 | Python test framework | `unittest` (stdlib) | `testing-scripts/run_windows_unit_suite.py` | PSF-2.0 |
-| `pywin32_postinstall.py` | ships with `pywin32` 312 | run in CI after install | PSF-2.0 |
+| `pywin32_postinstall.py` | ships with `pywin32` 312 | run after install on Windows when registering pywin32 | PSF-2.0 |
 
 There is no `dev-requirements.txt`, `test-requirements.txt` or `constraints.txt`
 in this repository. `testing-scripts/` imports `click`, `PIL`, `cv2`, `numpy`,
@@ -424,7 +422,7 @@ package listed here.
 
 `requirements.txt` mostly pins minor series (`== 25.1.*`), not exact releases,
 and carries no hashes at all. Two installs on two days can produce different
-wheels, and nothing in CI compares them. The npm side is locked
+wheels, and no automated check compares them. The npm side is locked
 (`package-lock.json`, `npm ci`); the Python side is not. The root
 `package-lock.json` is an empty stub (`packages: {}`) with no packages declared
 at the root.

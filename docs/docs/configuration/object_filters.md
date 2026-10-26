@@ -22,9 +22,9 @@ For object filters, any single detection below `min_score` will be ignored as a 
 | 5     | 0.88          | 0.7, 0.85, 0.95, 0.90, 0.88       | 0.88           | Yes             |
 | 6     | 0.95          | 0.7, 0.85, 0.95, 0.90, 0.88, 0.95 | 0.89           | Yes             |
 
-In frame 2, the score is below the `min_score` value, so Frigate ignores it and it becomes a 0.0. The computed score is the median of the score history (padding to at least 3 values), and only when that computed score crosses the `threshold` is the object marked as a true positive. That happens in frame 4 in the example.
+In frame 2, the score is below the `min_score` value, so Gannet ignores it and it becomes a 0.0. The computed score is the median of the score history (padding to at least 3 values), and only when that computed score crosses the `threshold` is the object marked as a true positive. That happens in frame 4 in the example.
 
-The **top score** is the highest computed score the tracked object has ever reached during its lifetime. Because the computed score rises and falls as new frames come in, the top score can be thought of as the peak confidence Frigate had in the object. In Frigate's UI (such as the Tracking Details pane in Explore), you may see all three values:
+The **top score** is the highest computed score the tracked object has ever reached during its lifetime. Because the computed score rises and falls as new frames come in, the top score can be thought of as the peak confidence Gannet had in the object. In Gannet's UI (such as the Tracking Details pane in Explore), you may see all three values:
 
 - **Score**: the raw detector score for that single frame.
 - **Computed Score**: the median of the most recent score history at that moment. This is the value compared against `threshold`.

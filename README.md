@@ -25,7 +25,7 @@ Use of a GPU or AI accelerator is highly recommended: accelerators outperform ev
 
 ## Native Windows application
 
-This distribution is designed exclusively for native 64-bit Windows. Frigate runs as a normal Windows process or SCM service; container, WSL, and Unix runtime paths are not supported. Frigate itself serves the API, media endpoints, and web interface.
+This distribution is designed exclusively for native 64-bit Windows. Gannet runs as a normal Windows process or SCM service; container, WSL, and Unix runtime paths are not supported. Gannet itself serves the API, media endpoints, and web interface.
 
 Install from an ordinary PowerShell window:
 
@@ -36,7 +36,7 @@ py -3.12 bootstrap_windows.py
 powershell -ExecutionPolicy Bypass -File .\run_frigate.ps1
 ```
 
-The bootstrap script needs 64-bit CPython 3.12. It creates the venv, installs the Windows requirements, fetches pinned FFmpeg and go2rtc builds plus the detection and audio models, builds the web interface when Node.js is available, and writes a launcher that restarts Frigate when Frigate asks to be restarted. Node.js is only needed for that frontend build; a packaged bundle can ship `web/dist` prebuilt.
+The bootstrap script needs 64-bit CPython 3.12. It creates the venv, installs the Windows requirements, fetches pinned FFmpeg and go2rtc builds plus the detection and audio models, builds the web interface when Node.js is available, and writes a launcher that restarts Gannet when Gannet asks to be restarted. Node.js is only needed for that frontend build; a packaged bundle can ship `web/dist` prebuilt.
 
 To produce that bundle — one self-contained ZIP with CPython, every dependency, FFmpeg,
 go2rtc, and the models inside it — see [BUILD.md](BUILD.md).
@@ -52,7 +52,7 @@ Read the [Windows installation guide](docs/docs/frigate/installation.md#windows)
 
 ## Documentation
 
-View the documentation at https://docs.frigate.video. To build this fork's docs locally, see [docs/README.md](docs/README.md).
+The documentation site is currently configured with Frigate's upstream host, https://docs.frigate.video. To build this fork's docs locally or configure a Gannet-specific host, see [docs/README.md](docs/README.md).
 
 ## License
 

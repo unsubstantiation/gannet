@@ -12,9 +12,9 @@ import numpy as np
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from frigate.config import MotionConfig  # noqa: E402
-from frigate.motion.improved_motion import ImprovedMotionDetector  # noqa: E402
-from frigate.util.image import create_mask  # noqa: E402
+from gannet.config import MotionConfig  # noqa: E402
+from gannet.motion.improved_motion import ImprovedMotionDetector  # noqa: E402
+from gannet.util.image import create_mask  # noqa: E402
 
 # get info on the video
 # cap = cv2.VideoCapture("debug/front_cam_2023_05_23_08_41__2023_05_23_08_43.mp4")
