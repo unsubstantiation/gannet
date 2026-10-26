@@ -960,8 +960,10 @@ network access required.
 1. Extract `{bundle_name}.zip` anywhere writable, for example
    `%LOCALAPPDATA%\\Programs\\GannetNVR`.
 2. Run `run_gannet.ps1` (or double-click `run_gannet.cmd`).
-3. Open <http://localhost:8971>. The generated administrator password is in the
-   log on first start.
+3. Open <https://localhost:8971> and accept the first-run warning for the
+   generated self-signed certificate. The generated administrator password is
+   printed on first start and recorded in
+   `%LOCALAPPDATA%\\Frigate\\tmp\\logs\\frigate\\current`.
 
 Data lives in `%LOCALAPPDATA%\\Frigate`. Pass `-BaseDir <path>` to keep it
 somewhere else. To remove the application, stop it and delete the folder.

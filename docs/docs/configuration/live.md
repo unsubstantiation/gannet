@@ -52,4 +52,4 @@ Permit the configured TCP and UDP ports in Windows Firewall only from required n
 4. Check Windows Firewall and NAT rules for WebRTC candidates.
 5. If Frigate runs as a service, remember it has a different environment and network credentials from the signed-in desktop user.
 
-The browser developer console and `logs\go2rtc.log` usually show whether a failure is authentication, codec negotiation, or connectivity related.
+The browser developer console and `tmp\logs\go2rtc\current` usually show whether a failure is authentication, codec negotiation, or connectivity related.

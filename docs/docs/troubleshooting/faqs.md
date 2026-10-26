@@ -11,10 +11,10 @@ Interactive installs default to `%LOCALAPPDATA%\Frigate`. The Windows service in
 
 ## Where are the logs?
 
-Use **System > Logs** or read `logs\frigate.log` and `logs\go2rtc.log` below the data root:
+Use **System > Logs** or read `tmp\logs\frigate\current` and `tmp\logs\go2rtc\current` below the data root:
 
 ```powershell
-Get-Content "$env:ProgramData\Frigate\logs\frigate.log" -Wait
+Get-Content "$env:ProgramData\Frigate\tmp\logs\frigate\current" -Wait
 ```
 
 ## Why does `localhost` not reach MQTT or a camera?

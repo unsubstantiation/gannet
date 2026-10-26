@@ -14,7 +14,7 @@ instead, see [`WINDOWS_COMPATIBILITY.md`](WINDOWS_COMPATIBILITY.md) and the
 | Entry point (local) | `pwsh scripts/build_portable.ps1` |
 | Entry point (CI) | `.github/workflows/windows-release.yml` calls the same script |
 | Output | `dist/GannetNVR-<version>-win64.zip` |
-| Typical size | 400-700 MiB (dominated by TensorFlow, OpenVINO and ONNX Runtime) |
+| Typical size | ~875 MiB for 0.19.0 (dominated by TensorFlow, OpenVINO and ONNX Runtime) |
 | Runtime contract | Windows 10/11 or Server, x64. Nothing else runs it. |
 
 ## What a build is, and what it is not
@@ -149,8 +149,10 @@ differs only in where it finds Python:
 1. Extract the ZIP to a writable location, for example
    `%LOCALAPPDATA%\Programs\GannetNVR`. Do not extract into `C:\Program Files`.
 2. Run `run_gannet.ps1` from that folder, or double-click `run_gannet.cmd`.
-3. Open <http://localhost:8971>. The generated administrator password is written
-   to the log on first start.
+3. Open <https://localhost:8971> and accept the first-run warning for the
+   generated self-signed certificate. The generated administrator password is
+   printed on first start and recorded in
+   `%LOCALAPPDATA%\Frigate\tmp\logs\frigate\current`.
 4. Data appears in `%LOCALAPPDATA%\Frigate`: `config/`, `media/`, `cache/`, `tmp/`.
 
 The first launch is slower than later ones because CPython compiles the installed

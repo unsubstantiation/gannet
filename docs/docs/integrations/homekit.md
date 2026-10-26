@@ -67,6 +67,6 @@ Then use `front_door_homekit` as the key in `go2rtc_homekit.yml`. On matching NV
 3. Select the camera and enter the configured PIN.
 4. Confirm a `pairings` value is written beneath the camera in `go2rtc_homekit.yml`.
 
-If the accessory is not discovered, verify that the Windows network is Private, multicast is not isolated by the access point/VLAN, and Windows Firewall allows go2rtc. If pairing succeeds but fails after restart, check that the Frigate service account can modify `go2rtc_homekit.yml` and inspect `logs\go2rtc.log` for a save error.
+If the accessory is not discovered, verify that the Windows network is Private, multicast is not isolated by the access point/VLAN, and Windows Firewall allows go2rtc. If pairing succeeds but fails after restart, check that the Frigate service account can modify `go2rtc_homekit.yml` and inspect `tmp\logs\go2rtc\current` for a save error.
 
 Renaming the stream changes the accessory identity and requires pairing again.

@@ -17,7 +17,7 @@
       "type": "editor-browser",
       "request": "launch",
       "name": "Frigate: Launch in integrated browser",
-      "url": "http://localhost:8971"
+      "url": "https://localhost:8971"
     },
     {
       "type": "editor-browser",

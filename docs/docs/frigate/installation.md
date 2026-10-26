@@ -41,8 +41,10 @@ Start Frigate with:
 .\run_frigate.ps1
 ```
 
-Open `http://localhost:8971`. On first start, the generated administrator
-password is written to the Frigate log.
+Open `https://localhost:8971` and accept the first-run warning for the
+generated self-signed certificate. On first start, the generated administrator
+password is printed to the console and recorded in
+`%LOCALAPPDATA%\Frigate\tmp\logs\frigate\current`.
 
 ### Bootstrap options
 
@@ -75,12 +77,14 @@ Frigate\
     ffmpeg\             installed ffmpeg.exe and ffprobe.exe
     go2rtc.exe          installed live-stream helper
     model_cache\        object-detection models
-  logs\                 Frigate and go2rtc logs
   media\
     clips\              snapshots and thumbnails
     exports\            user exports
     recordings\         recording segments
-  tmp\                  runtime temporary files and restart marker
+  tmp\
+    logs\frigate\current  main Frigate log
+    logs\go2rtc\current   go2rtc log
+    restart marker and other runtime temporary files
 ```
 
 Relocate the whole tree before running the bootstrap:

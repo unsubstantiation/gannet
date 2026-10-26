@@ -27,7 +27,7 @@ Start Frigate interactively for the first setup:
 .\scripts\start_frigate.ps1
 ```
 
-Open `https://localhost:8971`. The generated certificate is self-signed, so the first browser visit displays a certificate warning. Retrieve the generated administrator password from `%LOCALAPPDATA%\Frigate\logs\frigate.log` and change it during setup.
+Open `https://localhost:8971`. The generated certificate is self-signed, so the first browser visit displays a certificate warning. Retrieve the generated administrator password from `%LOCALAPPDATA%\Frigate\tmp\logs\frigate\current` and change it during setup.
 
 ## 2. Add a camera
 
@@ -137,7 +137,7 @@ The installer records paths and environment for the service account. Verify:
 
 ```powershell
 Get-Service Frigate
-Get-Content "$env:ProgramData\Frigate\logs\frigate.log" -Tail 100
+Get-Content "$env:ProgramData\Frigate\tmp\logs\frigate\current" -Tail 100
 ```
 
 If the installer was given another data root, read the log from that configured root instead.

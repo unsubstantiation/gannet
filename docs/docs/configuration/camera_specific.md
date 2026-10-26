@@ -93,6 +93,6 @@ Camera timestamps are useful for correlating source frames with Frigate events, 
 2. Verify the service account can resolve the camera hostname and reach the port.
 3. Check that only one detection stream is assigned per camera.
 4. Start without hardware acceleration, then enable a Windows preset after basic decoding works.
-5. Review `logs\frigate.log` and copy the generated FFmpeg command when requesting help.
+5. Review `tmp\logs\frigate\current` and copy the generated FFmpeg command when requesting help.
 
 Never publish camera credentials or complete signed URLs in logs, screenshots, or support requests.

@@ -5,13 +5,13 @@ title: go2rtc Troubleshooting
 
 # go2rtc troubleshooting on Windows
 
-go2rtc powers MSE, WebRTC, restreaming, and two-way talk. Frigate starts `go2rtc.exe` as a managed child and writes its output to `logs\go2rtc.log`.
+go2rtc powers MSE, WebRTC, restreaming, and two-way talk. Frigate starts `go2rtc.exe` as a managed child and writes its output to `tmp\logs\go2rtc\current`.
 
 ## 1. Check the process and log
 
 ```powershell
 Get-Process go2rtc -ErrorAction SilentlyContinue
-Get-Content "$env:ProgramData\Frigate\logs\go2rtc.log" -Tail 200
+Get-Content "$env:ProgramData\Frigate\tmp\logs\go2rtc\current" -Tail 200
 ```
 
 Adjust the path for an interactive or custom data root. If the executable is missing, rerun `bootstrap_windows.py --skip-web`. Antivirus quarantine is a common cause of a file disappearing after bootstrap.

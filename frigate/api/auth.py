@@ -49,6 +49,24 @@ FIRST_LOAD_TTL_SECONDS = 60 * 60 * 24 * 7  # 7 days
 _first_load_seen: dict[str, float] = {}
 
 
+def _application_path(request: Request) -> str:
+    """Return the request path relative to the mounted API application.
+
+    ``Request.url.path`` includes the ASGI ``root_path``. The native gateway
+    mounts this app below ``/api``, so a check against the route paths declared
+    here (``/login``, ``/profile``, ...) must remove that mount prefix first.
+    Otherwise every exemption below is missed on a native install and the
+    public login endpoint is rejected before it can check the password.
+    """
+    path = request.url.path
+    root_path = (request.scope.get("root_path") or "").rstrip("/")
+
+    if root_path and (path == root_path or path.startswith(f"{root_path}/")):
+        return path[len(root_path) :] or "/"
+
+    return path
+
+
 def require_admin_by_default():
     """
     Global admin requirement dependency for all endpoints by default.
@@ -123,7 +141,7 @@ def require_admin_by_default():
     )
 
     async def admin_checker(request: Request):
-        path = request.url.path
+        path = _application_path(request)
 
         # Check exact path matches
         if path in EXEMPT_PATHS:
@@ -476,10 +494,15 @@ def refresh_user_session(request: Request, username: str) -> None:
 
 
 def is_secure_request(request: Request) -> bool:
-    """Check the cookie setting and nginx's forwarded scheme for HTTPS."""
-    # nginx sets X-Forwarded-Proto to its own scheme, replacing any client value
+    """Whether the session cookie must carry the Secure flag.
+
+    The native gateway terminates TLS itself, so the ASGI scheme is the
+    authoritative signal there. ``X-Forwarded-Proto`` remains for a reverse
+    proxy that terminates TLS before a plain-HTTP Frigate listener.
+    """
     return (
         request.app.frigate_config.auth.cookie_secure
+        or request.scope.get("scheme") == "https"
         or request.headers.get("x-forwarded-proto") == "https"
     )
 

@@ -307,6 +307,50 @@ class TestGatewayRoutes(unittest.TestCase):
         )
         self.assertTrue(needs_auth("/cache/preview.jpg"))
 
+    def test_a_refreshed_session_cookie_reaches_the_browser(self):
+        """The gateway must not discard ``Set-Cookie`` from the auth check.
+
+        ``/auth`` refreshes an expiring JWT by returning a replacement cookie.
+        The middleware used only its identity headers, so the browser kept the
+        old token and was logged out at its original expiry despite activity.
+        """
+        from starlette.testclient import TestClient
+
+        def refreshing_auth(request: Request) -> Response:
+            response = Response(
+                status_code=202,
+                headers={"remote-user": "admin", "remote-role": "admin"},
+            )
+            response.set_cookie(
+                "frigate_token", "refreshed-token", httponly=True, secure=True
+            )
+            return response
+
+        api_app = FastAPI()
+        api_app.frigate_config = SimpleNamespace(
+            auth=SimpleNamespace(enabled=True),
+            proxy=SimpleNamespace(
+                auth_secret=None,
+                header_map=SimpleNamespace(user=None, role=None),
+            ),
+        )
+
+        @api_app.get("/profile")
+        def profile():
+            return {"username": "admin", "role": "admin"}
+
+        with (
+            patch("frigate.api.web.vod_native.start_cache_maintenance"),
+            patch("frigate.api.web.auth_check", side_effect=refreshing_auth),
+        ):
+            response = TestClient(create_native_web_app(api_app, 8971)).get(
+                "/api/profile"
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.cookies["frigate_token"], "refreshed-token")
+        self.assertIn("secure", response.headers["set-cookie"].lower())
+
 
 class TestProxyHttp(unittest.IsolatedAsyncioTestCase):
     """The plain HTTP proxy in front of go2rtc."""
