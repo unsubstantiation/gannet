@@ -11,7 +11,6 @@ import onnxruntime as ort
 
 from frigate.detectors.windows_ml import (
     provider_from_device,
-    provider_label,
     registered_provider_devices,
 )
 from frigate.util.model import get_ort_providers
@@ -235,7 +234,13 @@ class ONNXModelRunner(BaseModelRunner):
             return "CPU"
 
         provider = providers[0]
-        return _PROVIDER_LABELS.get(provider, provider_label(provider))
+        # device_name feeds stats and the loaded-device registry, where the
+        # convention is a compact token ("CUDA", "CPU", "QNN"); human-friendly
+        # vendor labels such as "Qualcomm QNN" stay in the hardware catalog
+        # (see frigate.detectors.hardware).
+        return _PROVIDER_LABELS.get(
+            provider, provider.removesuffix("ExecutionProvider")
+        )
 
 
 class CudaGraphRunner(BaseModelRunner):

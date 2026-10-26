@@ -34,7 +34,11 @@ from frigate.const import (
 )
 from frigate.log import LogPipe
 from frigate.util.builtin import EventsPerSecond, get_record_segment_time
-from frigate.util.ffmpeg import start_or_restart_ffmpeg, stop_ffmpeg
+from frigate.util.ffmpeg import (
+    request_ffmpeg_stop,
+    start_or_restart_ffmpeg,
+    stop_ffmpeg,
+)
 from frigate.util.image import (
     FrameManager,
     SharedMemoryFrameManager,
@@ -326,8 +330,15 @@ class CameraWatchdog(threading.Thread):
         if terminate:
             # The capture thread keeps draining stdout, so wait() is enough here.
             # communicate() would also buffer every frame ffmpeg writes before it
-            # exits, which can be many duplicates after a stall.
-            self.ffmpeg_detect_process.terminate()
+            # exits, which can be many duplicates after a stall. Ask ffmpeg to
+            # stop through the graceful Windows mechanisms first: a hard
+            # TerminateProcess can leave the segment this process is writing
+            # (record_sub shares the detect process) without a moov atom. The
+            # zero quit poll avoids adding a second to every stall restart, and
+            # terminate() is still the fallback where no console is available.
+            request_ffmpeg_stop(
+                self.ffmpeg_detect_process, self.logger, wait_timeout=0.0
+            )
             try:
                 self.logger.info("Waiting for ffmpeg to exit gracefully...")
                 self.ffmpeg_detect_process.wait(timeout=30)
