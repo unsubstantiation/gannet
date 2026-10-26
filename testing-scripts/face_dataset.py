@@ -2,8 +2,8 @@ r"""
 Face recognition investigation script.
 
 Standalone replica of Frigate's ArcFace pipeline (see
-frigate/data_processing/common/face/model.py and
-frigate/embeddings/onnx/face_embedding.py) for analyzing a face collection
+gannet/data_processing/common/face/model.py and
+gannet/embeddings/onnx/face_embedding.py) for analyzing a face collection
 outside the running service. Useful for:
 
   - Diagnosing why a person's collection produces false positives
@@ -44,7 +44,7 @@ import onnxruntime as ort
 from PIL import Image
 from scipy import stats
 
-from frigate.util.platform import get_model_cache_dir
+from gannet.util.platform import get_model_cache_dir
 
 ARCFACE_INPUT_SIZE = 112
 
@@ -385,7 +385,7 @@ def vector_outlier_test(
     """Measure the shipped vector-wise outlier filter at various thresholds.
 
     The production filter at `build_class_mean` in
-    frigate/data_processing/common/face/model.py uses T=0.30. This test
+    gannet/data_processing/common/face/model.py uses T=0.30. This test
     sweeps T so you can see which images would be dropped on a new collection
     and how that affects the negative scores.
 

@@ -1,10 +1,10 @@
 import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 import { PropSidebarItemLink } from "@docusaurus/plugin-content-docs";
-import frigateHttpApiSidebar from "./docs/integrations/api/sidebar";
+import gannetHttpApiSidebar from "./docs/integrations/api/sidebar";
 
 const sidebars: SidebarsConfig = {
   docs: {
-    Frigate: [
+    Gannet: [
       "frigate/index",
       "frigate/hardware",
       "frigate/planning_setup",
@@ -147,11 +147,11 @@ const sidebars: SidebarsConfig = {
         label: "HTTP API",
         link: {
           type: "generated-index",
-          title: "Frigate HTTP API",
+          title: "Gannet HTTP API",
           description: "HTTP API",
           slug: "/integrations/api/frigate-http-api",
         },
-        items: frigateHttpApiSidebar,
+        items: gannetHttpApiSidebar,
       },
       "integrations/mqtt",
       "integrations/homekit",

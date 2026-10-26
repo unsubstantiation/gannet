@@ -11,7 +11,7 @@ State classification allows you to train a custom MobileNetV2 classification mod
 
 :::info
 
-Training a custom state-classification model requires an internet connection for MobileNetV2 base weights. Frigate caches them in the Windows model cache; the trained model then runs offline. See [Network Requirements](/frigate/network_requirements#runtime-model-downloads).
+Training a custom state-classification model requires an internet connection for MobileNetV2 base weights. Gannet caches them in the Windows model cache; the trained model then runs offline. See [Network Requirements](/frigate/network_requirements#runtime-model-downloads).
 
 :::
 
@@ -87,7 +87,7 @@ An optional config, `save_attempts`, can be set as a key under the model name. T
 
 ## Review items
 
-When a model's state changes while its camera has an active review item, the change is recorded on that review item. This includes changes in the few seconds before the item starts, such as a garage door opening just before the car is detected. State changes never create or extend review items on their own, and the first state reported after Frigate starts is not recorded as a change.
+When a model's state changes while its camera has an active review item, the change is recorded on that review item. This includes changes in the few seconds before the item starts, such as a garage door opening just before the car is detected. State changes never create or extend review items on their own, and the first state reported after Gannet starts is not recorded as a change.
 
 Recorded changes appear in the review item's data as `classification_state_changes` (see the [`frigate/reviews`](/integrations/mqtt#frigatereviews) MQTT topic) and are passed to [GenAI review summaries](/configuration/genai/genai_review) as facts, so a description can note that a gate was opened during the activity.
 
@@ -95,7 +95,7 @@ Change times are most accurate with `motion: true`. A model that only runs on an
 
 ## Training the model
 
-Creating and training the model is done within the Frigate UI using the `Classification` page. The process consists of three steps:
+Creating and training the model is done within the Gannet UI using the `Classification` page. The process consists of three steps:
 
 ### Step 1: Name and Define
 
@@ -115,7 +115,7 @@ Once some images are assigned, training will begin automatically.
 
 :::tip Diversity matters far more than volume
 
-Selecting dozens of nearly identical images is one of the fastest ways to degrade model performance. MobileNetV2 can overfit quickly when trained on homogeneous data. The model learns what _that exact moment_ looked like rather than what actually defines the state. This often leads to models that work perfectly under the original conditions but become unstable when day turns to night, weather changes, or seasonal lighting shifts. **This is why Frigate does not implement bulk training in the UI.**
+Selecting dozens of nearly identical images is one of the fastest ways to degrade model performance. MobileNetV2 can overfit quickly when trained on homogeneous data. The model learns what _that exact moment_ looked like rather than what actually defines the state. This often leads to models that work perfectly under the original conditions but become unstable when day turns to night, weather changes, or seasonal lighting shifts. **This is why Gannet does not implement bulk training in the UI.**
 
 For more detail, see [Frigate Tip: Best Practices for Training Face and Custom Classification Models](https://github.com/blakeblackshear/frigate/discussions/21374).
 
@@ -133,7 +133,7 @@ For more detail, see [Frigate Tip: Best Practices for Training Face and Custom C
 
 To troubleshoot issues with state classification models, enable debug logging to see detailed information about classification attempts, scores, and state verification.
 
-Enable debug logs for classification models by adding `frigate.data_processing.real_time.custom_classification: debug` to your `logger` configuration. These logs are verbose, so only keep this enabled when necessary. Restart Frigate after this change.
+Enable debug logs for classification models by adding `gannet.data_processing.real_time.custom_classification: debug` to your `logger` configuration. These logs are verbose, so only keep this enabled when necessary. Restart Gannet after this change.
 
 <ConfigTabs>
 <TabItem value="ui">
@@ -141,7 +141,7 @@ Enable debug logs for classification models by adding `frigate.data_processing.r
 Navigate to <NavPath path="Settings > System > Logging" />.
 
 - Set **Logging level** to `debug`
-- Set **Per-process log level > `frigate.data_processing.real_time.custom_classification`** to `debug` for verbose classification logging
+- Set **Per-process log level > `gannet.data_processing.real_time.custom_classification`** to `debug` for verbose classification logging
 
 </TabItem>
 <TabItem value="yaml">
@@ -151,7 +151,7 @@ logger:
   default: info
   logs:
     # highlight-next-line
-    frigate.data_processing.real_time.custom_classification: debug
+    gannet.data_processing.real_time.custom_classification: debug
 ```
 
 </TabItem>

@@ -8,11 +8,11 @@ An object is considered stationary when it is being tracked and has been in a ve
 
 ## Why does it matter if an object is stationary?
 
-Once an object becomes stationary, object detection will not be continually run on that object. This serves to reduce resource usage and redundant detections when there has been no motion near the tracked object. This also means that Frigate is contextually aware, and can for example [filter out recording segments](record.md#configuring-recording-retention) to only when the object is considered active. Motion alone does not determine if an object is "active" for active_objects segment retention. Lighting changes for a parked car won't make an object active.
+Once an object becomes stationary, object detection will not be continually run on that object. This serves to reduce resource usage and redundant detections when there has been no motion near the tracked object. This also means that Gannet is contextually aware, and can for example [filter out recording segments](record.md#configuring-recording-retention) to only when the object is considered active. Motion alone does not determine if an object is "active" for active_objects segment retention. Lighting changes for a parked car won't make an object active.
 
 ## Tuning stationary behavior
 
-Configure how Frigate handles stationary objects.
+Configure how Gannet handles stationary objects.
 
 <ConfigTabs>
 <TabItem value="ui">
@@ -35,9 +35,9 @@ detect:
 </TabItem>
 </ConfigTabs>
 
-## Why does Frigate track stationary objects?
+## Why does Gannet track stationary objects?
 
-Frigate didn't always track stationary objects. In fact, it didn't even track objects at all initially.
+Gannet didn't always track stationary objects. In fact, it didn't even track objects at all initially.
 
 Let's look at an example use case: I want to record any cars that enter my driveway.
 

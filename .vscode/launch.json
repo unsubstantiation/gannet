@@ -5,7 +5,7 @@
       "name": "Python: Launch Frigate",
       "type": "debugpy",
       "request": "launch",
-      "module": "frigate"
+      "module": "gannet"
     },
     {
       "type": "editor-browser",

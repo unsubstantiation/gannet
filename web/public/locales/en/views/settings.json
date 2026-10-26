@@ -1537,7 +1537,7 @@
       "variableNameLabel": "Variable name",
       "variableNamePlaceholder": "e.g., MY_VARIABLE",
       "loggerNameLabel": "Logger name",
-      "loggerNamePlaceholder": "e.g., frigate.record",
+      "loggerNamePlaceholder": "e.g., gannet.record",
       "keyPatternError": "Use only letters, numbers, hyphens, and underscores (no spaces)"
     },
     "knownPlates": {

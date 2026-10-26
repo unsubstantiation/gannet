@@ -32,7 +32,7 @@ If no RTSP URLs are found, the credentials may be wrong or the camera may not su
 
 Assign [roles](#setting-up-camera-inputs) to the stream, and use **Add Another Stream** to add the camera's other streams, for example a substream for `detect` alongside the main stream for `record`. At least one stream must have the `detect` role before you can continue.
 
-**Reduce connections to camera** routes that input through the go2rtc restream so Frigate and the live view share a single connection to the camera instead of each opening their own. See [restream](restream.md) for more detail.
+**Reduce connections to camera** routes that input through the go2rtc restream so Gannet and the live view share a single connection to the camera instead of each opening their own. See [restream](restream.md) for more detail.
 
 ### Step 4: Validation and testing
 
@@ -68,18 +68,18 @@ Deleting a camera removes:
 
 [Exports](/usage/exports) are kept by default, so saved footage survives the deletion of the camera it came from. Turn on **Also delete exports for this camera** in the confirmation step to remove those too.
 
-The camera's processes are stopped and the change takes effect immediately, so no restart is required. If the resulting config cannot be parsed, Frigate restores the previous config and reports an error instead of leaving Frigate in a broken state.
+The camera's processes are stopped and the change takes effect immediately, so no restart is required. If the resulting config cannot be parsed, Gannet restores the previous config and reports an error instead of leaving Gannet in a broken state.
 
 Two things are not cleaned up for you:
 
-- **go2rtc streams.** Frigate makes a best effort to stop a running [go2rtc](go2rtc.md) stream named after the camera, but stream entries in your config file remain and are recreated on the next restart. Remove them in <NavPath path="Settings > System > go2rtc streams" /> or in your config file.
+- **go2rtc streams.** Gannet makes a best effort to stop a running [go2rtc](go2rtc.md) stream named after the camera, but stream entries in your config file remain and are recreated on the next restart. Remove them in <NavPath path="Settings > System > go2rtc streams" /> or in your config file.
 - **Camera groups.** A deleted camera stays listed in any [camera group](#setting-up-camera-groups) that referenced it. The group skips the missing camera, so this is harmless, but you can edit the group to drop the stale entry.
 
 ## Setting Up Camera Inputs
 
 Several inputs can be configured for each camera and the role of each input can be mixed and matched based on your needs. This allows you to use a lower resolution stream for object detection, but create recordings from a higher resolution stream, or vice versa.
 
-A camera is enabled by default but can be disabled by using `enabled: False`. Cameras that are disabled through the configuration file will not appear in the Frigate UI and will not consume system resources.
+A camera is enabled by default but can be disabled by using `enabled: False`. Cameras that are disabled through the configuration file will not appear in the Gannet UI and will not consume system resources.
 
 Each role can only be assigned to one input per camera. The options for roles are as follows:
 
@@ -99,7 +99,7 @@ Navigate to <NavPath path="Settings > Camera configuration > Streams (FFmpeg)" /
 | ----------------- | ------------------------------------------------------------------- |
 | **Camera inputs** | List of input stream definitions (paths and roles) for this camera. |
 
-For each input you can choose its source: select **Restream (go2rtc)** to pick an existing [go2rtc stream](restream.md) from a dropdown (Frigate uses the `rtsp://127.0.0.1:8554/<stream>` path and `preset-rtsp-restream` input args for that input automatically), or **Manual input path** to type the stream URL directly.
+For each input you can choose its source: select **Restream (go2rtc)** to pick an existing [go2rtc stream](restream.md) from a dropdown (Gannet uses the `rtsp://127.0.0.1:8554/<stream>` path and `preset-rtsp-restream` input args for that input automatically), or **Manual input path** to type the stream URL directly.
 
 Navigate to <NavPath path="Settings > Camera configuration > Object detection" />.
 
@@ -126,8 +126,8 @@ cameras:
           roles:
             - record
     detect:
-      width: 1280 # <- optional, by default Frigate tries to automatically detect resolution
-      height: 720 # <- optional, by default Frigate tries to automatically detect resolution
+      width: 1280 # <- optional, by default Gannet tries to automatically detect resolution
+      height: 720 # <- optional, by default Gannet tries to automatically detect resolution
 ```
 
 </TabItem>
@@ -156,9 +156,9 @@ cameras:
 
 :::note
 
-If you only define one stream in your `inputs` and do not assign a `detect` role to it, Frigate will automatically assign it the `detect` role. Frigate will always decode a stream to support motion detection, Birdseye, the API image endpoints, and other features, even if you have disabled object detection with `enabled: False` in your config's `detect` section.
+If you only define one stream in your `inputs` and do not assign a `detect` role to it, Gannet will automatically assign it the `detect` role. Gannet will always decode a stream to support motion detection, Birdseye, the API image endpoints, and other features, even if you have disabled object detection with `enabled: False` in your config's `detect` section.
 
-If you plan to use Frigate for recording only, it is still recommended to define a `detect` role for a low resolution stream to minimize resource usage from the required stream decoding.
+If you plan to use Gannet for recording only, it is still recommended to define a `detect` role for a low resolution stream to minimize resource usage from the required stream decoding.
 
 :::
 
@@ -168,7 +168,7 @@ For camera model specific settings check the [camera specific](camera_specific.m
 
 :::warning
 
-Not every PTZ supports ONVIF, which is the standard protocol Frigate uses to communicate with your camera. Check the [official list of ONVIF conformant products](https://www.onvif.org/conformant-products/), your camera documentation, or camera manufacturer's website to ensure your PTZ supports ONVIF. Also, ensure your camera is running the latest firmware.
+Not every PTZ supports ONVIF, which is the standard protocol Gannet uses to communicate with your camera. Check the [official list of ONVIF conformant products](https://www.onvif.org/conformant-products/), your camera documentation, or camera manufacturer's website to ensure your PTZ supports ONVIF. Also, ensure your camera is running the latest firmware.
 
 :::
 
@@ -217,9 +217,9 @@ If your ONVIF camera does not require authentication credentials, you may still 
 If a camera connects but fails to authenticate, two optional fields can help:
 
 - `tls_insecure`: Skips TLS certificate verification and sends the ONVIF password as plaintext (`PasswordText`) instead of a hashed digest (`PasswordDigest`). Some cameras reject the digest token and only accept plaintext. This weakens connection security, so only enable it on a trusted local network.
-- `ignore_time_mismatch`: ONVIF authentication tokens include a timestamp, and a camera will reject the token if its clock differs too much from Frigate's. Enabling this makes Frigate compensate for the time offset so authentication can still succeed. Running NTP on both the camera and the Frigate host is the recommended fix; only use this in a "safe" environment, as it slightly weakens token validation.
+- `ignore_time_mismatch`: ONVIF authentication tokens include a timestamp, and a camera will reject the token if its clock differs too much from Gannet's. Enabling this makes Gannet compensate for the time offset so authentication can still succeed. Running NTP on both the camera and the Gannet host is the recommended fix; only use this in a "safe" environment, as it slightly weakens token validation.
 
-If your camera has multiple ONVIF profiles, you can specify which one to use for PTZ control with the `profile` option, matched by token or name. When not set, Frigate selects the first profile with a valid PTZ configuration. Check the Frigate debug logs (`frigate.ptz.onvif: debug`) to see available profile names and tokens for your camera.
+If your camera has multiple ONVIF profiles, you can specify which one to use for PTZ control with the `profile` option, matched by token or name. When not set, Gannet selects the first profile with a valid PTZ configuration. Check the Gannet debug logs (`gannet.ptz.onvif: debug`) to see available profile names and tokens for your camera.
 
 An ONVIF-capable camera that supports relative movement within the field of view (FOV) can also be configured to automatically track moving objects and keep them in the center of the frame. For autotracking setup, see the [autotracking](autotracking.md) docs.
 
@@ -227,7 +227,7 @@ An ONVIF-capable camera that supports relative movement within the field of view
 
 This list of working and non-working PTZ cameras is based on user feedback. If you'd like to report specific quirks or issues with a manufacturer or camera that would be helpful for other users, open a pull request to add to this list.
 
-The FeatureList on the [ONVIF Conformant Products Database](https://www.onvif.org/conformant-products/) can provide a starting point to determine a camera's compatibility with Frigate's autotracking. Look to see if a camera lists `PTZRelative`, `PTZRelativePanTilt` and/or `PTZRelativeZoom`. These features are required for autotracking, but some cameras still fail to respond even if they claim support. If they are missing, autotracking will not work (though basic PTZ in the WebUI might). Avoid cameras with no database entry unless they are confirmed as working below.
+The FeatureList on the [ONVIF Conformant Products Database](https://www.onvif.org/conformant-products/) can provide a starting point to determine a camera's compatibility with Gannet's autotracking. Look to see if a camera lists `PTZRelative`, `PTZRelativePanTilt` and/or `PTZRelativeZoom`. These features are required for autotracking, but some cameras still fail to respond even if they claim support. If they are missing, autotracking will not work (though basic PTZ in the WebUI might). Avoid cameras with no database entry unless they are confirmed as working below.
 
 | Brand or specific camera     | PTZ Controls | Autotracking | Notes                                                                                                                                                                                                                                                             |
 | ---------------------------- | :----------: | :----------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

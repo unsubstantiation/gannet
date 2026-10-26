@@ -155,7 +155,7 @@ class DigestMismatchError(BootstrapError):
 class BaseLayout:
     """The directories of a native install, computed like the app computes them.
 
-    Mirrors frigate/util/platform.py without importing it: this script runs
+    Mirrors gannet/util/platform.py without importing it: this script runs
     before Frigate's dependencies are installed, so the app package may not
     even be importable yet.
     """
@@ -551,7 +551,7 @@ def build_launcher_script(venv_dir: Path, layout: BaseLayout) -> str:
     """The PowerShell launcher that keeps Frigate restartable.
 
     Frigate signals a restart by writing a marker file (see
-    frigate/util/services.py). The launcher starts Frigate again only when
+    gannet/util/services.py). The launcher starts Frigate again only when
     the marker is there, so Ctrl+C and closing the console still stop it.
     """
     python = python_executable_in(venv_dir).resolve()
@@ -576,7 +576,7 @@ if (-not $env:PYTHONUTF8) {{ $env:PYTHONUTF8 = "1" }}
 $marker = Join-Path $env:FRIGATE_TMP_DIR "{RESTART_MARKER_NAME}"
 
 while ($true) {{
-    & $python -m frigate @args
+    & $python -m gannet @args
     $code = $LASTEXITCODE
 
     if (Test-Path $marker) {{

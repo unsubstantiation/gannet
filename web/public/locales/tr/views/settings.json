@@ -1535,7 +1535,7 @@
       "variableNameLabel": "Değişken adı",
       "variableNamePlaceholder": "örn: DEGISKENIM",
       "loggerNameLabel": "Günlükleyici adı",
-      "loggerNamePlaceholder": "örn: frigate.record",
+      "loggerNamePlaceholder": "örn: gannet.record",
       "keyPatternError": "Yalnızca harf, rakam, tire ve alt çizgi kullanın (boşluksuz)"
     },
     "knownPlates": {

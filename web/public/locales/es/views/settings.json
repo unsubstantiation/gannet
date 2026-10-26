@@ -1500,7 +1500,7 @@
       "variableNamePlaceholder": "p. ej., MI_VARIABLE",
       "loggerNameLabel": "Nombre del registrador",
       "keyPatternError": "Utilice únicamente letras, números, guiones y guiones bajos (sin espacios)",
-      "loggerNamePlaceholder": "p. ej., frigate.record"
+      "loggerNamePlaceholder": "p. ej., gannet.record"
     },
     "knownPlates": {
       "namePlaceholder": "p. ej., Coche de mi mujer",

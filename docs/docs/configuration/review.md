@@ -7,27 +7,27 @@ import ConfigTabs from "@site/src/components/ConfigTabs";
 import TabItem from "@theme/TabItem";
 import NavPath from "@site/src/components/NavPath";
 
-The Review page of the Frigate UI is for quickly reviewing historical footage of interest from your cameras. _Review items_ are indicated on a vertical timeline and displayed as a grid of previews - bandwidth-optimized, low frame rate, low resolution videos. Hovering over or swiping a preview plays the video and marks it as reviewed. If more in-depth analysis is required, the preview can be clicked/tapped and the full frame rate, full resolution recording is displayed.
+The Review page of the Gannet UI is for quickly reviewing historical footage of interest from your cameras. _Review items_ are indicated on a vertical timeline and displayed as a grid of previews - bandwidth-optimized, low frame rate, low resolution videos. Hovering over or swiping a preview plays the video and marks it as reviewed. If more in-depth analysis is required, the preview can be clicked/tapped and the full frame rate, full resolution recording is displayed.
 
 Review items are filterable by date, object type, and camera.
 
 ### Review items vs. tracked objects (formerly "events")
 
-In Frigate 0.13 and earlier versions, the UI presented "events". An event was synonymous with a tracked or detected object. In Frigate 0.14 and later, a review item is a time period where any number of tracked objects were active.
+In Gannet 0.13 and earlier versions, the UI presented "events". An event was synonymous with a tracked or detected object. In Gannet 0.14 and later, a review item is a time period where any number of tracked objects were active.
 
 For example, consider a situation where two people walked past your house. One was walking a dog. At the same time, a car drove by on the street behind them.
 
-In this scenario, Frigate 0.13 and earlier would show 4 "events" in the UI - one for each person, another for the dog, and yet another for the car. You would have had 4 separate videos to watch even though they would have all overlapped.
+In this scenario, Gannet 0.13 and earlier would show 4 "events" in the UI - one for each person, another for the dog, and yet another for the car. You would have had 4 separate videos to watch even though they would have all overlapped.
 
 In 0.14 and later, all of that is bundled into a single review item which starts and ends to capture all of that activity. Reviews for a single camera cannot overlap. Once you have watched that time period on that camera, it is marked as reviewed.
 
 ## Alerts and Detections
 
-Not every segment of video captured by Frigate may be of the same level of interest to you. Video of people who enter your property may be a different priority than those walking by on the sidewalk. For this reason, Frigate categorizes review items as _alerts_ and _detections_. By default, all person and car objects are considered alerts. You can refine categorization of your review items by configuring [required zones](/configuration/zones#restricting-alerts-and-detections-to-specific-zones) for them.
+Not every segment of video captured by Gannet may be of the same level of interest to you. Video of people who enter your property may be a different priority than those walking by on the sidewalk. For this reason, Gannet categorizes review items as _alerts_ and _detections_. By default, all person and car objects are considered alerts. You can refine categorization of your review items by configuring [required zones](/configuration/zones#restricting-alerts-and-detections-to-specific-zones) for them.
 
 :::note
 
-Alerts and detections categorize the tracked objects in review items, but Frigate must first detect those objects with your configured CPU, OpenVINO, ONNX, or ZMQ object detector. By default, the object tracker only detects `person`. Setting `labels` for `alerts` and `detections` does not automatically enable detection of new objects. To detect more than `person`, you should add more labels via <NavPath path="Settings > Global configuration > Objects" /> or <NavPath path="Settings > Camera configuration > Objects" /> and select your camera. Alternatively, add the following to your config:
+Alerts and detections categorize the tracked objects in review items, but Gannet must first detect those objects with your configured CPU, OpenVINO, ONNX, or ZMQ object detector. By default, the object tracker only detects `person`. Setting `labels` for `alerts` and `detections` does not automatically enable detection of new objects. To detect more than `person`, you should add more labels via <NavPath path="Settings > Global configuration > Objects" /> or <NavPath path="Settings > Camera configuration > Objects" /> and select your camera. Alternatively, add the following to your config:
 
 ```yaml
 objects:
@@ -37,7 +37,7 @@ objects:
     - ...
 ```
 
-See the [objects documentation](objects.md) for the list of objects that Frigate's default model tracks.
+See the [objects documentation](objects.md) for the list of objects that Gannet's default model tracks.
 :::
 
 ## Restricting alerts to specific labels

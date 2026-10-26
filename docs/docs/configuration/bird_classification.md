@@ -17,7 +17,7 @@ Bird classification requires a one-time internet connection to download the clas
 
 ## Minimum System Requirements
 
-Bird classification runs a lightweight tflite model on the CPU, there are no significantly different system requirements than running Frigate itself.
+Bird classification runs a lightweight tflite model on the CPU, there are no significantly different system requirements than running Gannet itself.
 
 ## Model
 

@@ -5,20 +5,20 @@ title: go2rtc Troubleshooting
 
 # go2rtc troubleshooting on Windows
 
-go2rtc powers MSE, WebRTC, restreaming, and two-way talk. Frigate starts `go2rtc.exe` as a managed child and writes its output to `tmp\logs\go2rtc\current`.
+go2rtc powers MSE, WebRTC, restreaming, and two-way talk. Gannet starts `go2rtc.exe` as a managed child and writes its output to `tmp\logs\go2rtc\current`.
 
 ## 1. Check the process and log
 
 ```powershell
 Get-Process go2rtc -ErrorAction SilentlyContinue
-Get-Content "$env:ProgramData\Frigate\tmp\logs\go2rtc\current" -Tail 200
+Get-Content "$env:ProgramData\Gannet\tmp\logs\go2rtc\current" -Tail 200
 ```
 
 Adjust the path for an interactive or custom data root. If the executable is missing, rerun `bootstrap_windows.py --skip-web`. Antivirus quarantine is a common cause of a file disappearing after bootstrap.
 
 ## 2. Inspect streams safely
 
-Open the management UI through Frigate's authenticated gateway:
+Open the management UI through Gannet's authenticated gateway:
 
 ```text
 https://frigate-host:8971/go2rtc/
@@ -28,7 +28,7 @@ Do not expose port `1984`; the generated native config binds it to loopback. Str
 
 ## 3. Test the source
 
-Test the exact camera URL in VLC or Frigate's bundled `ffplay.exe`. Confirm:
+Test the exact camera URL in VLC or Gannet's bundled `ffplay.exe`. Confirm:
 
 - the service account can resolve and reach the camera;
 - credentials are correct;
@@ -72,11 +72,11 @@ Only one application may hold some camera backchannels. Close vendor apps while 
 
 ## Hardware transcode fails
 
-Test software transcoding first. Native go2rtc choices exposed by Frigate are CUDA and DXVA2 plus automatic selection. Update the Windows display driver and verify the bundled FFmpeg reports the chosen backend.
+Test software transcoding first. Native go2rtc choices exposed by Gannet are CUDA and DXVA2 plus automatic selection. Update the Windows display driver and verify the bundled FFmpeg reports the chosen backend.
 
 ## Configuration changes do not appear
 
-Frigate regenerates its runtime go2rtc config at startup. Save `config.yml` and restart Frigate. HomeKit pairing state is the exception and persists in `config\go2rtc_homekit.yml`.
+Gannet regenerates its runtime go2rtc config at startup. Save `config.yml` and restart Gannet. HomeKit pairing state is the exception and persists in `config\go2rtc_homekit.yml`.
 
 ## Restricted source removed
 

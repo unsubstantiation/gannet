@@ -276,15 +276,15 @@ cameras:
 
 ### Speed Estimation
 
-Frigate can be configured to estimate the speed of objects moving through a zone. This works by combining data from Frigate's object tracker and "real world" distance measurements of the edges of the zone. The recommended use case for this feature is to track the speed of vehicles on a road as they move through the zone.
+Gannet can be configured to estimate the speed of objects moving through a zone. This works by combining data from Gannet's object tracker and "real world" distance measurements of the edges of the zone. The recommended use case for this feature is to track the speed of vehicles on a road as they move through the zone.
 
 Your zone must be defined with exactly 4 points and should be aligned to the ground where objects are moving.
 
 ![Ground plane 4-point zone](/img/ground-plane.jpg)
 
-Speed estimation requires a minimum number of frames for your object to be tracked before a valid estimate can be calculated, so create your zone away from places where objects enter and exit for the best results. The object's bounding box must be stable and remain a constant size as it enters and exits the zone. _Your zone should not take up the full frame, and the zone does **not** need to be the same size or larger than the objects passing through it._ An object's speed is tracked while it passes through the zone and then saved to Frigate's database.
+Speed estimation requires a minimum number of frames for your object to be tracked before a valid estimate can be calculated, so create your zone away from places where objects enter and exit for the best results. The object's bounding box must be stable and remain a constant size as it enters and exits the zone. _Your zone should not take up the full frame, and the zone does **not** need to be the same size or larger than the objects passing through it._ An object's speed is tracked while it passes through the zone and then saved to Gannet's database.
 
-Accurate real-world distance measurements are required to estimate speeds. These distances can be specified through the `distances` field. Each number represents the real-world distance between consecutive points in the `coordinates` list. The fastest and most accurate way to configure this is through the Zone Editor in the Frigate UI.
+Accurate real-world distance measurements are required to estimate speeds. These distances can be specified through the `distances` field. Each number represents the real-world distance between consecutive points in the `coordinates` list. The fastest and most accurate way to configure this is through the Zone Editor in the Gannet UI.
 
 <ConfigTabs>
 <TabItem value="ui">
@@ -335,7 +335,7 @@ ui:
 </TabItem>
 </ConfigTabs>
 
-The average speed of your object as it moved through your zone is saved in Frigate's database and can be seen in the UI in the Tracked Object Details pane in Explore. Current estimated speed can also be seen on the debug view as the third value in the object label (see the caveats below). Current estimated speed, average estimated speed, and velocity angle (the angle of the direction the object is moving relative to the frame) of tracked objects is also sent through the `events` MQTT topic. See the [MQTT docs](../integrations/mqtt.md#frigateevents).
+The average speed of your object as it moved through your zone is saved in Gannet's database and can be seen in the UI in the Tracked Object Details pane in Explore. Current estimated speed can also be seen on the debug view as the third value in the object label (see the caveats below). Current estimated speed, average estimated speed, and velocity angle (the angle of the direction the object is moving relative to the frame) of tracked objects is also sent through the `events` MQTT topic. See the [MQTT docs](../integrations/mqtt.md#frigateevents).
 
 These speed values are output as a number in miles per hour (mph) or kilometers per hour (kph). For miles per hour, set `unit_system` to `imperial`. For kilometers per hour, set `unit_system` to `metric`.
 
@@ -345,7 +345,7 @@ These speed values are output as a number in miles per hour (mph) or kilometers 
 - Create a zone where the bottom center of your object's bounding box travels directly through it and does not become obscured at any time.
 - A large zone can be used (as in the photo example above), but it may cause inaccurate estimation if the object's bounding box changes shape (such as when it turns or becomes partially hidden). Generally it's best to make your zone large enough to capture a few frames, but small enough so that the bounding box doesn't change size as it enters, travels through, and exits the zone.
 - Depending on the size and location of your zone, you may want to decrease the zone's `inertia` value from the default of 3.
-- The more accurate your real-world dimensions can be measured, the more accurate speed estimation will be. However, due to the way Frigate's tracking algorithm works, you may need to tweak the real-world distance values so that estimated speeds better match real-world speeds.
+- The more accurate your real-world dimensions can be measured, the more accurate speed estimation will be. However, due to the way Gannet's tracking algorithm works, you may need to tweak the real-world distance values so that estimated speeds better match real-world speeds.
 - Once an object leaves the zone, speed accuracy will likely decrease due to perspective distortion and misalignment with the calibrated area. Therefore, speed values will show as a zero through MQTT and will not be visible on the debug view when an object is outside of a speed tracking zone.
 - The speeds are only an _estimation_ and are highly dependent on camera position, zone points, and real-world measurements. This feature should not be used for law enforcement.
 

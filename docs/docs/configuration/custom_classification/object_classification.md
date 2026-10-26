@@ -11,7 +11,7 @@ Object classification allows you to train a custom MobileNetV2 classification mo
 
 :::info
 
-Training a custom object-classification model requires an internet connection for MobileNetV2 base weights. Frigate caches them in the Windows model cache; the trained model then runs offline. See [Network Requirements](/frigate/network_requirements#runtime-model-downloads).
+Training a custom object-classification model requires an internet connection for MobileNetV2 base weights. Gannet caches them in the Windows model cache; the trained model then runs offline. See [Network Requirements](/frigate/network_requirements#runtime-model-downloads).
 
 :::
 
@@ -117,11 +117,11 @@ An optional config, `save_attempts`, can be set as a key under the model name. T
 
 ## Training the model
 
-Creating and training the model is done within the Frigate UI using the `Classification` page. The process consists of two steps:
+Creating and training the model is done within the Gannet UI using the `Classification` page. The process consists of two steps:
 
 ### Step 1: Name and Define
 
-Enter a name for your model, select the object label to classify (e.g., `person`, `dog`, `car`), choose the classification type (sub label or attribute), and define your classes. Frigate will automatically include a `none` class for objects that don't fit any specific category.
+Enter a name for your model, select the object label to classify (e.g., `person`, `dog`, `car`), choose the classification type (sub label or attribute), and define your classes. Gannet will automatically include a `none` class for objects that don't fit any specific category.
 
 For example: To classify your two cats, create a model named "Our Cats" and create two classes, "Charlie" and "Leo". A third class, "none", will be created automatically for other neighborhood cats that are not your own.
 
@@ -137,7 +137,7 @@ If examples for some of your classes do not appear in the grid, you can continue
 
 :::tip Diversity matters far more than volume
 
-Selecting dozens of nearly identical images is one of the fastest ways to degrade model performance. MobileNetV2 can overfit quickly when trained on homogeneous data. The model learns what _that exact moment_ looked like rather than what actually defines the class. **This is why Frigate does not implement bulk training in the UI.**
+Selecting dozens of nearly identical images is one of the fastest ways to degrade model performance. MobileNetV2 can overfit quickly when trained on homogeneous data. The model learns what _that exact moment_ looked like rather than what actually defines the class. **This is why Gannet does not implement bulk training in the UI.**
 
 For more detail, see [Frigate Tip: Best Practices for Training Face and Custom Classification Models](https://github.com/blakeblackshear/frigate/discussions/21374).
 
@@ -148,7 +148,7 @@ For more detail, see [Frigate Tip: Best Practices for Training Face and Custom C
 - **Avoid bulk training similar images**: Training large batches of images that already score 100% (or close) adds little new information and increases the risk of overfitting.
 - **The wizard is just the starting point**: You don't need to find and label every class upfront. Missing classes will naturally appear in Recent Classifications, and those images tend to be more valuable because they represent new conditions and edge cases.
 - **Problem framing**: Keep classes visually distinct and relevant to the chosen object types.
-- **Preprocessing**: Ensure examples reflect object crops similar to Frigate's boxes; keep the subject centered.
+- **Preprocessing**: Ensure examples reflect object crops similar to Gannet's boxes; keep the subject centered.
 - **Crop size**: Aim for crops of at least 100×100 pixels (a 10,000 pixel area). Crops smaller than ~80×80 get stretched 3-7× by the model's 224×224 input resize and tend to collapse into a generic "blob" region of feature space where identity becomes unreliable. If most of your detections are small because the camera is far from the subject, consider repositioning the camera for closer crops.
 - **Class balance**: Aim to keep your largest class within ~3× the count of your smallest. Beyond that, the model becomes biased toward the dominant class and tends to default borderline predictions to it (the "everything looks like Buddy" failure mode).
 - **Threshold**: Tune `threshold` per model to reduce false assignments. Start at `0.8` and adjust based on validation.
@@ -163,7 +163,7 @@ Named classes work best with visually uniform examples. Every Buddy photo should
 
 To troubleshoot issues with object classification models, enable debug logging to see detailed information about classification attempts, scores, and consensus calculations.
 
-Enable debug logs for classification models by adding `frigate.data_processing.real_time.custom_classification: debug` to your `logger` configuration. These logs are verbose, so only keep this enabled when necessary. Restart Frigate after this change.
+Enable debug logs for classification models by adding `gannet.data_processing.real_time.custom_classification: debug` to your `logger` configuration. These logs are verbose, so only keep this enabled when necessary. Restart Gannet after this change.
 
 <ConfigTabs>
 <TabItem value="ui">
@@ -171,7 +171,7 @@ Enable debug logs for classification models by adding `frigate.data_processing.r
 Navigate to <NavPath path="Settings > System > Logging" />.
 
 - Set **Logging level** to `debug`
-- Set **Per-process log level > `frigate.data_processing.real_time.custom_classification`** to `debug` for verbose classification logging
+- Set **Per-process log level > `gannet.data_processing.real_time.custom_classification`** to `debug` for verbose classification logging
 
 </TabItem>
 <TabItem value="yaml">
@@ -181,7 +181,7 @@ logger:
   default: info
   logs:
     # highlight-next-line
-    frigate.data_processing.real_time.custom_classification: debug
+    gannet.data_processing.real_time.custom_classification: debug
 ```
 
 </TabItem>

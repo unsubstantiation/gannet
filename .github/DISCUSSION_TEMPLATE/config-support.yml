@@ -55,7 +55,7 @@ body:
     id: stats
     attributes:
       label: Frigate stats
-      description: Output from frigate's /api/stats endpoint
+      description: Output from Gannet's /api/stats endpoint
       render: json
   - type: dropdown
     id: os

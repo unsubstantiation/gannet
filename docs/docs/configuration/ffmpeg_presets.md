@@ -5,7 +5,7 @@ title: FFmpeg Presets
 
 # FFmpeg presets for Windows
 
-Presets expand to tested FFmpeg arguments. Set them under `ffmpeg.hwaccel_args`; Frigate rejects presets and raw hardware arguments that require Linux, macOS, or embedded-device APIs.
+Presets expand to tested FFmpeg arguments. Set them under `ffmpeg.hwaccel_args`; Gannet rejects presets and raw hardware arguments that require Linux, macOS, or embedded-device APIs.
 
 ## Decode presets
 
@@ -39,7 +39,7 @@ cameras:
           roles: [detect, record]
 ```
 
-Set `hwaccel_args: auto` to let Frigate inspect go2rtc and Windows display adapters. Explicit presets are preferable when a machine has several GPUs.
+Set `hwaccel_args: auto` to let Gannet inspect go2rtc and Windows display adapters. Explicit presets are preferable when a machine has several GPUs.
 
 ## Input presets
 

@@ -30,13 +30,13 @@ cameras:
 
 ## Native paths
 
-Interactive installs default to `%LOCALAPPDATA%\Frigate`; services default to `%ProgramData%\Frigate`. Set `FRIGATE_BASE_DIR` before startup to change the root. Config, media, cache, temporary files, logs, model cache, and installed tools each have dedicated subdirectories.
+Interactive installs default to `%LOCALAPPDATA%\Gannet`; services default to `%ProgramData%\Gannet`. Set `FRIGATE_BASE_DIR` before startup to change the root. Config, media, cache, temporary files, logs, model cache, and installed tools each have dedicated subdirectories.
 
 Omit path fields to use that layout. When an explicit path is needed, quote it:
 
 ```yaml
 database:
-  path: 'D:\Frigate\config\frigate.db'
+  path: 'D:\Gannet\config\gannet.db'
 ```
 
 Keep SQLite on local NTFS. Camera names and paths follow Windows case-insensitive and reserved-name rules.
@@ -67,8 +67,8 @@ networking:
 
 tls:
   enabled: true
-  cert_file: 'C:\ProgramData\Frigate\config\tls\fullchain.pem'
-  key_file: 'C:\ProgramData\Frigate\config\tls\privkey.pem'
+  cert_file: 'C:\ProgramData\Gannet\config\tls\fullchain.pem'
+  key_file: 'C:\ProgramData\Gannet\config\tls\privkey.pem'
 
 auth:
   enabled: true
@@ -84,7 +84,7 @@ auth:
       - driveway
 ```
 
-The internal listener is always loopback-only and cannot share the public port. `networking.ipv6.enabled` makes the public listener bind the dual-stack wildcard `::` (IPv6 and IPv4) instead of `0.0.0.0`; `FRIGATE_WEB_HOST` overrides either. When both TLS files are absent Frigate creates a self-signed pair and renews it itself when it is within 30 days of expiry; certificates you install are never touched. Custom role camera lists cannot be empty.
+The internal listener is always loopback-only and cannot share the public port. `networking.ipv6.enabled` makes the public listener bind the dual-stack wildcard `::` (IPv6 and IPv4) instead of `0.0.0.0`; `FRIGATE_WEB_HOST` overrides either. When both TLS files are absent Gannet creates a self-signed pair and renews it itself when it is within 30 days of expiry; certificates you install are never touched. Custom role camera lists cannot be empty.
 
 Proxy-supplied identity requires native authentication to be disabled and a shared secret:
 
@@ -105,15 +105,15 @@ proxy:
 
 ## Detection models
 
-With no `models` section, Frigate runs its downloaded TFLite model on CPU. Supported detector names are `cpu`, `openvino`, `onnx`, and `zmq`.
+With no `models` section, Gannet runs its downloaded TFLite model on CPU. Supported detector names are `cpu`, `openvino`, `onnx`, and `zmq`.
 
 ```yaml
 models:
   - scene: default
     devices:
       - openvino:AUTO
-    path: 'D:\Frigate\models\detector.xml'
-    labelmap_path: 'D:\Frigate\models\labels.txt'
+    path: 'D:\Gannet\models\detector.xml'
+    labelmap_path: 'D:\Gannet\models\labels.txt'
     width: 320
     height: 320
     input_pixel_format: bgr
@@ -171,7 +171,7 @@ live:
     front: front
 ```
 
-The generated management API binds to `127.0.0.1:1984` by default and is available through the authenticated Frigate gateway. HomeKit pairing state is stored separately in `go2rtc_homekit.yml`.
+The generated management API binds to `127.0.0.1:1984` by default and is available through the authenticated Gannet gateway. HomeKit pairing state is stored separately in `go2rtc_homekit.yml`.
 
 ## Recording and snapshots
 
@@ -273,18 +273,18 @@ telemetry:
     nvidia_gpu_stats: true
     # Optional: Enable per-process network bandwidth stats for the
     # camera ffmpeg processes and go2rtc (default: shown below)
-    # NOTE: Frigate must run elevated; the collector opens the
+    # NOTE: Gannet must run elevated; the collector opens the
     # NT Kernel Logger ETW session, which needs administrator rights.
     network_bandwidth: false
   version_check: true
 ```
 
-MQTT TLS certificate paths may be absolute Windows paths. Native GPU telemetry is provided through NVIDIA NVML when available; Intel and AMD adapters are still discovered for configuration and acceleration but do not report invented utilization values. Network bandwidth stats read the bytes each camera ffmpeg process and go2rtc moves through a real-time ETW kernel session, so they need an elevated Frigate and are off by default; a non-elevated run logs one warning and reports nothing.
+MQTT TLS certificate paths may be absolute Windows paths. Native GPU telemetry is provided through NVIDIA NVML when available; Intel and AMD adapters are still discovered for configuration and acceleration but do not report invented utilization values. Network bandwidth stats read the bytes each camera ffmpeg process and go2rtc moves through a real-time ETW kernel session, so they need an elevated Gannet and are off by default; a non-elevated run logs one warning and reports nothing.
 
 ## Validate
 
 ```powershell
-.\.venv\Scripts\python.exe -m frigate --validate-config
+.\.venv\Scripts\python.exe -m gannet --validate-config
 ```
 
 Validation checks model/device compatibility, case-insensitive names, Windows paths and reserved names, ports, proxy security, FFmpeg arguments, stream roles, zones, and cross-feature dependencies before processes start.

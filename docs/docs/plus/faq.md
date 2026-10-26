@@ -17,7 +17,7 @@ Not currently. At the moment, the set of labels will be consistent for all users
 
 ### Can Frigate+ models be used offline?
 
-Yes. Models and metadata are stored in the `model_cache` directory within the config folder. Frigate will only attempt to download a model if it does not exist in the cache. This means you can backup the directory and/or use it completely offline.
+Yes. Models and metadata are stored in the `model_cache` directory within the config folder. Gannet will only attempt to download a model if it does not exist in the cache. This means you can backup the directory and/or use it completely offline.
 
 ### Can I keep using my Frigate+ models even if I do not renew my subscription?
 

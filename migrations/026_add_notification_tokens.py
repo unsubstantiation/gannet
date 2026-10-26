@@ -24,7 +24,7 @@ Some examples (model - class or model name)::
 import peewee as pw
 from playhouse.sqlite_ext import JSONField
 
-from frigate.models import User
+from gannet.models import User
 
 SQL = pw.SQL
 

@@ -29,12 +29,12 @@ This repository is a fork of [Frigate](https://github.com/blakeblackshear/frigat
 which is MIT-licensed. A fork cannot take rights away from the people upstream
 granted them, so the noncommercial terms here are deliberately narrow:
 
-| What | Who owns it | Terms | Roughly |
-| --- | --- | --- | --- |
-| Files this fork did not change | Frigate, Inc. and Frigate contributors | **MIT** — commercial use allowed, unchanged, unchangeable by us | 2,589 of 3,068 files |
-| Frigate files with Gannet changes applied | both | **MIT AND LicenseRef-GNCL-1.0** — the upstream parts stay MIT, the parts we wrote carry these terms | 371 files |
-| Files created by this fork (`bootstrap_windows.py`, `frigate/util/platform.py`, the Windows service and job-object code, `frigate/test/test_windows_*.py`, `scripts/*.ps1`, the Gannet logo) | unsubstantiation and their contributors | **LicenseRef-GNCL-1.0** — non-commercial, share-alike, no-ML-training | 59 files |
-| Generated catalogs, lockfiles, vendored and downloaded binaries, and any brand asset still byte-identical to Frigate's — and this fork's own theme CSS, which the screen below demoted | translators, Frigate, Inc., upstream projects | **their own licenses**; we claim nothing | 59 tracked files, plus everything fetched at install time |
+| What | Terms | Where to verify |
+| --- | --- | --- |
+| Files not assigned a more-specific annotation (default `**`) | **MIT** — commercial use allowed; this fork does not narrow the upstream grant | `REUSE.toml` |
+| Upstream-derived files explicitly listed as changed by Gannet | **MIT AND LicenseRef-GNCL-1.0** — upstream portions stay MIT; Gannet-authored changes carry these terms | `REUSE.toml` |
+| Files explicitly identified as Gannet Material | **LicenseRef-GNCL-1.0** — non-commercial, share-alike, no-ML-training | `REUSE.toml` and the file notices |
+| Third-party catalogs, lockfiles, binaries, brand assets, and dependencies | Their respective licenses; we claim no additional rights | The files' notices and [`THIRD_PARTY.md`](THIRD_PARTY.md) |
 
 Two guards on the third row, because a fork that insists on honesty from its
 users has to start with honesty about its own claims:
@@ -53,7 +53,7 @@ users has to start with honesty about its own claims:
 `REUSE.toml` is the authoritative list: generated against
 `frigate-dev@ee2ae1a` on 18 October 2026, never hand-edited, and regenerated
 after every upstream merge with `scripts/generate_reuse_toml.py`. Anything the
-mapping does not claim falls back to MIT, never to us. `frigate/test/test_licensing.py`
+mapping does not claim falls back to MIT, never to us. `gannet/test/test_licensing.py`
 fails if the license files, the mapping, and the READMEs drift apart.
 
 **What follows from that, stated plainly:** anyone may take the Frigate-authored
@@ -165,16 +165,16 @@ Not licensing questions, but they sit next to them and are easy to forget:
   wordmark, and docs favicon are deleted from the tree, the READMEs and the docs
   site carry Gannet's own art and name, and the winget manifest is
   `unsubstantiation.GannetNVR` instead of Frigate's identifier. What remains is
-  internal and load-bearing: the package directory is still `frigate/`,
+  internal and load-bearing: the package directory is `gannet/`,
   `pyproject.toml` still builds a `frigate-nvr` distribution (which
-  `frigate/util/version.py` looks up to resolve the running version), config keys
+  `gannet/util/version.py` looks up to resolve the running version), config keys
   and environment variables still use the `FRIGATE_` prefix, the default data
-  directory is still `%LOCALAPPDATA%\Frigate`, and about 1,240 whole-word mentions
-  survive in `docs/`, source comments, the web UI's translation catalogs, and the
-  startup log line. Renaming identifiers breaks upgrades and existing installs, so
-  each is a release decision to schedule rather than a licensing defect to fix in
-  passing; the prose sweep, though, can happen any time and costs nothing but a
-  review of 784 documentation mentions.
+  directory is still `%LOCALAPPDATA%\Frigate`. Compatibility-facing runtime names,
+  configuration and environment variables, MQTT/API identifiers, and parts of the
+  inherited UI and startup output still refer to Frigate. Changing those interfaces
+  needs an explicit migration plan to protect existing installs. Repository prose and
+  visible product branding now use Gannet where appropriate; remaining references
+  identify upstream, preserve compatibility, or remain in inherited UI/runtime text.
 - **The docs host.** `docs/docusaurus.config.ts` still sets `url` to
   `docs.frigate.video` (flagged with `FIXME(owner)` in the file), so the generated
   canonical links and the sitemap advertise upstream's domain, and `netlify.toml`

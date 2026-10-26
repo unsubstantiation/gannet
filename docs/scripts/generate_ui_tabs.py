@@ -1,7 +1,7 @@
-"""Generate Frigate UI tab content for documentation files.
+"""Generate Gannet UI tab content for documentation files.
 
 This script reads YAML code blocks from documentation markdown files and
-generates corresponding "Frigate UI" tab instructions based on:
+generates corresponding "Gannet UI" tab instructions based on:
 - JSON Schema (from Pydantic config models)
 - i18n translation files (for UI field labels)
 - Section configs (for hidden/advanced field info)
@@ -428,7 +428,7 @@ def _ensure_imports(content: str) -> str:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate Frigate UI tab content for documentation files"
+        description="Generate Gannet UI tab content for documentation files"
     )
     parser.add_argument(
         "paths",

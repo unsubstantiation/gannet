@@ -11,8 +11,8 @@ import sys
 from pathlib import Path
 from typing import Any, get_args, get_origin
 
-from frigate.config.config import FrigateConfig
-from frigate.util.schema import get_config_schema
+from gannet.config.config import FrigateConfig
+from gannet.util.schema import get_config_schema
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -349,22 +349,22 @@ def main():
         # Add camera-level fields to global config documentation if applicable
         CAMERA_LEVEL_FIELDS = {
             "birdseye": (
-                "frigate.config.camera.birdseye",
+                "gannet.config.camera.birdseye",
                 "BirdseyeCameraConfig",
                 ["order"],
             ),
             "ffmpeg": (
-                "frigate.config.camera.ffmpeg",
+                "gannet.config.camera.ffmpeg",
                 "CameraFfmpegConfig",
                 ["inputs"],
             ),
             "lpr": (
-                "frigate.config.classification",
+                "gannet.config.classification",
                 "CameraLicensePlateRecognitionConfig",
                 ["expire_time"],
             ),
             "semantic_search": (
-                "frigate.config.classification",
+                "gannet.config.classification",
                 "CameraSemanticSearchConfig",
                 ["triggers"],
             ),
@@ -448,13 +448,13 @@ def main():
     # Handle camera-level configs that aren't top-level FrigateConfig fields
     # These are defined as fields in CameraConfig, so we extract title/description from there
     camera_level_configs = {
-        "camera_mqtt": ("frigate.config.camera.mqtt", "CameraMqttConfig", "mqtt"),
-        "camera_ui": ("frigate.config.camera.ui", "CameraUiConfig", "ui"),
-        "onvif": ("frigate.config.camera.onvif", "OnvifConfig", "onvif"),
+        "camera_mqtt": ("gannet.config.camera.mqtt", "CameraMqttConfig", "mqtt"),
+        "camera_ui": ("gannet.config.camera.ui", "CameraUiConfig", "ui"),
+        "onvif": ("gannet.config.camera.onvif", "OnvifConfig", "onvif"),
     }
 
     # Import CameraConfig to extract field metadata
-    from frigate.config.camera.camera import CameraConfig
+    from gannet.config.camera.camera import CameraConfig
 
     camera_config_schema = CameraConfig.model_json_schema()
     camera_properties = camera_config_schema.get("properties", {})
@@ -525,7 +525,7 @@ def main():
         if "camera_config_schema" in locals():
             camera_schema = camera_config_schema
         else:
-            from frigate.config.camera.camera import CameraConfig
+            from gannet.config.camera.camera import CameraConfig
 
             camera_schema = CameraConfig.model_json_schema()
 

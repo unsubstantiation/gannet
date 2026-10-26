@@ -26,16 +26,16 @@ When running a default COCO model or another model that does not include `face` 
 
 :::note
 
-Frigate needs to first detect a `person` before it can detect and recognize a face.
+Gannet needs to first detect a `person` before it can detect and recognize a face.
 
 :::
 
 ### Face Recognition
 
-Frigate has support for two face recognition model types:
+Gannet has support for two face recognition model types:
 
-- **small**: Frigate will run a FaceNet embedding model to recognize faces, which runs locally on the CPU. This model is optimized for efficiency and is not as accurate.
-- **large**: Frigate will run a large ArcFace embedding model that is optimized for accuracy. It is only recommended to be run when an integrated or dedicated GPU / NPU is available.
+- **small**: Gannet will run a FaceNet embedding model to recognize faces, which runs locally on the CPU. This model is optimized for efficiency and is not as accurate.
+- **large**: Gannet will run a large ArcFace embedding model that is optimized for accuracy. It is only recommended to be run when an integrated or dedicated GPU / NPU is available.
 
 In both cases, a lightweight face landmark detection model is also used to align faces before running recognition.
 
@@ -71,7 +71,7 @@ face_recognition:
 </TabItem>
 </ConfigTabs>
 
-Like the other real-time processors in Frigate, face recognition runs on the camera stream defined by the `detect` role in your config. To ensure optimal performance, select a suitable resolution for this stream in your camera's firmware that fits your specific scene and requirements.
+Like the other real-time processors in Gannet, face recognition runs on the camera stream defined by the `detect` role in your config. To ensure optimal performance, select a suitable resolution for this stream in your camera's firmware that fits your specific scene and requirements.
 
 ## Advanced Configuration
 
@@ -145,9 +145,9 @@ face_recognition:
 
 Follow these steps to begin:
 
-1. **Enable face recognition** in your configuration and restart Frigate.
-2. **Upload one face** using the **Add Face** button's wizard in the Face Library section of the Frigate UI. Read below for the best practices on expanding your training set.
-3. When Frigate detects and attempts to recognize a face, it will appear in the **Train** tab of the Face Library, along with its associated recognition confidence.
+1. **Enable face recognition** in your configuration and restart Gannet.
+2. **Upload one face** using the **Add Face** button's wizard in the Face Library section of the Gannet UI. Read below for the best practices on expanding your training set.
+3. When Gannet detects and attempts to recognize a face, it will appear in the **Train** tab of the Face Library, along with its associated recognition confidence.
 4. From the **Train** tab, you can **assign the face** to a new or existing person to improve recognition accuracy for the future.
 
 ## Creating a Robust Training Set
@@ -194,13 +194,13 @@ Each face image is labeled with a name (or `Unknown`) along with the confidence 
 
 While each image can be used to train the system for a specific person, not all images are suitable for training. Refer to the guidelines below for best practices on selecting images for training.
 
-### How Frigate Decides Who a Person Is
+### How Gannet Decides Who a Person Is
 
-Recognition does not happen one frame at a time. While a `person` is in view, Frigate runs face recognition on many frames, not just a single frame. The final `sub_label` is decided from all of those attempts together, weighted by the area of each face (larger, closer faces count more), not from any single frame.
+Recognition does not happen one frame at a time. While a `person` is in view, Gannet runs face recognition on many frames, not just a single frame. The final `sub_label` is decided from all of those attempts together, weighted by the area of each face (larger, closer faces count more), not from any single frame.
 
 This has a few practical consequences:
 
-- A handful of wrong guesses on blurry or distant frames usually do not change the result. If Frigate sees a person as "Tom, Tom, Sam, Tom, Tom," it will still conclude the person was Tom.
+- A handful of wrong guesses on blurry or distant frames usually do not change the result. If Gannet sees a person as "Tom, Tom, Sam, Tom, Tom," it will still conclude the person was Tom.
 - The goal is not for every individual face crop to be correct. The goal is for each person to be recognized correctly overall, across all the faces captured while they were present.
 - A single very high confidence match will not by itself assign a sub label. Recognition must be consistent. See [I see scores above the threshold in the Recent Recognitions tab, but a sub label wasn't assigned?](#i-see-scores-above-the-threshold-in-the-recent-recognitions-tab-but-a-sub-label-wasnt-assigned) below.
 
@@ -216,7 +216,7 @@ Whether a face is worth training has little to do with what it was recognized as
 
 When first enabling face recognition it is important to build a foundation of strong images. It is recommended to start by uploading 1-5 photos containing just this person's face. It is important that the person's face in the photo is front-facing and not turned, this will ensure a good starting point.
 
-Then it is recommended to use the `Face Library` tab in Frigate to select and train images for each person as they are detected. When building a strong foundation it is strongly recommended to only train on images that are front-facing. Ignore images from cameras that recognize faces from an angle. Aim to strike a balance between the quality of images while also having a range of conditions (day / night, different weather conditions, different times of day, etc.) in order to have diversity in the images used for each person and not have over-fitting.
+Then it is recommended to use the `Face Library` tab in Gannet to select and train images for each person as they are detected. When building a strong foundation it is strongly recommended to only train on images that are front-facing. Ignore images from cameras that recognize faces from an angle. Aim to strike a balance between the quality of images while also having a range of conditions (day / night, different weather conditions, different times of day, etc.) in order to have diversity in the images used for each person and not have over-fitting.
 
 You do not want to train images that are 90%+ as these are already being confidently recognized. In this step the goal is to train on clear, lower scoring front-facing images until the majority of front-facing images for a given person are consistently recognized correctly. Then it is time to move on to step 2.
 
@@ -232,21 +232,21 @@ Once front-facing images are performing well, start choosing slightly off-angle 
 
 Start with the [Usage](#usage) section and re-read the [Model Requirements](#model-requirements) above.
 
-1. Enable debug logs to see exactly what Frigate is doing.
-   - Enable debug logs for face recognition by adding `frigate.data_processing.real_time.face: debug` to your `logger` configuration. Restart Frigate after this change.
+1. Enable debug logs to see exactly what Gannet is doing.
+   - Enable debug logs for face recognition by adding `gannet.data_processing.real_time.face: debug` to your `logger` configuration. Restart Gannet after this change.
 
      ```yaml
      logger:
        default: info
        logs:
          # highlight-next-line
-         frigate.data_processing.real_time.face: debug
+         gannet.data_processing.real_time.face: debug
      ```
 
    - These logs report where the pipeline stopped for each `person` object, such as no face being found within the person's bounding box, the detected face being smaller than `min_area`, or a face being recognized but scoring too low.
-   - If you see no face-related messages at all, also add `frigate.embeddings.maintainer: debug` to confirm that the face processor was created at startup and that `person` updates are reaching it.
+   - If you see no face-related messages at all, also add `gannet.embeddings.maintainer: debug` to confirm that the face processor was created at startup and that `person` updates are reaching it.
 
-2. Ensure `person` is being _detected_. A `person` will automatically be scanned by Frigate for a face. Any detected faces will appear in the Recent Recognitions tab in the Frigate UI's Face Library.
+2. Ensure `person` is being _detected_. A `person` will automatically be scanned by Gannet for a face. Any detected faces will appear in the Recent Recognitions tab in the Gannet UI's Face Library.
 
    If you are using a Frigate+ or `face` detecting model:
    - Watch the [debug view](/usage/live#the-single-camera-view) to ensure that `face` is being detected along with `person`.
@@ -327,7 +327,7 @@ If a person is repeatedly misidentified, do not keep reassigning the same frame.
 
 </FaqItem>
 
-<FaqItem id="frigate-misidentified-a-face-can-i-tell-it-that-a-face-is-not-a-specific-person" question={'Frigate misidentified a face. Can I tell it that a face is "not" a specific person?'}>
+<FaqItem id="frigate-misidentified-a-face-can-i-tell-it-that-a-face-is-not-a-specific-person" question={'Gannet misidentified a face. Can I tell it that a face is "not" a specific person?'}>
 
 No, face recognition does not support negative training (i.e., explicitly telling it who someone is _not_). Instead, the best approach is to improve the training data by using a more diverse and representative set of images for each person.
 For more guidance, refer to the section above on improving recognition accuracy.
@@ -338,7 +338,7 @@ This also applies to a stranger who is repeatedly matched to a known person (for
 
 <FaqItem id="i-see-scores-above-the-threshold-in-the-recent-recognitions-tab-but-a-sub-label-wasnt-assigned" question="I see scores above the threshold in the Recent Recognitions tab, but a sub label wasn't assigned?">
 
-Frigate considers the recognition scores across all recognition attempts for each person object. The scores are continually weighted based on the area of the face, and a sub label will only be assigned to person if a person is confidently recognized consistently. This avoids cases where a single high confidence recognition would throw off the results.
+Gannet considers the recognition scores across all recognition attempts for each person object. The scores are continually weighted based on the area of the face, and a sub label will only be assigned to person if a person is confidently recognized consistently. This avoids cases where a single high confidence recognition would throw off the results.
 
 </FaqItem>
 
@@ -346,7 +346,7 @@ Frigate considers the recognition scores across all recognition attempts for eac
 
 <FaqItem id="can-i-use-other-face-recognition-software-like-doubletake-at-the-same-time-as-the-built-in-face-recognition" question="Can I use other face recognition software like DoubleTake at the same time as the built in face recognition?">
 
-No, using another face recognition service will interfere with Frigate's built in face recognition. When using double-take the sub_label feature must be disabled if the built in face recognition is also desired.
+No, using another face recognition service will interfere with Gannet's built in face recognition. When using double-take the sub_label feature must be disabled if the built in face recognition is also desired.
 
 </FaqItem>
 
@@ -358,6 +358,6 @@ By default iOS devices will use HEIC (High Efficiency Image Container) for image
 
 <FaqItem id="how-can-i-delete-the-face-database-and-start-over" question="How can I delete the face database and start over?">
 
-Frigate does not store face-recognition images in its database. Delete faces through the UI or remove the contents of `clips\faces` beneath the configured Windows media directory while Frigate is stopped.
+Gannet does not store face-recognition images in its database. Delete faces through the UI or remove the contents of `clips\faces` beneath the configured Windows media directory while Gannet is stopped.
 
 </FaqItem>

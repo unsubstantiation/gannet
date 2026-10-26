@@ -5,15 +5,15 @@ title: Video Decoding
 
 # Hardware-accelerated video decoding on Windows
 
-Frigate can decode camera streams through Windows GPU APIs. Hardware decoding reduces CPU use, but the selected FFmpeg build, Windows driver, codec, and GPU must all support the same path.
+Gannet can decode camera streams through Windows GPU APIs. Hardware decoding reduces CPU use, but the selected FFmpeg build, Windows driver, codec, and GPU must all support the same path.
 
 ## Before enabling acceleration
 
 1. Install the current graphics driver from Intel, NVIDIA, or AMD.
-2. Install Frigate with `bootstrap_windows.py`; its pinned FFmpeg build includes the supported Windows backends.
+2. Install Gannet with `bootstrap_windows.py`; its pinned FFmpeg build includes the supported Windows backends.
 3. Confirm software decoding works first.
 4. Select one of the [`preset-windows-*` presets](./ffmpeg_presets.md).
-5. Check the Frigate logs and GPU graphs on the System page.
+5. Check the Gannet logs and GPU graphs on the System page.
 
 ## Recommended starting points
 
@@ -40,18 +40,18 @@ ffmpeg:
   hwaccel_args: preset-windows-nvenc
 ```
 
-Windows Task Manager, `Get-CimInstance Win32_VideoController`, and the Frigate diagnostics output can help identify installed adapters. Adapter ordering can differ between APIs, so confirm the loaded device in logs.
+Windows Task Manager, `Get-CimInstance Win32_VideoController`, and the Gannet diagnostics output can help identify installed adapters. Adapter ordering can differ between APIs, so confirm the loaded device in logs.
 
 ## Troubleshooting
 
-Open **System → General** and click **Hardware Info** to see what Windows exposes to Frigate: the active display adapters, the processor, the acceleration methods compiled into the pinned `ffmpeg.exe`, the accelerators go2rtc could open, and the `preset-windows-*` family Frigate recommends. The same report is available from `GET /api/gpuinfo`, and NVIDIA driver details from `GET /api/nvinfo`.
+Open **System → General** and click **Hardware Info** to see what Windows exposes to Gannet: the active display adapters, the processor, the acceleration methods compiled into the pinned `ffmpeg.exe`, the accelerators go2rtc could open, and the `preset-windows-*` family Gannet recommends. The same report is available from `GET /api/gpuinfo`, and NVIDIA driver details from `GET /api/nvinfo`.
 
 If FFmpeg repeatedly exits:
 
 - switch to `preset-windows-d3d11va`;
 - verify whether the stream is H.264 or H.265;
 - update the GPU driver;
-- make sure Frigate is using the pinned `ffmpeg.exe`, not another executable on `PATH`;
+- make sure Gannet is using the pinned `ffmpeg.exe`, not another executable on `PATH`;
 - remove custom `-hwaccel`, filter, and pixel-format arguments while testing;
 - use software decoding temporarily by setting `hwaccel_args: []`.
 

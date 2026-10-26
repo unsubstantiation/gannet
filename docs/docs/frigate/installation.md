@@ -3,7 +3,7 @@ id: installation
 title: Windows installation
 ---
 
-Frigate is installed directly on 64-bit Windows. Docker, WSL, Linux packages,
+Gannet is installed directly on 64-bit Windows. Docker, WSL, Linux packages,
 and Home Assistant add-on images are not supported by this edition.
 
 ## Requirements
@@ -35,7 +35,7 @@ The bootstrap performs these steps:
 6. writes `run_frigate.ps1`; and
 7. creates a Start Menu shortcut unless `--skip-shortcut` is used.
 
-Start Frigate with:
+Start Gannet with:
 
 ```powershell
 .\run_frigate.ps1
@@ -44,7 +44,7 @@ Start Frigate with:
 Open `https://localhost:8971` and accept the first-run warning for the
 generated self-signed certificate. On first start, the generated administrator
 password is printed to the console and recorded in
-`%LOCALAPPDATA%\Frigate\tmp\logs\frigate\current`.
+`%LOCALAPPDATA%\Gannet\tmp\logs\frigate\current`.
 
 ### Bootstrap options
 
@@ -57,7 +57,7 @@ password is printed to the console and recorded in
 --skip-web               do not build the web application
 --skip-shortcut          do not create a Start Menu shortcut
 --install-service        register the Windows service
---add-defender-exclusion add the Frigate data directory to Microsoft Defender exclusions
+--add-defender-exclusion add the Gannet data directory to Microsoft Defender exclusions
 ```
 
 Use `--add-defender-exclusion` only after reviewing the command and deciding
@@ -65,15 +65,15 @@ that the performance trade-off is appropriate for the host.
 
 ## Data locations
 
-The default writable root is `%LOCALAPPDATA%\Frigate` for an interactive user.
+The default writable root is `%LOCALAPPDATA%\Gannet` for an interactive user.
 It contains:
 
 ```text
-Frigate\
+Gannet\
   cache\               model downloads and temporary data
   config\
     config.yml          main configuration
-    frigate.db          SQLite database
+    gannet.db          SQLite database
     ffmpeg\             installed ffmpeg.exe and ffprobe.exe
     go2rtc.exe          installed live-stream helper
     model_cache\        object-detection models
@@ -82,7 +82,7 @@ Frigate\
     exports\            user exports
     recordings\         recording segments
   tmp\
-    logs\frigate\current  main Frigate log
+    logs\frigate\current  main Gannet log
     logs\go2rtc\current   go2rtc log
     restart marker and other runtime temporary files
 ```
@@ -90,7 +90,7 @@ Frigate\
 Relocate the whole tree before running the bootstrap:
 
 ```powershell
-$env:FRIGATE_BASE_DIR = 'D:\Frigate'
+$env:FRIGATE_BASE_DIR = 'D:\Gannet'
 py -3.12 bootstrap_windows.py
 ```
 
@@ -102,7 +102,7 @@ PowerShell window does not affect later launches.
 ## Configuration
 
 If the bootstrap did not create a configuration, create
-`%LOCALAPPDATA%\Frigate\config\config.yml`. A minimal configuration is:
+`%LOCALAPPDATA%\Gannet\config\config.yml`. A minimal configuration is:
 
 ```yaml
 mqtt:
@@ -134,7 +134,7 @@ Camera names may not use Windows reserved device names such as `CON`, `NUL`, or
 | --- | --- | --- |
 | `8971/tcp` | `0.0.0.0` by default | Authenticated web interface and API |
 | `5000/tcp` | `127.0.0.1` only | Trusted internal media jobs |
-| `1984/tcp` | loopback child service | go2rtc API used by Frigate |
+| `1984/tcp` | loopback child service | go2rtc API used by Gannet |
 | `8554/tcp` | go2rtc configuration | Optional RTSP restreaming |
 | `8555/tcp` and UDP | go2rtc configuration | Optional WebRTC media |
 
@@ -146,7 +146,7 @@ $env:FRIGATE_WEB_HOST = '127.0.0.1'
 ```
 
 Allow port 8971 through Windows Defender Firewall only when other computers need
-to reach Frigate. Keep port 5000 blocked from the network.
+to reach Gannet. Keep port 5000 blocked from the network.
 
 ### IPv6
 
@@ -159,7 +159,7 @@ networking:
     enabled: true
 ```
 
-With it enabled and no `FRIGATE_WEB_HOST` override, Frigate binds the dual-stack
+With it enabled and no `FRIGATE_WEB_HOST` override, Gannet binds the dual-stack
 wildcard `::`, which on Windows accepts both IPv6 and IPv4 connections. An
 explicit `FRIGATE_WEB_HOST` always wins; an IPv6 address there while
 `networking.ipv6.enabled` is `false` is still bound, but a warning is logged
@@ -193,7 +193,7 @@ Run an elevated PowerShell session:
 py -3.12 bootstrap_windows.py --install-service
 ```
 
-The service wrapper uses pywin32 and starts Frigate from the repository/install
+The service wrapper uses pywin32 and starts Gannet from the repository/install
 root. Service data may use a different profile from an interactive launch; set
 `FRIGATE_BASE_DIR` as a machine or service environment variable when you need a
 fixed location.
@@ -201,10 +201,10 @@ fixed location.
 Useful commands:
 
 ```powershell
-Get-Service Frigate
-Start-Service Frigate
-Stop-Service Frigate
-Restart-Service Frigate
+Get-Service Gannet
+Start-Service Gannet
+Stop-Service Gannet
+Restart-Service Gannet
 ```
 
 The API restart action creates a restart marker and exits cleanly; the launcher
@@ -212,20 +212,20 @@ or service wrapper then starts a new process.
 
 ## Updating
 
-1. Stop Frigate or the Windows service.
+1. Stop Gannet or the Windows service.
 2. Back up the configuration directory and media/database data.
 3. Update the checkout.
 4. Run `py -3.12 bootstrap_windows.py` again to refresh dependencies, binaries,
    and the web build.
-5. Start Frigate and review the logs for configuration migrations.
+5. Start Gannet and review the logs for configuration migrations.
 
 Do not downgrade a database without restoring the matching backup.
 
 ## Uninstall
 
 Stop and remove the service first if it was installed, then remove the checkout,
-virtual environment, Start Menu shortcut, and Frigate data directory. Preserve
-`config.yml`, `frigate.db`, and media first if they are needed later.
+virtual environment, Start Menu shortcut, and Gannet data directory. Preserve
+`config.yml`, `gannet.db`, and media first if they are needed later.
 
 Removing the application does not remove Python, Node.js, Git, firewall rules,
 or a Defender exclusion that you created. Remove those separately if desired.
@@ -238,10 +238,10 @@ or a Defender exclusion that you created. Remove those separately if desired.
   `--skip-web`.
 - **Live view is unavailable:** rerun without `--skip-binaries`, then inspect
   the go2rtc log in the native log directory.
-- **A camera URL works elsewhere but not in Frigate:** run the installed
+- **A camera URL works elsewhere but not in Gannet:** run the installed
   `ffprobe.exe` against the URL from the same Windows account.
 - **Files intermittently fail to move or delete:** antivirus and indexing tools
-  can hold media handles. Frigate retries sharing violations; persistent cases
+  can hold media handles. Gannet retries sharing violations; persistent cases
   should be handled with narrowly scoped exclusions.
 - **Long-path warning:** enable Win32 long paths through Windows policy or move
   `FRIGATE_BASE_DIR` closer to a drive root.

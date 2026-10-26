@@ -19,7 +19,7 @@ function problem(
   return { text, severity, relevantLink };
 }
 
-// matches SKIPPED_DETECTIONS_PCT in frigate/stats/emitter.py
+// matches SKIPPED_DETECTIONS_PCT in gannet/stats/emitter.py
 const SKIPPED_DETECTIONS_PCT = 5;
 
 export default function useStats(stats: FrigateStats | undefined) {

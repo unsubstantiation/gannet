@@ -43,7 +43,7 @@ Use Windows 11 24H2 or later and select the `--windows-ml` bootstrap profile. It
 .\.venv\Scripts\python.exe scripts\manage_windows_ml.py install --all
 ```
 
-Only providers the Windows ML catalog reports as compatible are available. After installation, Frigate registers ready provider libraries in its Python ONNX Runtime process and exposes selectable device strings such as `onnx:windowsml:QNNExecutionProvider`. This is separate from the standalone OpenVINO backend. Catalog availability does not guarantee that a particular model is supported or fast on the selected hardware. WebGPU is experimental and is excluded by default; opt in by setting `FRIGATE_ENABLE_EXPERIMENTAL_WEBGPU=1` in the environment used for both provider installation and the Frigate process.
+Only providers the Windows ML catalog reports as compatible are available. After installation, Gannet registers ready provider libraries in its Python ONNX Runtime process and exposes selectable device strings such as `onnx:windowsml:QNNExecutionProvider`. This is separate from the standalone OpenVINO backend. Catalog availability does not guarantee that a particular model is supported or fast on the selected hardware. WebGPU is experimental and is excluded by default; opt in by setting `FRIGATE_ENABLE_EXPERIMENTAL_WEBGPU=1` in the environment used for both provider installation and the Gannet process.
 
 ## Memory considerations
 

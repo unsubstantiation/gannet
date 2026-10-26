@@ -1,14 +1,14 @@
-# Frigate documentation site
+# Gannet documentation site
 
-The documentation published at https://docs.frigate.video, built with [Docusaurus 3](https://docusaurus.io/).
+This Docusaurus 3 site is the documentation source for Gannet. Its canonical URL is currently set to the upstream Frigate domain, https://docs.frigate.video; configure a Gannet-specific host before deploying it as a separate site.
 
 ## Development
 
-Requires Node.js 20.
+Requires Node.js 20.19 or newer and npm.
 
 ```console
 cd docs
-npm install
+npm ci
 npm run start
 ```
 
@@ -27,6 +27,6 @@ Other useful scripts:
 Pages live in `docs/`, and the sidebar order in `sidebars.ts`. Two things are generated and must not be hand-edited:
 
 - `static/frigate-api.yaml`, from the FastAPI app. Regenerate with `python3 generate_api_auth_spec.py` from the repository root.
-- The "Frigate UI" tabs inside configuration pages. See [scripts/README.md](scripts/README.md); `python3 docs/scripts/generate_ui_tabs.py --check docs/docs/configuration/` reports drift.
+- The "Gannet UI" tabs inside configuration pages. See [scripts/README.md](scripts/README.md); `python3 docs/scripts/generate_ui_tabs.py --check docs/docs/configuration/` reports drift.
 
 For the wider contribution guide, see [development/contributing.md](docs/development/contributing.md).

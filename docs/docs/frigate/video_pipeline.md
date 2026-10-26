@@ -3,9 +3,9 @@ id: video_pipeline
 title: Video pipeline
 ---
 
-Frigate uses a sophisticated video pipeline that starts with the camera feed and progressively applies transformations to it (e.g. decoding, motion detection, etc.).
+Gannet uses a sophisticated video pipeline that starts with the camera feed and progressively applies transformations to it (e.g. decoding, motion detection, etc.).
 
-This guide provides an overview to help users understand some of the key Frigate concepts.
+This guide provides an overview to help users understand some of the key Gannet concepts.
 
 ## Overview
 

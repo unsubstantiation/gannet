@@ -5,7 +5,7 @@ title: HomeKit
 
 # Apple HomeKit
 
-The bundled Windows `go2rtc.exe` can publish Frigate restreams as HomeKit camera accessories.
+The bundled Windows `go2rtc.exe` can publish Gannet restreams as HomeKit camera accessories.
 
 ## Requirements
 
@@ -14,19 +14,19 @@ The bundled Windows `go2rtc.exe` can publish Frigate restreams as HomeKit camera
 - The exported stream must be compatible with HomeKit, normally H.264 video at a supported resolution and Opus mono audio at 16 kHz.
 - A stream must already exist under `go2rtc.streams`.
 
-This publishes a Frigate stream to HomeKit. Importing an existing HomeKit camera as a Frigate source is a different go2rtc feature.
+This publishes a Gannet stream to HomeKit. Importing an existing HomeKit camera as a Gannet source is a different go2rtc feature.
 
 ## Persistent configuration
 
 HomeKit pairings are writable state, so they are stored separately from generated go2rtc settings:
 
 ```text
-<Frigate config directory>\go2rtc_homekit.yml
+<Gannet config directory>\go2rtc_homekit.yml
 ```
 
-For the default service install this is `%ProgramData%\Frigate\config\go2rtc_homekit.yml`. Frigate keeps only the `homekit` section and passes this file to go2rtc as its writable primary config. Do not store camera URLs or other settings there.
+For the default service install this is `%ProgramData%\Gannet\config\go2rtc_homekit.yml`. Gannet keeps only the `homekit` section and passes this file to go2rtc as its writable primary config. Do not store camera URLs or other settings there.
 
-Open the go2rtc editor through Frigate's authenticated gateway:
+Open the go2rtc editor through Gannet's authenticated gateway:
 
 ```text
 https://frigate-host:8971/go2rtc/editor.html
@@ -62,11 +62,11 @@ Then use `front_door_homekit` as the key in `go2rtc_homekit.yml`. On matching NV
 
 ## Pair
 
-1. Restart Frigate after adding the `homekit` entry.
+1. Restart Gannet after adding the `homekit` entry.
 2. In Apple Home, choose **Add Accessory**, then **More options**.
 3. Select the camera and enter the configured PIN.
 4. Confirm a `pairings` value is written beneath the camera in `go2rtc_homekit.yml`.
 
-If the accessory is not discovered, verify that the Windows network is Private, multicast is not isolated by the access point/VLAN, and Windows Firewall allows go2rtc. If pairing succeeds but fails after restart, check that the Frigate service account can modify `go2rtc_homekit.yml` and inspect `tmp\logs\go2rtc\current` for a save error.
+If the accessory is not discovered, verify that the Windows network is Private, multicast is not isolated by the access point/VLAN, and Windows Firewall allows go2rtc. If pairing succeeds but fails after restart, check that the Gannet service account can modify `go2rtc_homekit.yml` and inspect `tmp\logs\go2rtc\current` for a save error.
 
 Renaming the stream changes the accessory identity and requires pairing again.

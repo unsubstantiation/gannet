@@ -1,0 +1,862 @@
+"""Tests for the config_set endpoint's wildcard camera propagation."""
+
+import os
+import tempfile
+import unittest
+from unittest.mock import MagicMock, Mock, patch
+
+import ruamel.yaml
+
+from gannet.config import BirdseyeModeEnum, FrigateConfig
+from gannet.config.camera.updater import (
+    CameraConfigUpdateEnum,
+    CameraConfigUpdatePublisher,
+    CameraConfigUpdateTopic,
+)
+from gannet.config.holder import ConfigHolder
+from gannet.const import REDACTED_CREDENTIAL_SENTINEL
+from gannet.models import Event, Recordings, ReviewSegment
+from gannet.test.http_api.base_http_test import AuthTestClient, BaseTestHttp
+
+
+class TestConfigSetWildcardPropagation(BaseTestHttp):
+    """Test that wildcard camera updates fan out to all cameras."""
+
+    def setUp(self):
+        super().setUp(models=[Event, Recordings, ReviewSegment])
+        self.minimal_config = {
+            "mqtt": {"host": "mqtt"},
+            "cameras": {
+                "front_door": {
+                    "ffmpeg": {
+                        "inputs": [
+                            {"path": "rtsp://10.0.0.1:554/video", "roles": ["detect"]}
+                        ]
+                    },
+                    "detect": {
+                        "height": 1080,
+                        "width": 1920,
+                        "fps": 5,
+                    },
+                },
+                "back_yard": {
+                    "ffmpeg": {
+                        "inputs": [
+                            {"path": "rtsp://10.0.0.2:554/video", "roles": ["detect"]}
+                        ]
+                    },
+                    "detect": {
+                        "height": 720,
+                        "width": 1280,
+                        "fps": 10,
+                    },
+                },
+            },
+        }
+
+    def _create_app_with_publisher(self):
+        """Create app with a mocked config publisher."""
+        from fastapi import Request
+
+        from gannet.api.auth import get_allowed_cameras_for_filter, get_current_user
+        from gannet.api.fastapi_app import create_fastapi_app
+
+        mock_publisher = Mock(spec=CameraConfigUpdatePublisher)
+        mock_publisher.publisher = MagicMock()
+
+        app = create_fastapi_app(
+            FrigateConfig(**self.minimal_config),
+            self.db,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            mock_publisher,
+            None,
+            enforce_default_admin=False,
+        )
+
+        async def mock_get_current_user(request: Request):
+            username = request.headers.get("remote-user")
+            role = request.headers.get("remote-role")
+            return {"username": username, "role": role}
+
+        async def mock_get_allowed_cameras_for_filter(request: Request):
+            return list(self.minimal_config.get("cameras", {}).keys())
+
+        app.dependency_overrides[get_current_user] = mock_get_current_user
+        app.dependency_overrides[get_allowed_cameras_for_filter] = (
+            mock_get_allowed_cameras_for_filter
+        )
+
+        return app, mock_publisher
+
+    def _create_app_with_dispatcher(self, dispatcher):
+        """Create app with a mocked config publisher and a real-ish dispatcher."""
+        from fastapi import Request
+
+        from gannet.api.auth import get_allowed_cameras_for_filter, get_current_user
+        from gannet.api.fastapi_app import create_fastapi_app
+
+        mock_publisher = Mock(spec=CameraConfigUpdatePublisher)
+        mock_publisher.publisher = MagicMock()
+
+        app = create_fastapi_app(
+            FrigateConfig(**self.minimal_config),
+            self.db,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            mock_publisher,
+            None,
+            dispatcher=dispatcher,
+            enforce_default_admin=False,
+        )
+
+        async def mock_get_current_user(request: Request):
+            username = request.headers.get("remote-user")
+            role = request.headers.get("remote-role")
+            return {"username": username, "role": role}
+
+        async def mock_get_allowed_cameras_for_filter(request: Request):
+            return list(self.minimal_config.get("cameras", {}).keys())
+
+        app.dependency_overrides[get_current_user] = mock_get_current_user
+        app.dependency_overrides[get_allowed_cameras_for_filter] = (
+            mock_get_allowed_cameras_for_filter
+        )
+
+        return app, mock_publisher
+
+    @patch("gannet.api.app.find_config_file")
+    def test_runtime_disabled_camera_survives_unrelated_save(self, mock_find_config):
+        """A camera turned off at runtime stays off when another camera is saved."""
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        dispatcher = MagicMock()
+        dispatcher.comms = []
+
+        # front_door was turned off via the UI: the override is on disk, and
+        # yaml still says enabled: true. Stand in for the real replay, which
+        # reads dispatcher.config - the object the endpoint just swapped in.
+        def fake_reapply():
+            dispatcher.config.cameras["front_door"].enabled = False
+
+        dispatcher.reapply_runtime_state_to_config.side_effect = fake_reapply
+
+        try:
+            app, _ = self._create_app_with_dispatcher(dispatcher)
+
+            with AuthTestClient(app) as client:
+                resp = client.put(
+                    "/config/set",
+                    json={
+                        "config_data": {
+                            "cameras": {"back_yard": {"detect": {"fps": 7}}}
+                        },
+                        "requires_restart": 0,
+                    },
+                )
+
+                self.assertEqual(resp.status_code, 200)
+                self.assertTrue(resp.json()["success"])
+
+                # the swap must be repaired: the new config object the API and
+                # dispatcher now share has to still show front_door as off
+                dispatcher.reapply_runtime_state_to_config.assert_called_once_with()
+                self.assertFalse(app.frigate_config.cameras["front_door"].enabled)
+                self.assertIs(dispatcher.config, app.frigate_config)
+
+                # yaml-wins ordering: the surgical clear for rewritten keys
+                # must run before the replay, or a save that rewrote a toggle
+                # would have its old override resurrected
+                call_names = [name for name, _, _ in dispatcher.mock_calls]
+                self.assertLess(
+                    call_names.index("clear_runtime_state_for_yaml_keys"),
+                    call_names.index("reapply_runtime_state_to_config"),
+                )
+        finally:
+            os.unlink(config_path)
+
+    @patch("gannet.api.app.find_config_file")
+    def test_no_reapply_when_config_is_not_swapped(self, mock_find_config):
+        """A restart-required save with no update topic never swaps, so no replay."""
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        dispatcher = MagicMock()
+        dispatcher.comms = []
+
+        try:
+            app, _ = self._create_app_with_dispatcher(dispatcher)
+
+            with AuthTestClient(app) as client:
+                resp = client.put(
+                    "/config/set",
+                    json={
+                        "config_data": {"mqtt": {"host": "other"}},
+                        "requires_restart": 1,
+                    },
+                )
+
+                self.assertEqual(resp.status_code, 200)
+                dispatcher.reapply_runtime_state_to_config.assert_not_called()
+        finally:
+            os.unlink(config_path)
+
+    def _write_config_file(self):
+        """Write the minimal config to a temp YAML file and return the path."""
+        yaml = ruamel.yaml.YAML()
+        f = tempfile.NamedTemporaryFile(mode="w", suffix=".yml", delete=False)
+        yaml.dump(self.minimal_config, f)
+        f.close()
+        return f.name
+
+    @patch("gannet.api.app.find_config_file")
+    def test_wildcard_detect_update_fans_out_to_all_cameras(self, mock_find_config):
+        """config/cameras/*/detect fans out to all cameras."""
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        try:
+            app, mock_publisher = self._create_app_with_publisher()
+            with AuthTestClient(app) as client:
+                resp = client.put(
+                    "/config/set",
+                    json={
+                        "config_data": {"detect": {"fps": 15}},
+                        "update_topic": "config/cameras/*/detect",
+                        "requires_restart": 0,
+                    },
+                )
+
+                self.assertEqual(resp.status_code, 200)
+                data = resp.json()
+                self.assertTrue(data["success"])
+
+                # Verify publish_update called for each camera
+                self.assertEqual(mock_publisher.publish_update.call_count, 2)
+
+                published_cameras = set()
+                for c in mock_publisher.publish_update.call_args_list:
+                    topic = c[0][0]
+                    self.assertIsInstance(topic, CameraConfigUpdateTopic)
+                    self.assertEqual(topic.update_type, CameraConfigUpdateEnum.detect)
+                    published_cameras.add(topic.camera)
+
+                self.assertEqual(published_cameras, {"front_door", "back_yard"})
+
+                # Global publisher should NOT be called for wildcard
+                mock_publisher.publisher.publish.assert_not_called()
+        finally:
+            os.unlink(config_path)
+
+    @patch("gannet.api.app.find_config_file")
+    def test_wildcard_motion_update_fans_out(self, mock_find_config):
+        """config/cameras/*/motion fans out to all cameras."""
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        try:
+            app, mock_publisher = self._create_app_with_publisher()
+            with AuthTestClient(app) as client:
+                resp = client.put(
+                    "/config/set",
+                    json={
+                        "config_data": {"motion": {"threshold": 30}},
+                        "update_topic": "config/cameras/*/motion",
+                        "requires_restart": 0,
+                    },
+                )
+
+                self.assertEqual(resp.status_code, 200)
+
+                published_cameras = set()
+                for c in mock_publisher.publish_update.call_args_list:
+                    topic = c[0][0]
+                    self.assertEqual(topic.update_type, CameraConfigUpdateEnum.motion)
+                    published_cameras.add(topic.camera)
+
+                self.assertEqual(published_cameras, {"front_door", "back_yard"})
+        finally:
+            os.unlink(config_path)
+
+    @patch("gannet.api.app.find_config_file")
+    def test_camera_specific_topic_only_updates_one_camera(self, mock_find_config):
+        """config/cameras/front_door/detect only updates front_door."""
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        try:
+            app, mock_publisher = self._create_app_with_publisher()
+            with AuthTestClient(app) as client:
+                resp = client.put(
+                    "/config/set",
+                    json={
+                        "config_data": {
+                            "cameras": {"front_door": {"detect": {"fps": 20}}}
+                        },
+                        "update_topic": "config/cameras/front_door/detect",
+                        "requires_restart": 0,
+                    },
+                )
+
+                self.assertEqual(resp.status_code, 200)
+
+                # Only one camera updated
+                self.assertEqual(mock_publisher.publish_update.call_count, 1)
+                topic = mock_publisher.publish_update.call_args[0][0]
+                self.assertEqual(topic.camera, "front_door")
+                self.assertEqual(topic.update_type, CameraConfigUpdateEnum.detect)
+
+                # Global publisher should NOT be called
+                mock_publisher.publisher.publish.assert_not_called()
+        finally:
+            os.unlink(config_path)
+
+    @patch("gannet.api.app.find_config_file")
+    def test_wildcard_sends_merged_per_camera_config(self, mock_find_config):
+        """Wildcard fan-out sends each camera's own merged config."""
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        try:
+            app, mock_publisher = self._create_app_with_publisher()
+            with AuthTestClient(app) as client:
+                resp = client.put(
+                    "/config/set",
+                    json={
+                        "config_data": {"detect": {"fps": 15}},
+                        "update_topic": "config/cameras/*/detect",
+                        "requires_restart": 0,
+                    },
+                )
+
+                self.assertEqual(resp.status_code, 200)
+
+                for c in mock_publisher.publish_update.call_args_list:
+                    camera_detect_config = c[0][1]
+                    self.assertIsNotNone(camera_detect_config)
+                    self.assertTrue(hasattr(camera_detect_config, "fps"))
+        finally:
+            os.unlink(config_path)
+
+    @patch("gannet.api.app.find_config_file")
+    def test_non_camera_global_topic_uses_generic_publish(self, mock_find_config):
+        """Non-camera topics (e.g. config/live) use the generic publisher."""
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        try:
+            app, mock_publisher = self._create_app_with_publisher()
+            with AuthTestClient(app) as client:
+                resp = client.put(
+                    "/config/set",
+                    json={
+                        "config_data": {"live": {"height": 720}},
+                        "update_topic": "config/live",
+                        "requires_restart": 0,
+                    },
+                )
+
+                self.assertEqual(resp.status_code, 200)
+
+                # Global topic publisher called
+                mock_publisher.publisher.publish.assert_called_once()
+
+                # Camera-level publish_update NOT called
+                mock_publisher.publish_update.assert_not_called()
+        finally:
+            os.unlink(config_path)
+
+    @patch("gannet.api.app.find_config_file")
+    def test_global_birdseye_save_fans_out_resolved_camera_configs(
+        self, mock_find_config
+    ):
+        """A global birdseye save must also publish the per-camera values.
+
+        Global birdseye only seeds enabled and mode; the camera copies are what
+        the output process actually reads. Sending just the global object makes
+        a worker guess which cameras were inheriting, and the only available
+        guess (modes still equals the previous global) wrongly claims a camera
+        whose explicit yaml modes happens to match.
+        """
+        self.minimal_config["birdseye"] = {
+            "enabled": True,
+            "modes": ["motion"],
+        }
+        # explicit override that matches the global value being replaced
+        self.minimal_config["cameras"]["front_door"]["birdseye"] = {"modes": ["motion"]}
+
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        try:
+            app, mock_publisher = self._create_app_with_publisher()
+            with AuthTestClient(app) as client:
+                resp = client.put(
+                    "/config/set",
+                    json={
+                        "config_data": {"birdseye": {"modes": ["continuous"]}},
+                        "update_topic": "config/birdseye",
+                        "requires_restart": 0,
+                    },
+                )
+
+                self.assertEqual(resp.status_code, 200)
+
+                # the global object still goes out on its own topic
+                mock_publisher.publisher.publish.assert_called_once()
+                topic, settings = mock_publisher.publisher.publish.call_args[0]
+                self.assertEqual(topic, "config/birdseye")
+                self.assertEqual(settings.modes, [BirdseyeModeEnum.continuous])
+
+                published = {
+                    call[0][0].camera: call[0][1]
+                    for call in mock_publisher.publish_update.call_args_list
+                }
+                self.assertEqual(set(published), {"front_door", "back_yard"})
+
+                for call in mock_publisher.publish_update.call_args_list:
+                    self.assertEqual(
+                        call[0][0].update_type, CameraConfigUpdateEnum.birdseye
+                    )
+
+                # the override survives, the inheriting camera follows global
+                self.assertEqual(
+                    published["front_door"].modes, [BirdseyeModeEnum.motion]
+                )
+                self.assertEqual(
+                    published["back_yard"].modes, [BirdseyeModeEnum.continuous]
+                )
+        finally:
+            os.unlink(config_path)
+
+    @patch("gannet.api.app.find_config_file")
+    def test_save_updates_the_config_holder(self, mock_find_config):
+        """A save must move the holder onto the freshly parsed config.
+
+        FrigateApp reads the holder when the watchdog rebuilds a crashed
+        process; if the save leaves it on the boot config, that process comes
+        back having lost every change made since Frigate started.
+        """
+        from fastapi import Request
+
+        from gannet.api.auth import get_allowed_cameras_for_filter, get_current_user
+        from gannet.api.fastapi_app import create_fastapi_app
+
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        mock_publisher = Mock(spec=CameraConfigUpdatePublisher)
+        mock_publisher.publisher = MagicMock()
+        boot_config = FrigateConfig(**self.minimal_config)
+        holder = ConfigHolder(boot_config)
+
+        try:
+            app = create_fastapi_app(
+                boot_config,
+                self.db,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                mock_publisher,
+                None,
+                enforce_default_admin=False,
+                config_holder=holder,
+            )
+
+            async def mock_get_current_user(request: Request):
+                return {"username": "admin", "role": "admin"}
+
+            async def mock_get_allowed_cameras_for_filter(request: Request):
+                return list(self.minimal_config.get("cameras", {}).keys())
+
+            app.dependency_overrides[get_current_user] = mock_get_current_user
+            app.dependency_overrides[get_allowed_cameras_for_filter] = (
+                mock_get_allowed_cameras_for_filter
+            )
+
+            with AuthTestClient(app) as client:
+                resp = client.put(
+                    "/config/set",
+                    json={
+                        "config_data": {"birdseye": {"inactivity_threshold": 5}},
+                        "update_topic": "config/birdseye",
+                        "requires_restart": 0,
+                    },
+                )
+
+                self.assertEqual(resp.status_code, 200)
+
+            self.assertIsNot(holder.config, boot_config)
+            self.assertIs(holder.config, app.frigate_config)
+            self.assertEqual(holder.config.birdseye.inactivity_threshold, 5)
+        finally:
+            os.unlink(config_path)
+
+    camera_path = "rtsp://10.0.0.1:554/video?password=s3cret&user=admin"
+
+    def _add_credentials(self):
+        """Give the config a credentialed camera path and go2rtc secrets."""
+        self.minimal_config["cameras"]["front_door"]["ffmpeg"]["inputs"][0]["path"] = (
+            self.camera_path
+        )
+        self.minimal_config["go2rtc"] = {
+            "rtsp": {"username": "rtspuser", "password": "rtsppass"},
+            "api": {"username": "apiuser", "password": "apipass"},
+            "mqtt": {"username": "mquser", "password": "mqpass"},
+            "ngrok": {"command": "ngrok tcp 8555 --authtoken ngroksecret"},
+            "homekit": {"front_door": {"pin": "19550224"}},
+            "publish": {"front_door": "rtmp://a.rtmp.youtube.com/live2/streamkey"},
+            "webrtc": {
+                "candidates": ["10.0.0.5:8555"],
+                "ice_servers": [
+                    {
+                        "urls": ["turn:turn.example.com:3478"],
+                        "username": "turnuser",
+                        "credential": "turnpass",
+                    }
+                ],
+            },
+        }
+
+    def _read_config_file(self, config_path):
+        with open(config_path) as f:
+            raw = f.read()
+        return raw, ruamel.yaml.YAML().load(raw)
+
+    @patch("gannet.api.app.find_config_file")
+    def test_masked_camera_path_round_trips(self, mock_find_config):
+        self._add_credentials()
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        try:
+            app, _ = self._create_app_with_publisher()
+
+            with AuthTestClient(app) as client:
+                camera = client.get("/config").json()["cameras"]["front_door"]
+                inputs = camera["ffmpeg"]["inputs"]
+                self.assertNotIn("s3cret", inputs[0]["path"])
+
+                resp = client.put(
+                    "/config/set",
+                    json={
+                        "config_data": {
+                            "cameras": {
+                                "front_door": {
+                                    "ffmpeg": {"inputs": inputs},
+                                    "detect": {"fps": 7},
+                                }
+                            }
+                        },
+                        "requires_restart": 0,
+                    },
+                )
+                self.assertEqual(resp.status_code, 200)
+
+            _, saved = self._read_config_file(config_path)
+            self.assertEqual(
+                saved["cameras"]["front_door"]["ffmpeg"]["inputs"][0]["path"],
+                self.camera_path,
+            )
+        finally:
+            os.unlink(config_path)
+
+    def _save(self, client, config_data):
+        return client.put(
+            "/config/set",
+            json={"config_data": config_data, "requires_restart": 0},
+        )
+
+    def _set_inputs(self, paths):
+        self.minimal_config["cameras"]["front_door"]["ffmpeg"]["inputs"] = [
+            {"path": path, "roles": [role]} for path, role in paths
+        ]
+
+    # the native env module rebuilds FRIGATE_ENV_VARS from its sources on every
+    # config parse, so the value is installed as a process-environment source
+    @patch.dict("gannet.util.env._PROCESS_ENV", {"FRIGATE_RTSP_PASSWORD": "s3cret"})
+    @patch.dict(
+        "gannet.util.env.FRIGATE_ENV_VARS", {"FRIGATE_RTSP_PASSWORD": "s3cret"}
+    )
+    @patch("gannet.api.app.find_config_file")
+    def test_masked_path_keeps_env_placeholder(self, mock_find_config):
+        path = "rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.1:554/live"
+        self._set_inputs([(path, "detect")])
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        try:
+            app, _ = self._create_app_with_publisher()
+
+            with AuthTestClient(app) as client:
+                camera = client.get("/config").json()["cameras"]["front_door"]
+                self.assertNotIn("s3cret", str(camera))
+
+                resp = self._save(
+                    client,
+                    {
+                        "cameras": {
+                            "front_door": {
+                                "ffmpeg": {"inputs": camera["ffmpeg"]["inputs"]},
+                                "detect": {"fps": 7},
+                            }
+                        }
+                    },
+                )
+                self.assertEqual(resp.status_code, 200)
+
+            raw, saved = self._read_config_file(config_path)
+            self.assertNotIn("s3cret", raw)
+            self.assertEqual(
+                saved["cameras"]["front_door"]["ffmpeg"]["inputs"][0]["path"], path
+            )
+        finally:
+            os.unlink(config_path)
+
+    @patch("gannet.api.app.find_config_file")
+    def test_over_masked_path_round_trips(self, mock_find_config):
+        path = "rtsp://10.0.0.1:554/live?x=a@b"
+        self._set_inputs([(path, "detect")])
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        try:
+            app, _ = self._create_app_with_publisher()
+
+            with AuthTestClient(app) as client:
+                inputs = client.get("/config").json()["cameras"]["front_door"][
+                    "ffmpeg"
+                ]["inputs"]
+                self.assertNotEqual(inputs[0]["path"], path)
+
+                resp = self._save(
+                    client,
+                    {"cameras": {"front_door": {"ffmpeg": {"inputs": inputs}}}},
+                )
+                self.assertEqual(resp.status_code, 200)
+
+            _, saved = self._read_config_file(config_path)
+            self.assertEqual(
+                saved["cameras"]["front_door"]["ffmpeg"]["inputs"][0]["path"], path
+            )
+        finally:
+            os.unlink(config_path)
+
+    @patch("gannet.api.app.find_config_file")
+    def test_unrestorable_masked_values_are_rejected(self, mock_find_config):
+        self._add_credentials()
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        try:
+            app, _ = self._create_app_with_publisher()
+
+            with AuthTestClient(app) as client:
+                for name, request in (
+                    (
+                        "index-keyed inputs",
+                        {
+                            "json": {
+                                "config_data": {
+                                    "cameras": {
+                                        "front_door": {
+                                            "ffmpeg": {
+                                                "inputs": {
+                                                    "0": {"path": "rtsp://*:*@h/x"}
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "requires_restart": 0,
+                            }
+                        },
+                    ),
+                    (
+                        "go2rtc streams",
+                        {
+                            "json": {
+                                "config_data": {
+                                    "go2rtc": {"streams": {"cam": ["rtsp://*:*@h/x"]}}
+                                },
+                                "requires_restart": 0,
+                            }
+                        },
+                    ),
+                    (
+                        "query string",
+                        {
+                            "params": {
+                                "cameras.front_door.ffmpeg.inputs.0.path": (
+                                    "rtsp://*:*@h/x"
+                                ),
+                                "go2rtc.rtsp.password": REDACTED_CREDENTIAL_SENTINEL,
+                            },
+                            "json": {"requires_restart": 0},
+                        },
+                    ),
+                ):
+                    with self.subTest(name):
+                        resp = client.put("/config/set", **request)
+                        self.assertEqual(resp.status_code, 400)
+                        self.assertIn("credentials", resp.json()["message"])
+
+            raw, _ = self._read_config_file(config_path)
+            self.assertNotIn("*:*", raw)
+            self.assertNotIn(REDACTED_CREDENTIAL_SENTINEL, raw)
+        finally:
+            os.unlink(config_path)
+
+    @patch("gannet.api.app.find_config_file")
+    def test_go2rtc_credentials_redacted_and_round_trip(self, mock_find_config):
+        self._add_credentials()
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        try:
+            app, _ = self._create_app_with_publisher()
+
+            with AuthTestClient(app) as client:
+                response = client.get("/config").json()
+                body = str(response)
+                for secret in (
+                    "rtsppass",
+                    "apipass",
+                    "mqpass",
+                    "ngroksecret",
+                    "19550224",
+                    "streamkey",
+                ):
+                    self.assertNotIn(secret, body)
+
+                go2rtc = response["go2rtc"]
+                self.assertEqual(go2rtc["webrtc"]["candidates"], ["10.0.0.5:8555"])
+                # browsers need the TURN account to relay WebRTC
+                self.assertEqual(
+                    go2rtc["webrtc"]["ice_servers"][0]["credential"], "turnpass"
+                )
+
+                go2rtc.pop("ngrok")
+                go2rtc["webrtc"]["candidates"] = ["10.0.0.9:8555"]
+                self.assertEqual(
+                    self._save(client, {"go2rtc": go2rtc}).status_code, 200
+                )
+
+            raw, saved = self._read_config_file(config_path)
+            self.assertNotIn(REDACTED_CREDENTIAL_SENTINEL, raw)
+            self.assertEqual(saved["go2rtc"]["rtsp"]["password"], "rtsppass")
+            self.assertEqual(saved["go2rtc"]["mqtt"]["password"], "mqpass")
+            self.assertEqual(
+                saved["go2rtc"]["homekit"]["front_door"]["pin"], "19550224"
+            )
+            self.assertIn("streamkey", saved["go2rtc"]["publish"]["front_door"])
+            self.assertEqual(saved["go2rtc"]["webrtc"]["candidates"], ["10.0.0.9:8555"])
+            self.assertEqual(
+                saved["go2rtc"]["webrtc"]["ice_servers"][0]["credential"], "turnpass"
+            )
+        finally:
+            os.unlink(config_path)
+
+    @patch("gannet.api.app.find_config_file")
+    def test_masked_inputs_restore_by_value(self, mock_find_config):
+        main = "rtsp://u:MAIN@10.0.0.1:554/main"
+        sub = "rtsp://u:SUB@10.0.0.1:554/sub"
+
+        for name, edit, expected in (
+            ("delete first", lambda inputs: [inputs[1]], [sub]),
+            ("reorder", lambda inputs: [inputs[1], inputs[0]], [sub, main]),
+        ):
+            with self.subTest(name):
+                self._set_inputs([(main, "record"), (sub, "detect")])
+                config_path = self._write_config_file()
+                mock_find_config.return_value = config_path
+
+                try:
+                    app, _ = self._create_app_with_publisher()
+
+                    with AuthTestClient(app) as client:
+                        inputs = client.get("/config").json()["cameras"]["front_door"][
+                            "ffmpeg"
+                        ]["inputs"]
+                        resp = self._save(
+                            client,
+                            {
+                                "cameras": {
+                                    "front_door": {"ffmpeg": {"inputs": edit(inputs)}}
+                                }
+                            },
+                        )
+                        self.assertEqual(resp.status_code, 200)
+
+                    _, saved = self._read_config_file(config_path)
+                    saved_inputs = saved["cameras"]["front_door"]["ffmpeg"]["inputs"]
+                    self.assertEqual([i["path"] for i in saved_inputs], expected)
+                finally:
+                    os.unlink(config_path)
+
+    @patch("gannet.api.app.find_config_file")
+    def test_ambiguous_or_unmatched_masked_input(self, mock_find_config):
+        self._set_inputs(
+            [
+                ("rtsp://u:one@10.0.0.1:554/live", "record"),
+                ("rtsp://u:two@10.0.0.1:554/live", "detect"),
+            ]
+        )
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        try:
+            app, _ = self._create_app_with_publisher()
+
+            with AuthTestClient(app) as client:
+                inputs = client.get("/config").json()["cameras"]["front_door"][
+                    "ffmpeg"
+                ]["inputs"]
+
+                # both inputs mask to the same value and roles no longer tell
+                # them apart
+                remaining = dict(inputs[1], roles=["detect", "record"])
+                resp = self._save(
+                    client,
+                    {"cameras": {"front_door": {"ffmpeg": {"inputs": [remaining]}}}},
+                )
+                self.assertEqual(resp.status_code, 400)
+
+                inputs[0]["path"] = "rtsp://*:*@10.0.0.99:554/live"
+                resp = self._save(
+                    client,
+                    {"cameras": {"front_door": {"ffmpeg": {"inputs": inputs}}}},
+                )
+                self.assertEqual(resp.status_code, 400)
+
+                # roles break the tie when the second input stays as it was
+                resp = self._save(
+                    client,
+                    {"cameras": {"front_door": {"ffmpeg": {"inputs": [inputs[1]]}}}},
+                )
+                self.assertEqual(resp.status_code, 200)
+
+            raw, saved = self._read_config_file(config_path)
+            self.assertNotIn("*:*", raw)
+            self.assertEqual(
+                saved["cameras"]["front_door"]["ffmpeg"]["inputs"][0]["path"],
+                "rtsp://u:two@10.0.0.1:554/live",
+            )
+        finally:
+            os.unlink(config_path)
+
+
+if __name__ == "__main__":
+    unittest.main()

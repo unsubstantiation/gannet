@@ -1,14 +1,14 @@
-# Frigate frontend
+# Gannet web frontend
 
-The React/TypeScript interface that talks to the Python backend.
+The React/TypeScript interface for Gannet that talks to its Python backend.
 
 ## Setup
 
 ```bash
-npm install
+npm ci
 ```
 
-`postinstall` runs `patch-package`. Node.js 20 matches CI.
+`postinstall` runs `patch-package`. The frontend build requires Node.js 20.19+ or 22.12+ (Vite engine requirement).
 
 ## Development server
 
@@ -16,7 +16,7 @@ npm install
 PROXY_HOST=<ip_address:port> npm run dev
 ```
 
-`PROXY_HOST` is the Frigate instance the dev server proxies `/api`, `/vod`, `/clips` and the other backend routes to. It defaults to `localhost:5000`, which is the unauthenticated port of a Frigate running on the same machine.
+`PROXY_HOST` is the Gannet instance the dev server proxies `/api`, `/vod`, `/clips` and other backend routes to. It defaults to `localhost:5000`, the unauthenticated internal port of a local Gannet process.
 
 ## Commands
 

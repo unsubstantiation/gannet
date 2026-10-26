@@ -5,29 +5,29 @@ title: Frequently Asked Questions
 
 # Frequently asked questions
 
-## Where are Frigate's files?
+## Where are Gannet's files?
 
-Interactive installs default to `%LOCALAPPDATA%\Frigate`. The Windows service installer defaults to `%ProgramData%\Frigate`. `FRIGATE_BASE_DIR` can select another root before installation. Subdirectories contain config, media, cache, temporary files, logs, models, and tools.
+Interactive installs default to `%LOCALAPPDATA%\Gannet`. The Windows service installer defaults to `%ProgramData%\Gannet`. `FRIGATE_BASE_DIR` can select another root before installation. Subdirectories contain config, media, cache, temporary files, logs, models, and tools.
 
 ## Where are the logs?
 
 Use **System > Logs** or read `tmp\logs\frigate\current` and `tmp\logs\go2rtc\current` below the data root:
 
 ```powershell
-Get-Content "$env:ProgramData\Frigate\tmp\logs\frigate\current" -Wait
+Get-Content "$env:ProgramData\Gannet\tmp\logs\frigate\current" -Wait
 ```
 
 ## Why does `localhost` not reach MQTT or a camera?
 
-`localhost` means the Windows machine running Frigate. Use the broker/camera's LAN address or DNS name when it runs elsewhere. For a local broker, confirm the service is listening on loopback and that the Frigate service account can connect.
+`localhost` means the Windows machine running Gannet. Use the broker/camera's LAN address or DNS name when it runs elsewhere. For a local broker, confirm the service is listening on loopback and that the Gannet service account can connect.
 
 ## Can I expose port 5000?
 
-No. Port `5000` is an unauthenticated loopback listener for Frigate's own media jobs. Users and integrations connect to the authenticated public listener on port `8971`.
+No. Port `5000` is an unauthenticated loopback listener for Gannet's own media jobs. Users and integrations connect to the authenticated public listener on port `8971`.
 
 ## Why does HTTPS show a warning?
 
-Frigate generates a self-signed certificate when no pair exists. Install a trusted certificate with the correct DNS/IP Subject Alternative Names, or trust a private CA on each client. Do not disable TLS on an untrusted network.
+Gannet generates a self-signed certificate when no pair exists. Install a trusted certificate with the correct DNS/IP Subject Alternative Names, or trust a private CA on each client. Do not disable TLS on an untrusted network.
 
 ## How do I change or recover the administrator password?
 
@@ -35,7 +35,7 @@ Use the user-management UI while signed in. If access is lost, set `auth.reset_a
 
 ## What does the config `version` field do?
 
-It records the last configuration format migration. Frigate backs up and rewrites older YAML during migration, then updates the field. Do not manually increase it. Back up `config.yml`, `secrets.yaml`, and `frigate.db` before upgrades.
+It records the last configuration format migration. Gannet backs up and rewrites older YAML during migration, then updates the field. Do not manually increase it. Back up `config.yml`, `secrets.yaml`, and `gannet.db` before upgrades.
 
 ## Why is the service using different files from an interactive run?
 
@@ -43,7 +43,7 @@ Services do not inherit the signed-in user's `%LOCALAPPDATA%` or PowerShell envi
 
 ## Can media be stored on a network share?
 
-Local NTFS is recommended. Never place `frigate.db` on a network share. If media must use SMB, run the service under an account with explicit share and NTFS permissions, use a UNC path rather than a mapped drive, and make the share available at boot. Network interruptions can create recording gaps.
+Local NTFS is recommended. Never place `gannet.db` on a network share. If media must use SMB, run the service under an account with explicit share and NTFS permissions, use a UNC path rather than a mapped drive, and make the share available at boot. Network interruptions can create recording gaps.
 
 ## Why does CPU usage remain high?
 
@@ -75,8 +75,8 @@ Configure one camera source in go2rtc and use its local RTSP restream for detect
 
 ## Can camera processing be turned off temporarily?
 
-Yes. Use the camera controls in the UI, Home Assistant, or MQTT. Runtime state persists across Frigate restarts. Set the camera's configured state to Disabled when it should remain administratively unavailable.
+Yes. Use the camera controls in the UI, Home Assistant, or MQTT. Runtime state persists across Gannet restarts. Set the camera's configured state to Disabled when it should remain administratively unavailable.
 
 ## How do I request help safely?
 
-Include the Frigate version, Windows build, relevant log excerpt, camera codec/resolution/FPS, selected detector and acceleration preset, and hardware/driver versions. Remove camera credentials, signed URLs, JWTs, API keys, proxy secrets, and private images.
+Include the Gannet version, Windows build, relevant log excerpt, camera codec/resolution/FPS, selected detector and acceleration preset, and hardware/driver versions. Remove camera credentials, signed URLs, JWTs, API keys, proxy secrets, and private images.

@@ -53,7 +53,7 @@ except ImportError:  # pragma: no cover - only outside the dependency closure
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 REQUIREMENTS = REPO_ROOT / "requirements.txt"
-PACKAGE_ROOT = REPO_ROOT / "frigate"
+PACKAGE_ROOT = REPO_ROOT / "gannet"
 
 #: import name -> distribution name, for the packages where they differ
 IMPORT_TO_DISTRIBUTION = {
@@ -385,7 +385,7 @@ def imported_distribution(module: str) -> str:
 
 
 def third_party_imports() -> dict[str, set[str]]:
-    """Every non standard library module imported at module scope in frigate/."""
+    """Every non standard library module imported at module scope in gannet/."""
     stdlib = sys.stdlib_module_names
     imports: dict[str, set[str]] = {}
 
@@ -410,7 +410,7 @@ def third_party_imports() -> dict[str, set[str]]:
             for name in names:
                 top_level = name.split(".")[0]
 
-                if not top_level or top_level in stdlib or top_level == "frigate":
+                if not top_level or top_level in stdlib or top_level == "gannet":
                     continue
 
                 imports.setdefault(top_level, set()).add(

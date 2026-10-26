@@ -1,6 +1,6 @@
 # Agent and contributor guide
 
-This repository is the native Windows edition of Frigate. It is a
+This repository is the native Windows edition of Gannet. It is a
 Windows-only application: 64-bit CPython 3.12, running directly on Windows
 as a normal process or SCM service. There is no container, WSL, POSIX, or
 Unix-service runtime, and changes must not reintroduce one. The full runtime
@@ -9,20 +9,20 @@ and review rules are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Runtime contract
 
-- `frigate.__main__` rejects every platform other than Windows before
-  runtime initialization (`frigate.util.platform.require_windows`).
+- `gannet.__main__` rejects every platform other than Windows before
+  runtime initialization (`gannet.util.platform.require_windows`).
 - Multiprocessing always uses `spawn`.
 - Writable data defaults to `%LOCALAPPDATA%\Frigate`, relocatable with
   `FRIGATE_BASE_DIR` and the `FRIGATE_*_DIR` overrides. Build paths with
   `pathlib` or `os.path`; never introduce Unix root paths, device nodes,
   Unix sockets, UID/GID ownership, or Unix service managers.
 - Executables are native `.exe` files, located through
-  `frigate.util.platform.find_executable`. The bootstrap installs pinned
+  `gannet.util.platform.find_executable`. The bootstrap installs pinned
   FFmpeg and go2rtc builds and verifies their SHA-256 digests.
 - Process, IPC, shared-memory, priority, and service behavior goes through
-  `frigate/util/platform.py` and `frigate/util/job_object.py` where
+  `gannet/util/platform.py` and `gannet/util/job_object.py` where
   practical. `platform.py` must remain importable during early startup
-  without importing other Frigate modules.
+  without importing other Gannet modules.
 - The public HTTP listener (default `0.0.0.0:8971`) is authenticated; the
   internal listener (`127.0.0.1:5000`) is loopback-only and trusted. Never
   trust client-supplied identity headers.
@@ -48,16 +48,16 @@ boundaries are in [LICENSING.md](LICENSING.md). Concretely:
 - Never propose replacing these terms with MIT or Apache on the Gannet Material, and
   never propose adding a noncommercial or field-of-use restriction to the Upstream
   Material — the first is the point of the license, the second is not ours to do.
-- `frigate/test/test_licensing.py` fails when any of the above is violated.
+- `gannet/test/test_licensing.py` fails when any of the above is violated.
 
 ## Required checks
 
 From the repository root, on Windows:
 
 ```powershell
-ruff format bootstrap_windows.py frigate migrations testing-scripts
-ruff check bootstrap_windows.py frigate migrations testing-scripts
-python -m compileall -q bootstrap_windows.py frigate migrations testing-scripts
+ruff format bootstrap_windows.py gannet migrations testing-scripts
+ruff check bootstrap_windows.py gannet migrations testing-scripts
+python -m compileall -q bootstrap_windows.py gannet migrations testing-scripts
 python testing-scripts/check_windows_requirements.py
 python testing-scripts/run_windows_unit_suite.py
 ```
@@ -65,7 +65,7 @@ python testing-scripts/run_windows_unit_suite.py
 PowerShell, SCM, Win32 process behavior, and the downloaded Windows
 executables can only be validated on a Windows x64 host; results from other
 operating systems are not evidence for this runtime. Tests that cannot pass
-on Windows belong in `frigate/test/windows_suite_denylist.txt` with a
+on Windows belong in `gannet/test/windows_suite_denylist.txt` with a
 concrete reason, and the list is expected to shrink, never grow silently.
 
 Regenerate derived artifacts when their sources change:

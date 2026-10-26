@@ -9,7 +9,7 @@ import NavPath from "@site/src/components/NavPath";
 
 # Tuning Motion Detection
 
-Frigate uses motion detection as a first line check to see if there is anything happening in the frame worth checking with object detection.
+Gannet uses motion detection as a first line check to see if there is anything happening in the frame worth checking with object detection.
 
 Once motion is detected, it tries to group up nearby areas of motion together in hopes of identifying a rectangle in the image that will capture the area worth inspecting. These are the red "motion boxes" you see in the [debug viewer](/usage/live#the-single-camera-view).
 
@@ -170,7 +170,7 @@ To override for a specific camera, navigate to <NavPath path="Settings > Camera 
 
 | Field                     | Description                                                                                                                                                                                                                                                                                                                                                                                                          |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Skip motion threshold** | Fraction of the frame that must change in a single update before Frigate will completely ignore any motion in that frame. Values range between 0.0 and 1.0; leave unset (null) to disable. For example, setting this to 0.7 causes Frigate to skip reporting motion boxes when more than 70% of the image appears to change (e.g. during lightning storms, IR/color mode switches, or other sudden lighting events). |
+| **Skip motion threshold** | Fraction of the frame that must change in a single update before Gannet will completely ignore any motion in that frame. Values range between 0.0 and 1.0; leave unset (null) to disable. For example, setting this to 0.7 causes Gannet to skip reporting motion boxes when more than 70% of the image appears to change (e.g. during lightning storms, IR/color mode switches, or other sudden lighting events). |
 
 </TabItem>
 <TabItem value="yaml">
@@ -178,9 +178,9 @@ To override for a specific camera, navigate to <NavPath path="Settings > Camera 
 ```yaml
 motion:
   # Optional: Fraction of the frame that must change in a single update
-  #           before Frigate will completely ignore any motion in that frame.
+  #           before Gannet will completely ignore any motion in that frame.
   #           Values range between 0.0 and 1.0, leave unset (null) to disable.
-  #           Setting this to 0.7 would cause Frigate to **skip** reporting
+  #           Setting this to 0.7 would cause Gannet to **skip** reporting
   #           motion boxes when more than 70% of the image appears to change
   #           (e.g. during lightning storms, IR/color mode switches, or other
   #           sudden lighting events).

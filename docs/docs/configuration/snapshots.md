@@ -7,9 +7,9 @@ import ConfigTabs from "@site/src/components/ConfigTabs";
 import TabItem from "@theme/TabItem";
 import NavPath from "@site/src/components/NavPath";
 
-A snapshot is a single still image that captures a tracked object at its best moment: the clearest frame Frigate saw while following that object across the scene. Unlike a [recording](./record.md), which is continuous video, a snapshot is one representative image saved per tracked object once tracking ends.
+A snapshot is a single still image that captures a tracked object at its best moment: the clearest frame Gannet saw while following that object across the scene. Unlike a [recording](./record.md), which is continuous video, a snapshot is one representative image saved per tracked object once tracking ends.
 
-When snapshots are enabled, Frigate saves one image in `clips` beneath the configured Windows media directory for each tracked object, named `<camera>-<id>-clean.webp`. A clean image is always stored without any annotations (no timestamp, bounding boxes, or cropping) so you have an unmodified copy of the original frame. Annotations like bounding boxes and timestamps are applied on demand when a snapshot is requested [via the HTTP API](../integrations/api/event-snapshot-events-event-id-snapshot-jpg-get.api.mdx). See [Rendering](#rendering) below.
+When snapshots are enabled, Gannet saves one image in `clips` beneath the configured Windows media directory for each tracked object, named `<camera>-<id>-clean.webp`. A clean image is always stored without any annotations (no timestamp, bounding boxes, or cropping) so you have an unmodified copy of the original frame. Annotations like bounding boxes and timestamps are applied on demand when a snapshot is requested [via the HTTP API](../integrations/api/event-snapshot-events-event-id-snapshot-jpg-get.api.mdx). See [Rendering](#rendering) below.
 
 A few things to keep in mind:
 
@@ -130,13 +130,13 @@ snapshots:
 
 ## Frame Selection
 
-Frigate does not save every frame. It picks a single "best" frame for each tracked object based on detection confidence, object size, and the presence of key attributes like faces or license plates. Frames where the object touches the edge of the frame are deprioritized. That best frame is written to disk once tracking ends.
+Gannet does not save every frame. It picks a single "best" frame for each tracked object based on detection confidence, object size, and the presence of key attributes like faces or license plates. Frames where the object touches the edge of the frame are deprioritized. That best frame is written to disk once tracking ends.
 
 MQTT snapshots are published more frequently: each time a better thumbnail frame is found during tracking, or when the current best image is older than `best_image_timeout` (default: 60s). These use their own annotation settings configured under the camera MQTT settings.
 
 ## Rendering
 
-Frigate stores a single clean snapshot on disk:
+Gannet stores a single clean snapshot on disk:
 
 | API / Use                                | Result                                                                                                |
 | ---------------------------------------- | ----------------------------------------------------------------------------------------------------- |

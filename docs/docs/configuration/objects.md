@@ -23,7 +23,7 @@ Please note:
 
 ## Configuring Tracked Objects
 
-By default, Frigate only tracks `person`. To track additional object types, add them to the tracked objects list.
+By default, Gannet only tracks `person`. To track additional object types, add them to the tracked objects list.
 
 <ConfigTabs>
 <TabItem value="ui">

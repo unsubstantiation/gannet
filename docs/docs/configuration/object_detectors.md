@@ -5,7 +5,7 @@ title: Object Detectors
 
 # Object detectors on Windows
 
-Frigate runs object detection locally. A model declares one or more Windows detector devices using the `models[].devices` list. Each value is either a detector name or `<detector>:<device>`.
+Gannet runs object detection locally. A model declares one or more Windows detector devices using the `models[].devices` list. Each value is either a detector name or `<detector>:<device>`.
 
 ## Supported detectors
 
@@ -29,7 +29,7 @@ models:
       - cpu
 ```
 
-On first use Frigate downloads its default TFLite model into `%LOCALAPPDATA%\Frigate\config\model_cache`. Set `path` to use another compatible model.
+On first use Gannet downloads its default TFLite model into `%LOCALAPPDATA%\Gannet\config\model_cache`. Set `path` to use another compatible model.
 
 ## ONNX Runtime
 
@@ -72,7 +72,7 @@ models:
       - zmq:tcp://192.168.1.20:5555
 ```
 
-The remote endpoint is responsible for loading a compatible model and returning detections using Frigate's ZMQ detector protocol. Keep the endpoint on a trusted network; ZMQ transport does not add authentication by itself.
+The remote endpoint is responsible for loading a compatible model and returning detections using Gannet's ZMQ detector protocol. Keep the endpoint on a trusted network; ZMQ transport does not add authentication by itself.
 
 ## Multiple devices and scenes
 

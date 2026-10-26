@@ -1,17 +1,17 @@
 ---
 id: pwa
-title: Installing Frigate App
+title: Installing Gannet App
 ---
 
-Frigate supports being installed as a [Progressive Web App](https://web.dev/explore/progressive-web-apps) on Desktop, Android, and iOS.
+Gannet supports being installed as a [Progressive Web App](https://web.dev/explore/progressive-web-apps) on Desktop, Android, and iOS.
 
 This adds features including the ability to deep link directly into the app.
 
 ## Requirements
 
-In order to install Frigate as a PWA, the following requirements must be met:
+In order to install Gannet as a PWA, the following requirements must be met:
 
-- Frigate must be accessed via a secure context (localhost, secure https, VPN, etc.)
+- Gannet must be accessed via a secure context (localhost, secure https, VPN, etc.)
 - On Android, Firefox, Chrome, Edge, Opera, and Samsung Internet Browser all support installing PWAs.
 - On iOS 16.4 and later, PWAs can be installed from the Share menu in Safari, Chrome, Edge, Firefox, and Orion.
 
@@ -25,4 +25,4 @@ Installation varies slightly based on the device that is being used:
 
 ## Usage
 
-Once setup, the Frigate app can be used wherever it has access to Frigate. This means it can be setup as local-only, VPN-only, or fully accessible depending on your needs.
+Once setup, the Gannet app can be used wherever it has access to Gannet. This means it can be setup as local-only, VPN-only, or fully accessible depending on your needs.

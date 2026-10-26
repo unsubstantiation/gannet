@@ -1455,7 +1455,7 @@
       "variableNameLabel": "変数名",
       "variableNamePlaceholder": "例：MY_VARIABLE",
       "loggerNameLabel": "ロガー名",
-      "loggerNamePlaceholder": "例：frigate.record",
+      "loggerNamePlaceholder": "例：gannet.record",
       "keyPatternError": "英字、数字、ハイフン、アンダースコアのみを使用してください（スペースは使用不可）"
     },
     "knownPlates": {

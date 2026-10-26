@@ -1574,7 +1574,7 @@
       "variableNameLabel": "Nama variabel",
       "variableNamePlaceholder": "mis., MY_VARIABLE",
       "loggerNameLabel": "Nama logger",
-      "loggerNamePlaceholder": "mis., frigate.record",
+      "loggerNamePlaceholder": "mis., gannet.record",
       "keyPatternError": "Gunakan hanya huruf, angka, tanda hubung, dan garis bawah (tanpa spasi)"
     },
     "knownPlates": {

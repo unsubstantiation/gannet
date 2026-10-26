@@ -1,6 +1,6 @@
 # Contributing
 
-This repository is the native Windows edition of Frigate. Changes must preserve
+This repository is the native Windows edition of Gannet. Changes must preserve
 the Windows-only runtime contract: 64-bit CPython 3.12, `spawn`
 multiprocessing, native Windows paths and executables, and no dependency on
 WSL, containers, Unix sockets, device nodes, UID/GID ownership, or Unix service
@@ -25,7 +25,7 @@ Node.js is available.
 ## Licensing your work
 
 This repository is not open source; see [LICENSING.md](LICENSING.md). Contributions
-follow three rules, and CI enforces the second:
+follow three rules, enforced by the licensing tests:
 
 1. **Inbound equals outbound.** Your patch arrives under
    [`LicenseRef-GNCL-1.0`](LICENSE) if it adds new Gannet Material, and under the MIT
@@ -55,9 +55,9 @@ python scripts/generate_reuse_toml.py --upstream-dir ..\frigate
 From the repository root:
 
 ```powershell
-ruff format bootstrap_windows.py frigate migrations testing-scripts
-ruff check bootstrap_windows.py frigate migrations testing-scripts
-python -m compileall -q bootstrap_windows.py frigate migrations testing-scripts
+ruff format bootstrap_windows.py gannet migrations testing-scripts
+ruff check bootstrap_windows.py gannet migrations testing-scripts
+python -m compileall -q bootstrap_windows.py gannet migrations testing-scripts
 python testing-scripts/check_windows_requirements.py
 python testing-scripts/run_windows_unit_suite.py
 ```
@@ -77,9 +77,9 @@ scripts when changing the corresponding source.
 
 ## Design rules
 
-- Keep platform behavior in `frigate/util/platform.py` where practical. It must
-  remain importable during early startup without importing other Frigate
-  modules.
+- Keep platform behavior in `gannet/util/platform.py` where practical. It must
+remain importable during early startup without importing other Gannet
+modules.
 - Build paths with `pathlib` or `os.path`; do not introduce Unix root paths.
 - Start child processes with Windows-safe argument lists and process flags.
 - Keep the public HTTP listener authenticated and the trusted internal listener
@@ -94,7 +94,7 @@ scripts when changing the corresponding source.
 ```text
 bootstrap_windows.py   Windows installer and launcher generator
 requirements.txt       authoritative CPython 3.12 Windows dependencies
-frigate/               Python application
+gannet/                Python application
   api/                 FastAPI routes and native HTTP gateway
   config/              configuration models and validation
   detectors/           Windows-supported detector backends

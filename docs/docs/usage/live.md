@@ -5,7 +5,7 @@ title: Live View
 
 import NavPath from "@site/src/components/NavPath";
 
-**Live view** is Frigate's real-time dashboard and the page you land on by default. It shows all of your cameras at a glance, streams your most recent alerts across the top, and lets you open any camera in a full-resolution single-camera view with audio, two-way talk, PTZ, and on-demand recording controls.
+**Live view** is Gannet's real-time dashboard and the page you land on by default. It shows all of your cameras at a glance, streams your most recent alerts across the top, and lets you open any camera in a full-resolution single-camera view with audio, two-way talk, PTZ, and on-demand recording controls.
 
 This page describes how to _use_ the Live view. For how to _configure_ live streaming (go2rtc, stream selection, smart streaming, WebRTC, and audio), see the [Live View configuration](/configuration/live) docs.
 
@@ -13,7 +13,7 @@ This page describes how to _use_ the Live view. For how to _configure_ live stre
 
 The default **All Cameras** dashboard shows every camera, with a filmstrip of recent **alerts** scrolling across the top. Clicking an alert opens it in [Review](/usage/review); each card also has a check button to mark it reviewed without leaving the dashboard. Only **alerts** appear in the filmstrip. To suppress a label or zone from showing there, configure it as a detection instead (see [Alerts and Detections](/configuration/review#alerts-and-detections)).
 
-By default Frigate uses **smart streaming**: a camera's image updates roughly once per minute while nothing is happening, and switches to a full live stream the moment activity is detected. This conserves bandwidth and resources. You can change this for each camera when using a camera group (see [Streaming settings](#streaming-settings-and-the-right-click-menu) below), and the behavior is explained in detail under [Live view technologies](/configuration/live#live-view-technologies).
+By default Gannet uses **smart streaming**: a camera's image updates roughly once per minute while nothing is happening, and switches to a full live stream the moment activity is detected. This conserves bandwidth and resources. You can change this for each camera when using a camera group (see [Streaming settings](#streaming-settings-and-the-right-click-menu) below), and the behavior is explained in detail under [Live view technologies](/configuration/live#live-view-technologies).
 
 On mobile, a toggle in the header switches between a **grid** layout and a single-column **list** layout. On desktop a **fullscreen** button is available in the lower-right corner.
 
@@ -60,7 +60,7 @@ You can optionally overlay live streaming statistics (stream type, bandwidth, la
 
 Right-clicking (or long-pressing) a camera tile opens a context menu with quick controls: an **audio volume** control for streams that support audio, **Mute / Unmute all cameras**, **show or hide streaming statistics**, the **debug view**, **notification** options, and, for admins, turning the camera on or off. If the audio control doesn't appear, see [Audio Support](/configuration/live#audio-support). Audio requires go2rtc configured with a compatible codec.
 
-A **Low-bandwidth mode** notice may also appear in the context menu with a **Reset** option when Frigate has fallen back to the lower-quality jsmpeg stream. See the [Live view FAQ](/configuration/live#live-view-faq) for why this happens.
+A **Low-bandwidth mode** notice may also appear in the context menu with a **Reset** option when Gannet has fallen back to the lower-quality jsmpeg stream. See the [Live view FAQ](/configuration/live#live-view-faq) for why this happens.
 
 For non-default groups, the context menu also exposes **Streaming Settings** for that camera, which let you choose:
 
@@ -80,7 +80,7 @@ Clicking a camera tile opens its full-resolution single-camera view. The top bar
 - **Two-way talk** (the microphone button, which requires a supported camera and WebRTC; keyboard shortcut `t`), and
 - **Camera audio muting** (the speaker button; keyboard shortcut `m`).
 
-You can pinch or scroll to zoom into the feed. A **settings** gear provides a **stream** selector (with audio and two-way-talk availability indicators), **Play in background**, **Show stats**, and a **Debug view** that overlays Frigate's detection regions and bounding boxes.
+You can pinch or scroll to zoom into the feed. A **settings** gear provides a **stream** selector (with audio and two-way-talk availability indicators), **Play in background**, **Show stats**, and a **Debug view** that overlays Gannet's detection regions and bounding boxes.
 
 :::tip
 

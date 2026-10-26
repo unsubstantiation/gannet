@@ -51,7 +51,7 @@ unidecode == 1.4.*
 titlecase == 2.4.*
 
 # Image processing
-# numpy stays below 2.0: norfair 2.3.0, which frigate/ptz/autotrack.py uses for
+# numpy stays below 2.0: norfair 2.3.0, which gannet/ptz/autotrack.py uses for
 # camera motion estimation, requires numpy<2.0.0 and has no newer release. The
 # three packages below are the ones whose current releases require numpy>=2
 # (scipy 1.18, librosa 1.0, opencv-contrib-python 4.12 and later), so they are
@@ -81,7 +81,7 @@ openai == 3.33.*
 py-vapid == 1.9.6
 pywebpush == 2.5.*
 
-# Windows service (SCM) support: frigate/util/windows_service.py imports
+# Windows service (SCM) support: gannet/util/windows_service.py imports
 # servicemanager, win32event, win32service and win32serviceutil, and
 # scripts/install_frigate_service.ps1 drives the install through them. pywin32
 # ships those as compiled extension modules in its cp312 win_amd64 wheel, so

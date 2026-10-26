@@ -31,7 +31,7 @@ export const BASE_STATS = {
     garage: cameraStats("garage"),
   },
   cpu_usages: {
-    "1": { cmdline: "frigate.app", cpu: "5.0", cpu_average: "4.5", mem: "2.1" },
+    "1": { cmdline: "gannet.app", cpu: "5.0", cpu_average: "4.5", mem: "2.1" },
   },
   detectors: {
     cpu: {

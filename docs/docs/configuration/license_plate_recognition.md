@@ -8,9 +8,9 @@ import TabItem from "@theme/TabItem";
 import NavPath from "@site/src/components/NavPath";
 import FaqItem from "@site/src/components/FaqItem";
 
-Frigate can recognize license plates on vehicles and automatically add the detected characters to the `recognized_license_plate` field or a [known](#matching) name as a `sub_label` to tracked objects of type `car`, `motorcycle`, `bus`, `truck`, `school_bus`, or `garbage_truck`, depending on which of those labels your model detects. A common use case may be to read the license plates of cars pulling into a driveway or cars passing by on a street.
+Gannet can recognize license plates on vehicles and automatically add the detected characters to the `recognized_license_plate` field or a [known](#matching) name as a `sub_label` to tracked objects of type `car`, `motorcycle`, `bus`, `truck`, `school_bus`, or `garbage_truck`, depending on which of those labels your model detects. A common use case may be to read the license plates of cars pulling into a driveway or cars passing by on a street.
 
-LPR works best when the license plate is clearly visible to the camera. For moving vehicles, Frigate continuously refines the recognition process, keeping the most confident result. When a vehicle becomes stationary, LPR continues to run for a short time after to attempt recognition.
+LPR works best when the license plate is clearly visible to the camera. For moving vehicles, Gannet continuously refines the recognition process, keeping the most confident result. When a vehicle becomes stationary, LPR continues to run for a short time after to attempt recognition.
 
 :::info
 
@@ -31,11 +31,11 @@ When a plate is recognized, the details are:
 
 Users running a Frigate+ model (or any custom model that natively detects license plates) should ensure that `license_plate` is added to the [list of objects to track](https://docs.frigate.video/plus/#available-label-types) either globally or for a specific camera. This will improve the accuracy and performance of the LPR model.
 
-Users without a model that detects license plates can still run LPR. Frigate uses a lightweight YOLOv9 license plate detection model that can be configured to run on your CPU or GPU. In this case, you should _not_ define `license_plate` in your list of objects to track.
+Users without a model that detects license plates can still run LPR. Gannet uses a lightweight YOLOv9 license plate detection model that can be configured to run on your CPU or GPU. In this case, you should _not_ define `license_plate` in your list of objects to track.
 
 :::note
 
-In the default mode, Frigate's LPR needs to first detect a vehicle before it can recognize a license plate. If you're using a dedicated LPR camera and have a zoomed-in view where a vehicle will not be detected, you can still run LPR, but the configuration parameters will differ from the default mode. See the [Dedicated LPR Cameras](#dedicated-lpr-cameras) section below.
+In the default mode, Gannet's LPR needs to first detect a vehicle before it can recognize a license plate. If you're using a dedicated LPR camera and have a zoomed-in view where a vehicle will not be detected, you can still run LPR, but the configuration parameters will differ from the default mode. See the [Dedicated LPR Cameras](#dedicated-lpr-cameras) section below.
 
 :::
 
@@ -65,7 +65,7 @@ lpr:
 </TabItem>
 </ConfigTabs>
 
-Like other enrichments in Frigate, LPR **must be enabled globally** to use the feature. Disable it for specific cameras at the camera level if you don't want to run LPR on cars on those cameras.
+Like other enrichments in Gannet, LPR **must be enabled globally** to use the feature. Disable it for specific cameras at the camera level if you don't want to run LPR on cars on those cameras.
 
 <ConfigTabs>
 <TabItem value="ui">
@@ -86,9 +86,9 @@ cameras:
 </TabItem>
 </ConfigTabs>
 
-For non-dedicated LPR cameras, ensure that your camera is configured to detect vehicle objects, and that a vehicle is actually being detected by Frigate. Otherwise, LPR will not run. The object types that can carry a plate are defined by your model's `attributes_map`, so if your model detects other vehicle labels, you can add them there.
+For non-dedicated LPR cameras, ensure that your camera is configured to detect vehicle objects, and that a vehicle is actually being detected by Gannet. Otherwise, LPR will not run. The object types that can carry a plate are defined by your model's `attributes_map`, so if your model detects other vehicle labels, you can add them there.
 
-Like the other real-time processors in Frigate, license plate recognition runs on the camera stream defined by the `detect` role in your config. To ensure optimal performance, select a suitable resolution for this stream in your camera's firmware that fits your specific scene and requirements.
+Like the other real-time processors in Gannet, license plate recognition runs on the camera stream defined by the `detect` role in your config. To ensure optimal performance, select a suitable resolution for this stream in your camera's firmware that fits your specific scene and requirements.
 
 ## Advanced Configuration
 
@@ -105,7 +105,7 @@ Navigate to <NavPath path="Settings > Enrichments > License plate recognition" /
   - Default: `0.7`
 - **Minimum plate area**: Minimum area (in pixels) a license plate must be before recognition runs. This is an _area_ measurement (length x width). For reference, 1000 pixels represents a ~32x32 pixel square in your camera image. Depending on the resolution of your camera's `detect` stream, you can increase this value to ignore small or distant plates.
   - Default: `1000` pixels
-- **Device**: Device to use to run license plate detection _and_ recognition models. Auto-selected by Frigate and can be `CPU`, `GPU`, or the GPU's device number. For users without a model that detects license plates natively, using a GPU may increase performance of the YOLOv9 license plate detector model. See the [Hardware Accelerated Enrichments](/configuration/hardware_acceleration_enrichments.md) documentation.
+- **Device**: Device to use to run license plate detection _and_ recognition models. Auto-selected by Gannet and can be `CPU`, `GPU`, or the GPU's device number. For users without a model that detects license plates natively, using a GPU may increase performance of the YOLOv9 license plate detector model. See the [Hardware Accelerated Enrichments](/configuration/hardware_acceleration_enrichments.md) documentation.
   - Default: `None`
 - **Model size**: The size of the model used to identify regions of text on plates. The `small` model is fast and identifies groups of Latin and Chinese characters. The `large` model identifies Latin characters only, and uses an enhanced text detector to find characters on multi-line plates. If your country or region does not use multi-line plates, you should use the `small` model.
   - Default: `small`
@@ -200,7 +200,7 @@ lpr:
 </TabItem>
 </ConfigTabs>
 
-If Frigate is already recognizing plates correctly, leave enhancement at the default of `0`. However, if you're experiencing frequent character issues or incomplete plates and you can already easily read the plates yourself, try increasing the value gradually, starting at 3 and adjusting as needed. Use the `debug_save_plates` configuration option (see below) to see how different enhancement levels affect your plates.
+If Gannet is already recognizing plates correctly, leave enhancement at the default of `0`. However, if you're experiencing frequent character issues or incomplete plates and you can already easily read the plates yourself, try increasing the value gradually, starting at 3 and adjusting as needed. Use the `debug_save_plates` configuration option (see below) to see how different enhancement levels affect your plates.
 
 ### Normalization Rules
 
@@ -268,9 +268,9 @@ lpr:
 </TabItem>
 </ConfigTabs>
 
-The saved images are not full plates but rather the specific areas of text detected on the plates. It is normal for the text detection model to sometimes find multiple areas of text on the plate. Use them to analyze what text Frigate recognized and how image enhancement affects detection.
+The saved images are not full plates but rather the specific areas of text detected on the plates. It is normal for the text detection model to sometimes find multiple areas of text on the plate. Use them to analyze what text Gannet recognized and how image enhancement affects detection.
 
-**Note:** Frigate does **not** automatically delete these debug images. Once LPR is functioning correctly, you should disable this option and manually remove the saved files to free up storage.
+**Note:** Gannet does **not** automatically delete these debug images. Once LPR is functioning correctly, you should disable this option and manually remove the saved files to free up storage.
 
 ## Configuration Examples
 
@@ -316,7 +316,7 @@ lpr:
 
 :::note
 
-If a camera is configured to detect vehicles but you don't want Frigate to run LPR for that camera, disable LPR at the camera level:
+If a camera is configured to detect vehicles but you don't want Gannet to run LPR for that camera, disable LPR at the camera level:
 
 <ConfigTabs>
 <TabItem value="ui">
@@ -347,15 +347,15 @@ To mark a camera as a dedicated LPR camera, set `type: "lpr"` in the camera conf
 
 :::note
 
-Frigate's dedicated LPR mode is optimized for cameras with a narrow field of view, specifically positioned and zoomed to capture license plates exclusively. If your camera provides a general overview of a scene rather than a tightly focused view, this mode is not recommended.
+Gannet's dedicated LPR mode is optimized for cameras with a narrow field of view, specifically positioned and zoomed to capture license plates exclusively. If your camera provides a general overview of a scene rather than a tightly focused view, this mode is not recommended.
 
 :::
 
-Users can configure Frigate's dedicated LPR mode in two different ways depending on whether a Frigate+ (or native `license_plate` detecting) model is used:
+Users can configure Gannet's dedicated LPR mode in two different ways depending on whether a Frigate+ (or native `license_plate` detecting) model is used:
 
 ### Using a Frigate+ (or Native `license_plate` Detecting) Model
 
-Users running a Frigate+ model (or any model that natively detects `license_plate`) can take advantage of `license_plate` detection. This allows license plates to be treated as standard objects in dedicated LPR mode, meaning that alerts, detections, snapshots, and other Frigate features work as usual, and plates are detected efficiently through your configured object detector.
+Users running a Frigate+ model (or any model that natively detects `license_plate`) can take advantage of `license_plate` detection. This allows license plates to be treated as standard objects in dedicated LPR mode, meaning that alerts, detections, snapshots, and other Gannet features work as usual, and plates are detected efficiently through your configured object detector.
 
 An example configuration for a dedicated LPR camera using a `license_plate`-detecting model:
 
@@ -451,7 +451,7 @@ cameras:
 
 With this setup:
 
-- License plates are treated as normal objects in Frigate.
+- License plates are treated as normal objects in Gannet.
 - Scores, alerts, detections, and snapshots work as expected.
 - Snapshots will have license plate bounding boxes on them.
 - The `frigate/events` MQTT topic will publish tracked object updates.
@@ -460,7 +460,7 @@ With this setup:
 
 ### Using the Secondary LPR Pipeline (Without Frigate+)
 
-If you are not running a Frigate+ model, you can use Frigate's built-in secondary dedicated LPR pipeline. In this mode, Frigate bypasses the standard object detection pipeline and runs a local license plate detector model on the full frame whenever motion activity occurs.
+If you are not running a Frigate+ model, you can use Gannet's built-in secondary dedicated LPR pipeline. In this mode, Gannet bypasses the standard object detection pipeline and runs a local license plate detector model on the full frame whenever motion activity occurs.
 
 An example configuration for a dedicated LPR camera using the secondary pipeline:
 
@@ -482,8 +482,8 @@ Navigate to <NavPath path="Settings > Camera configuration > Object detection" /
 
 | Field                       | Description                                                                                                                  |
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| **Enable object detection** | Set to off to disable Frigate's standard object detection pipeline                                                           |
-| **Detect FPS**              | Set to `5`. Increase if necessary, though high values may slow down Frigate's enrichments pipeline and use considerable CPU. |
+| **Enable object detection** | Set to off to disable Gannet's standard object detection pipeline                                                           |
+| **Detect FPS**              | Set to `5`. Increase if necessary, though high values may slow down Gannet's enrichments pipeline and use considerable CPU. |
 | **Detect width**            | Set to `1920` (recommended value, but depends on your camera)                                                                |
 | **Detect height**           | Set to `1080` (recommended value, but depends on your camera)                                                                |
 
@@ -535,8 +535,8 @@ cameras:
       enhancement: 3 # optional, enhance the image before trying to recognize characters
     ffmpeg: ... # add your streams
     detect:
-      enabled: False # disable Frigate's standard object detection pipeline
-      fps: 5 # increase if necessary, though high values may slow down Frigate's enrichments pipeline and use considerable CPU
+      enabled: False # disable Gannet's standard object detection pipeline
+      fps: 5 # increase if necessary, though high values may slow down Gannet's enrichments pipeline and use considerable CPU
       width: 1920
       height: 1080
     objects:
@@ -560,7 +560,7 @@ cameras:
 
 With this setup:
 
-- The standard object detection pipeline is bypassed. Any detected license plates on dedicated LPR cameras are treated similarly to manual events in Frigate. You must **not** specify `license_plate` as an object to track.
+- The standard object detection pipeline is bypassed. Any detected license plates on dedicated LPR cameras are treated similarly to manual events in Gannet. You must **not** specify `license_plate` as an object to track.
 - The license plate detector runs on the full frame whenever motion is detected and processes frames according to your detect `fps` setting.
 - Review items will always be classified as a `detection`.
 - Snapshots will always be saved.
@@ -598,12 +598,12 @@ By selecting the appropriate configuration, users can optimize their dedicated L
 
 Ensure that:
 
-- Your camera has a clear, human-readable, well-lit view of the plate. If you can't read the plate's characters, Frigate certainly won't be able to, even if the model is recognizing a `license_plate`. This may require changing video size, quality, or frame rate settings on your camera, depending on your scene and how fast the vehicles are traveling.
+- Your camera has a clear, human-readable, well-lit view of the plate. If you can't read the plate's characters, Gannet certainly won't be able to, even if the model is recognizing a `license_plate`. This may require changing video size, quality, or frame rate settings on your camera, depending on your scene and how fast the vehicles are traveling.
 - The plate is large enough in the image (try adjusting `min_area`) or increasing the resolution of your camera's stream.
 - Your `enhancement` level (if you've changed it from the default of `0`) is not too high. Too much enhancement will run too much denoising and cause the plate characters to become blurry and unreadable.
 
 If you are using a Frigate+ model or a custom model that detects license plates, ensure that `license_plate` is added to your list of objects to track.
-If you are using the free model that ships with Frigate, you should _not_ add `license_plate` to the list of objects to track.
+If you are using the free model that ships with Gannet, you should _not_ add `license_plate` to the list of objects to track.
 
 Recognized plates will show as object labels in the debug view and will appear in the "Recognized License Plates" select box in the More Filters popout in Explore.
 
@@ -613,7 +613,7 @@ If you are still having issues detecting plates, start with a basic configuratio
 
 <FaqItem id="can-i-run-lpr-without-detecting-car-or-motorcycle-objects" question={<>Can I run LPR without detecting vehicle objects?</>}>
 
-In normal LPR mode, Frigate requires a vehicle to be detected first before recognizing a license plate. If you have a dedicated LPR camera, you can change the camera `type` to `"lpr"` to use the Dedicated LPR Camera algorithm. This comes with important caveats, though. See the [Dedicated LPR Cameras](#dedicated-lpr-cameras) section above.
+In normal LPR mode, Gannet requires a vehicle to be detected first before recognizing a license plate. If you have a dedicated LPR camera, you can change the camera `type` to `"lpr"` to use the Dedicated LPR Camera algorithm. This comes with important caveats, though. See the [Dedicated LPR Cameras](#dedicated-lpr-cameras) section above.
 
 </FaqItem>
 
@@ -633,7 +633,7 @@ Yes, but performance depends on camera quality, lighting, and infrared capabilit
 
 <FaqItem id="can-i-limit-lpr-to-specific-zones" question="Can I limit LPR to specific zones?">
 
-LPR, like other Frigate enrichments, runs at the camera level rather than the zone level. While you can't restrict LPR to specific zones directly, you can control when recognition runs by setting a `min_area` value to filter out smaller detections.
+LPR, like other Gannet enrichments, runs at the camera level rather than the zone level. While you can't restrict LPR to specific zones directly, you can control when recognition runs by setting a `min_area` value to filter out smaller detections.
 
 </FaqItem>
 
@@ -650,7 +650,7 @@ Use `match_distance` to allow small character mismatches. Alternatively, define 
 Start with ["Why isn't my license plate being detected and recognized?"](#why-isnt-my-license-plate-being-detected-and-recognized). If you are still having issues, work through these steps.
 
 1. Start with a simplified LPR config.
-   - Remove or comment out everything in your LPR config, including `min_area`, `min_plate_length`, `format`, `known_plates`, or `enhancement` values so that the only values left are `enabled` and `debug_save_plates`. This will run LPR with Frigate's default values.
+   - Remove or comment out everything in your LPR config, including `min_area`, `min_plate_length`, `format`, `known_plates`, or `enhancement` values so that the only values left are `enabled` and `debug_save_plates`. This will run LPR with Gannet's default values.
 
 <ConfigTabs>
 <TabItem value="ui">
@@ -674,15 +674,15 @@ lpr:
 </TabItem>
 </ConfigTabs>
 
-2. Enable debug logs to see exactly what Frigate is doing.
-   - Enable debug logs for LPR by adding `frigate.data_processing.common.license_plate: debug` to your `logger` configuration. These logs are _very_ verbose, so only keep this enabled when necessary. Restart Frigate after this change.
+2. Enable debug logs to see exactly what Gannet is doing.
+   - Enable debug logs for LPR by adding `gannet.data_processing.common.license_plate: debug` to your `logger` configuration. These logs are _very_ verbose, so only keep this enabled when necessary. Restart Gannet after this change.
 
      ```yaml
      logger:
        default: info
        logs:
          # highlight-next-line
-         frigate.data_processing.common.license_plate: debug
+         gannet.data_processing.common.license_plate: debug
      ```
 
 3. Ensure your plates are being _detected_.
@@ -718,9 +718,9 @@ If you are detecting vehicles on cameras where you don't want to run LPR, make s
 
 </FaqItem>
 
-<FaqItem id="it-looks-like-frigate-picked-up-my-cameras-timestamp-or-overlay-text-as-the-license-plate-how-can-i-prevent-this" question="It looks like Frigate picked up my camera's timestamp or overlay text as the license plate. How can I prevent this?">
+<FaqItem id="it-looks-like-frigate-picked-up-my-cameras-timestamp-or-overlay-text-as-the-license-plate-how-can-i-prevent-this" question="It looks like Gannet picked up my camera's timestamp or overlay text as the license plate. How can I prevent this?">
 
-This could happen if vehicles travel close to your camera's timestamp or overlay text. You could either move the text through your camera's firmware, or apply a mask to it in Frigate.
+This could happen if vehicles travel close to your camera's timestamp or overlay text. You could either move the text through your camera's firmware, or apply a mask to it in Gannet.
 
 If you are using a model that natively detects `license_plate`, add an _object mask_ of type `license_plate` and a _motion mask_ over your text.
 

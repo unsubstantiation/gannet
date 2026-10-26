@@ -3,7 +3,7 @@ id: glossary
 title: Glossary
 ---
 
-The glossary explains terms commonly used in Frigate's documentation.
+The glossary explains terms commonly used in Gannet's documentation.
 
 ## Alert
 
@@ -38,11 +38,11 @@ An incorrect result from the object detection [model](#model), where it assigns 
 
 ## Label
 
-The type assigned to a detected [object](#object) by the object detection [model](#model), drawn from the model's labelmap, for example `person`, `car`, or `dog`. Frigate tracks `person` by default; additional labels are tracked by adding them to the objects configuration. [See the available objects docs for the full list](/configuration/objects)
+The type assigned to a detected [object](#object) by the object detection [model](#model), drawn from the model's labelmap, for example `person`, `car`, or `dog`. Gannet tracks `person` by default; additional labels are tracked by adding them to the objects configuration. [See the available objects docs for the full list](/configuration/objects)
 
 ## Mask
 
-There are two types of masks in Frigate. [See the mask docs for more info](/configuration/masks)
+There are two types of masks in Gannet. [See the mask docs for more info](/configuration/masks)
 
 ### Motion Mask
 
@@ -58,7 +58,7 @@ The lowest score a detected object can have to be kept during tracking. Anything
 
 ## Model
 
-A machine learning model that Frigate uses to detect or classify objects. The object detection model locates [objects](#object) in each frame and returns their [labels](#label) and [bounding boxes](#bounding-box). Additional enrichment models run on tracked objects to add detail: face recognition, license plate recognition, bird classification, custom object and state classification, and the embedding models used for semantic search. [See the object detectors docs for more info](/configuration/object_detectors)
+A machine learning model that Gannet uses to detect or classify objects. The object detection model locates [objects](#object) in each frame and returns their [labels](#label) and [bounding boxes](#bounding-box). Additional enrichment models run on tracked objects to add detail: face recognition, license plate recognition, bird classification, custom object and state classification, and the embedding models used for semantic search. [See the object detectors docs for more info](/configuration/object_detectors)
 
 ## Motion
 
@@ -66,7 +66,7 @@ A change in pixels between the current camera frame and previous frames. When ma
 
 ## Object
 
-Something Frigate can detect and follow in a camera frame, identified by its [label](#label) (for example a person or a car). The object types Frigate watches for are set in the `objects` configuration. Once an object is detected and followed across frames it becomes a [tracked object](#tracked-object-event-in-previous-versions), which may also carry a [sub label](#sub-label) and [attributes](#attribute). [See the available objects docs for more info](/configuration/objects)
+Something Gannet can detect and follow in a camera frame, identified by its [label](#label) (for example a person or a car). The object types Gannet watches for are set in the `objects` configuration. Once an object is detected and followed across frames it becomes a [tracked object](#tracked-object-event-in-previous-versions), which may also carry a [sub label](#sub-label) and [attributes](#attribute). [See the available objects docs for more info](/configuration/objects)
 
 ## Region
 
@@ -98,4 +98,4 @@ An [object](#object) followed from the moment it enters the frame until it leave
 
 ## Zone
 
-A user-defined area of interest within the camera frame. Zones can be used for notifications and to limit where Frigate creates a [review item](#review-item). [See the zone docs for more info](/configuration/zones)
+A user-defined area of interest within the camera frame. Zones can be used for notifications and to limit where Gannet creates a [review item](#review-item). [See the zone docs for more info](/configuration/zones)

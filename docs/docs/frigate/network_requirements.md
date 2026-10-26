@@ -5,7 +5,7 @@ title: Network Requirements
 
 # Network requirements
 
-Frigate can process cameras entirely on the local Windows network after required binaries and models have been installed. Optional cloud services require outbound access.
+Gannet can process cameras entirely on the local Windows network after required binaries and models have been installed. Optional cloud services require outbound access.
 
 ## Installation
 
@@ -22,7 +22,7 @@ The bootstrap verifies downloaded application archives with fixed SHA-256 digest
 
 The Windows host needs outbound access to every camera stream and ONVIF endpoint. Typical ports include RTSP `554`, HTTP/HTTPS, and vendor-specific ONVIF ports. Use fixed camera addresses or reliable DNS.
 
-Frigate normally opens no inbound camera-facing connection. PTZ, talkback, and restreaming may require extra camera permissions.
+Gannet normally opens no inbound camera-facing connection. PTZ, talkback, and restreaming may require extra camera permissions.
 
 ## User and integration access
 
@@ -41,10 +41,10 @@ Restrict Windows Firewall rules to the required subnets or integration hosts. Ne
 Models are cached below the configured data root, normally:
 
 ```text
-%LOCALAPPDATA%\Frigate\config\model_cache
+%LOCALAPPDATA%\Gannet\config\model_cache
 ```
 
-A Windows service normally uses `%ProgramData%\Frigate` unless another base directory was selected. Features that may download model data on first use include:
+A Windows service normally uses `%ProgramData%\Gannet` unless another base directory was selected. Features that may download model data on first use include:
 
 - default CPU object detection;
 - semantic search;
@@ -66,12 +66,12 @@ Set `HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1` in the Windows service envir
 - **WebRTC STUN** uses the configured STUN service for candidate discovery.
 - **Update checks** query release metadata when enabled by the UI.
 
-Disable the corresponding feature to eliminate its traffic. Frigate does not require inbound internet exposure for any of them.
+Disable the corresponding feature to eliminate its traffic. Gannet does not require inbound internet exposure for any of them.
 
 ## Offline preparation
 
 1. Run the Windows bootstrap while connected.
-2. Start Frigate with every required local enrichment and detection model enabled.
+2. Start Gannet with every required local enrichment and detection model enabled.
 3. Confirm the model cache is populated and restart successfully without downloads.
 4. Back up the config, database, model cache, and pinned installer artifacts.
 5. Apply outbound firewall rules and test camera, MQTT, UI, recording, live view, and enrichment behavior.

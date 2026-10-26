@@ -7,7 +7,7 @@ import ConfigTabs from "@site/src/components/ConfigTabs";
 import TabItem from "@theme/TabItem";
 import NavPath from "@site/src/components/NavPath";
 
-Frigate provides a builtin audio detector which runs on the CPU. Compared to object detection in images, audio detection is a relatively lightweight operation so the only option is to run the detection on a CPU.
+Gannet provides a builtin audio detector which runs on the CPU. Compared to object detection in images, audio detection is a relatively lightweight operation so the only option is to run the detection on a CPU.
 
 ## Configuration
 
@@ -78,7 +78,7 @@ cameras:
 
 ### Configuring Minimum Volume
 
-The audio detector uses volume levels in the same way that motion in a camera feed is used for object detection. This means that Frigate will not run audio detection unless the audio volume is above the configured level in order to reduce resource usage. Audio levels can vary widely between camera models so it is important to run tests to see what volume levels are. The [Debug view](/usage/live#the-single-camera-view) in the Frigate UI has an Audio tab for cameras that have the `audio` role assigned where a graph and the current levels are displayed. The `min_volume` parameter should be set to the minimum the `RMS` level required to run audio detection.
+The audio detector uses volume levels in the same way that motion in a camera feed is used for object detection. This means that Gannet will not run audio detection unless the audio volume is above the configured level in order to reduce resource usage. Audio levels can vary widely between camera models so it is important to run tests to see what volume levels are. The [Debug view](/usage/live#the-single-camera-view) in the Gannet UI has an Audio tab for cameras that have the `audio` role assigned where a graph and the current levels are displayed. The `min_volume` parameter should be set to the minimum the `RMS` level required to run audio detection.
 
 :::tip
 
@@ -140,7 +140,7 @@ Audio label mappings are separate from the object detector's `model.labelmap`.
 
 ### Common Audio Labels
 
-The labelmap includes hundreds of sound types. The labels below are the ones most users may find practical, grouped by what they're typically used for. Use the exact label string from the left column in your `listen` config, or search for the label in the Frigate UI directly.
+The labelmap includes hundreds of sound types. The labels below are the ones most users may find practical, grouped by what they're typically used for. Use the exact label string from the left column in your `listen` config, or search for the label in the Gannet UI directly.
 
 Some labels cover several related sounds: `yell` is triggered by shouting, yelling, children shouting, and screaming; `crying` covers baby cries, sobbing, and whimpering; and `speech` covers ordinary talking and conversation.
 
@@ -198,13 +198,13 @@ Some labels cover several related sounds: `yell` is triggered by shouting, yelli
 
 :::tip
 
-Frequently-heard labels like `speech` can generate a lot of events, and each event could save a snapshot and recording based on your configuration, so start with a focused set and expand from there. The defaults (`bark`, `fire_alarm`, `speech`, `yell`) plus a few of the safety labels above cover most needs. See the [full audio labelmap](https://github.com/blakeblackshear/frigate/blob/dev/audio-labelmap.txt) or the Frigate UI for every available type.
+Frequently-heard labels like `speech` can generate a lot of events, and each event could save a snapshot and recording based on your configuration, so start with a focused set and expand from there. The defaults (`bark`, `fire_alarm`, `speech`, `yell`) plus a few of the safety labels above cover most needs. See the [full audio labelmap](https://github.com/blakeblackshear/frigate/blob/dev/audio-labelmap.txt) or the Gannet UI for every available type.
 
 :::
 
 ### Audio Transcription
 
-Frigate supports fully local audio transcription using either `sherpa-onnx` or OpenAI's open-source Whisper models via `faster-whisper`, and can alternatively offload transcription to a [GenAI provider](#genai-provider). The goal of this feature is to support Semantic Search for `speech` audio events. Frigate is not intended to act as a continuous, fully-automatic speech transcription service. Automatically transcribing all speech (or queuing many audio events for transcription) requires substantial CPU (or GPU) resources and is impractical on most systems. For this reason, transcriptions for events are initiated manually from the UI or the API rather than being run continuously in the background.
+Gannet supports fully local audio transcription using either `sherpa-onnx` or OpenAI's open-source Whisper models via `faster-whisper`, and can alternatively offload transcription to a [GenAI provider](#genai-provider). The goal of this feature is to support Semantic Search for `speech` audio events. Gannet is not intended to act as a continuous, fully-automatic speech transcription service. Automatically transcribing all speech (or queuing many audio events for transcription) requires substantial CPU (or GPU) resources and is impractical on most systems. For this reason, transcriptions for events are initiated manually from the UI or the API rather than being run continuously in the background.
 
 :::info
 
@@ -224,7 +224,7 @@ To enable transcription, configure it globally and optionally disable for specif
 **Global:** Navigate to <NavPath path="Settings > Enrichments > Audio transcription" />.
 
 - Set **Enable audio transcription** to on
-- Set **Audio transcription model or GenAI provider name** to `whisper` for Frigate's built-in local models, or to the name of a GenAI provider
+- Set **Audio transcription model or GenAI provider name** to `whisper` for Gannet's built-in local models, or to the name of a GenAI provider
 - Set **Transcription device** to the desired device
 - Set **Model size** to the desired size
 
@@ -267,7 +267,7 @@ The optional config parameters that can be set at the global level include:
   - It is recommended to only configure the features at the global level, and enable it at the individual camera level.
 - **`model`**: The transcription backend.
   - Default: `whisper`
-  - `whisper` uses Frigate's built-in local models, described by `device` and `model_size` below.
+  - `whisper` uses Gannet's built-in local models, described by `device` and `model_size` below.
   - Any other value must name a key in your `genai` config whose entry has `transcribe` in its `roles`. See [GenAI Provider](#genai-provider).
 - **`device`**: Device to use to run transcription and translation models.
   - Default: `CPU`
@@ -289,7 +289,7 @@ The only field that is valid at the camera level is `enabled`. In particular `mo
 
 #### GenAI Provider
 
-Frigate can send audio to a GenAI provider for transcription when that provider has the `transcribe` role. This is useful if you already run a GenAI provider, or if you do not have the CPU/GPU headroom for a local whisper model. See [Provider support](/configuration/genai/genai_config#provider-support) for which providers can serve this role. The model must accept audio: either a dedicated ASR model such as Qwen3-ASR, or a general multimodal model that accepts audio.
+Gannet can send audio to a GenAI provider for transcription when that provider has the `transcribe` role. This is useful if you already run a GenAI provider, or if you do not have the CPU/GPU headroom for a local whisper model. See [Provider support](/configuration/genai/genai_config#provider-support) for which providers can serve this role. The model must accept audio: either a dedicated ASR model such as Qwen3-ASR, or a general multimodal model that accepts audio.
 
 To use a GenAI provider for audio transcription:
 
@@ -336,7 +336,7 @@ audio_transcription:
 
 :::warning
 
-**Live transcription against a metered provider is billed continuously.** In live mode Frigate uploads an overlapping ~2 second window of audio roughly once per second, per camera, for as long as audio stays above that camera's `audio.min_volume`. Windows below that threshold are never uploaded, which is what keeps a quiet camera near zero requests, but a camera pointed at a busy street will keep sending.
+**Live transcription against a metered provider is billed continuously.** In live mode Gannet uploads an overlapping ~2 second window of audio roughly once per second, per camera, for as long as audio stays above that camera's `audio.min_volume`. Windows below that threshold are never uploaded, which is what keeps a quiet camera near zero requests, but a camera pointed at a busy street will keep sending.
 
 Three things keep this opt-in: `transcribe` is not one of the default roles, live transcription is off by default, and the volume gate suppresses silence. Transcription of recorded `speech` events is unaffected - it remains a manual, one-request-per-event action.
 
@@ -350,7 +350,7 @@ When set explicitly, it is sent as the transcription endpoint's native `language
 
 #### Live transcription
 
-The single camera Live view in the Frigate UI supports live transcription of audio for streams defined with the `audio` role. Use the Enable/Disable Live Audio Transcription button/switch to toggle transcription processing, or toggle it outside of the UI with the [`frigate/<camera_name>/audio_transcription/set`](/integrations/mqtt#frigatecamera_nameaudio_transcriptionset) MQTT topic or the HTTP API. When speech is heard, the UI will display a black box over the top of the camera stream with text. The MQTT topic `frigate/<camera_name>/audio/transcription` will also be updated in real-time with transcribed text.
+The single camera Live view in the Gannet UI supports live transcription of audio for streams defined with the `audio` role. Use the Enable/Disable Live Audio Transcription button/switch to toggle transcription processing, or toggle it outside of the UI with the [`frigate/<camera_name>/audio_transcription/set`](/integrations/mqtt#frigatecamera_nameaudio_transcriptionset) MQTT topic or the HTTP API. When speech is heard, the UI will display a black box over the top of the camera stream with text. The MQTT topic `frigate/<camera_name>/audio/transcription` will also be updated in real-time with transcribed text.
 
 Results can be error-prone due to a number of factors, including:
 
@@ -362,7 +362,7 @@ Results can be error-prone due to a number of factors, including:
 
 For speech sources close to the camera with minimal background noise, use the `small` model.
 
-A [GenAI provider](#genai-provider) is generally the most accurate option for live transcription, at the cost of a network round trip per window. That round trip has to stay under about a second to keep up with the audio; if it does not, Frigate drops the oldest buffered audio rather than letting the backlog grow.
+A [GenAI provider](#genai-provider) is generally the most accurate option for live transcription, at the cost of a network round trip per window. That round trip has to stay under about a second to keep up with the audio; if it does not, Gannet drops the oldest buffered audio rather than letting the backlog grow.
 
 If you have CUDA hardware, you can experiment with the `large` `whisper` model on GPU. Performance is not quite as fast as the `sherpa-onnx` `small` model, but live transcription is far more accurate. Using the `large` model with CPU will likely be too slow for real-time transcription.
 
@@ -376,7 +376,7 @@ The transcribed/translated speech will appear in the description box in the Trac
 
 :::note
 
-Only one `speech` event may be transcribed at a time. Frigate does not automatically transcribe `speech` events or implement a queue for long-running transcription model inference.
+Only one `speech` event may be transcribed at a time. Gannet does not automatically transcribe `speech` events or implement a queue for long-running transcription model inference.
 
 :::
 
@@ -384,9 +384,9 @@ With `model: whisper`, recorded `speech` events always use a `whisper` model, re
 
 #### FAQ
 
-1. Why doesn't Frigate automatically transcribe all `speech` events?
+1. Why doesn't Gannet automatically transcribe all `speech` events?
 
-   Frigate does not implement a queue mechanism for speech transcription, and adding one is not trivial. A proper queue would need backpressure, prioritization, memory/disk buffering, retry logic, crash recovery, and safeguards to prevent unbounded growth when events outpace processing. That's a significant amount of complexity for a feature that, in most real-world environments, would mostly just churn through low-value noise.
+   Gannet does not implement a queue mechanism for speech transcription, and adding one is not trivial. A proper queue would need backpressure, prioritization, memory/disk buffering, retry logic, crash recovery, and safeguards to prevent unbounded growth when events outpace processing. That's a significant amount of complexity for a feature that, in most real-world environments, would mostly just churn through low-value noise.
 
    Because transcription is **serialized (one event at a time)** and speech events can be generated far faster than they can be processed, an auto-transcribe toggle would very quickly create an ever-growing backlog and degrade core functionality. For the amount of engineering and risk involved, it adds **very little practical value** for the majority of deployments, which are often on low-powered, edge hardware.
 
@@ -398,4 +398,4 @@ With `model: whisper`, recorded `speech` events always use a `whisper` model, re
 
    There's no guarantee that a `speech` event is even created from the exact audio that went through the transcription model. Live transcription and `speech` event creation are **separate, asynchronous processes**. Even when both are correctly configured, trying to align the **precise start and end time of a speech event** with whatever audio the model happened to be processing at that moment is unreliable.
 
-   Automatically persisting that data would often result in **misaligned, partial, or irrelevant transcripts**, while still incurring all of the CPU, storage, and privacy costs of transcription. That's why Frigate treats transcription as an **explicit, user-initiated action** rather than an automatic side-effect of every `speech` event.
+   Automatically persisting that data would often result in **misaligned, partial, or irrelevant transcripts**, while still incurring all of the CPU, storage, and privacy costs of transcription. That's why Gannet treats transcription as an **explicit, user-initiated action** rather than an automatic side-effect of every `speech` event.

@@ -77,7 +77,7 @@ def check_pydantic_fields(pydantic_class, mock_keys, model_name):
 
 def generate_config():
     """Generate FrigateConfig from the Python backend model."""
-    from frigate.config import FrigateConfig
+    from gannet.config import FrigateConfig
 
     config = FrigateConfig.model_validate_json(
         json.dumps(
@@ -135,14 +135,14 @@ def generate_config_schema():
     RJSF-based config form. Generating it here keeps the e2e fixture in sync
     with the backend whenever config models change.
     """
-    from frigate.config import FrigateConfig
+    from gannet.config import FrigateConfig
 
     return FrigateConfig.model_json_schema()
 
 
 def generate_reviews():
     """Generate ReviewSegmentResponse[] validated against Pydantic + Peewee."""
-    from frigate.api.defs.response.review_response import ReviewSegmentResponse
+    from gannet.api.defs.response.review_response import ReviewSegmentResponse
 
     reviews = [
         ReviewSegmentResponse(
@@ -235,7 +235,7 @@ def generate_reviews():
 
 def generate_events():
     """Generate EventResponse[] validated against Pydantic + Peewee."""
-    from frigate.api.defs.response.event_response import EventResponse
+    from gannet.api.defs.response.event_response import EventResponse
 
     events = [
         EventResponse(
@@ -342,7 +342,7 @@ def generate_events():
 
 def generate_exports():
     """Generate ExportModel[] validated against Pydantic + Peewee."""
-    from frigate.api.defs.response.export_response import ExportModel
+    from gannet.api.defs.response.export_response import ExportModel
 
     exports = [
         ExportModel(
@@ -386,7 +386,7 @@ def generate_exports():
 
 def generate_cases():
     """Generate ExportCaseModel[] validated against Pydantic + Peewee."""
-    from frigate.api.defs.response.export_case_response import ExportCaseModel
+    from gannet.api.defs.response.export_case_response import ExportCaseModel
 
     cases = [
         ExportCaseModel(

@@ -1,0 +1,476 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
+"""Platform helper tests for Windows command and path handling."""
+
+import ntpath
+import os
+import tempfile
+import threading
+import unittest
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+from gannet.util.builtin import get_ffmpeg_arg_list
+from gannet.util.platform import (
+    IPC_ENDPOINTS,
+    IS_WINDOWS,
+    MAX_PATH_LIMIT,
+    SERVICE_STOP_EVENT_VAR,
+    ffmpeg_concat_file_line,
+    ffmpeg_stdin_input,
+    get_fs_type,
+    get_process_priority_class,
+    get_web_host,
+    get_web_port,
+    install_service_stop_watcher,
+    ipc_endpoint,
+    is_subpath,
+    long_path_warning,
+    longest_recording_path,
+    quote_ffmpeg_arg,
+    resolve_media_url_path,
+    split_ffmpeg_command,
+    to_media_url_path,
+)
+
+
+class TestWindowsFfmpegPaths(unittest.TestCase):
+    def test_stdin_uses_pipe_protocol_on_windows(self):
+        with patch("gannet.util.platform.IS_WINDOWS", True):
+            self.assertEqual(ffmpeg_stdin_input(), "pipe:0")
+
+    def test_concat_file_line_normalizes_windows_paths_and_quotes(self):
+        path = "C:\\Program Files\\Cam's Clips\\front.mp4"
+        with patch("gannet.util.platform.IS_WINDOWS", True):
+            line = ffmpeg_concat_file_line(path)
+
+        self.assertEqual(line, "file 'C:/Program Files/Cam'\\''s Clips/front.mp4'")
+
+    def test_command_parser_preserves_paths_with_spaces(self):
+        executable = r"C:\Program Files\FFmpeg\bin\ffmpeg.exe"
+        media_path = r"C:\Frigate Data\recordings\front.mp4"
+        with patch("gannet.util.platform.IS_WINDOWS", True):
+            command = (
+                f"{quote_ffmpeg_arg(executable)} -i "
+                f"{quote_ffmpeg_arg(media_path)} output.mp4"
+            )
+            parsed = split_ffmpeg_command(command)
+
+        self.assertEqual(parsed, [executable, "-i", media_path, "output.mp4"])
+
+    def test_unquoted_windows_path_keeps_its_separators(self):
+        """POSIX escape handling used to eat the backslashes in a path."""
+        with patch("gannet.util.platform.IS_WINDOWS", True):
+            parsed = split_ffmpeg_command(r"-i D:\videos\cam.mp4")
+
+        self.assertEqual(parsed, ["-i", r"D:\videos\cam.mp4"])
+
+    def test_a_path_with_spaces_has_to_be_quoted(self):
+        """Frigate quotes what it builds itself; a hand written config must too."""
+        path = r"D:\Frigate Data\clips\front.mp4"
+
+        with patch("gannet.util.platform.IS_WINDOWS", True):
+            unquoted = split_ffmpeg_command(f"-i {path}")
+            quoted = split_ffmpeg_command(f'-i "{path}"')
+
+        self.assertEqual(unquoted, ["-i", r"D:\Frigate", r"Data\clips\front.mp4"])
+        self.assertEqual(quoted, ["-i", path])
+
+    def test_quotes_are_removed_in_windows_mode(self):
+        # the C runtime strips the quotes before ffmpeg sees the argument
+        with patch("gannet.util.platform.IS_WINDOWS", True):
+            parsed = split_ffmpeg_command(r'-vf "scale=1280:720" -i "D:/cams/s1"')
+
+        self.assertEqual(parsed, ["-vf", "scale=1280:720", "-i", "D:/cams/s1"])
+
+    def test_quotes_are_removed_and_escapes_are_applied(self):
+        with patch("gannet.util.platform.IS_WINDOWS", True):
+            parsed = split_ffmpeg_command(r'-metadata "say \"hi\"" out.mp4')
+
+        self.assertEqual(parsed, ["-metadata", 'say "hi"', "out.mp4"])
+
+    def test_quoted_windows_path_keeps_its_separators(self):
+        path = "C:\\Program Files\\cams\\front.mp4"
+        with patch("gannet.util.platform.IS_WINDOWS", True):
+            parsed = split_ffmpeg_command(f'-i "{path}"')
+
+        self.assertEqual(parsed, ["-i", path])
+
+    def test_get_ffmpeg_arg_list_uses_the_platform_rules(self):
+        with patch("gannet.util.platform.IS_WINDOWS", True):
+            args = get_ffmpeg_arg_list(r"-re -i D:\videos\cam.mp4")
+
+        self.assertEqual(args, ["-re", "-i", r"D:\videos\cam.mp4"])
+
+    def test_get_ffmpeg_arg_list_leaves_lists_alone(self):
+        args = ["-re", "-i", r"D:\videos\cam.mp4"]
+        self.assertIs(get_ffmpeg_arg_list(args), args)
+
+    def test_quoting_round_trips_through_the_splitter(self):
+        cases = [
+            r"D:\videos\cam.mp4",
+            r"C:\Program Files\ffmpeg\bin\ffmpeg.exe",
+            r"D:\Frigate Data\clips\front door.mp4",
+        ]
+
+        with patch("gannet.util.platform.IS_WINDOWS", True):
+            for value in cases:
+                with self.subTest(value=value):
+                    command = f"-hide_banner -i {quote_ffmpeg_arg(value)}"
+                    self.assertEqual(split_ffmpeg_command(command)[2], value)
+
+    def test_low_priority_maps_to_windows_idle_class(self):
+        psutil = MagicMock()
+        psutil.IDLE_PRIORITY_CLASS = 0x40
+        psutil.BELOW_NORMAL_PRIORITY_CLASS = 0x4000
+        psutil.NORMAL_PRIORITY_CLASS = 0x20
+        with (
+            patch("gannet.util.platform.IS_WINDOWS", True),
+            patch.dict("sys.modules", {"psutil": psutil}),
+        ):
+            self.assertEqual(get_process_priority_class(19), 0x40)
+            self.assertEqual(get_process_priority_class(5), 0x4000)
+            self.assertEqual(get_process_priority_class(0), 0x20)
+
+
+class TestWindowsLongPaths(unittest.TestCase):
+    def test_longest_path_uses_the_longest_camera_name(self):
+        with (
+            patch("gannet.util.platform.IS_WINDOWS", True),
+            patch(
+                "gannet.util.platform.get_media_dir", return_value="D:\Frigate\media"
+            ),
+        ):
+            short = longest_recording_path(["driveway", "front_door"])
+            long = longest_recording_path(["driveway", "front_door_camera_name"])
+
+        self.assertIn("front_door_camera_name", long)
+        self.assertEqual(
+            len(long) - len(short), len("front_door_camera_name") - len("front_door")
+        )
+
+    def test_warning_names_the_base_dir_and_the_registry_value(self):
+        with (
+            patch("gannet.util.platform.IS_WINDOWS", True),
+            patch("gannet.util.platform.long_paths_enabled", return_value=False),
+            patch("gannet.util.platform.get_base_dir", return_value="D:\Frigate"),
+            patch(
+                "gannet.util.platform.get_media_dir",
+                return_value="D:\\" + "nested\\" * 30 + "Frigate\\media",
+            ),
+        ):
+            warning = long_path_warning(["driveway"])
+
+        self.assertIsNotNone(warning)
+        self.assertIn("D:\\Frigate", warning)
+        self.assertIn("LongPathsEnabled", warning)
+
+    def test_no_warning_when_long_paths_are_enabled(self):
+        with (
+            patch("gannet.util.platform.IS_WINDOWS", True),
+            patch("gannet.util.platform.long_paths_enabled", return_value=True),
+            patch(
+                "gannet.util.platform.get_media_dir",
+                return_value="D:\\" + "nested\\" * 30 + "Frigate\\media",
+            ),
+        ):
+            self.assertIsNone(long_path_warning(["driveway"]))
+
+    def test_no_warning_for_a_short_path(self):
+        with (
+            patch("gannet.util.platform.IS_WINDOWS", True),
+            patch("gannet.util.platform.long_paths_enabled", return_value=False),
+            patch(
+                "gannet.util.platform.get_media_dir", return_value="C:\Frigate\media"
+            ),
+        ):
+            self.assertIsNone(long_path_warning(["driveway"]))
+
+        self.assertLess(len("C:\\Frigate\\media\\recordings"), MAX_PATH_LIMIT)
+
+
+class TestWebPort(unittest.TestCase):
+    def test_out_of_range_ports_fall_back_to_the_internal_port(self):
+        """A port outside 1-65535 cannot be bound, so it is not a port."""
+        for value in ("0", "65536", "99999"):
+            with (
+                self.subTest(value=value),
+                patch.dict(os.environ, {"FRIGATE_WEB_PORT": value}),
+            ):
+                self.assertEqual(get_web_port(5000), 5000)
+
+    def test_a_valid_port_is_used(self):
+        with patch.dict(os.environ, {"FRIGATE_WEB_PORT": "8971"}):
+            self.assertEqual(get_web_port(5000), 8971)
+
+    def test_a_non_numeric_port_falls_back(self):
+        with patch.dict(os.environ, {"FRIGATE_WEB_PORT": "https"}):
+            self.assertEqual(get_web_port(5000), 5000)
+
+
+class TestWebHost(unittest.TestCase):
+    def test_ipv4_is_the_default(self):
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(get_web_host(), "0.0.0.0")
+
+    def test_the_ipv6_config_option_selects_the_dual_stack_wildcard(self):
+        """``networking.ipv6.enabled`` has to reach the listener.
+
+        The option was accepted by the config, shown in the UI, and then read by
+        nothing: the public listener always bound the IPv4 wildcard, so an
+        installation that enabled IPv6 still could not be reached over it.
+        """
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(get_web_host(ipv6_enabled=True), "::")
+
+    def test_an_explicit_host_wins_over_the_config_option(self):
+        for value in ("127.0.0.1", "::1", "2001:db8::5"):
+            with (
+                self.subTest(value=value),
+                patch.dict(os.environ, {"FRIGATE_WEB_HOST": value}),
+                patch("gannet.util.platform.logger"),
+            ):
+                self.assertEqual(get_web_host(), value)
+                self.assertEqual(get_web_host(ipv6_enabled=True), value)
+
+    def test_an_ipv6_host_without_the_config_option_is_reported(self):
+        with (
+            patch.dict(os.environ, {"FRIGATE_WEB_HOST": "::"}),
+            self.assertLogs("gannet.util.platform", level="WARNING") as logs,
+        ):
+            self.assertEqual(get_web_host(ipv6_enabled=False), "::")
+
+        self.assertIn("networking.ipv6.enabled", "\n".join(logs.output))
+
+    def test_a_hostname_is_not_an_ipv6_address(self):
+        with patch.dict(os.environ, {"FRIGATE_WEB_HOST": "nvr.local"}):
+            with patch("gannet.util.platform.logger") as logger:
+                self.assertEqual(get_web_host(), "nvr.local")
+
+            logger.warning.assert_not_called()
+
+
+class TestIpcEndpoints(unittest.TestCase):
+    def test_unknown_names_do_not_collide_with_known_endpoints(self):
+        """An unknown endpoint must not share a known endpoint's port.
+
+        A hash of the name used to be able to land on any of the known
+        ports (the name ``a`` hashes onto the zmq detector endpoint), and
+        on the birdseye listener 20 ports above the base, so two sockets
+        would fight over one loopback port.
+        """
+        with patch("gannet.util.platform.IS_WINDOWS", True):
+            known = {ipc_endpoint(name) for name in IPC_ENDPOINTS}
+            birdseye = "tcp://127.0.0.1:5620"
+
+            for name in ("a", "foo", "bar", "detector2", "new_socket"):
+                with self.subTest(name=name):
+                    endpoint = ipc_endpoint(name)
+                    self.assertNotIn(endpoint, known)
+                    self.assertNotEqual(endpoint, birdseye)
+
+    def test_unknown_names_are_stable(self):
+        with patch("gannet.util.platform.IS_WINDOWS", True):
+            self.assertEqual(
+                ipc_endpoint("future_socket"), ipc_endpoint("future_socket")
+            )
+
+
+class TestMediaUrlPaths(unittest.TestCase):
+    def test_cache_urls_resolve_into_the_cache_dir(self):
+        """The cache dir is the /cache URL root, not a directory inside it."""
+        # a resolved path is a real path on this platform, so the expected
+        # value is built with the same separators the platform uses
+        cache_dir = str(Path(tempfile.gettempdir()) / "frigate-cache")
+
+        media_dir = str(Path(tempfile.gettempdir()) / "frigate-media")
+
+        with (
+            patch("gannet.util.platform.get_media_dir", return_value=media_dir),
+            patch("gannet.util.platform.get_cache_dir", return_value=cache_dir),
+        ):
+            self.assertEqual(
+                resolve_media_url_path("/cache/previews/front_door/1.jpg"),
+                os.path.join(cache_dir, "previews", "front_door", "1.jpg"),
+            )
+            self.assertEqual(
+                to_media_url_path(
+                    os.path.join(cache_dir, "previews", "front_door", "1.jpg")
+                ),
+                "/cache/previews/front_door/1.jpg",
+            )
+
+    def test_windows_media_path_mapping_ignores_case(self):
+        """Persisted Windows paths may use different casing than the config."""
+        with (
+            patch("gannet.util.platform.os.path", ntpath),
+            patch(
+                "gannet.util.platform.get_media_dir",
+                return_value=r"C:\Frigate\Media",
+            ),
+            patch(
+                "gannet.util.platform.get_cache_dir",
+                return_value=r"C:\Frigate\Cache",
+            ),
+        ):
+            self.assertEqual(
+                to_media_url_path(r"c:\frigate\media\recordings\front_door\00.00.mp4"),
+                "/recordings/front_door/00.00.mp4",
+            )
+            self.assertEqual(
+                to_media_url_path(r"c:\frigate\cache\model.bin"),
+                "/cache/model.bin",
+            )
+
+    def test_media_paths_round_trip(self):
+        media_dir = str(Path(tempfile.gettempdir()) / "frigate-media")
+
+        with (
+            patch("gannet.util.platform.get_media_dir", return_value=media_dir),
+            patch(
+                "gannet.util.platform.get_cache_dir",
+                return_value=str(Path(tempfile.gettempdir()) / "frigate-cache"),
+            ),
+        ):
+            path = os.path.join(
+                media_dir, "recordings", "2024-01-01", "10", "front_door", "00.00.mp4"
+            )
+            self.assertEqual(
+                to_media_url_path(path),
+                "/recordings/2024-01-01/10/front_door/00.00.mp4",
+            )
+            self.assertEqual(resolve_media_url_path(to_media_url_path(path)), path)
+
+    def test_a_camera_named_like_a_component_keeps_its_path(self):
+        media_dir = str(Path(tempfile.gettempdir()) / "frigate-media")
+
+        with (
+            patch("gannet.util.platform.get_media_dir", return_value=media_dir),
+            patch(
+                "gannet.util.platform.get_cache_dir",
+                return_value=str(Path(tempfile.gettempdir()) / "frigate-cache"),
+            ),
+        ):
+            self.assertEqual(
+                to_media_url_path(
+                    os.path.join(
+                        media_dir,
+                        "recordings",
+                        "2024-01-01",
+                        "10",
+                        "clips",
+                        "00.00.mp4",
+                    )
+                ),
+                "/recordings/2024-01-01/10/clips/00.00.mp4",
+            )
+
+
+class TestFsType(unittest.TestCase):
+    def test_a_mountpoint_prefix_is_not_a_match(self):
+        """A sibling directory is not on the filesystem at the mountpoint."""
+        mountpoint = os.path.join(tempfile.gettempdir(), "media")
+        partition = MagicMock()
+        partition.mountpoint = mountpoint
+        partition.fstype = "NTFS"
+
+        with patch("psutil.disk_partitions", return_value=[partition]):
+            self.assertEqual(
+                get_fs_type(
+                    os.path.join(tempfile.gettempdir(), "media2", "recordings")
+                ),
+                "",
+            )
+            self.assertEqual(
+                get_fs_type(os.path.join(mountpoint, "recordings")), "NTFS"
+            )
+
+
+class TestIsSubpath(unittest.TestCase):
+    """The containment check has to agree with the filesystem it runs on."""
+
+    def test_a_child_is_a_subpath(self):
+        base = os.path.join(tempfile.gettempdir(), "frigate-media")
+        self.assertTrue(is_subpath(os.path.join(base, "clips", "a.webp"), base))
+
+    def test_a_sibling_is_not_a_subpath(self):
+        base = os.path.join(tempfile.gettempdir(), "frigate-media")
+        self.assertFalse(
+            is_subpath(os.path.join(tempfile.gettempdir(), "frigate-media2"), base)
+        )
+
+    def test_case_follows_the_platform(self):
+        """Windows resolves a path that differs only in case to the same file."""
+        base = os.path.join(tempfile.gettempdir(), "frigate-media")
+        path = os.path.join(tempfile.gettempdir(), "Frigate-Media", "clips", "a.webp")
+
+        if os.name == "nt":
+            self.assertTrue(is_subpath(path, base))
+        else:
+            self.assertFalse(is_subpath(path, base))
+
+    def test_windows_paths_are_case_insensitive_but_component_aware(self):
+        """Exercise ntpath semantics even when this test runs on POSIX."""
+        with patch("gannet.util.platform.os.path", ntpath):
+            self.assertTrue(
+                is_subpath(
+                    r"C:\Frigate\Media\clips\a.webp",
+                    r"c:\frigate\media\clips",
+                )
+            )
+            self.assertFalse(
+                is_subpath(
+                    r"C:\Frigate\Media\clips_evil\a.webp",
+                    r"c:\frigate\media\clips",
+                )
+            )
+
+
+class TestServiceStopWatcher(unittest.TestCase):
+    """A service cannot signal its child, so it sets a named event instead."""
+
+    def test_nothing_happens_without_the_event_variable(self):
+        """Frigate started by hand, or by the launcher, must gain no watcher."""
+        with patch.dict(os.environ, {SERVICE_STOP_EVENT_VAR: ""}):
+            self.assertFalse(install_service_stop_watcher(threading.Event()))
+
+    def test_no_watcher_when_pywin32_is_missing(self):
+        """Service mode on a checkout without pywin32 degrades, not crashes."""
+        with patch("gannet.util.platform.IS_WINDOWS", True):
+            with patch.dict(os.environ, {SERVICE_STOP_EVENT_VAR: "FrigateTestStop"}):
+                with patch.dict("sys.modules", {"win32event": None}):
+                    self.assertFalse(install_service_stop_watcher(threading.Event()))
+
+    def test_no_watcher_off_windows(self):
+        if IS_WINDOWS:  # pragma: no cover - the Windows path is tested below
+            self.skipTest("this is the non Windows path")
+
+        with patch.dict(os.environ, {SERVICE_STOP_EVENT_VAR: "FrigateTestStop"}):
+            self.assertFalse(install_service_stop_watcher(threading.Event()))
+
+    @unittest.skipUnless(IS_WINDOWS, "a named event is a Windows mechanism")
+    def test_setting_the_event_stops_frigate(self):
+        """The whole contract: the service sets it, Frigate's stop_event is set."""
+        import win32event
+
+        name = f"FrigateTestStop-{os.getpid()}"
+        handle = win32event.CreateEvent(None, 1, 0, name)
+        self.addCleanup(handle.Close)
+
+        stop_event = threading.Event()
+
+        with patch.dict(os.environ, {SERVICE_STOP_EVENT_VAR: name}):
+            self.assertTrue(install_service_stop_watcher(stop_event))
+
+            # nothing stops before the service asks
+            self.assertFalse(stop_event.wait(1))
+
+            win32event.SetEvent(handle)
+
+            self.assertTrue(
+                stop_event.wait(30),
+                "the watcher did not stop Frigate when the service signalled",
+            )
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)

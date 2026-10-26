@@ -1445,7 +1445,7 @@
       "variableNamePlaceholder": "f.eks MIN_VARIABEL",
       "providerNameLabel": "Tilbydernavn",
       "loggerNameLabel": "Loggernavn",
-      "loggerNamePlaceholder": "f.eks. frigate.record",
+      "loggerNamePlaceholder": "f.eks. gannet.record",
       "keyPatternError": "Bruk kun bokstaver, tall, bindestreker og understreker (ingen mellomrom)"
     },
     "roleMap": {

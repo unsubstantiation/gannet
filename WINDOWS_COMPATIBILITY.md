@@ -1,12 +1,12 @@
 # Native Windows Architecture
 
-Frigate in this repository is a Windows-only application. It requires 64-bit
+Gannet in this repository is a Windows-only application. It requires 64-bit
 CPython 3.12 and runs directly on Windows; there is no alternate container,
 WSL, POSIX, or Unix-service runtime.
 
 ## Runtime contract
 
-- `frigate.__main__` rejects every platform other than Windows before runtime
+- `gannet.__main__` rejects every platform other than Windows before runtime
   initialization.
 - Multiprocessing always uses `spawn`.
 - Writable data defaults to `%LOCALAPPDATA%\Frigate`. `FRIGATE_BASE_DIR`,
@@ -19,16 +19,16 @@ WSL, POSIX, or Unix-service runtime.
   Unix-specific process facilities.
 - Files inherit Windows ACLs. There is no UID/GID ownership layer.
 
-`frigate/util/platform.py` is the central implementation of these rules. It is
-kept independent of the rest of the package because `frigate.const` imports it
+`gannet/util/platform.py` is the central implementation of these rules. It is
+kept independent of the rest of the package because `gannet.const` imports it
 during early initialization.
 
 ## Web and service topology
 
-`frigate/api/web.py` owns HTTP serving. The default listeners are:
+`gannet/api/web.py` owns HTTP serving. The default listeners are:
 
 - `0.0.0.0:8971`: authenticated UI, API, media, VOD, and live proxy traffic.
-- `127.0.0.1:5000`: trusted internal media requests from Frigate's own jobs.
+- `127.0.0.1:5000`: trusted internal media requests from Gannet's own jobs.
 
 The two ports must be distinct. Authentication is evaluated in process and
 caller-supplied identity headers are removed before requests enter the API.
@@ -37,7 +37,7 @@ forwarding is accepted only when the direct peer belongs to a configured
 trusted network.
 
 Media is authorised per camera for roles with a camera allow-list. The check
-in `frigate/api/media_auth.py` classifies `/clips`, `/recordings`, `/exports`
+in `gannet/api/media_auth.py` classifies `/clips`, `/recordings`, `/exports`
 and the native `/vod` playlist and segment routes, so a restricted viewer can
 only play back the cameras their role names. The cache directory is never
 served over HTTP: it holds in-progress segments and preview frames for every
@@ -53,9 +53,9 @@ When `tls.enabled` is set and no certificate is configured, the gateway
 generates a self-signed pair and renews it itself once it is within 30 days of
 expiry. A certificate an administrator installed is never replaced.
 
-Frigate launches and stops `go2rtc.exe` as a child. FFmpeg and other descendants
-are attached to a Windows Job Object so they cannot outlive Frigate. The
-optional SCM wrapper in `frigate/util/windows_service.py` uses the same runtime
+Gannet launches and stops `go2rtc.exe` as a child. FFmpeg and other descendants
+are attached to a Windows Job Object so they cannot outlive Gannet. The
+optional SCM wrapper in `gannet/util/windows_service.py` uses the same runtime
 and pins the child working directory to the source/install root.
 
 ## Supported hardware
@@ -76,7 +76,7 @@ The System page's "Hardware Info" button calls `/api/gpuinfo`, the native
 replacement for the Linux `vainfo` output. It reports the active display
 adapters (Win32 `EnumDisplayDevices`), the processor, the acceleration methods
 compiled into the installed `ffmpeg.exe` (`ffmpeg -hwaccels`), the accelerators
-go2rtc could open, and the `preset-windows-*` families Frigate recommends.
+go2rtc could open, and the `preset-windows-*` families Gannet recommends.
 `/api/nvinfo` still returns NVML driver details when an NVIDIA adapter is
 polled.
 
@@ -99,12 +99,12 @@ overrides, service commands, upgrades, and uninstall steps.
 Repository checks are (`check_windows_requirements.py` resolves every pin
 against PyPI for Windows CPython 3.12 and also verifies the pins against each
 other's declared dependency bounds, so a pin that pip could never install
-alongside the others fails locally rather than in the install step on CI):
+alongside the others fails locally before deployment):
 
 ```powershell
-ruff format --check bootstrap_windows.py frigate migrations testing-scripts
-ruff check bootstrap_windows.py frigate migrations testing-scripts
-python -m compileall -q bootstrap_windows.py frigate migrations testing-scripts
+ruff format --check bootstrap_windows.py gannet migrations testing-scripts
+ruff check bootstrap_windows.py gannet migrations testing-scripts
+python -m compileall -q bootstrap_windows.py gannet migrations testing-scripts
 python testing-scripts/check_windows_requirements.py
 python testing-scripts/run_windows_unit_suite.py
 cd web
@@ -116,9 +116,6 @@ npm run build:native
 PowerShell and real-device validation must run on Windows. Linux/container test
 results are not accepted as evidence for this runtime.
 
-These checks also run automatically in the `Windows Python` and `Windows Web`
-GitHub Actions workflows on every pull request and push to `dev`.
-
 ## Port audit
 
 What the conversion from the Linux image to a native Windows application
@@ -128,29 +125,29 @@ changed, how the result is verified, and what is deliberately still open.
 
 | Area | Before | Now |
 | --- | --- | --- |
-| Process model | An image with nginx, supervisord and a Frigate container | One process; `frigate/api/web.py` serves the UI, the API, media and live streams |
-| Multiprocessing | `fork` | `spawn` (`frigate.util.platform.get_mp_start_method`) |
+| Process model | An image with nginx, supervisord and a Frigate container | One process; `gannet/api/web.py` serves the UI, the API, media and live streams |
+| Multiprocessing | `fork` | `spawn` (`gannet.util.platform.get_mp_start_method`) |
 | Writable paths | `/config`, `/media`, `/cache` | `%LOCALAPPDATA%\Frigate`, relocatable with `FRIGATE_*_DIR` |
 | Executables | `ffmpeg` and `go2rtc` on `PATH` | `ffmpeg.exe` and `go2rtc.exe` installed by `bootstrap_windows.py` with verified SHA-256 digests |
-| Local IPC | Unix domain sockets and FIFOs | Loopback TCP (`frigate.util.platform.ipc_endpoint`) and named shared memory |
-| Child lifetime | The supervisor reaped orphans | A kill-on-close Job Object (`frigate/util/job_object.py`) |
+| Local IPC | Unix domain sockets and FIFOs | Loopback TCP (`gannet.util.platform.ipc_endpoint`) and named shared memory |
+| Child lifetime | The supervisor reaped orphans | A kill-on-close Job Object (`gannet/util/job_object.py`) |
 | Shutdown | `SIGTERM` | Console control events, plus a named event for the SCM service |
 | Ownership | UID, GID and `chown` | Windows ACLs inherited from the parent directory |
 | Text files | Locale default encoding (UTF-8 on the image) | Explicit UTF-8 for the config, go2rtc config, state files, labelmaps and logs; the launcher and service set `PYTHONUTF8=1` |
-| File removal | `rm -rf` semantics | `frigate.util.file.robust_remove`/`robust_move`/`robust_rmdir`/`robust_rmtree`, which clear the read-only attribute and retry sharing violations |
+| File removal | `rm -rf` semantics | `gannet.util.file.robust_remove`/`robust_move`/`robust_rmdir`/`robust_rmtree`, which clear the read-only attribute and retry sharing violations |
 | Detectors | Coral, Hailo, TensorRT, RKNN and other appliance SDKs | CPU TFLite, ONNX Runtime (CPU or DirectML), OpenVINO (CPU, GPU or NPU) and ZMQ |
 | Acceleration | VAAPI, DRM, V4L2, RKMPP, Jetson and VideoToolbox | D3D11VA, DXVA2, Intel QSV, NVIDIA NVENC and CUDA, AMD AMF, Vulkan and software |
 | Storage statistics | A `/dev/shm` quota and a root check | Page-file backed shared memory and the Win32 APIs |
 | GPU diagnostics | `vainfo` (libva) via `/api/vainfo` | `/api/gpuinfo`: display adapters, `ffmpeg -hwaccels`, go2rtc accelerators and the recommended `preset-windows-*` family |
-| Bandwidth statistics | `nethogs` (root, `CAP_NET_ADMIN`/`CAP_NET_RAW`) | A real-time ETW kernel-logger session (`frigate/util/bandwidth.py`); the `telemetry.stats.network_bandwidth` collector reports the bytes each camera `ffmpeg.exe` and `go2rtc.exe` moves, so it needs an elevated Frigate and is off by default |
+| Bandwidth statistics | `nethogs` (root, `CAP_NET_ADMIN`/`CAP_NET_RAW`) | A real-time ETW kernel-logger session (`gannet/util/bandwidth.py`); the `telemetry.stats.network_bandwidth` collector reports the bytes each camera `ffmpeg.exe` and `go2rtc.exe` moves, so it needs an elevated Gannet process and is off by default |
 
 ### What is verified
 
 The repository checks above run on a Windows x64 host for every pull request.
-The unit suite is the main gate: `frigate/test/windows_suite_denylist.txt` is
+The unit suite is the main gate: `gannet/test/windows_suite_denylist.txt` is
 empty, so no test is known to be unable to run on Windows, and a test that
 fails there fails the build. The platform behaviour itself is covered by
-`frigate/test/test_platform_windows.py`, `test_windows_service.py`,
+`gannet/test/test_platform_windows.py`, `test_windows_service.py`,
 `test_job_object.py`, `test_go2rtc_windows.py`, `test_native_e2e.py`,
 `test_windows_gpu_info.py`, `test_file.py` (read-only and held-file removal)
 and `http_api/test_http_config_encoding.py` (UTF-8 config round trips).
@@ -162,8 +159,8 @@ feature for feature. The port is audited against upstream `dev` at `91e91c68`
 (2026-10-21); the licensing map in `REUSE.toml` pins the merge point at
 `5bb2cde8`. Five surfaces are compared: the Python modules and their
 functions and classes, the API routes, the configuration schema, and the web
-application (files and English locale keys). `frigate/models.py` and
-`frigate/api/defs` are byte-identical to upstream. Every difference is either
+application (files and English locale keys). `gannet/models.py` and
+`gannet/api/defs` are byte-identical to upstream. Every difference is either
 the same feature with a Windows implementation or one of the exclusions
 below; there is no dropped product feature.
 
@@ -188,8 +185,8 @@ reason in the tool itself.
 | AMD, Intel, Jetson, Rockchip and Raspberry Pi GPU/NPU statistics and thermal-zone temperatures | DRM fdinfo, sysfs, tegrastats | NVML for NVIDIA; panes without a counter are hidden rather than filled with invented numbers |
 | The `/dev/shm` sizing notice | Windows frame memory is page-file backed and has no shm quota | `stats.service.storage` reports the page file |
 | UID/GID ownership, POSIX shm `unlink`, `os.register_at_fork`, memray, SIGUSR1 stack dumps | POSIX-only facilities | ACLs, named mappings, spawn-only multiprocessing |
-| Docker secrets (`CREDENTIALS_DIRECTORY`), the `/run/secrets` JWT lookup and the Home Assistant add-on `/data/options.json` | Container facilities; the native build reads the process environment, `secrets.yaml` and `environment_vars` only | The same three sources, enforced by `frigate/test/test_env.py` |
-| nethogs bandwidth accounting | Needs root and `CAP_NET_ADMIN`/`CAP_NET_RAW` | The ETW kernel-logger collector (elevated Frigate) |
+| Docker secrets (`CREDENTIALS_DIRECTORY`), the `/run/secrets` JWT lookup and the Home Assistant add-on `/data/options.json` | Container facilities; the native build reads the process environment, `secrets.yaml` and `environment_vars` only | The same three sources, enforced by `gannet/test/test_env.py` |
+| nethogs bandwidth accounting | Needs root and `CAP_NET_ADMIN`/`CAP_NET_RAW` | The ETW kernel-logger collector (elevated Gannet process) |
 | `RemoteUserPlugin` | Defined upstream but never registered or read there | Proxy identity uses `proxy_config.header_map` with the shared-secret check |
 
 ### Upstream feature-parity audit (2026-10-22)
@@ -200,17 +197,17 @@ comparison is by behavior and feature surface, not a blind tree merge: this
 checkout is the native Windows runtime, and large source diffs include
 intentional Windows substitutions (paths, process/service management, FFmpeg,
 GPU reporting, and packaging). The check covered the upstream feature/test
-surfaces in `frigate/`, `web/src/`, and the compatibility exclusions above.
+surfaces in `gannet/`, `web/src/`, and the compatibility exclusions above.
 
 | Upstream capability/change | Audit result | Windows disposition |
 | --- | --- | --- |
 | Login-session revocation, cross-origin websocket protection, media-auth path normalization | Present in native auth/API/websocket code and covered by Windows-side tests (`test_http_auth_jwt_role`, `test_ws_origin`, `test_media_auth`) | Portable; retained with native listener and proxy handling |
-| Camera credential redaction in config responses and safe config updates | Present in `frigate/api/app.py`, frontend credential masking, and config/API tests | Portable; retained, with raw-path handling adapted to the native server |
-| Web-push registration/send hardening and malformed-subscription handling | Present in `frigate/comms/webpush.py` and `test_webpush_registration.py` | Portable; retained |
+| Camera credential redaction in config responses and safe config updates | Present in `gannet/api/app.py`, frontend credential masking, and config/API tests | Portable; retained, with raw-path handling adapted to the native server |
+| Web-push registration/send hardening and malformed-subscription handling | Present in `gannet/comms/webpush.py` and `test_webpush_registration.py` | Portable; retained |
 | Same-origin-only chat images | Present in `web/src/components/chat/ChatMessage.tsx` | Portable; retained |
-| Motion-search concurrency/resource limits | Present in `frigate/jobs/motion_search.py` and `frigate/api/motion_search.py` | Portable; retained |
-| Avoid buffering raw FFmpeg frames on watchdog reset | Present in `frigate/video/ffmpeg.py`; reset waits while the capture reader drains stdout | Portable; retained for the Windows process wrapper |
-| Autotracking tracker rebuild/selection and cropped histogram work | Present in `frigate/track/norfair_tracker.py` and `frigate/util/image.py` | Portable; retained |
+| Motion-search concurrency/resource limits | Present in `gannet/jobs/motion_search.py` and `gannet/api/motion_search.py` | Portable; retained |
+| Avoid buffering raw FFmpeg frames on watchdog reset | Present in `gannet/video/ffmpeg.py`; reset waits while the capture reader drains stdout | Portable; retained for the Windows process wrapper |
+| Autotracking tracker rebuild/selection and cropped histogram work | Present in `gannet/track/norfair_tracker.py` and `gannet/util/image.py` | Portable; retained |
 | Newer UI and application flows (auto-live, GenAI audio transcription, live/review/search/export, camera setup and settings) | Present in the corresponding frontend/backend components and config models | Portable; retained; no missing feature confirmed in this audit |
 | Axelera Metis detector plugin | Upstream-only plugin and tests; no supported native Windows driver/runtime is provided by this fork | Not ported; existing detector exclusion remains appropriate |
 | Docker/container startup, Nginx cache/proxy configuration, Linux device plugins and Linux-only metrics | Runtime-specific, not application features transferable to the native process | Not applicable; native HTTP/media server, Windows process/service, and hardware stats are used instead |
@@ -235,7 +232,7 @@ upstream `dev` before each parity claim.
   verified by configuration and by the presets themselves, not on every
   vendor's silicon.
 - The bandwidth collector opens the NT Kernel Logger session, so it runs
-  only when Frigate is elevated and reports nothing (with one warning)
+  only when Gannet is elevated and reports nothing (with one warning)
   otherwise, exactly as upstream reports nothing when it is not root. The
   ETW parsing is covered by unit tests and the MOF layouts are pinned by
   structure-layout tests, but the live capture was not exercised on every
@@ -243,7 +240,7 @@ upstream `dev` before each parity claim.
   error.
 - Only NVIDIA adapters report usage counters. `stats.gpu_usages` can therefore
   only ever carry entries polled through NVML; there is no utilization counter
-  for an Intel or AMD GPU, or for an Intel NPU, in the Windows runtimes Frigate
+  for an Intel or AMD GPU, or for an Intel NPU, in the Windows runtimes Gannet
   uses. For the same reason `npu_usages` and `detectors.temperature` are never
   emitted: the OpenVINO NPU is selectable and runs inference, but nothing
   reports how busy it is, and no detector exposes a thermometer. The System
@@ -268,7 +265,7 @@ because Frigate, Inc. does not publish it, and `License: GNCL-1.0 AND MIT` is wh
 the tree actually carries, so a submission that says otherwise would be a
 misstatement to the registry as well as to users. The installer asset is still
 named for upstream (`frigate-windows-installer.exe`); rename it in the release
-workflow and the manifest in the same change, or `winget validate` fails on a
+process and manifest in the same change, or `winget validate` fails on a
 404.
 
 The bootstrap and source launcher are the supported installation path in the

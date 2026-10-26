@@ -1485,7 +1485,7 @@
       "variableNameLabel": "Nome della variabile",
       "variableNamePlaceholder": "ad es. MIA_VARIABILE",
       "loggerNameLabel": "Nome del logger",
-      "loggerNamePlaceholder": "ad es. frigate.record",
+      "loggerNamePlaceholder": "ad es. gannet.record",
       "keyPatternError": "Utilizza solo lettere, numeri, trattini e trattini bassi (nessun spazio)"
     },
     "ffmpegArgs": {

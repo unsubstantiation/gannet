@@ -2,13 +2,13 @@
 
 ## generate_ui_tabs.py
 
-Generates the "Frigate UI" tab of the `<ConfigTabs>` blocks in the configuration docs from the YAML examples already on the page, so UI instructions do not have to be written by hand for every block. It reads three sources:
+Generates the "Gannet UI" tab of the `<ConfigTabs>` blocks in the configuration docs from the YAML examples already on the page, so UI instructions do not have to be written by hand for every block. It reads three sources:
 
 1. The JSON schema built from the Pydantic config models: field names, types, defaults
 2. The i18n translation files: the exact labels the Settings UI shows
 3. The section configs and navigation map from the web app: config key to UI path
 
-Run it from the repository root; it imports Frigate's config models, so `frigate` must be importable.
+Run it from the repository root; it imports Gannet's config models, so `gannet` must be importable.
 
 ```bash
 python3 docs/scripts/generate_ui_tabs.py --help
@@ -20,7 +20,7 @@ python3 docs/scripts/generate_ui_tabs.py --help
 | ---- | ------ |
 | none (default) | Print what would be generated for each bare YAML block, changing nothing |
 | `--inject` | Wrap bare YAML blocks in `<ConfigTabs>`, insert the generated UI tab, and add the `ConfigTabs` / `TabItem` / `NavPath` imports if missing. Already-wrapped blocks are skipped |
-| `--check` | Diff the existing UI tabs against what the current schema and i18n files produce; exit 1 on drift. This is what CI runs |
+| `--check` | Diff the existing UI tabs against what the current schema and i18n files produce; exit 1 on drift. Run this manually during review after changing the schema, translations, or configuration docs |
 | `--regenerate` | Rewrite only the UI tab inside existing `<ConfigTabs>` blocks, leaving the YAML tab untouched |
 
 Options: `--outdir DIR` writes a mirrored copy of the tree instead of editing in place (works with `--inject` and `--regenerate`), `--dry-run` prints the `--regenerate` diffs without writing, and `-v` explains every skipped and unchanged block.
@@ -50,7 +50,7 @@ Blocks are skipped when they are already inside `<ConfigTabs>`, when their top-l
 
 | Source | Path | Provides |
 | ------ | ---- | -------- |
-| Pydantic models | `frigate/config/` | Field names, types, defaults, nesting, via a JSON schema built at runtime |
+| Pydantic models | `gannet/config/` | Field names, types, defaults, nesting, via a JSON schema built at runtime |
 | i18n (global) | `web/public/locales/en/config/global.json` | Labels for global settings |
 | i18n (cameras) | `web/public/locales/en/config/cameras.json` | Labels for camera settings |
 | i18n (menu) | `web/public/locales/en/views/settings.json` | Sidebar menu labels |

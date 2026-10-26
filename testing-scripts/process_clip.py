@@ -19,18 +19,18 @@ import numpy as np
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from frigate.config import FrigateConfig  # noqa: E402
-from frigate.motion import MotionDetector  # noqa: E402
-from frigate.object_detection.base import LocalObjectDetector  # noqa: E402
-from frigate.track.centroid_tracker import CentroidTracker  # noqa: E402
-from frigate.track.object_processing import CameraState  # noqa: E402
-from frigate.util.builtin import EventsPerSecond  # noqa: E402
-from frigate.util.image import (  # noqa: E402
+from gannet.config import FrigateConfig  # noqa: E402
+from gannet.motion import MotionDetector  # noqa: E402
+from gannet.object_detection.base import LocalObjectDetector  # noqa: E402
+from gannet.track.centroid_tracker import CentroidTracker  # noqa: E402
+from gannet.track.object_processing import CameraState  # noqa: E402
+from gannet.util.builtin import EventsPerSecond  # noqa: E402
+from gannet.util.image import (  # noqa: E402
     SharedMemoryFrameManager,
     draw_box_with_label,
 )
-from frigate.util.platform import resolve_ffmpeg_binary  # noqa: E402
-from frigate.video import (  # noqa: E402
+from gannet.util.platform import resolve_ffmpeg_binary  # noqa: E402
+from gannet.video import (  # noqa: E402
     capture_frames,
     process_frames,
     start_or_restart_ffmpeg,

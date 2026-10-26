@@ -1553,7 +1553,7 @@
       "variableNameLabel": "Назва зменнай",
       "variableNamePlaceholder": "напрыклад MY_VARIABLE",
       "loggerNameLabel": "Назва журнала",
-      "loggerNamePlaceholder": "напрыклад frigate.record",
+      "loggerNamePlaceholder": "напрыклад gannet.record",
       "keyPatternError": "Толькі літары, лічбы, злучкі і падкрэсліванні (без прабелаў)"
     },
     "knownPlates": {

@@ -1,6 +1,6 @@
 import peewee as pw
 
-from frigate.models import Event
+from gannet.models import Event
 
 
 def migrate(migrator, database, fake=False, **kwargs):

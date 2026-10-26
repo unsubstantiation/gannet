@@ -17,7 +17,7 @@ dependency (``require_role``/``allow_any_authenticated``/``allow_public``/
 ``require_camera_access``) AND the global "secure by default" admin dependency,
 which is bypassed only for the paths listed in ``require_admin_by_default``.
 Those exempt lists are read directly from the function's closure so this script
-stays in lockstep with ``frigate/api/auth.py`` instead of duplicating them.
+stays in lockstep with ``gannet/api/auth.py`` instead of duplicating them.
 
 Many handlers enforce per-camera access by calling ``require_camera_access``
 inside the handler body rather than as a route dependency, which dependency
@@ -47,8 +47,8 @@ from fastapi.routing import APIRoute
 from ruamel.yaml import YAML
 from ruamel.yaml.scalarstring import LiteralScalarString
 
-from frigate.api import app as main_app
-from frigate.api import (
+from gannet.api import app as main_app
+from gannet.api import (
     auth,
     camera,
     chat,
@@ -65,7 +65,7 @@ from frigate.api import (
     record,
     review,
 )
-from frigate.api.auth import require_admin_by_default
+from gannet.api.auth import require_admin_by_default
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger("generate_api_auth_spec")
@@ -136,7 +136,7 @@ ACCESS_NOTES = {
 }
 
 
-# Mirrors the router set wired up in frigate.api.fastapi_app.
+# Mirrors the router set wired up in gannet.api.fastapi_app.
 ROUTERS = [
     auth.router,
     camera.router,
@@ -174,7 +174,7 @@ def read_exempt_rules() -> tuple[set[str], tuple[str, ...]]:
     """Read the admin-exemption lists straight from the auth dependency closure.
 
     Reading them here (rather than copying) keeps this generator in sync with
-    frigate/api/auth.py automatically.
+    gannet/api/auth.py automatically.
     """
     closure = inspect.getclosurevars(require_admin_by_default()).nonlocals
     exempt_paths = set(closure["EXEMPT_PATHS"])

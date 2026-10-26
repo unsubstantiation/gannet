@@ -26,7 +26,7 @@ Some examples (model - class or model_name)::
 
 import peewee as pw
 
-from frigate.models import User, UserReviewStatus
+from gannet.models import User, UserReviewStatus
 
 SQL = pw.SQL
 

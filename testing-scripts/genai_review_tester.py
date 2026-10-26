@@ -45,8 +45,8 @@ else:  # pragma: no cover - the Windows build never reaches this branch
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from frigate.config.camera.genai import GenAIConfig, GenAIProviderEnum  # noqa: E402
-from frigate.genai.prompts import (  # noqa: E402
+from gannet.config.camera.genai import GenAIConfig, GenAIProviderEnum  # noqa: E402
+from gannet.genai.prompts import (  # noqa: E402
     REVIEW_RESPONSE_STYLES,
     build_review_description_response_format,
 )
@@ -57,7 +57,7 @@ IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 
 # Providers are imported individually so a missing SDK for an unused provider
 # does not break the script. Keys match GenAIProviderEnum values, values are
-# the module names under frigate.genai.plugins.
+# the module names under gannet.genai.plugins.
 PROVIDER_MODULES = {
     GenAIProviderEnum.openai: "openai",
     GenAIProviderEnum.azure_openai: "azure-openai",
@@ -326,7 +326,7 @@ def edit_settings(settings: TesterSettings) -> None:
 
 def build_client(settings: TesterSettings) -> Any | None:
     """Instantiate the Frigate provider client for the saved settings."""
-    from frigate.genai import PROVIDERS
+    from gannet.genai import PROVIDERS
 
     try:
         provider = GenAIProviderEnum(settings.provider)
@@ -336,7 +336,7 @@ def build_client(settings: TesterSettings) -> Any | None:
 
     module = PROVIDER_MODULES[provider]
     try:
-        importlib.import_module(f"frigate.genai.plugins.{module}")
+        importlib.import_module(f"gannet.genai.plugins.{module}")
     except ImportError as e:
         print(f"Failed to import provider plugin '{module}': {e}")
         return None
