@@ -72,13 +72,17 @@ class TestCameraWatchdogReset(unittest.TestCase):
         watchdog.start_ffmpeg_detect = MagicMock()
         return watchdog
 
-    def test_reset_does_not_buffer_raw_frames(self):
+    def test_reset_asks_ffmpeg_to_stop_gracefully_without_buffering_frames(self):
         watchdog = self._build_resettable_watchdog()
         process = watchdog.ffmpeg_detect_process
 
-        watchdog.reset_capture_thread()
+        with patch("frigate.video.ffmpeg.request_ffmpeg_stop") as mock_request_stop:
+            watchdog.reset_capture_thread()
 
-        process.terminate.assert_called_once()
+        mock_request_stop.assert_called_once_with(
+            process, watchdog.logger, wait_timeout=0.0
+        )
+        process.terminate.assert_not_called()
         process.wait.assert_called_once_with(timeout=30)
         process.communicate.assert_not_called()
         watchdog.start_ffmpeg_detect.assert_called_once()
@@ -88,7 +92,8 @@ class TestCameraWatchdogReset(unittest.TestCase):
         process = watchdog.ffmpeg_detect_process
         process.wait.side_effect = [sp.TimeoutExpired("ffmpeg", 30), 0]
 
-        watchdog.reset_capture_thread()
+        with patch("frigate.video.ffmpeg.request_ffmpeg_stop"):
+            watchdog.reset_capture_thread()
 
         process.kill.assert_called_once()
         self.assertEqual(process.wait.call_args_list, [call(timeout=30), call()])

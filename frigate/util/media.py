@@ -205,13 +205,23 @@ def sync_recordings(
 
         # Only try to cleanup files if db cleanup was successful or dry_run
         if limited:
-            # get recording files from last 36 hours
-            hour_check = f"{RECORD_DIR}/{check_point.strftime('%Y-%m-%d/%H')}"
+            # get recording files from last 36 hours. Normalize the separator
+            # on both sides: on Windows os.walk yields backslash roots while
+            # the strftime suffix uses slashes, and a raw string compare then
+            # ranks every root above the cutoff ("\\" 0x5c > "/" 0x2f), so the
+            # "limited" scan walks the whole recordings tree instead of 36h.
+            hour_check = os.path.normpath(
+                os.path.join(
+                    RECORD_DIR,
+                    check_point.strftime("%Y-%m-%d"),
+                    check_point.strftime("%H"),
+                )
+            )
             files_on_disk = {
                 os.path.join(root, file)
                 for root, _, files in os.walk(RECORD_DIR)
                 for file in files
-                if root > hour_check
+                if os.path.normpath(root) > hour_check
             }
         else:
             # get all recordings files on disk and put them in a set

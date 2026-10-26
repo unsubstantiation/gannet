@@ -175,11 +175,11 @@
       "description": "The loopback-only internal port and authenticated public Windows web port. FRIGATE_WEB_PORT may override the public listener.",
       "internal": {
         "label": "Internal port",
-        "description": "Loopback-only port for Frigate media jobs. Requests on this port are trusted and never exposed to the LAN."
+        "description": "Loopback-only port for Frigate media jobs. Requests on this port are trusted and never exposed to the LAN. A \"host:port\" value is accepted for compatibility, but the internal listener always binds 127.0.0.1."
       },
       "external": {
         "label": "External port",
-        "description": "Authenticated Windows web-interface port."
+        "description": "Authenticated Windows web-interface port. A \"host:port\" value sets the address the public listener binds; FRIGATE_WEB_HOST takes precedence when it is set."
       }
     }
   },
