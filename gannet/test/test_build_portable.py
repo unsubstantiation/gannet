@@ -516,7 +516,11 @@ class TestManifestInputs(unittest.TestCase):
         )
         self.assertIn("Double-click `GannetNVR.cmd`", notes)
         self.assertIn(r"python\GannetNVR.exe", notes)
-        self.assertIn("GannetNVR.cmd -- --validate-config", notes)
+        # The shim supplies the separator itself; telling users to add a
+        # second one makes argparse reject the flag as a positional.
+        self.assertIn("GannetNVR.cmd --validate-config", notes)
+        self.assertNotIn("GannetNVR.cmd -- --validate-config", notes)
+        self.assertIn(r"python\GannetNVR.exe -- --validate-config", notes)
         self.assertIn("FRIGATE_BASE_DIR", notes)
         self.assertIn("run_gannet.ps1", notes)
 

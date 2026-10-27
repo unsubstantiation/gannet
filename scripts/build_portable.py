@@ -1270,9 +1270,10 @@ network access required.
    `%LOCALAPPDATA%\\Frigate\\tmp\\logs\\frigate\\current`.
 
 `run_gannet.ps1` and `run_gannet.cmd` remain as a PowerShell alternative with
-`-BaseDir <path>`. With the .exe, set `FRIGATE_BASE_DIR` instead. Application
-flags follow a `--` separator: `GannetNVR.cmd -- --validate-config` (the `.cmd`
-inserts the separator for you).
+`-BaseDir <path>`. With the .exe, set `FRIGATE_BASE_DIR` instead. The `.cmd`
+inserts the `--` separator CPython needs, so pass application flags straight
+to it: `GannetNVR.cmd --validate-config`. Running the exe directly needs the
+separator: `python\GannetNVR.exe -- --validate-config`.
 
 Data lives in `%LOCALAPPDATA%\\Frigate`. To remove the application, stop it and
 delete the folder.

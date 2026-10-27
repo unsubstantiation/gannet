@@ -174,10 +174,12 @@ code. The app itself always runs under `python.exe`, so `sys.executable` and
 multiprocessing stay the same as a checkout install.
 
 **Arguments.** CPython parses its own command-line options before `site` runs,
-so application flags must follow `--`. `GannetNVR.cmd` inserts that separator:
+so application flags must follow `--` when the exe is invoked directly. The
+`GannetNVR.cmd` shim already inserts that separator, so do not add a second
+one:
 
 ```powershell
-.\GannetNVR.cmd -- --validate-config
+.\GannetNVR.cmd --validate-config
 .\python\GannetNVR.exe -- --validate-config   # the exe directly
 ```
 
