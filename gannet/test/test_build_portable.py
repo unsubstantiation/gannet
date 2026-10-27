@@ -162,7 +162,7 @@ class TestExeLauncher(unittest.TestCase):
         import subprocess
         from unittest import mock
 
-        root = self.root / "bundle"
+        root = self.root.resolve() / "bundle"
         site_packages = root / "python" / "Lib" / "site-packages"
         site_packages.mkdir(parents=True)
         (root / "python" / "python.exe").write_bytes(b"MZ")
@@ -215,7 +215,7 @@ class TestExeLauncher(unittest.TestCase):
         import subprocess
         from unittest import mock
 
-        root = self.root / "bundle"
+        root = self.root.resolve() / "bundle"
         site_packages = root / "python" / "Lib" / "site-packages"
         site_packages.mkdir(parents=True)
         (root / "python" / "python.exe").write_bytes(b"MZ")
@@ -639,8 +639,8 @@ class TestLayoutAssertions(unittest.TestCase):
                 staging, expect_wheels=False, expect_artifacts=False
             )
         message = str(caught.exception)
-        self.assertIn("app/web/dist/index.html", message)
-        self.assertIn("app/labelmap.txt", message)
+        self.assertIn(str(Path("app/web/dist/index.html")), message)
+        self.assertIn(str(Path("app/labelmap.txt")), message)
 
     def test_requires_the_version_metadata_when_wheels_are_expected(self):
         staging = self._complete_tree()
@@ -985,7 +985,7 @@ class TestSlimBuild(unittest.TestCase):
                     0,
                 )
         self.assertIn(
-            str(dist / "slim" / ".staging" / "GannetNVR-0.19.0-win64-slim"),
+            str((dist / "slim" / ".staging" / "GannetNVR-0.19.0-win64-slim").resolve()),
             "\n".join(logs.output),
         )
         self.assertFalse(dist.exists())
