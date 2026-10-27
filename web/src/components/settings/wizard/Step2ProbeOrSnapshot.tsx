@@ -327,7 +327,11 @@ export default function Step2ProbeOrSnapshot({
           templates[key]
             .replace("{username}", data.username || "")
             .replace("{password}", data.password || "")
-            .replace("{host}", host),
+            .replace("{host}", host)
+            .replace(
+              "{port}",
+              String(data.rtspPort ?? (brand.value === "foscam" ? 88 : 554)),
+            ),
         );
     },
     [onUpdate],
@@ -350,7 +354,11 @@ export default function Step2ProbeOrSnapshot({
         brand.template
           .replace("{username}", data.username || "")
           .replace("{password}", data.password || "")
-          .replace("{host}", data.host),
+          .replace("{host}", data.host)
+          .replace(
+            "{port}",
+            String(data.rtspPort ?? (brand.value === "foscam" ? 88 : 554)),
+          ),
       ];
     },
     [generateDynamicStreamUrls],

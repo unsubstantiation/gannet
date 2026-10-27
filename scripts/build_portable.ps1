@@ -15,6 +15,11 @@
         RELEASE-NOTES.md                        release body
         unsubstantiation.GannetNVR.yaml         winget manifest with the digest
 
+    With -Slim, output goes to dist/slim/ by default and has a -slim suffix.
+    Selected TensorFlow and OpenVINO C/C++ SDK headers are omitted; use the
+    full bundle for native custom-op or extension development. Slim builds do
+    not emit a winget manifest.
+
     Nothing here runs the bundle: only a Windows x64 host can do that.
 
 .PARAMETER Version
@@ -24,6 +29,9 @@
 .PARAMETER RequirePinned
     Fail instead of trusting an unrecorded CPython digest. Release builds use
     this; a developer's first build does not, so it can record one.
+
+.PARAMETER Slim
+    Opt into removing selected SDK headers from the portable bundle.
 
 .EXAMPLE
     pwsh scripts/build_portable.ps1
@@ -38,6 +46,7 @@ param(
     [string]$PythonVersion,
     [string]$PythonZip,
     [string]$Requirements,
+    [switch]$Slim,
     [switch]$SkipWeb,
     [switch]$SkipWheels,
     [switch]$SkipArtifacts,
@@ -120,6 +129,7 @@ if ($OutputDir) { $arguments += @("--output-dir", $OutputDir) }
 if ($PythonVersion) { $arguments += @("--python-version", $PythonVersion) }
 if ($PythonZip) { $arguments += @("--python-zip", $PythonZip) }
 if ($Requirements) { $arguments += @("--requirements", $Requirements) }
+if ($Slim) { $arguments += "--slim" }
 if ($SkipWeb) { $arguments += "--skip-web" }
 if ($SkipWheels) { $arguments += "--skip-wheels" }
 if ($SkipArtifacts) { $arguments += "--skip-artifacts" }
@@ -146,8 +156,13 @@ if ($code -ne 0) {
     exit $code
 }
 
-$dist = Join-Path $RepoRoot "dist"
-if (Test-Path $dist) {
+$dist = if ($OutputDir) {
+    if ([System.IO.Path]::IsPathRooted($OutputDir)) { $OutputDir }
+    else { Join-Path $RepoRoot $OutputDir }
+}
+elseif ($Slim) { Join-Path $RepoRoot "dist\slim" }
+else { Join-Path $RepoRoot "dist" }
+if (-not $PlanOnly -and (Test-Path $dist)) {
     Write-Host ""
     Write-Host "Artifacts in $dist :"
     Get-ChildItem -Path $dist -File |

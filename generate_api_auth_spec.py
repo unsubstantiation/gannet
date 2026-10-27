@@ -51,6 +51,7 @@ from gannet.api import app as main_app
 from gannet.api import (
     auth,
     camera,
+    camera_discovery,
     chat,
     classification,
     debug_replay,
@@ -139,6 +140,7 @@ ACCESS_NOTES = {
 # Mirrors the router set wired up in gannet.api.fastapi_app.
 ROUTERS = [
     auth.router,
+    camera_discovery.router,
     camera.router,
     chat.router,
     classification.router,

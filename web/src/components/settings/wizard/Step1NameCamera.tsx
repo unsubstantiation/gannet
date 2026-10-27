@@ -38,6 +38,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { LuInfo } from "react-icons/lu";
+import CameraDiscovery from "./CameraDiscovery";
 
 type Step1NameCameraProps = {
   wizardData: Partial<WizardFormData>;
@@ -82,6 +83,17 @@ export default function Step1NameCamera({
       password: z.string().optional(),
       brandTemplate: z.enum(CAMERA_BRAND_VALUES).optional(),
       onvifPort: z.coerce.number().int().min(1).max(65535).optional(),
+      rtspPort: z
+        .string()
+        .optional()
+        .refine(
+          (value) =>
+            !value ||
+            (/^\d{1,5}$/.test(value) &&
+              Number(value) >= 1 &&
+              Number(value) <= 65535),
+          t("cameraWizard.step1.errors.invalidPort"),
+        ),
       useDigestAuth: z.boolean().optional(),
       customUrl: z
         .string()
@@ -95,7 +107,7 @@ export default function Step1NameCamera({
     .refine(
       (data) => {
         // If brand is "other", customUrl is required
-        if (data.brandTemplate === "other") {
+        if (!probeMode && data.brandTemplate === "other") {
           return data.customUrl && data.customUrl.trim().length > 0;
         }
         // If brand is not "other", host is required
@@ -121,6 +133,7 @@ export default function Step1NameCamera({
           : "dahua",
       customUrl: wizardData.customUrl || "",
       onvifPort: wizardData.onvifPort ?? 80,
+      rtspPort: wizardData.rtspPort?.toString() ?? "",
       useDigestAuth: wizardData.useDigestAuth ?? false,
     },
     mode: "onChange",
@@ -143,14 +156,22 @@ export default function Step1NameCamera({
         : hostPresent);
 
   const onSubmit = (data: z.infer<typeof step1FormData>) => {
-    onUpdate({ ...data, probeMode });
+    onUpdate({
+      ...data,
+      rtspPort: data.rtspPort ? Number(data.rtspPort) : undefined,
+      probeMode,
+    });
   };
 
   const handleContinue = useCallback(async () => {
     const isValid = await form.trigger();
     if (isValid) {
       const data = form.getValues();
-      onNext({ ...data, probeMode });
+      onNext({
+        ...data,
+        rtspPort: data.rtspPort ? Number(data.rtspPort) : undefined,
+        probeMode,
+      });
     }
   }, [form, probeMode, onNext]);
 
@@ -180,6 +201,63 @@ export default function Step1NameCamera({
                 <FormMessage />
               </FormItem>
             )}
+          />
+
+          <CameraDiscovery
+            onSelect={({ host, protocol, port }) => {
+              form.setValue("host", host, {
+                shouldDirty: true,
+                shouldValidate: true,
+              });
+              if (protocol === "onvif") {
+                // A new ONVIF selection must not inherit another camera's
+                // hidden RTSP URL or port (or their validation errors).
+                form.setValue("rtspPort", "", { shouldValidate: true });
+                form.setValue("customUrl", "", { shouldValidate: true });
+                form.setValue("onvifPort", port, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+                setProbeMode(true);
+                onUpdate({
+                  host,
+                  onvifPort: port,
+                  rtspPort: undefined,
+                  customUrl: "",
+                  probeMode: true,
+                  probeResult: undefined,
+                  probeCandidates: [],
+                  candidateTests: {},
+                  streams: [],
+                });
+              } else {
+                // The manual RTSP flow does not use an ONVIF port; discard a
+                // stale invalid value before the hidden field is validated.
+                form.setValue("onvifPort", 80, { shouldValidate: true });
+                form.setValue("rtspPort", String(port), {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+                form.setValue("brandTemplate", "other", { shouldDirty: true });
+                form.setValue("customUrl", `rtsp://${host}:${port}/`, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+                setProbeMode(false);
+                onUpdate({
+                  host,
+                  onvifPort: 80,
+                  rtspPort: port,
+                  brandTemplate: "other",
+                  customUrl: `rtsp://${host}:${port}/`,
+                  probeMode: false,
+                  probeResult: undefined,
+                  probeCandidates: [],
+                  candidateTests: {},
+                  streams: [],
+                });
+              }
+            }}
           />
 
           <div className="space-y-4">
@@ -404,10 +482,7 @@ export default function Step1NameCamera({
                           ) : null;
                         })()}
                     </div>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="h-8">
                           <SelectValue
@@ -430,6 +505,34 @@ export default function Step1NameCamera({
                 )}
               />
 
+              {watchedBrand !== "other" && (
+                <FormField
+                  control={form.control}
+                  name="rtspPort"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-primary-variant">
+                        {t("cameraWizard.step1.rtspPort")}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          className="h-8"
+                          inputMode="numeric"
+                          placeholder={t(
+                            "cameraWizard.step1.rtspPortPlaceholder",
+                          )}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {t("cameraWizard.step1.rtspPortDescription")}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
               {watchedBrand == "other" && (
                 <FormField
                   control={form.control}
@@ -446,6 +549,9 @@ export default function Step1NameCamera({
                           {...field}
                         />
                       </FormControl>
+                      <FormDescription>
+                        {t("cameraWizard.step1.customUrlDescription")}
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

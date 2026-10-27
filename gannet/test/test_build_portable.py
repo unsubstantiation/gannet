@@ -6,13 +6,18 @@ tests exercise it on any host: the launcher contract, the layout assertions, and
 the planning mode that CI gates on. Nothing here downloads or builds anything.
 """
 
+import csv
 import importlib.util
 import json
 import re
+import stat
 import sys
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
+from types import SimpleNamespace
+from unittest import mock
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -331,6 +336,255 @@ class TestPowerShellWrapper(unittest.TestCase):
         )
         self.assertIsNone(re.search(r"\$pythonVersion\s*=", text, re.IGNORECASE))
 
+    def test_slim_switch_is_forwarded(self):
+        text = (REPO_ROOT / "scripts" / "build_portable.ps1").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("[switch]$Slim", text)
+        self.assertIn('if ($Slim) { $arguments += "--slim" }', text)
+        self.assertIn('Join-Path $RepoRoot "dist\\slim"', text)
+
+
+class TestSlimPruning(unittest.TestCase):
+    """SDK cleanup never touches runtime data or unowned files."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.builder = _load_builder()
+
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.site = Path(self.temporary.name) / "site-packages"
+        self.site.mkdir()
+
+    def put(self, relative, data=b"test data"):
+        path = self.site / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data)
+        return path
+
+    def record(self, distribution, paths):
+        record = self.site / f"{distribution}.dist-info" / "RECORD"
+        record.parent.mkdir(parents=True, exist_ok=True)
+        with record.open("w", encoding="utf-8", newline="") as handle:
+            writer = csv.writer(handle, lineterminator="\n")
+            writer.writerows([[path, "sha256=unchanged", "123"] for path in paths])
+            writer.writerow([record.relative_to(self.site).as_posix(), "", ""])
+        return record
+
+    def rows(self, record):
+        with record.open(encoding="utf-8", newline="") as handle:
+            return list(csv.reader(handle))
+
+    def test_prunes_only_owned_sdk_headers_and_preserves_other_rows(self):
+        removed = {
+            "tensorflow/include/core,defs.h": b"aaa",
+            "tensorflow/include/deep/layer.hpp": b"12345",
+            "tensorflow/include/generated.inc": b"abcd",
+            "openvino/include/openvino/op.hpp": b"xyz",
+            "openvino/include/core.H": b"12",
+        }
+        retained = {
+            "tensorflow/include/LICENSE": b"license text",
+            "tensorflow/include/NOTICE.hpp": b"notice text",
+            "tensorflow/include/copyright/attribution.h": b"copyright text",
+            "tensorflow/include/embedded.h": b"// Copy" + b"right marker\nint x;",
+            "tensorflow/include/symbol.h": b"// \xc2\xa9 marker\n",
+            "tensorflow/include/unknown.inc": b"\xff\xfe\x00\x01",
+            "tensorflow/include/descriptors.bin": b"descriptor",
+            "tensorflow/runtime.h": b"outside SDK",
+            "tensorflow/runtime.dll": b"native library",
+            "openvino/include/COPYING.h": b"copying text",
+            "openvino/include/embedded.hpp": b"// SPDX-License-Identifier: Apache-2.0\n",
+            "openvino/include/symbol.h": b"// (C) marker\n",
+            "openvino/include/notice.h": b"// Legal notice\n",
+            "openvino/include/model.bin": b"weights",
+            "openvino/include/config.hpp.in": b"not an SDK header",
+            "openvino/runtime/openvino.dll": b"native library",
+            "numpy/testing/__init__.py": b"numpy testing",
+            "scipy/special/tests/test_hyp2f1.py": b"scipy tests",
+        }
+        for relative, data in (removed | retained).items():
+            self.put(relative, data)
+
+        tensorflow_paths = [
+            p for p in removed | retained if p.startswith("tensorflow/")
+        ]
+        # RECORD is normally POSIX-style even on Windows; also accept a record
+        # whose owner used Windows separators without changing retained rows.
+        tensorflow_paths[tensorflow_paths.index("tensorflow/include/generated.inc")] = (
+            r"tensorflow\include\generated.inc"
+        )
+        tf_record = self.record("tensorflow_cpu-2.21.0", tensorflow_paths)
+        ov_record = self.record(
+            "openvino-2026.4.1",
+            [p for p in removed | retained if p.startswith("openvino/")],
+        )
+        shared_record = self.record("other-1.0", ["tensorflow/include/core,defs.h"])
+        old_tf = self.rows(tf_record)
+        old_ov = self.rows(ov_record)
+
+        result = self.builder.prune_sdk_headers(self.site)
+
+        self.assertTrue(result["enabled"])
+        self.assertEqual(result["files_removed"], len(removed))
+        self.assertEqual(result["bytes_removed"], sum(map(len, removed.values())))
+        self.assertEqual(
+            result["removed_paths_relative_to_site_packages"], sorted(removed)
+        )
+        self.assertEqual(result["components"]["tensorflow"]["files_removed"], 3)
+        self.assertEqual(result["components"]["openvino"]["files_removed"], 2)
+        self.assertEqual(
+            result["components"]["tensorflow"][
+                "headers_retained_for_notices_or_unknown_content"
+            ],
+            5,
+        )
+        self.assertEqual(
+            result["components"]["openvino"][
+                "headers_retained_for_notices_or_unknown_content"
+            ],
+            4,
+        )
+        for relative in removed:
+            self.assertFalse((self.site / relative).exists(), relative)
+        for relative, data in retained.items():
+            self.assertEqual((self.site / relative).read_bytes(), data, relative)
+
+        def without_removed(rows):
+            return [row for row in rows if row[0].replace("\\", "/") not in removed]
+
+        self.assertEqual(self.rows(tf_record), without_removed(old_tf))
+        self.assertEqual(self.rows(ov_record), without_removed(old_ov))
+        self.assertEqual(len(self.rows(shared_record)), 1)
+        self.assertFalse(list(self.site.rglob(".RECORD-slim-*")))
+
+        # The helper is idempotent; a second pass does not rewrite the records.
+        before = {r: r.read_bytes() for r in (tf_record, ov_record, shared_record)}
+        second = self.builder.prune_sdk_headers(self.site)
+        self.assertEqual(second["files_removed"], 0)
+        self.assertEqual(second["bytes_removed"], 0)
+        self.assertEqual(before, {r: r.read_bytes() for r in before})
+
+    def test_missing_ownership_aborts_before_any_changes(self):
+        first = self.put("tensorflow/include/owned.h")
+        second = self.put("tensorflow/include/unowned.h")
+        record = self.record("tensorflow_cpu-2.21.0", ["tensorflow/include/owned.h"])
+        before = record.read_bytes()
+        with self.assertRaisesRegex(self.builder.BuildError, "no owning wheel RECORD"):
+            self.builder.prune_sdk_headers(self.site)
+        self.assertTrue(first.exists())
+        self.assertTrue(second.exists())
+        self.assertEqual(record.read_bytes(), before)
+        self.assertFalse(list(self.site.rglob(".RECORD-slim-*")))
+
+    def test_malformed_record_aborts_before_any_changes(self):
+        header = self.put("tensorflow/include/owned.h")
+        record = self.record("tensorflow_cpu-2.21.0", ["tensorflow/include/owned.h"])
+        bad = self.put("other-1.0.dist-info/RECORD", b"not,a,valid,row\n")
+        before = record.read_bytes(), bad.read_bytes()
+        with self.assertRaisesRegex(self.builder.BuildError, "malformed wheel RECORD"):
+            self.builder.prune_sdk_headers(self.site)
+        self.assertTrue(header.exists())
+        self.assertEqual((record.read_bytes(), bad.read_bytes()), before)
+
+    def test_signed_record_aborts_without_invalidating_the_signature(self):
+        header = self.put("tensorflow/include/owned.h")
+        record = self.record("tensorflow_cpu-2.21.0", ["tensorflow/include/owned.h"])
+        signature = self.put("tensorflow_cpu-2.21.0.dist-info/RECORD.jws", b"signature")
+        before = record.read_bytes(), signature.read_bytes()
+        with self.assertRaisesRegex(self.builder.BuildError, "signed wheel RECORD"):
+            self.builder.prune_sdk_headers(self.site)
+        self.assertTrue(header.is_file())
+        self.assertEqual((record.read_bytes(), signature.read_bytes()), before)
+
+    def test_record_self_digest_is_cleared_after_rewrite(self):
+        self.put("tensorflow/include/owned.h")
+        record = self.record("tensorflow_cpu-2.21.0", ["tensorflow/include/owned.h"])
+        with record.open("w", encoding="utf-8", newline="") as handle:
+            csv.writer(handle).writerows(
+                [
+                    ["tensorflow/include/owned.h", "sha256=x", "4"],
+                    [record.relative_to(self.site).as_posix(), "sha256=stale", "100"],
+                ]
+            )
+        self.builder.prune_sdk_headers(self.site)
+        self.assertEqual(
+            self.rows(record), [[record.relative_to(self.site).as_posix(), "", ""]]
+        )
+
+    def test_symlinked_sdk_files_are_rejected(self):
+        header = self.put("tensorflow/include/owned.h")
+        outside = self.put("outside.h", b"outside")
+        link = header.parent / "linked.h"
+        try:
+            link.symlink_to(outside)
+        except (OSError, NotImplementedError) as exc:
+            self.skipTest(f"creating symlinks is unavailable: {exc}")
+        record = self.record("tensorflow_cpu-2.21.0", ["tensorflow/include/owned.h"])
+        before = record.read_bytes()
+        with self.assertRaisesRegex(self.builder.BuildError, "symlinked SDK"):
+            self.builder.prune_sdk_headers(self.site)
+        self.assertTrue(header.exists())
+        self.assertEqual(outside.read_bytes(), b"outside")
+        self.assertEqual(record.read_bytes(), before)
+
+    def test_symlinked_package_directory_is_rejected(self):
+        outside = Path(self.temporary.name) / "outside-package"
+        (outside / "include").mkdir(parents=True)
+        header = outside / "include" / "external.h"
+        header.write_bytes(b"outside")
+        link = self.site / "tensorflow"
+        try:
+            link.symlink_to(outside, target_is_directory=True)
+        except (OSError, NotImplementedError) as exc:
+            self.skipTest(f"creating symlinks is unavailable: {exc}")
+        with self.assertRaisesRegex(self.builder.BuildError, "symlinked SDK"):
+            self.builder.prune_sdk_headers(self.site)
+        self.assertEqual(header.read_bytes(), b"outside")
+
+    def test_windows_reparse_points_are_treated_as_links(self):
+        fake_stat = SimpleNamespace(
+            st_mode=stat.S_IFDIR,
+            st_file_attributes=stat.FILE_ATTRIBUTE_REPARSE_POINT,
+        )
+        with mock.patch.object(Path, "lstat", return_value=fake_stat):
+            self.assertTrue(self.builder.is_link_or_reparse_point(self.site))
+
+    def test_unreadable_header_fails_closed(self):
+        header = self.put("tensorflow/include/owned.h")
+        record = self.record("tensorflow_cpu-2.21.0", ["tensorflow/include/owned.h"])
+        before = record.read_bytes()
+        with mock.patch.object(
+            Path, "read_bytes", side_effect=PermissionError("denied")
+        ):
+            with self.assertRaisesRegex(
+                self.builder.BuildError, "cannot inspect SDK header"
+            ):
+                self.builder.prune_sdk_headers(self.site)
+        self.assertTrue(header.is_file())
+        self.assertEqual(record.read_bytes(), before)
+
+    def test_unreadable_sdk_walk_fails_closed(self):
+        self.put("tensorflow/include/owned.h")
+
+        def fail_walk(path, onerror, followlinks):
+            onerror(PermissionError("inaccessible"))
+            return []
+
+        with mock.patch.object(self.builder.os, "walk", side_effect=fail_walk):
+            with self.assertRaisesRegex(self.builder.BuildError, "cannot inspect SDK"):
+                self.builder.prune_sdk_headers(self.site)
+        self.assertTrue((self.site / "tensorflow/include/owned.h").is_file())
+
+    def test_no_optional_sdks_is_a_noop(self):
+        self.put("numpy/testing/__init__.py")
+        result = self.builder.prune_sdk_headers(self.site)
+        self.assertEqual(result["files_removed"], 0)
+        self.assertEqual(result["removed_paths_relative_to_site_packages"], [])
+        self.assertTrue((self.site / "numpy/testing/__init__.py").exists())
+
 
 class TestLayoutAssertions(unittest.TestCase):
     def setUp(self):
@@ -584,6 +838,164 @@ class TestManifestInputs(unittest.TestCase):
             re.fullmatch(r"[0-9a-f]{64}", pin["sha256"]),
             "python_embed_pin.json must carry the pinned SHA-256 digest",
         )
+
+
+class TestSlimBuild(unittest.TestCase):
+    """Exercise both modes through the builder without downloads or Windows."""
+
+    def setUp(self):
+        self.builder = _load_builder()
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.output = self.root / "output"
+        self.archive = self.root / "python.zip"
+        self.archive.write_bytes(b"pinned interpreter archive")
+
+    def _build(self, slim, keep_staging=False):
+        def stage_python(python_dir, _archive):
+            site = python_dir / "Lib" / "site-packages"
+            site.mkdir(parents=True)
+            (python_dir / "python.exe").write_bytes(b"MZ interpreter")
+            return str(site)
+
+        def install(site, _requirements):
+            files = {
+                "tensorflow/include/core.h": b"header",
+                "tensorflow/include/LICENSE": b"license",
+                "tensorflow/include/runtime.bin": b"runtime data",
+            }
+            for relative, content in files.items():
+                path = site / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(content)
+            metadata = site / "tensorflow_cpu-2.21.0.dist-info"
+            metadata.mkdir()
+            (metadata / "METADATA").write_text("Version: 2.21.0\n", encoding="utf-8")
+            with (metadata / "RECORD").open("w", encoding="utf-8", newline="") as fh:
+                writer = csv.writer(fh)
+                writer.writerows(
+                    [
+                        [path, "sha256=test", str(len(data))]
+                        for path, data in files.items()
+                    ]
+                )
+                writer.writerow([f"{metadata.name}/RECORD", "", ""])
+
+        def launcher(python_dir, _site, _staging):
+            path = python_dir / "GannetNVR.exe"
+            path.write_bytes((python_dir / "python.exe").read_bytes())
+            return path
+
+        args = [
+            "--version",
+            "0.19.0",
+            "--output-dir",
+            str(self.output),
+            "--skip-web",
+            "--skip-artifacts",
+        ]
+        if slim:
+            args.append("--slim")
+        if keep_staging:
+            args.append("--keep-staging")
+        with mock.patch.multiple(
+            self.builder,
+            stage_app=mock.DEFAULT,
+            stage_web=mock.DEFAULT,
+            fetch_python_embed=mock.DEFAULT,
+            stage_python=mock.DEFAULT,
+            install_wheels=mock.DEFAULT,
+            install_project_metadata=mock.DEFAULT,
+            stage_exe_launcher=mock.DEFAULT,
+            verify_layout=mock.DEFAULT,
+        ) as patched:
+            patched["fetch_python_embed"].return_value = self.archive
+            patched["stage_python"].side_effect = stage_python
+            patched["install_wheels"].side_effect = install
+            patched["stage_exe_launcher"].side_effect = launcher
+            self.assertEqual(self.builder.main(args), 0)
+
+    def test_slim_and_full_artifacts_coexist_and_describe_their_contents(self):
+        self._build(slim=False, keep_staging=True)
+        full_name = "GannetNVR-0.19.0-win64"
+        full_staging = self.output / ".staging" / full_name
+        full_artifacts = [
+            self.output / f"{full_name}.zip",
+            self.output / f"{full_name}.zip.sha256",
+            self.output / "SHA256SUMS.txt",
+            self.output / "RELEASE-NOTES.md",
+            self.output / self.builder.WINGET_TEMPLATE.name,
+        ]
+        before = {path: path.read_bytes() for path in full_artifacts}
+
+        # Even an explicitly shared output directory must not clobber full
+        # artifacts or a retained full staging tree.
+        self._build(slim=True)
+        self.assertEqual(before, {path: path.read_bytes() for path in full_artifacts})
+        self.assertTrue(full_staging.is_dir())
+        slim_name = f"{full_name}-slim"
+        for name in (
+            f"{slim_name}.zip",
+            f"{slim_name}.zip.sha256",
+            "SHA256SUMS-slim.txt",
+            "RELEASE-NOTES-slim.md",
+        ):
+            self.assertTrue((self.output / name).is_file(), name)
+
+        prefix = "python/Lib/site-packages/tensorflow/include/"
+        with zipfile.ZipFile(self.output / f"{full_name}.zip") as archive:
+            self.assertIn(f"{full_name}/{prefix}core.h", archive.namelist())
+            info = json.loads(archive.read(f"{full_name}/BUILD-INFO.json"))
+            self.assertEqual(info["bundle_mode"], "full")
+            self.assertFalse(info["sdk_pruning"]["enabled"])
+        with zipfile.ZipFile(self.output / f"{slim_name}.zip") as archive:
+            self.assertNotIn(f"{slim_name}/{prefix}core.h", archive.namelist())
+            self.assertIn(f"{slim_name}/{prefix}LICENSE", archive.namelist())
+            self.assertIn(f"{slim_name}/{prefix}runtime.bin", archive.namelist())
+            info = json.loads(archive.read(f"{slim_name}/BUILD-INFO.json"))
+            offer = archive.read(f"{slim_name}/SOURCE-OFFER.txt").decode("utf-8")
+            record = archive.read(
+                f"{slim_name}/python/Lib/site-packages/"
+                "tensorflow_cpu-2.21.0.dist-info/RECORD"
+            ).decode("utf-8")
+        self.assertEqual(info["bundle"], slim_name)
+        self.assertEqual(info["bundle_mode"], "slim")
+        self.assertEqual(info["sdk_pruning"]["files_removed"], 1)
+        self.assertEqual(info["sdk_pruning"]["bytes_removed"], len(b"header"))
+        self.assertEqual(
+            info["sdk_pruning"]["removed_paths_relative_to_site_packages"],
+            ["tensorflow/include/core.h"],
+        )
+        self.assertIn("omits selected TensorFlow and OpenVINO", offer)
+        self.assertNotIn("each wheel in python/Lib/site-packages is unmodified", offer)
+        self.assertNotIn("tensorflow/include/core.h", record)
+        self.assertIn("tensorflow/include/LICENSE", record)
+        self.assertIn(
+            "Native custom-op or extension development requires the full bundle",
+            (self.output / "RELEASE-NOTES-slim.md").read_text(encoding="utf-8"),
+        )
+
+    def test_slim_plan_defaults_to_a_separate_directory_without_writes(self):
+        dist = self.root / "dist"
+        with mock.patch.object(self.builder, "DIST", dist):
+            with self.assertLogs("build_portable", level="INFO") as logs:
+                self.assertEqual(
+                    self.builder.main(["--version", "0.19.0", "--slim", "--plan-only"]),
+                    0,
+                )
+        self.assertIn(
+            str(dist / "slim" / ".staging" / "GannetNVR-0.19.0-win64-slim"),
+            "\n".join(logs.output),
+        )
+        self.assertFalse(dist.exists())
+
+    def test_slim_cannot_claim_a_build_without_wheels(self):
+        with self.assertRaisesRegex(self.builder.BuildError, "cannot be combined"):
+            self.builder.main(
+                ["--slim", "--skip-wheels", "--output-dir", str(self.output)]
+            )
+        self.assertFalse(self.output.exists())
 
 
 if __name__ == "__main__":

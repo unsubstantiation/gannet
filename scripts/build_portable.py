@@ -56,14 +56,17 @@ not run the result: only a Windows x64 host can do that.
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import json
 import logging
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
+import tempfile
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -656,6 +659,210 @@ def install_project_metadata(site_packages: Path, version: str) -> None:
         )
 
 
+# Only C/C++ SDK headers are optional here. In particular, TensorFlow's .bin
+# descriptors, native libraries, Python packages, and license files are runtime
+# or redistribution material and must not be treated as disposable SDK files.
+SLIM_HEADER_RULES = {
+    "tensorflow": (Path("tensorflow/include"), {".h", ".hpp", ".inc"}),
+    "openvino": (Path("openvino/include"), {".h", ".hpp"}),
+}
+NOTICE_NAME_PARTS = ("license", "licence", "notice", "copying", "copyright")
+NOTICE_CONTENT_PARTS = NOTICE_NAME_PARTS + (
+    "spdx-",
+    "all rights reserved",
+    "permission is hereby granted",
+    "redistribution and use",
+)
+COPYRIGHT_SYMBOL = re.compile(r"\(\s*c\s*\)", re.IGNORECASE)
+
+
+def has_notice_or_unknown_content(path: Path) -> bool:
+    """Keep headers that might carry attribution, or cannot be inspected safely."""
+    try:
+        data = path.read_bytes()
+    except OSError as exc:
+        raise BuildError(f"cannot inspect SDK header {path}: {exc}") from exc
+    try:
+        text = data.decode("utf-8")
+    except UnicodeDecodeError:
+        return True
+    if "\x00" in text or "©" in text or COPYRIGHT_SYMBOL.search(text):
+        return True
+    lower = text.lower()
+    return any(marker in lower for marker in NOTICE_CONTENT_PARTS)
+
+
+def is_link_or_reparse_point(path: Path) -> bool:
+    """Catch Windows junctions as well as POSIX/Windows symbolic links."""
+    try:
+        info = path.lstat()
+    except FileNotFoundError:
+        return False
+    return stat.S_ISLNK(info.st_mode) or bool(
+        getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT
+    )
+
+
+def prune_sdk_headers(site_packages: Path) -> dict:
+    """Remove the opt-in SDK headers and update all owning wheel RECORDs.
+
+    Headers with attribution or uncertain content are retained. Ownership is
+    established for every selected path before anything is removed; a missing
+    or unreadable RECORD aborts the build rather than making package metadata
+    silently inaccurate. Paths in the report are relative to site-packages.
+    """
+    if is_link_or_reparse_point(site_packages) or not site_packages.is_dir():
+        raise BuildError(f"not a regular site-packages directory: {site_packages}")
+
+    selected: dict[str, tuple[Path, str, int]] = {}
+    components = {
+        name: {
+            "files_removed": 0,
+            "bytes_removed": 0,
+            "headers_retained_for_notices_or_unknown_content": 0,
+        }
+        for name in SLIM_HEADER_RULES
+    }
+
+    def walk_error(error: OSError) -> None:
+        raise BuildError(f"cannot inspect SDK directory: {error}") from error
+
+    for name, (relative_root, extensions) in SLIM_HEADER_RULES.items():
+        include = site_packages
+        for part in relative_root.parts:
+            include /= part
+            if is_link_or_reparse_point(include):
+                raise BuildError(
+                    f"refusing to prune a symlinked SDK directory or reparse point: {include}"
+                )
+        if not include.exists():
+            continue
+        if not include.is_dir():
+            raise BuildError(f"SDK path is not a directory: {include}")
+
+        # Never follow links out of the staged tree. Wheel installs normally
+        # contain regular files; unexpected links are a reason to fail closed.
+        for root, dirs, files in os.walk(
+            include, onerror=walk_error, followlinks=False
+        ):
+            dirs.sort()
+            files.sort()
+            for entry in dirs + files:
+                path = Path(root) / entry
+                if is_link_or_reparse_point(path):
+                    raise BuildError(
+                        f"refusing to prune a symlinked SDK path or reparse point: {path}"
+                    )
+            for entry in files:
+                path = Path(root) / entry
+                if path.suffix.lower() not in extensions:
+                    continue
+                if any(
+                    marker in part.lower()
+                    for part in path.relative_to(include).parts
+                    for marker in NOTICE_NAME_PARTS
+                ) or has_notice_or_unknown_content(path):
+                    components[name][
+                        "headers_retained_for_notices_or_unknown_content"
+                    ] += 1
+                    continue
+                relative = path.relative_to(site_packages).as_posix()
+                selected[relative] = (path, name, path.stat().st_size)
+
+    if selected:
+        # A path can be recorded by more than one distribution. Remove it from
+        # every owning RECORD, not merely from the first one found.
+        owned: set[str] = set()
+        updates: list[tuple[Path, list[list[str]]]] = []
+        records = sorted(site_packages.glob("*.dist-info/RECORD"))
+        for record in records:
+            if is_link_or_reparse_point(record) or is_link_or_reparse_point(
+                record.parent
+            ):
+                raise BuildError(f"refusing to modify a symlinked RECORD: {record}")
+            try:
+                with record.open(encoding="utf-8", newline="") as handle:
+                    rows = list(csv.reader(handle, strict=True))
+            except (OSError, UnicodeError, csv.Error) as exc:
+                raise BuildError(f"cannot read wheel RECORD {record}: {exc}") from exc
+            if any(len(row) != 3 for row in rows):
+                raise BuildError(f"malformed wheel RECORD: {record}")
+
+            retained = []
+            changed = False
+            record_path = record.relative_to(site_packages).as_posix()
+            for row in rows:
+                relative = row[0].replace("\\", "/")
+                if relative in selected:
+                    owned.add(relative)
+                    changed = True
+                else:
+                    # The RECORD itself cannot retain a digest of its old
+                    # contents. Empty hash/size is permitted by the wheel spec.
+                    if relative == record_path:
+                        row = [row[0], "", ""]
+                    retained.append(row)
+            if changed:
+                # Rewriting a signed RECORD would invalidate the package's
+                # signature. Do not silently drop or corrupt that metadata.
+                for signature in ("RECORD.jws", "RECORD.p7s"):
+                    signature_path = record.parent / signature
+                    if signature_path.exists() or signature_path.is_symlink():
+                        raise BuildError(f"cannot slim a signed wheel RECORD: {record}")
+                updates.append((record, retained))
+
+        missing = sorted(set(selected) - owned)
+        if missing:
+            raise BuildError(
+                f"refusing slim cleanup: {len(missing)} selected header(s) have "
+                f"no owning wheel RECORD; first: {missing[0]}"
+            )
+
+        temporary_records: list[tuple[Path, Path]] = []
+        try:
+            # Prepare all replacement metadata before deleting any headers.
+            for record, rows in updates:
+                with tempfile.NamedTemporaryFile(
+                    mode="w",
+                    encoding="utf-8",
+                    newline="",
+                    prefix=".RECORD-slim-",
+                    dir=record.parent,
+                    delete=False,
+                ) as handle:
+                    temporary_records.append((record, Path(handle.name)))
+                    csv.writer(handle, lineterminator="\n").writerows(rows)
+            for path, name, size in selected.values():
+                path.unlink()
+                components[name]["files_removed"] += 1
+                components[name]["bytes_removed"] += size
+            for record, temporary in temporary_records:
+                temporary.replace(record)
+        finally:
+            for _, temporary in temporary_records:
+                temporary.unlink(missing_ok=True)
+
+    report = {
+        "enabled": True,
+        "files_removed": sum(item["files_removed"] for item in components.values()),
+        "bytes_removed": sum(item["bytes_removed"] for item in components.values()),
+        "headers_retained_for_notices_or_unknown_content": sum(
+            item["headers_retained_for_notices_or_unknown_content"]
+            for item in components.values()
+        ),
+        "components": components,
+        "removed_paths_relative_to_site_packages": sorted(selected),
+    }
+    log.info(
+        "Slim SDK cleanup: %s headers, %.2f MiB extracted; %s retained for "
+        "possible notices or unknown content",
+        report["files_removed"],
+        report["bytes_removed"] / (1024 * 1024),
+        report["headers_retained_for_notices_or_unknown_content"],
+    )
+    return report
+
+
 def stage_artifacts(app_dir: Path) -> list[dict]:
     """Fetch the pinned binaries and models, reusing bootstrap's pins.
 
@@ -1138,6 +1345,7 @@ def build_info(
     artifacts: list[dict],
     python_archive: Path,
     launcher_exe: Path,
+    sdk_pruning: dict | None = None,
 ) -> str:
     distributions = []
     for metadata in sorted(site_packages.glob("*.dist-info")):
@@ -1154,9 +1362,14 @@ def build_info(
             }
         )
 
+    suffix = "-slim" if sdk_pruning is not None else ""
     payload = {
-        "bundle": f"GannetNVR-{version}-win64",
+        "bundle": f"GannetNVR-{version}-win64{suffix}",
         "version": version,
+        "bundle_mode": "slim" if sdk_pruning is not None else "full",
+        "sdk_pruning": sdk_pruning
+        if sdk_pruning is not None
+        else {"enabled": False, "files_removed": 0, "bytes_removed": 0},
         "python": {
             "version": PYTHON_EMBED_VERSION,
             "source": PYTHON_EMBED_URL.format(v=PYTHON_EMBED_VERSION),
@@ -1180,7 +1393,7 @@ def build_info(
     return json.dumps(payload, indent=2) + "\n"
 
 
-def source_offer(artifacts: list[dict]) -> str:
+def source_offer(artifacts: list[dict], slim: bool = False) -> str:
     """Written offer for the copyleft components a redistributed bundle carries."""
     lines = [
         "Source code for the third-party binaries redistributed in this bundle",
@@ -1224,7 +1437,17 @@ def source_offer(artifacts: list[dict]) -> str:
         "  separately compiled launcher; any Authenticode signature on it is",
         "  upstream's. The Gannet launcher code next to it is Python source.",
         "",
-        "Python packages: each wheel in python/Lib/site-packages is unmodified.",
+        "Python packages: wheel distributions installed into",
+        "  python/Lib/site-packages (pip updates installation metadata).",
+    ]
+    if slim:
+        lines += [
+            "  This slim bundle omits selected TensorFlow and OpenVINO SDK",
+            "  headers and updates the owning wheel RECORD files. BUILD-INFO.json",
+            "  lists the omitted paths. License and notice files, and headers",
+            "  that may contain attribution, are retained.",
+        ]
+    lines += [
         "GPL-2.0-or-later applies to Unidecode",
         "  (https://pypi.org/project/Unidecode/1.4.0/#files); MPL-2.0 applies to",
         "py-vapid and pywebpush. Sources are the published sdists, and the",
@@ -1246,8 +1469,20 @@ def winget_manifest(
 
 
 def release_notes(
-    version: str, bundle_name: str, digest: str, artifacts: list[dict]
+    version: str,
+    bundle_name: str,
+    digest: str,
+    artifacts: list[dict],
+    slim: bool = False,
 ) -> str:
+    slim_note = (
+        "## Slim build\n\n"
+        "Selected TensorFlow and OpenVINO C/C++ SDK headers are omitted. "
+        "Native custom-op or extension development requires the full bundle. "
+        "See `BUILD-INFO.json` for the omitted paths and cleanup statistics.\n\n"
+        if slim
+        else ""
+    )
     rows = "\n".join(
         f"| {item['name']} | {item['version']} | {item['license']} |"
         for item in artifacts
@@ -1257,7 +1492,7 @@ def release_notes(
 Self-contained portable bundle. No Python install, no administrator rights, no
 network access required.
 
-## Install
+{slim_note}## Install
 
 1. Extract `{bundle_name}.zip` anywhere writable, for example
    `%LOCALAPPDATA%\\Programs\\GannetNVR`. Do not extract into `C:\\Program Files`.
@@ -1273,7 +1508,7 @@ network access required.
 `-BaseDir <path>`. With the .exe, set `FRIGATE_BASE_DIR` instead. The `.cmd`
 inserts the `--` separator CPython needs, so pass application flags straight
 to it: `GannetNVR.cmd --validate-config`. Running the exe directly needs the
-separator: `python\GannetNVR.exe -- --validate-config`.
+separator: `python\\GannetNVR.exe -- --validate-config`.
 
 Data lives in `%LOCALAPPDATA%\\Frigate`. To remove the application, stop it and
 delete the folder.
@@ -1332,8 +1567,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--version", help="override the pyproject.toml version")
     parser.add_argument(
         "--output-dir",
-        default=str(DIST),
-        help="where the ZIP and checksums are written (default: dist/)",
+        help="where artifacts are written (default: dist/, or dist/slim/ with --slim)",
+    )
+    parser.add_argument(
+        "--slim",
+        action="store_true",
+        help="omit selected TensorFlow/OpenVINO SDK headers (native extensions need the full bundle)",
     )
     parser.add_argument(
         "--python-version",
@@ -1376,11 +1615,15 @@ def main(argv: list[str] | None = None) -> int:
     PYTHON_EMBED_VERSION = args.python_version
 
     version = args.version or project_version()
-    output_dir = Path(args.output_dir).resolve()
-    staging = output_dir / ".staging" / f"GannetNVR-{version}-win64"
-    bundle_name = staging.name
+    output_dir = Path(
+        args.output_dir or (DIST / "slim" if args.slim else DIST)
+    ).resolve()
+    bundle_name = f"GannetNVR-{version}-win64" + ("-slim" if args.slim else "")
+    staging = output_dir / ".staging" / bundle_name
     requirements = Path(args.requirements).resolve()
 
+    if args.slim and args.skip_wheels:
+        raise BuildError("--slim cannot be combined with --skip-wheels")
     if not requirements.is_file():
         raise BuildError(f"requirements file not found: {requirements}")
 
@@ -1388,6 +1631,7 @@ def main(argv: list[str] | None = None) -> int:
     log.info("  staging: %s", staging)
     log.info("  CPython: %s embeddable amd64", PYTHON_EMBED_VERSION)
     log.info("  requirements: %s", requirements)
+    log.info("  mode: %s", "slim (SDK headers omitted)" if args.slim else "full")
     log.info("  web: %s", "reuse web/dist" if args.skip_web else "build")
     log.info(
         "  binaries: %s", "skip" if args.skip_artifacts else "FFmpeg, go2rtc, 2 models"
@@ -1425,6 +1669,7 @@ def main(argv: list[str] | None = None) -> int:
         install_wheels(site_packages, requirements)
         install_project_metadata(site_packages, version)
 
+    sdk_pruning = prune_sdk_headers(site_packages) if args.slim else None
     artifacts = [] if args.skip_artifacts else stage_artifacts(app_dir)
 
     (staging / LAUNCHER_NAME).write_text(launcher_script(), encoding="utf-8")
@@ -1437,10 +1682,14 @@ def main(argv: list[str] | None = None) -> int:
     verify_layout(staging, not args.skip_wheels, not args.skip_artifacts)
 
     (staging / "BUILD-INFO.json").write_text(
-        build_info(version, site_packages, artifacts, python_archive, launcher_exe),
+        build_info(
+            version, site_packages, artifacts, python_archive, launcher_exe, sdk_pruning
+        ),
         encoding="utf-8",
     )
-    (staging / "SOURCE-OFFER.txt").write_text(source_offer(artifacts), encoding="utf-8")
+    (staging / "SOURCE-OFFER.txt").write_text(
+        source_offer(artifacts, slim=args.slim), encoding="utf-8"
+    )
 
     log.info("Writing the archive")
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -1452,14 +1701,19 @@ def main(argv: list[str] | None = None) -> int:
     (archive.with_suffix(".zip.sha256")).write_text(
         f"{digest}  {archive.name}\n", encoding="utf-8"
     )
-    (output_dir / "SHA256SUMS.txt").write_text(
+    checksums_name = "SHA256SUMS-slim.txt" if args.slim else "SHA256SUMS.txt"
+    notes_name = "RELEASE-NOTES-slim.md" if args.slim else "RELEASE-NOTES.md"
+    (output_dir / checksums_name).write_text(
         f"{digest}  {archive.name}\n", encoding="utf-8"
     )
-    (output_dir / "RELEASE-NOTES.md").write_text(
-        release_notes(version, bundle_name, digest, artifacts), encoding="utf-8"
+    (output_dir / notes_name).write_text(
+        release_notes(version, bundle_name, digest, artifacts, slim=args.slim),
+        encoding="utf-8",
     )
 
-    if WINGET_TEMPLATE.is_file():
+    # The checked-in winget template describes the standard release, not this
+    # optional SDK-trimmed variant.
+    if not args.slim and WINGET_TEMPLATE.is_file():
         url = (
             "https://github.com/unsubstantiation/gannet/releases/download/"
             f"v{version}/{archive.name}"
@@ -1477,7 +1731,12 @@ def main(argv: list[str] | None = None) -> int:
         log.info("Wrote a winget manifest with this build's digest")
 
     if not args.keep_staging:
-        shutil.rmtree(staging.parent if staging.parent.name == ".staging" else staging)
+        shutil.rmtree(staging)
+        # Another full/slim build may have its own retained staging tree.
+        try:
+            staging.parent.rmdir()
+        except OSError:
+            pass  # leave a nonempty staging directory alone
 
     log.info("")
     log.info("Built %s (%.1f MiB)", archive, size_mb)

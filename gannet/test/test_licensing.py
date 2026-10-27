@@ -28,13 +28,16 @@ Run from the repository root::
     python -m unittest gannet.test.test_licensing
 """
 
+import importlib.util
 import json
 import re
 import subprocess
 import sys
+import tempfile
 import tomllib
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -174,6 +177,27 @@ class TestReuseMapping(unittest.TestCase):
         head = REUSE_TOML.read_text(encoding="utf-8").splitlines()[:12]
         self.assertTrue(any("GENERATED" in line for line in head))
         self.assertTrue(any("generate_reuse_toml" in line for line in head))
+
+    def test_renamed_package_is_compared_to_its_upstream_path(self):
+        spec = importlib.util.spec_from_file_location(
+            "generate_reuse_toml", REPO / "scripts" / "generate_reuse_toml.py"
+        )
+        generator = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(generator)
+        rel = "gannet/api/defs/tags.py"
+        with tempfile.TemporaryDirectory() as directory:
+            upstream = Path(directory)
+            original = upstream / "frigate" / "api" / "defs" / "tags.py"
+            original.parent.mkdir(parents=True)
+            original.write_bytes((REPO / rel).read_bytes())
+            with patch.object(generator, "tracked_files", return_value=[rel]):
+                modified, only_here, _, _ = generator.classify(upstream)
+                self.assertNotIn(rel, modified)
+                self.assertNotIn(rel, only_here)
+                original.write_text("different upstream content", encoding="utf-8")
+                modified, only_here, _, _ = generator.classify(upstream)
+                self.assertIn(rel, modified)
+                self.assertNotIn(rel, only_here)
 
     def test_mapping_is_current_against_the_upstream_pin(self):
         """Regenerate and compare, but only when an upstream checkout is at hand.

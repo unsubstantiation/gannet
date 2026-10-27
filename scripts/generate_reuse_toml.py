@@ -214,7 +214,16 @@ def classify(
     not_claimed: list[str] = []
     ratios: dict[str, float] = {}
     for rel in tracked_files():
-        here, there = ROOT / rel, upstream_dir / rel
+        here = ROOT / rel
+        # The fork renamed the Python package from frigate/ to gannet/.
+        # Compare corresponding upstream files rather than treating every
+        # renamed module as newly authored material.
+        upstream_rel = (
+            f"frigate/{rel.removeprefix('gannet/')}"
+            if rel.startswith("gannet/")
+            else rel
+        )
+        there = upstream_dir / upstream_rel
         if rel.startswith(BRANDING_PREFIXES) and not same_bytes(here, there):
             only_here.append(rel)
             continue

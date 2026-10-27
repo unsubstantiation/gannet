@@ -73,13 +73,15 @@ Useful flags:
 | Flag | Effect |
 | --- | --- |
 | `-Version X.Y.Z` | override the `pyproject.toml` version |
+| `-OutputDir PATH` | choose where build artifacts are written |
+| `-Slim` | opt into omitting selected TensorFlow/OpenVINO C/C++ SDK headers; see [Optional slim bundle](#optional-slim-bundle) |
 | `-PlanOnly` | print the plan and exit; no network, no disk writes |
 | `-SkipWeb` | reuse the existing `web/dist` instead of building |
 | `-SkipWheels` | skip the requirement install (the result will not start) |
 | `-SkipArtifacts` | skip FFmpeg, go2rtc, and the models (the result will not start) |
 | `-PythonZip PATH` | use a local embeddable archive instead of downloading |
 | `-Requirements PATH` | swap the requirements file, for testing |
-| `-KeepStaging` | leave `dist/.staging` in place for inspection |
+| `-KeepStaging` | leave the staging tree in place for inspection |
 | `-VerboseOutput` | echo every pip command |
 
 `dist/` after a successful build:
@@ -93,6 +95,55 @@ unsubstantiation.GannetNVR.yaml        winget manifest, tokens already filled
 .staging/                             removed unless -KeepStaging
 .cache/                               downloads and built wheels, reused next time
 ```
+
+## Optional slim bundle
+
+The default build remains the full bundle. To opt into an experimental smaller
+bundle, run on a supported Windows x64 build host:
+
+```powershell
+pwsh scripts/build_portable.ps1 -RequirePinned -Slim
+# Or: python scripts/build_portable.py --require-pinned --slim
+```
+
+The slim build considers only `.h`, `.hpp`, and `.inc` files under
+`tensorflow/include/` and `.h` and `.hpp` files under `openvino/include/`.
+Paths with license, notice, copying, or copyright in a filename or directory
+are retained. Headers with possible embedded copyright, license, SPDX, or notice
+text are also retained, as are files that cannot be inspected as UTF-8 text.
+This deliberately conservative check means many SDK headers remain. The full
+bundle is required for TensorFlow native custom-op or OpenVINO native extension
+development. Python runtime code, native libraries,
+TensorFlow `.bin` data, installed license and notice files, NumPy/SciPy tests,
+ONVIF WSDL files, and all translations remain in the bundle. This is not a
+claim that every accelerator or third-party extension has been validated: test
+your workload on the target Windows hardware before redistributing it.
+
+Before removing anything the builder checks the installed wheel `RECORD` files;
+if any selected file has no recorded owner, or an affected `RECORD` is signed,
+the build fails. It removes the corresponding rows from every owning `RECORD`
+and leaves the other entries in place. `BUILD-INFO.json` records the build mode,
+removed file and byte counts, per-component statistics (including headers
+retained for notices or unknown content), and every omitted path relative to
+site-packages.
+`SOURCE-OFFER.txt` explains the omission. The actual compressed ZIP savings
+depend on the installed wheel versions and compression; the extracted byte
+count in `BUILD-INFO.json` is not the size saved in the ZIP.
+
+By default, the output is separate from the full release in `dist/slim/`:
+
+```
+GannetNVR-<version>-win64-slim.zip
+GannetNVR-<version>-win64-slim.zip.sha256
+SHA256SUMS-slim.txt
+RELEASE-NOTES-slim.md
+```
+
+No winget manifest is generated for the slim variant. Even with an explicit
+`-OutputDir`, the ZIP and release-metadata names do not overwrite the full
+bundle's names. `-Slim` cannot be combined with `-SkipWheels`. The normal
+Windows release workflow publishes the full bundle; its slim smoke check prunes
+a throwaway extraction rather than publishing or testing a complete slim ZIP.
 
 ## What is inside the archive
 
@@ -296,8 +347,11 @@ bundle that a network-restricted machine cannot.
   as a 30-day workflow artifact without publishing anything.
 - Every run smoke-tests the extracted archive: the bundled interpreter, the
   `.exe` launcher copy and its `.pth` hook, the web build, native wheels, and
-  `ffmpeg.exe`. The artifact is uploaded before that check, so a smoke-test
-  failure still leaves a downloadable bundle for diagnosis.
+  `ffmpeg.exe`. It then applies the slim cleanup to that throwaway extraction,
+  checks preservation and wheel metadata, and exercises small TensorFlow CPU
+  training/TFLite conversion and OpenVINO CPU inference examples. This does not
+  validate every application workload, GPU, or NPU. The full artifact is
+  uploaded before those checks, so a failure still leaves a bundle for diagnosis.
 
 The direct download URL for a published tag is
 `https://github.com/unsubstantiation/gannet/releases/download/<tag>/GannetNVR-<version>-win64.zip`.
