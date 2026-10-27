@@ -21,10 +21,14 @@ on:
         required: false
         type: string
       publish:
-        description: "Attach the artifact to a release for this v* tag"
+        description: "Attach the artifact to a release"
         required: false
         type: boolean
         default: false
+      release_tag:
+        description: "Existing tag to re-publish (default: this ref's own tag)"
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -94,14 +98,20 @@ jobs:
       # check must never be the difference between a tag and a download.
       - name: Publish the release
         if: >-
-          startsWith(github.ref, 'refs/tags/v') &&
-          (github.event_name == 'push' || inputs.publish == true)
+          (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+          (inputs.publish == true &&
+            (inputs.release_tag != '' || startsWith(github.ref, 'refs/tags/v')))
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           $ErrorActionPreference = 'Continue'
-          $tag = "${{ github.ref_name }}"
+          $tag = "${{ inputs.release_tag }}"
+          if ($tag -eq '') { $tag = "${{ github.ref_name }}" }
+          if ($tag -notmatch '^v') {
+            Write-Error "Refusing to publish from a ref that is not a v* tag: $tag"
+            exit 1
+          }
           gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
           if ($LASTEXITCODE -ne 0) {
             gh release create $tag `
@@ -115,6 +125,11 @@ jobs:
             dist/*.zip, dist/*.sha256, dist/SHA256SUMS.txt, `
             dist/RELEASE-NOTES.md, dist/unsubstantiation.GannetNVR.yaml).FullName
           gh release upload $tag --repo $env:GITHUB_REPOSITORY --clobber @assets
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          # Keep the release body in step with the asset: a re-publish can
+          # produce a different digest, and a stale body would mislead users.
+          gh release edit $tag --repo $env:GITHUB_REPOSITORY `
+            --notes-file dist/RELEASE-NOTES.md
           exit $LASTEXITCODE
 
       - name: Smoke-test the extracted bundle
