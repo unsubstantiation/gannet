@@ -10,8 +10,8 @@ Generates the "Gannet UI" tab of the `<ConfigTabs>` blocks in the configuration 
 
 Run it from the repository root; it imports Gannet's config models, so `gannet` must be importable.
 
-```bash
-python3 docs/scripts/generate_ui_tabs.py --help
+```powershell
+python docs/scripts/generate_ui_tabs.py --help
 ```
 
 ### Modes
@@ -25,17 +25,17 @@ python3 docs/scripts/generate_ui_tabs.py --help
 
 Options: `--outdir DIR` writes a mirrored copy of the tree instead of editing in place (works with `--inject` and `--regenerate`), `--dry-run` prints the `--regenerate` diffs without writing, and `-v` explains every skipped and unchanged block.
 
-```bash
+```powershell
 # Preview across all config docs without touching anything
-python3 docs/scripts/generate_ui_tabs.py --inject --outdir /tmp/ui-preview docs/docs/configuration/
-diff -ru docs/docs/configuration/ /tmp/ui-preview/
+python docs/scripts/generate_ui_tabs.py --inject --outdir .ui-preview docs/docs/configuration/
+git diff --no-index -- docs/docs/configuration/ .ui-preview/
 
 # Apply, then verify after schema or i18n changes
-python3 docs/scripts/generate_ui_tabs.py --inject docs/docs/configuration/
-python3 docs/scripts/generate_ui_tabs.py --check docs/docs/configuration/
+python docs/scripts/generate_ui_tabs.py --inject docs/docs/configuration/
+python docs/scripts/generate_ui_tabs.py --check docs/docs/configuration/
 
 # Re-sync drifted tabs
-python3 docs/scripts/generate_ui_tabs.py --regenerate docs/docs/configuration/
+python docs/scripts/generate_ui_tabs.py --regenerate docs/docs/configuration/
 ```
 
 ### What it generates

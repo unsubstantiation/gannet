@@ -4,25 +4,31 @@ The React/TypeScript interface for Gannet that talks to its Python backend.
 
 ## Setup
 
-```bash
+```powershell
+cd web
 npm ci
 ```
 
-`postinstall` runs `patch-package`. The frontend build requires Node.js 20.19+ or 22.12+ (Vite engine requirement).
+`postinstall` runs `patch-package`. The frontend build requires Node.js 20.19.x or newer in the 20.x line, or Node.js 22.12 or newer.
+Node.js 22.12+ is recommended.
 
 ## Development server
 
-```bash
-PROXY_HOST=<ip_address:port> npm run dev
+```powershell
+$env:PROXY_HOST = "127.0.0.1:5000"
+npm run dev
 ```
 
-`PROXY_HOST` is the Gannet instance the dev server proxies `/api`, `/vod`, `/clips` and other backend routes to. It defaults to `localhost:5000`, the unauthenticated internal port of a local Gannet process.
+`PROXY_HOST` is the Gannet instance the dev server proxies `/api`, `/vod`, `/clips` and other backend routes to. It defaults to `localhost:5000`, the unauthenticated internal port of a Gannet process on the same host. Port 5000 is loopback-only; a remote
+backend cannot be reached through it. Keep this development server on a trusted
+network: its proxy exposes the trusted internal API without public-listener
+authentication.
 
 ## Commands
 
 | Command | What it does |
 | ------- | ------------ |
-| `npm run build` | Production build served under a configurable base path |
+| `npm run build` | Production build with the `/BASE_PATH/` placeholder |
 | `npm run build:native` | Production build for the native install, served from `/`. Required for the native server to serve the UI |
 | `npm run lint` | ESLint plus the Playwright spec lint |
 | `npm run lint:fix` | ESLint with `--fix` |
@@ -32,9 +38,10 @@ PROXY_HOST=<ip_address:port> npm run dev
 
 ## E2E tests
 
-```bash
+```powershell
 npx playwright install chromium   # once
-npm run e2e:build && npm run e2e  # build, then run the suite
+npm run e2e:build
+npm run e2e                      # run after a successful build
 npm run e2e:ui                    # interactive UI for debugging
 ```
 

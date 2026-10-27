@@ -11,7 +11,7 @@ and Home Assistant add-on images are not supported by this edition.
 - Windows 10 or Windows 11, 64-bit
 - 64-bit CPython 3.12 (`py -3.12` must work)
 - Git
-- Node.js 22 or newer when building the web interface from source
+- Node.js 22.12 or newer when building the web interface from source
 - An optional MQTT broker for MQTT integrations
 
 The installer fetches verified native builds of FFmpeg and go2rtc plus the CPU detection and YAMNet audio models. You do not
@@ -44,13 +44,16 @@ Start Gannet with:
 Open `https://localhost:8971` and accept the first-run warning for the
 generated self-signed certificate. On first start, the generated administrator
 password is printed to the console and recorded in
-`%LOCALAPPDATA%\Gannet\tmp\logs\frigate\current`.
+`%LOCALAPPDATA%\Frigate\tmp\logs\frigate\current`.
 
 ### Bootstrap options
 
 ```text
 --venv PATH              choose the virtual-environment directory
---directml               use ONNX Runtime DirectML for AMD, Intel, or NVIDIA GPU inference
+--directml               use ONNX Runtime DirectML (default)
+--cuda                   use ONNX Runtime CUDA 13 for NVIDIA GPU inference
+--windows-ml             use Windows ML; install vendor providers separately
+--no-directml            use CPU ONNX Runtime
 --skip-venv              reuse an existing virtual environment
 --skip-deps              do not install Python requirements
 --skip-binaries          do not fetch FFmpeg, go2rtc, or the detection and audio models
@@ -58,22 +61,27 @@ password is printed to the console and recorded in
 --skip-shortcut          do not create a Start Menu shortcut
 --install-service        register the Windows service
 --add-defender-exclusion add the Gannet data directory to Microsoft Defender exclusions
+--print-digests          print recorded artifact digests and exit
 ```
+
+The four runtime profiles are mutually exclusive. See the
+[acceleration guide](/configuration/hardware_acceleration_enrichments) for
+provider installation and hardware requirements.
 
 Use `--add-defender-exclusion` only after reviewing the command and deciding
 that the performance trade-off is appropriate for the host.
 
 ## Data locations
 
-The default writable root is `%LOCALAPPDATA%\Gannet` for an interactive user.
-It contains:
+The default writable root is `%LOCALAPPDATA%\Frigate` for an interactive user.
+The `Frigate` directory name is retained for compatibility. It contains:
 
 ```text
-Gannet\
+Frigate\
   cache\               model downloads and temporary data
   config\
     config.yml          main configuration
-    gannet.db          SQLite database
+    gannet.db           SQLite database
     ffmpeg\             installed ffmpeg.exe and ffprobe.exe
     go2rtc.exe          installed live-stream helper
     model_cache\        object-detection models
@@ -102,7 +110,7 @@ PowerShell window does not affect later launches.
 ## Configuration
 
 If the bootstrap did not create a configuration, create
-`%LOCALAPPDATA%\Gannet\config\config.yml`. A minimal configuration is:
+`%LOCALAPPDATA%\Frigate\config\config.yml`. A minimal configuration is:
 
 ```yaml
 mqtt:
@@ -180,9 +188,10 @@ Encoding supports native NVIDIA NVENC, Intel QSV, and AMD AMF presets. `auto`
 uses Windows adapter and go2rtc diagnostics to choose a decoder and falls back
 to software when no compatible device is found.
 
-Object detection supports CPU TFLite, ONNX Runtime, OpenVINO, and ZMQ. Use
-`bootstrap_windows.py --directml` to install the DirectML ONNX provider for GPU
-inference. Accelerators that require Unix device nodes or Linux vendor SDKs are
+Object detection supports CPU TFLite, ONNX Runtime, OpenVINO, and ZMQ. The
+bootstrap installs DirectML by default; select `--cuda`, `--windows-ml`, or
+`--no-directml` for another ONNX Runtime profile. Do not mix profiles in one
+environment. Accelerators that require Unix device nodes or Linux vendor SDKs are
 not available.
 
 ## Install as a Windows service
@@ -194,17 +203,19 @@ py -3.12 bootstrap_windows.py --install-service
 ```
 
 The service wrapper uses pywin32 and starts Gannet from the repository/install
-root. Service data may use a different profile from an interactive launch; set
-`FRIGATE_BASE_DIR` as a machine or service environment variable when you need a
-fixed location.
+root. The installer pins `FRIGATE_BASE_DIR` in the service environment, using
+the current override or `%ProgramData%\Frigate` by default. This is separate
+from an interactive user's data. To choose another service data directory, use
+`.\scripts\install_frigate_service.ps1 -Action Configure -BaseDir D:\Gannet`
+from an elevated PowerShell session. The SCM service name is `Frigate`.
 
 Useful commands:
 
 ```powershell
-Get-Service Gannet
-Start-Service Gannet
-Stop-Service Gannet
-Restart-Service Gannet
+Get-Service Frigate
+Start-Service Frigate
+Stop-Service Frigate
+Restart-Service Frigate
 ```
 
 The API restart action creates a restart marker and exits cleanly; the launcher
