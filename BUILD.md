@@ -13,6 +13,7 @@ instead, see [`WINDOWS_COMPATIBILITY.md`](WINDOWS_COMPATIBILITY.md) and the
 | --- | --- |
 | Entry point (local) | `pwsh scripts/build_portable.ps1` |
 | Output | `dist/GannetNVR-<version>-win64.zip` |
+| Entry point (in the ZIP) | `GannetNVR.cmd` or `python\GannetNVR.exe` |
 | Typical size | ~875 MiB for 0.19.0 (dominated by TensorFlow, OpenVINO and ONNX Runtime) |
 | Runtime contract | Windows 10/11 or Server, x64. Nothing else runs it. |
 
@@ -26,12 +27,19 @@ It **is** a portable application directory, archived:
 - FFmpeg, go2rtc, and the two pinned TFLite models,
 - the licensing and provenance files that redistribution requires.
 
-It is **not** an installer, a service, or an auto-updating application. There is no
-`.exe` setup, no Start Menu entry, no uninstaller, and no code signing. Extract it,
-run it, delete the folder to remove it. `bootstrap_windows.py --install-service`
-remains the way to run as a Windows service, and it expects a checkout with a real
-Python install, not this bundle. The winget manifest is generated from the build
-but is a template until someone runs `winget validate` and submits it.
+It **is** launchable from a real executable. `python\GannetNVR.exe` is a native
+PE binary and `GannetNVR.cmd` at the archive root is a double-clickable shim for
+it. No compiler is needed to produce it: it is a byte-identical copy of the
+pinned CPython `python.exe`, turned into an application launcher by a `.pth`
+hook (see [The .exe launcher](#the-exe-launcher)).
+
+It is **not** an installer, a service, or an auto-updating application. There is
+no `.exe` setup program, no Start Menu entry, no uninstaller, and no code signing
+of Gannet's own code. Extract it, run it, delete the folder to remove it.
+`bootstrap_windows.py --install-service` remains the way to run as a Windows
+service, and it expects a checkout with a real Python install, not this bundle.
+The winget manifest is generated from the build but is a template until someone
+runs `winget validate` and submits it.
 
 ## Prerequisites
 
@@ -39,6 +47,7 @@ but is a template until someone runs `winget validate` and submits it.
 | --- | --- | --- |
 | Python 3.10 or newer on the build host | runs the builder and pip | The host does **not** need to be 3.12; wheels are resolved for the target, not the host |
 | Node.js 22 or newer | `npm ci` and `npm run build:native` | Skip with `-SkipWeb` if `web/dist` already exists |
+| **No C/C++ compiler** | the `.exe` is a copy of the pinned interpreter, not a compiled stub | Keeps the build reproducible on a plain Windows host |
 | Network access | PyPI, python.org, GitHub release assets | Only on the first build; `dist/.cache` keeps every download |
 | ~4 GiB free disk | wheels, staging tree, and archive | `dist/` holds the cache, the staging tree, and the ZIP |
 | Windows x64 | the supported build host, and the only host that can *verify* the result | The builder also runs on POSIX, but pip evaluates dependency environment markers (`sys_platform` and friends) for the build host, so a POSIX build can resolve a different dependency set than the Windows target. Release bundles are built on Windows |
@@ -101,9 +110,14 @@ GannetNVR-<version>-win64/
     LICENSE, LICENSES/, THIRD_PARTY.md, LICENSING.md, DEPENDENCIES.md, REUSE.toml
   python/                       CPython 3.12 embeddable
     python.exe, python312.zip, python312._pth
+    GannetNVR.exe               byte-identical copy of python.exe: the .exe entry point
+    GannetNVR._pth              same path seed, named after the exe as a fallback
     Lib/site-packages/          every wheel, plus frigate_nvr-<version>.dist-info
-  run_gannet.ps1                the launcher
-  run_gannet.cmd                double-clickable shim
+      gannet_launcher.pth       imports the launcher module while site is set up
+      gannet_launcher.py        the Python launcher logic
+  GannetNVR.cmd                 double-clickable shim for python\GannetNVR.exe
+  run_gannet.ps1               the PowerShell launcher (restart loop, model seeding)
+  run_gannet.cmd               its double-clickable shim
   BUILD-INFO.json               exact versions and digests this bundle was built from
   SOURCE-OFFER.txt              where to get the source of the binaries above
 ```
@@ -121,12 +135,64 @@ the bundle in a way that only shows up on Windows:
 | `app/ffmpeg/` | `get_ffmpeg_dir()` fallback | FFmpeg is not found and streams fail |
 | `app/bin/` | `find_executable()` candidate list | go2rtc is not found and restreaming fails |
 | `python/python312._pth` | CPython's path configuration | `import gannet` fails, because `..\app` is what puts it on `sys.path` |
+| `python/GannetNVR.exe` next to `python312.dll` | the Windows loader | the copy cannot start: its import table resolves `python312.dll` beside the executable |
+| `python/Lib/site-packages/gannet_launcher.pth` | `site` during interpreter startup | `GannetNVR.exe` starts an interactive REPL instead of the application |
+| `python/GannetNVR._pth` | CPython's `._pth` probe for a renamed executable | a future interpreter that probes the exe name first finds no path seed |
 
 `scripts/build_portable.py` asserts all of these after staging and before writing
 the archive, so a change in the application that breaks the mapping fails the
 build rather than the first launch.
 
-### The launcher
+### The .exe launcher
+
+`python/GannetNVR.exe` is an **unmodified copy** of `python.exe` from the pinned
+CPython 3.12.10 embeddable archive. That is the whole reason no compiler appears
+in the prerequisites: the archive is already a native x64 PE executable, its
+SHA-256 is committed in `scripts/python_embed_pin.json`, and copying it keeps
+upstream's Authenticode signature intact. `BUILD-INFO.json` records the digest
+of the copy under `launcher`.
+
+A copy of `python.exe` is still just an interpreter, so a few small text files
+turn it into an application launcher:
+
+1. `python/python312._pth` and `python/GannetNVR._pth` carry the same path seed:
+   `python312.zip`, `python/`, site-packages and `..\app`, ending with
+   `import site`. Two names cover both ways CPython probes for a `._pth` file.
+2. `site` processes `gannet_launcher.pth`, whose one active line is
+   `import gannet_launcher`.
+3. `gannet_launcher.py` checks the running executable. For `python.exe`,
+   `pythonw.exe` and the other interpreter names it returns immediately, so the
+   application and every `spawn`ed worker are unaffected. For `GannetNVR.exe`
+   (or a copy launched under another name) it starts `python.exe -m gannet` and
+   calls `os._exit` before CPython reaches its own main loop.
+
+That module implements the same contract as the PowerShell launcher: seed
+`app/model_cache/*.tflite` into the writable data directory only when absent,
+set `PYTHONUTF8=1`, run with the working directory set to `app/`, forward Gannet's
+arguments, loop only while `restart.requested` exists, and propagate the exit
+code. The app itself always runs under `python.exe`, so `sys.executable` and
+multiprocessing stay the same as a checkout install.
+
+**Arguments.** CPython parses its own command-line options before `site` runs,
+so application flags must follow `--` when the exe is invoked directly. The
+`GannetNVR.cmd` shim already inserts that separator, so do not add a second
+one:
+
+```powershell
+.\GannetNVR.cmd --validate-config
+.\python\GannetNVR.exe -- --validate-config   # the exe directly
+```
+
+With no arguments, either entry point just starts Gannet. Use the
+`FRIGATE_BASE_DIR` environment variable to move the writable data directory
+(`run_gannet.ps1 -BaseDir <path>` is the PowerShell equivalent). The launcher
+recognises any renamed copy of the interpreter (winget installs the command as
+`GannetNVR`), so don't rename `python.exe` for other purposes inside the bundle.
+The winget command runs through `PATH`, not a symlink, because Windows resolves
+an executable's private DLLs next to the symlink rather than its target; see
+[Releasing](#releasing).
+
+### The PowerShell launcher
 
 `run_gannet.ps1` is modelled on the launcher `bootstrap_windows.py` generates, and
 differs only in where it finds Python:
@@ -147,7 +213,9 @@ differs only in where it finds Python:
 
 1. Extract the ZIP to a writable location, for example
    `%LOCALAPPDATA%\Programs\GannetNVR`. Do not extract into `C:\Program Files`.
-2. Run `run_gannet.ps1` from that folder, or double-click `run_gannet.cmd`.
+2. Double-click `GannetNVR.cmd` (or `python\GannetNVR.exe` directly). Both run
+   the bundled interpreter as a real Windows executable; `run_gannet.ps1` and
+   `run_gannet.cmd` remain as a PowerShell alternative.
 3. Open <https://localhost:8971> and accept the first-run warning for the
    generated self-signed certificate. The generated administrator password is
    printed on first start and recorded in
@@ -165,6 +233,7 @@ bytecode is tied to the interpreter's magic number, and a build host that is not
 | --- | --- | --- |
 | Python dependencies | `requirements.txt` (`== X.Y.*`) | wheel tags for cp312 win_amd64; `--only-binary=:all:` means no sdist builds |
 | CPython embeddable | `scripts/python_embed_pin.json` | SHA-256 verified on every build against the committed pin |
+| `python/GannetNVR.exe` | same pinned archive | `verify_layout` asserts it is byte-identical to `python.exe`; `BUILD-INFO.json` records its digest |
 | FFmpeg, go2rtc, models | `bootstrap_windows.py` | SHA-256 enforced from the artifact constants imported by the builder, so an install and a bundle can never disagree about which build they contain |
 | npm packages | `web/package-lock.json` | `npm ci` |
 
@@ -198,7 +267,10 @@ so the local build fails closed if the download ever differs.
 
 The archive is written deterministically: sorted entries, fixed 1980-01-01
 timestamps, no filesystem metadata, and no bytecode, so two builds of the same
-tree with the same inputs are expected to produce the same SHA-256. Treat that
+tree with the same inputs are expected to produce the same SHA-256. The `.exe`
+does not weaken that: it is copied from the pinned archive rather than compiled
+on the build host, so it carries no compiler version, timestamp, or machine ID.
+Treat that
 as a property to spot-check (build twice, compare `SHA256SUMS.txt`) rather than
 a guarantee: no automated check asserts it, and a tool that embeds a build stamp in
 one of the staged files would break it silently.
@@ -209,6 +281,26 @@ the day of the build. If a release must be rebuilt identically later, the wheels
 in `dist/.cache` are the only way to get the same bytes — or the requirements need
 exact pins, which is a separate decision with its own tradeoffs (see
 [`DEPENDENCIES.md`](DEPENDENCIES.md) §7.1).
+
+## Building in CI (a downloadable build without a local Windows host)
+
+`.github/workflows/windows-release.yml` runs the same
+`pwsh scripts/build_portable.ps1 -RequirePinned` command on a `windows-latest`
+GitHub Actions runner. It has full network access to python.org, the pinned
+GitHub release assets, and the model hosts, so it can produce the real ~875 MiB
+bundle that a network-restricted machine cannot.
+
+- Push a `v*` tag at any commit to build **and publish** a pre-release with the
+  ZIP, its checksums, release notes, and the winget manifest attached.
+- Or run the workflow by hand (`workflow_dispatch`) to build and upload the ZIP
+  as a 30-day workflow artifact without publishing anything.
+- Every run smoke-tests the extracted archive: the bundled interpreter, the
+  `.exe` launcher copy and its `.pth` hook, the web build, native wheels, and
+  `ffmpeg.exe`. The artifact is uploaded before that check, so a smoke-test
+  failure still leaves a downloadable bundle for diagnosis.
+
+The direct download URL for a published tag is
+`https://github.com/unsubstantiation/gannet/releases/download/<tag>/GannetNVR-<version>-win64.zip`.
 
 ## Releasing
 
@@ -234,10 +326,21 @@ disagrees with it. `gannet/util/version.py` reads that metadata at runtime, so t
 version shown in the UI is the version the bundle carries.
 
 The bundle name carries the version too, so the winget manifest the build writes
-already points at the asset the release will have. `winget validate` is still a
-human step, and the manifest documents the one open question: winget's `portable`
-nested installer expects an executable, while this bundle's entry point is
-`run_gannet.cmd`.
+already points at the asset the release will have. Its `portable` nested installer
+now points at `python\GannetNVR.exe`, the executable winget expects, with
+`GannetNVR` as the command. `winget validate` is still a human step; the template
+also records that the binary is upstream's unsigned-by-us CPython copy and that
+application flags need a `--` separator (`GannetNVR -- --validate-config`).
+
+One winget detail is load-bearing: the manifest sets
+`ArchiveBinariesDependOnPath: true`. Winget normally exposes a portable command
+through a symlink in `WinGet\Links`, but Windows looks for an executable's
+private DLLs next to the **symlink**, not its target, so a symlinked copy of
+`python.exe` cannot find `python312.dll`. The field makes winget put the exe's
+own directory on `PATH` instead, so the loader finds the bundled runtime. The
+side effect is that the bundled `python.exe` also lands on `PATH`; a submission
+reviewer who objects can move the .exe and copies of its DLLs into a dedicated
+`launcher\` directory and point the nested installer there.
 
 ## Licensing of what you redistribute
 
@@ -247,7 +350,7 @@ obligations than running the app yourself. Everything below ships inside the ZIP
 | Component | License | What distribution requires |
 | --- | --- | --- |
 | FFmpeg 8.1.2 (x264/x265 enabled) | GPL-2.0-or-later as built | Corresponding source must be available. `SOURCE-OFFER.txt` states the exact build, digest, and source locations; do not strip it |
-| CPython 3.12 embeddable | PSF-2.0 | Keep the license and notice; unmodified |
+| CPython 3.12 embeddable (including the `GannetNVR.exe` copy) | PSF-2.0 | Keep the license and notice; unmodified |
 | Unidecode | GPL-2.0-or-later | Source availability; see `DEPENDENCIES.md` §6 for the MIT alternative |
 | py-vapid, pywebpush | MPL-2.0 | Nothing unless those files are modified |
 | Everything else | permissive (MIT/Apache/BSD/ISC) | copyright and NOTICE retention |
@@ -267,7 +370,10 @@ downstream packager needs to reconstruct the obligations.
 | `npm is not on PATH` | Node missing or too old | install Node 22+, or pass `-SkipWeb` with an existing `web/dist` |
 | Build succeeds, UI says "web app is not built" | `web/dist` was not a production build | the builder rejects the Vite dev entry; delete `web/dist` and rebuild |
 | `import gannet` fails on first run | `python312._pth` lost its `..\app` line, or the tree was re-zipped | re-extract the original archive; this is why the builder asserts the `._pth` contents |
-| Startup fails on a missing table | extracted tree started from the wrong working directory | launch through `run_gannet.ps1`; it sets the working directory to `app` |
+| Startup fails on a missing table | extracted tree started from the wrong working directory | launch through `GannetNVR.cmd` or `run_gannet.ps1`; both set the working directory to `app` |
+| Double-clicking `GannetNVR.exe` opens a Python `>>>` prompt | the `.pth` hook is missing, or the exe was renamed to one of the interpreter's own names | re-extract the archive; `verify_layout` asserts the hook and the `._pth` seeds at build time |
+| `unknown option --validate-config` when passing a Gannet flag | CPython parsed the flag as its own option before `site` ran | put `--` before application flags (`GannetNVR.cmd` does this for you) |
+| `python312.dll was not found` when running the .exe | `GannetNVR.exe` was moved out of `python\` | keep the copy next to `python.exe` and the DLLs; the Windows loader looks beside the executable |
 | `win32service` / `pywintypes` import error | `pywintypes312.dll` is not next to `python.exe` | the builder copies it from `pywin32_system32`; a re-zipped tree that dropped it will fail |
 | Antivirus quarantines the archive | unsigned executables in a ZIP | expected for unsigned builds; ship a signature or document the exclusion |
 

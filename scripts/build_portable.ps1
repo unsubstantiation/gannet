@@ -9,7 +9,7 @@
     has to call one entry point.
 
     Output goes to dist/:
-        GannetNVR-<version>-win64.zip           the bundle
+        GannetNVR-<version>-win64.zip           the bundle, with GannetNVR.exe inside
         GannetNVR-<version>-win64.zip.sha256    its digest
         SHA256SUMS.txt                          same digest, release-asset name
         RELEASE-NOTES.md                        release body
