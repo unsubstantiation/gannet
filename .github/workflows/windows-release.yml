@@ -13,7 +13,6 @@ name: Windows Release
 # tag ref and the `publish` input.
 on:
   push:
-    branches: ["arena/6ed7baf0-gannet"]
     tags: ["v*"]
   workflow_dispatch:
     inputs:
