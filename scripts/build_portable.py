@@ -13,8 +13,10 @@ Layout inside ``gannet-nvr-<version>-win64.zip``::
       app/                      source root: gannet/, migrations/, web/dist,
                                 labelmap.txt, ffmpeg/, bin/, model_cache/
       python/                   CPython 3.12 embeddable + Lib/site-packages
-      run_gannet.ps1            launcher (restart loop, model seeding)
-      run_gannet.cmd            double-clickable shim for the launcher
+        GannetNVR.exe           the .exe entry point (a copy of python.exe)
+      GannetNVR.cmd             double-clickable shim for the .exe
+      run_gannet.ps1            PowerShell launcher (restart loop, model seeding)
+      run_gannet.cmd            its double-clickable shim
       BUILD-INFO.json           versions and digests this bundle was built from
       SOURCE-OFFER.txt          source locations for the redistributed binaries
       LICENSE, LICENSES/, THIRD_PARTY.md, LICENSING.md, DEPENDENCIES.md ...
@@ -31,6 +33,12 @@ Why the layout is what it is:
 * The models ship inside ``app/model_cache`` and the launcher copies them into
   the writable data directory on first run, because the application reads them
   from ``config/model_cache`` under ``%LOCALAPPDATA%\\Frigate``.
+* ``python/GannetNVR.exe`` is a byte-identical copy of the pinned
+  ``python.exe``: a real PE executable that needs no compiler on the build
+  host. ``gannet_launcher.pth`` in site-packages imports a small module while
+  CPython sets up ``site``; that module recognises the renamed executable and
+  starts ``python.exe -m gannet`` from ``app/``. The application and its spawned
+  workers still run under ``python.exe``, so multiprocessing is unaffected.
 
 Everything downloaded is either already pinned in ``bootstrap_windows.py`` (the
 FFmpeg/go2rtc archives and the two models, re-verified here) or the CPython
@@ -107,6 +115,19 @@ APP_EXCLUDES = {
 
 LAUNCHER_NAME = "run_gannet.ps1"
 SHIM_NAME = "run_gannet.cmd"
+
+# The .exe entry point. It is a copy of python.exe, not a compiled stub: the
+# embeddable archive is already pinned and verified, so no compiler, SDK, or
+# extra download is needed on the build host. A .pth file (processed by `site`)
+# is what turns that interpreter into an application launcher.
+EXE_NAME = "GannetNVR.exe"
+EXE_SHIM_NAME = "GannetNVR.cmd"
+EXE_PTH_NAME = "gannet_launcher.pth"
+EXE_MODULE_NAME = "gannet_launcher.py"
+# CPython also looks for <executable stem>._pth before <library stem>._pth on
+# some builds. Shipping both with identical content keeps a renamed interpreter
+# on exactly the same sys.path as python.exe.
+EXE_PTH_CONFIG_NAME = "GannetNVR._pth"
 
 log = logging.getLogger("build_portable")
 
@@ -370,21 +391,45 @@ def stage_python(python_dir: Path, archive: Path) -> str:
         raise BuildError(f"{archive.name} does not contain python.exe")
 
     pth = pth_files[0]
-    pth.write_text(
+    expected_zip = stdlib_zip_name()
+    if pth.stem + ".zip" != expected_zip:
+        raise BuildError(
+            f"{archive.name} contains {pth.name}, but CPython "
+            f"{PYTHON_EMBED_VERSION} needs a {expected_zip} path seed"
+        )
+    pth.write_bytes(pth_contents())
+    log.info("  sys.path seed written to %s", pth.name)
+    return str(site_packages)
+
+
+def stdlib_zip_name() -> str:
+    """``python312.zip`` for the pinned 3.12.x embeddable interpreter."""
+    major, minor = PYTHON_EMBED_VERSION.split(".")[:2]
+    return f"python{major}{minor}.zip"
+
+
+def pth_contents() -> bytes:
+    """The path seed, shared by ``python312._pth`` and ``GannetNVR._pth``.
+
+    CPython probes a ``._pth`` named after the loaded DLL, then one named after
+    the executable. The standard name is what a normal ``python.exe`` finds;
+    the copy named after ``GannetNVR.exe`` keeps a renamed interpreter on the
+    same path if a future build probes it first. Entries are relative to
+    ``python/``. ``import site`` is required: it processes the launcher's
+    ``.pth`` file.
+    """
+    return (
         "\n".join(
             [
-                pth.stem.replace("python", "python") + ".zip",
+                stdlib_zip_name(),
                 ".",
                 r"Lib\site-packages",
                 r"..\app",
                 "import site",
                 "",
             ]
-        ),
-        encoding="utf-8",
-    )
-    log.info("  sys.path seed written to %s", pth.name)
-    return str(site_packages)
+        )
+    ).encode("utf-8")
 
 
 # Distributions that publish no wheel the cross-install below can use. A
@@ -784,6 +829,223 @@ def cmd_shim() -> str:
     )
 
 
+def exe_shim() -> str:
+    """Root-level double-clickable entry point for the real .exe.
+
+    The ``--`` matters: CPython parses its own options before the launcher
+    module runs, so Gannet's flags have to come after an end-of-options marker.
+    The shim inserts it so ``GannetNVR.cmd --validate-config`` just works.
+    """
+    return (
+        "@echo off\r\n"
+        "rem SPDX-License-Identifier: LicenseRef-GNCL-1.0\r\n"
+        "rem Double-clickable entry point for python\\GannetNVR.exe.\r\n"
+        "rem Arguments follow -- so CPython does not parse them as its own.\r\n"
+        '"%~dp0python\\GannetNVR.exe" -- %*\r\n'
+        "exit /b %ERRORLEVEL%\r\n"
+    )
+
+
+def exe_launcher_pth() -> str:
+    """The .pth line that starts the .exe launcher during ``site`` setup."""
+    return (
+        "# SPDX-License-Identifier: LicenseRef-GNCL-1.0\n"
+        "# Generated by scripts/build_portable.py. Do not edit.\n"
+        "import gannet_launcher\n"
+    )
+
+
+def exe_launcher_module() -> str:
+    """The module imported by ``gannet_launcher.pth``.
+
+    It runs only when the host executable is the renamed copy of python.exe.
+    For the application and every multiprocessing child it is a cheap no-op.
+    Keeping the launch here (rather than in a compiled stub) means the .exe is
+    an unmodified, upstream-signed CPython binary and the build needs no
+    compiler on Windows.
+    """
+    return r'''# SPDX-License-Identifier: LicenseRef-GNCL-1.0
+# Generated by scripts/build_portable.py. Do not edit this copy in the bundle.
+"""Start Gannet NVR when the bundle's .exe is launched.
+
+GannetNVR.exe is a byte-identical copy of the pinned CPython python.exe. The
+gannet_launcher.pth file next to this module imports it while CPython sets up
+"site", before its own main loop runs. Every other process in the bundle (the
+application and its multiprocessing children) runs python.exe, so importing
+this module does nothing for them.
+"""
+
+from __future__ import annotations
+
+import os
+import sys
+from pathlib import Path
+
+# The copy may be launched under another name (a command alias, for example),
+# so the interpreter's own names are the ones that must NOT trigger a launch.
+INTERPRETER_NAMES = {
+    "python.exe",
+    "pythonw.exe",
+    "python3.exe",
+    "pythonservice.exe",
+}
+RESTART_MARKER = "restart.requested"
+
+
+def is_launcher_process() -> bool:
+    """True for GannetNVR.exe, including a copy launched under another name."""
+    executable = Path(sys.executable or "").resolve()
+    return (
+        executable.suffix.lower() == ".exe"
+        and executable.name.lower() not in INTERPRETER_NAMES
+    )
+
+
+def app_args(raw_argv: list[str]) -> list[str]:
+    """Gannet's arguments are the tokens after a -- separator.
+
+    CPython parses its own options before this module runs, so application
+    flags must follow --. GannetNVR.cmd inserts the separator for you.
+    """
+    rest = raw_argv[1:]
+    if "--" not in rest:
+        return []
+    return list(rest[rest.index("--") + 1 :])
+
+
+def bundle_root() -> Path:
+    """This module lives at <root>/python/Lib/site-packages/gannet_launcher.py."""
+    root = Path(__file__).resolve().parents[3]
+    if not (root / "python" / "python.exe").is_file():
+        root = Path(sys.executable).resolve().parent.parent
+    return root
+
+
+def data_root() -> Path:
+    override = os.environ.get("FRIGATE_BASE_DIR")
+    if override:
+        return Path(override)
+    local = os.environ.get("LOCALAPPDATA")
+    if not local:
+        raise RuntimeError(
+            "LOCALAPPDATA is not set; set FRIGATE_BASE_DIR to a writable folder"
+        )
+    return Path(local) / "Frigate"
+
+
+def seed_models(root: Path, data: Path) -> None:
+    """Copy pinned models only when the writable copy is absent."""
+    import shutil
+
+    source = root / "app" / "model_cache"
+    if not source.is_dir():
+        return
+    target = data / "config" / "model_cache"
+    target.mkdir(parents=True, exist_ok=True)
+    for model in sorted(source.glob("*.tflite")):
+        destination = target / model.name
+        if not destination.exists():
+            shutil.copy2(model, destination)
+            print(f"Seeded model {model.name}", flush=True)
+
+
+def fail(message: str) -> None:
+    print(f"GannetNVR.exe: {message}", file=sys.stderr, flush=True)
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(1)
+
+
+def main() -> None:
+    # Imported here so the application and its workers only pay for os/sys at
+    # startup, and so nothing but a launcher failure imports subprocess early.
+    import subprocess
+
+    root = bundle_root()
+    python = root / "python" / "python.exe"
+    app = root / "app"
+    if not python.is_file():
+        fail(f"{python} is missing; the ZIP was not extracted completely")
+    if not app.is_dir():
+        fail(f"{app} is missing; the ZIP was not extracted completely")
+
+    data = data_root()
+    seed_models(root, data)
+    tmp_override = os.environ.get("FRIGATE_TMP_DIR")
+    marker = (Path(tmp_override) if tmp_override else data / "tmp") / RESTART_MARKER
+
+    env = os.environ.copy()
+    env.setdefault("PYTHONUTF8", "1")
+
+    raw_argv = list(getattr(sys, "orig_argv", sys.argv))
+    command = [str(python), "-m", "gannet", *app_args(raw_argv)]
+
+    # peewee-migrate resolves migrations/ against the working directory.
+    while True:
+        process = subprocess.Popen(command, cwd=str(app), env=env)
+        try:
+            code = process.wait()
+        except KeyboardInterrupt:
+            # Ctrl+C reaches both processes; let the child finish first.
+            code = process.wait()
+        if code is None:
+            code = 0
+
+        if marker.is_file():
+            try:
+                marker.unlink()
+            except OSError:
+                pass
+            print("Gannet requested a restart, starting it again", flush=True)
+            continue
+        break
+
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(int(code) & 0xFFFFFFFF)
+
+
+if is_launcher_process():
+    try:
+        main()
+    except Exception:
+        import traceback
+
+        traceback.print_exc()
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(1)
+'''
+
+
+def stage_exe_launcher(python_dir: Path, site_packages: Path, staging: Path) -> Path:
+    """Create the .exe entry point and the files that make it start Gannet.
+
+    The executable is copied, never compiled: it is the same bytes CPython
+    published and the build already verified against the committed SHA-256.
+    """
+    source = python_dir / "python.exe"
+    if not source.is_file():
+        raise BuildError(f"{source} is missing; cannot create {EXE_NAME}")
+
+    # A wheel must never have claimed either name: a silent overwrite here
+    # would either kill the .pth hook or import the wrong module at startup.
+    for name in (EXE_PTH_NAME, EXE_MODULE_NAME):
+        if (site_packages / name).exists():
+            raise BuildError(
+                f"a wheel already ships {name}; the .exe launcher needs it"
+            )
+
+    exe = python_dir / EXE_NAME
+    shutil.copyfile(source, exe)
+    (python_dir / EXE_PTH_CONFIG_NAME).write_bytes(pth_contents())
+    (site_packages / EXE_PTH_NAME).write_bytes(exe_launcher_pth().encode("utf-8"))
+    (site_packages / EXE_MODULE_NAME).write_bytes(exe_launcher_module().encode("utf-8"))
+    (staging / EXE_SHIM_NAME).write_bytes(exe_shim().encode("utf-8"))
+    log.info("  %s is a copy of python.exe (no compiler needed)", EXE_NAME)
+    return exe
+
+
 def verify_layout(staging: Path, expect_wheels: bool, expect_artifacts: bool) -> None:
     """Assert the staged tree has what the launcher and the app look for.
 
@@ -802,6 +1064,11 @@ def verify_layout(staging: Path, expect_wheels: bool, expect_artifacts: bool) ->
         staging / "app" / "LICENSE",
         staging / LAUNCHER_NAME,
         staging / SHIM_NAME,
+        staging / EXE_SHIM_NAME,
+        staging / "python" / EXE_NAME,
+        staging / "python" / EXE_PTH_CONFIG_NAME,
+        staging / "python" / "Lib" / "site-packages" / EXE_PTH_NAME,
+        staging / "python" / "Lib" / "site-packages" / EXE_MODULE_NAME,
     ]
     if expect_artifacts:
         required += [
@@ -814,6 +1081,31 @@ def verify_layout(staging: Path, expect_wheels: bool, expect_artifacts: bool) ->
     missing = [str(path.relative_to(staging)) for path in required if not path.exists()]
     if missing:
         raise BuildError("the staged bundle is incomplete: " + ", ".join(missing))
+
+    python_dir = staging / "python"
+    interpreter = (python_dir / "python.exe").read_bytes()
+    if (python_dir / EXE_NAME).read_bytes() != interpreter:
+        raise BuildError(
+            f"{EXE_NAME} is not a byte-identical copy of python.exe; the .exe "
+            "must stay the pinned upstream binary"
+        )
+    standard_pth = stdlib_zip_name().removesuffix(".zip") + "._pth"
+    for name in (standard_pth, EXE_PTH_CONFIG_NAME):
+        seed = python_dir / name
+        if not seed.is_file() or seed.read_bytes() != pth_contents():
+            raise BuildError(f"{name} does not carry the expected sys.path seed")
+    pth_hook = python_dir / "Lib" / "site-packages" / EXE_PTH_NAME
+    if "import gannet_launcher" not in [
+        line.strip()
+        for line in pth_hook.read_text(encoding="utf-8").splitlines()
+        if not line.lstrip().startswith("#")
+    ]:
+        raise BuildError(f"{EXE_PTH_NAME} does not import the .exe launcher")
+    if r'"%~dp0python\GannetNVR.exe" -- %*' not in (staging / EXE_SHIM_NAME).read_text(
+        encoding="utf-8"
+    ):
+        raise BuildError(f"{EXE_SHIM_NAME} must pass arguments after --")
+
     if expect_wheels:
         metadata = list(
             (staging / "python" / "Lib" / "site-packages").glob("*.dist-info")
@@ -845,6 +1137,7 @@ def build_info(
     site_packages: Path,
     artifacts: list[dict],
     python_archive: Path,
+    launcher_exe: Path,
 ) -> str:
     distributions = []
     for metadata in sorted(site_packages.glob("*.dist-info")):
@@ -868,6 +1161,12 @@ def build_info(
             "version": PYTHON_EMBED_VERSION,
             "source": PYTHON_EMBED_URL.format(v=PYTHON_EMBED_VERSION),
             "sha256": sha256_file(python_archive),
+        },
+        "launcher": {
+            "path": f"python/{EXE_NAME}",
+            "source": "python.exe from the pinned CPython embeddable archive",
+            "sha256": sha256_file(launcher_exe),
+            "note": "byte-identical copy of python.exe; unmodified upstream binary",
         },
         "runtime_artifacts": artifacts,
         "python_distributions": distributions,
@@ -921,6 +1220,9 @@ def source_offer(artifacts: list[dict]) -> str:
         "CPython 3.12 (PSF-2.0)",
         f"  Source: https://www.python.org/ftp/python/{PYTHON_EMBED_VERSION}/",
         "  The embeddable distribution is redistributed unmodified.",
+        f"  python/{EXE_NAME} is a byte-for-byte copy of its python.exe, not a",
+        "  separately compiled launcher; any Authenticode signature on it is",
+        "  upstream's. The Gannet launcher code next to it is Python source.",
         "",
         "Python packages: each wheel in python/Lib/site-packages is unmodified.",
         "GPL-2.0-or-later applies to Unidecode",
@@ -958,15 +1260,22 @@ network access required.
 ## Install
 
 1. Extract `{bundle_name}.zip` anywhere writable, for example
-   `%LOCALAPPDATA%\\Programs\\GannetNVR`.
-2. Run `run_gannet.ps1` (or double-click `run_gannet.cmd`).
+   `%LOCALAPPDATA%\\Programs\\GannetNVR`. Do not extract into `C:\\Program Files`.
+2. Double-click `GannetNVR.cmd`, or run `python\\{EXE_NAME}` directly. It is a
+   real Windows executable: a copy of the bundled CPython interpreter that starts
+   Gannet with the right working directory and models.
 3. Open <https://localhost:8971> and accept the first-run warning for the
    generated self-signed certificate. The generated administrator password is
    printed on first start and recorded in
    `%LOCALAPPDATA%\\Frigate\\tmp\\logs\\frigate\\current`.
 
-Data lives in `%LOCALAPPDATA%\\Frigate`. Pass `-BaseDir <path>` to keep it
-somewhere else. To remove the application, stop it and delete the folder.
+`run_gannet.ps1` and `run_gannet.cmd` remain as a PowerShell alternative with
+`-BaseDir <path>`. With the .exe, set `FRIGATE_BASE_DIR` instead. Application
+flags follow a `--` separator: `GannetNVR.cmd -- --validate-config` (the `.cmd`
+inserts the separator for you).
+
+Data lives in `%LOCALAPPDATA%\\Frigate`. To remove the application, stop it and
+delete the folder.
 
 ## Verify
 
@@ -1118,13 +1427,17 @@ def main(argv: list[str] | None = None) -> int:
     artifacts = [] if args.skip_artifacts else stage_artifacts(app_dir)
 
     (staging / LAUNCHER_NAME).write_text(launcher_script(), encoding="utf-8")
-    (staging / SHIM_NAME).write_text(cmd_shim(), encoding="utf-8")
+    # The .cmd shims carry CRLF themselves; write bytes so a Windows build host
+    # does not translate \n a second time and leave stray \r characters.
+    (staging / SHIM_NAME).write_bytes(cmd_shim().encode("utf-8"))
+    launcher_exe = stage_exe_launcher(staging / "python", site_packages, staging)
 
     log.info("Checking the staged layout")
     verify_layout(staging, not args.skip_wheels, not args.skip_artifacts)
 
     (staging / "BUILD-INFO.json").write_text(
-        build_info(version, site_packages, artifacts, python_archive), encoding="utf-8"
+        build_info(version, site_packages, artifacts, python_archive, launcher_exe),
+        encoding="utf-8",
     )
     (staging / "SOURCE-OFFER.txt").write_text(source_offer(artifacts), encoding="utf-8")
 
@@ -1170,7 +1483,8 @@ def main(argv: list[str] | None = None) -> int:
     log.info("  sha256 %s", digest)
     log.info(
         "  %s",
-        "Extract and run run_gannet.ps1 on a Windows x64 host to verify it starts",
+        "Extract on a Windows x64 host and double-click GannetNVR.cmd "
+        "(or python\\GannetNVR.exe) to verify it starts",
     )
     return 0
 

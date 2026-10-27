@@ -417,6 +417,7 @@ SPDX-License-Identifier = "MIT AND LicenseRef-GNCL-1.0"
 path = [
     ".gitattributes",
     ".github/copilot-instructions.md",
+    ".github/workflows/windows-release.yml",
     "BUILD.md",
     "DEPENDENCIES.md",
     "LICENSE",

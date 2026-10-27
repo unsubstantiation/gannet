@@ -39,7 +39,9 @@ powershell -ExecutionPolicy Bypass -File .\run_frigate.ps1
 The bootstrap script needs 64-bit CPython 3.12. It creates the venv, installs the Windows requirements, fetches pinned FFmpeg and go2rtc builds plus the detection and audio models, builds the web interface when Node.js is available, and writes a launcher that restarts Gannet when Gannet asks to be restarted. Node.js is only needed for that frontend build; a packaged bundle can ship `web/dist` prebuilt.
 
 To produce that bundle — one self-contained ZIP with CPython, every dependency, FFmpeg,
-go2rtc, and the models inside it — see [BUILD.md](BUILD.md).
+go2rtc, the models, and a double-clickable `GannetNVR.exe` entry point — see
+[BUILD.md](BUILD.md). The ZIP needs nothing installed on the target machine; no
+`setup.exe` is involved.
 
 Windows-specific behaviour:
 

@@ -10,10 +10,20 @@
 #     winget validate --manifest <the generated file>
 #
 # Caveats before the first submission:
-#   * Windows Package Manager's `portable` nested installer expects an
-#     executable entry point. This bundle's entry point is run_gannet.cmd, a
-#     shim for run_gannet.ps1. If `winget validate` rejects the shim, the fix is
-#     a small signed .exe launcher, not a change to the ZIP layout.
+#   * The nested installer is python\GannetNVR.exe, a real PE executable. It is
+#     a byte-identical copy of the pinned CPython python.exe (upstream's
+#     signature, if any, is preserved); the Gannet launcher code it runs is
+#     Python source in site-packages and is not signed. Application flags need
+#     a -- separator, for example `GannetNVR -- --validate-config`.
+#   * ArchiveBinariesDependOnPath is required, not cosmetic. Winget's default
+#     portable alias is a symlink in WinGet\Links, and Windows resolves an
+#     executable's private DLLs (python312.dll and friends) next to the SYMLINK,
+#     not its target, so the interpreter would fail to load. Setting it makes
+#     winget put the exe's own directory on PATH instead (no symlink). That also
+#     puts the bundled python.exe on PATH; if a submission reviewer objects,
+#     move the exe and copies of its DLLs into a dedicated launcher\ directory.
+#   * `winget validate` is still a human step, and the manifest is a template
+#     until a real release with these bytes exists.
 #   * `winget install` must put the extracted folder somewhere writable: the
 #     application writes to %LOCALAPPDATA%\Frigate, never into its own tree.
 #   * A tag that does not exist yet means the URL 404s. Publish the release
@@ -45,9 +55,12 @@ Installers:
   - Architecture: x64
     InstallerType: zip
     NestedInstallerType: portable
+    # The copy of python.exe needs the DLLs beside it; a Links\ symlink would
+    # break that. Put the exe's directory on PATH instead.
+    ArchiveBinariesDependOnPath: true
     NestedInstallerFiles:
-      - RelativeFilePath: __BUNDLE_ROOT__\run_gannet.cmd
-        PortableCommandAlias: gannet
+      - RelativeFilePath: __BUNDLE_ROOT__\python\GannetNVR.exe
+        PortableCommandAlias: GannetNVR
     InstallerUrl: __URL__
     InstallerSha256: __SHA256__
     Scope: user

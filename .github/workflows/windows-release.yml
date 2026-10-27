@@ -1,0 +1,210 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
+name: Windows Release
+
+# Builds the portable bundle described in BUILD.md on the only host that can
+# verify it, uploads the ZIP as a workflow artifact, and (for a v* tag) attaches
+# it to a GitHub release so it can be downloaded. The build itself is
+# scripts/build_portable.ps1 -- the same command a developer runs -- so the
+# release cannot come from an untested code path.
+#
+# This is also how to produce a downloadable build without a local Windows
+# machine: push a v* tag at any commit on this branch, or run the workflow by
+# hand. A manual run uploads the artifact; publishing additionally needs a v*
+# tag ref and the `publish` input.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to build (default: the pyproject.toml version)"
+        required: false
+        type: string
+      publish:
+        description: "Attach the artifact to a release for this v* tag"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  bundle:
+    name: Portable bundle with the .exe launcher
+    runs-on: windows-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: x64
+          cache: pip
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      # -RequirePinned makes the build fail closed if the committed CPython
+      # digest no longer matches what python.org serves. Everything else is the
+      # default path: real pinned wheels, artifacts, models, and web build.
+      - name: Build the bundle
+        id: build
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $buildArgs = @('-NoProfile', '-File', './scripts/build_portable.ps1', '-RequirePinned')
+          if ('${{ inputs.version }}' -ne '') {
+            $buildArgs += @('-Version', '${{ inputs.version }}')
+          }
+          & pwsh @buildArgs
+          exit $LASTEXITCODE
+
+      - name: Record what was built
+        shell: pwsh
+        run: |
+          Get-ChildItem dist | Format-Table Name, Length
+          Get-Content dist/SHA256SUMS.txt
+
+      # Uploaded before anything that can fail so a broken smoke test still
+      # leaves a downloadable bundle for diagnosis.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gannet-nvr-win64
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            dist/*.zip
+            dist/*.sha256
+            dist/SHA256SUMS.txt
+            dist/RELEASE-NOTES.md
+            dist/unsubstantiation.GannetNVR.yaml
+
+      # Published before the smoke test for the same reason: a strict runtime
+      # check must never be the difference between a tag and a download.
+      - name: Publish the release
+        if: >-
+          startsWith(github.ref, 'refs/tags/v') &&
+          (github.event_name == 'push' || inputs.publish == true)
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $tag = "${{ github.ref_name }}"
+          gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag `
+              --repo $env:GITHUB_REPOSITORY `
+              --prerelease `
+              --title "Gannet NVR $tag" `
+              --notes-file dist/RELEASE-NOTES.md
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          $assets = (Get-ChildItem -File `
+            dist/*.zip, dist/*.sha256, dist/SHA256SUMS.txt, `
+            dist/RELEASE-NOTES.md, dist/unsubstantiation.GannetNVR.yaml).FullName
+          gh release upload $tag --repo $env:GITHUB_REPOSITORY --clobber @assets
+          exit $LASTEXITCODE
+
+      - name: Smoke-test the extracted bundle
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $zip = (Get-ChildItem dist/*.zip -File | Select-Object -First 1).FullName
+          $dest = Join-Path $env:RUNNER_TEMP "bundle-smoke"
+          if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
+          New-Item -ItemType Directory -Path $dest | Out-Null
+          # Expand-Archive is far too slow for a bundle this large; bsdtar is on
+          # every Windows runner and reads the ZIP directly.
+          tar.exe -xf $zip -C $dest
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "bsdtar failed; falling back to Expand-Archive"
+            Remove-Item -Recurse -Force $dest
+            Expand-Archive -Path $zip -DestinationPath $dest
+          }
+
+          $root = (Get-ChildItem $dest -Directory | Select-Object -First 1).FullName
+          $python = Join-Path $root "python\python.exe"
+          $launcher = Join-Path $root "python\GannetNVR.exe"
+          $app = Join-Path $root "app"
+
+          & $python --version
+          if ($LASTEXITCODE -ne 0) { throw "bundled python.exe --version failed" }
+
+          # The .exe entry point is a byte-identical copy of the pinned
+          # interpreter, and both ._pth files must seed the same sys.path.
+          $interpreterHash = (Get-FileHash $python -Algorithm SHA256).Hash
+          $launcherHash = (Get-FileHash $launcher -Algorithm SHA256).Hash
+          if ($interpreterHash -ne $launcherHash) {
+            throw "GannetNVR.exe is not the pinned interpreter copy"
+          }
+          $seed = Get-Content (Join-Path $root "python\python312._pth") -Raw
+          $exeSeed = Get-Content (Join-Path $root "python\GannetNVR._pth") -Raw
+          if ($seed -ne $exeSeed) { throw "the two ._pth path seeds disagree" }
+          foreach ($relative in @(
+            "python\Lib\site-packages\gannet_launcher.pth",
+            "python\Lib\site-packages\gannet_launcher.py",
+            "GannetNVR.cmd",
+            "app\web\dist\index.html"
+          )) {
+            if (-not (Test-Path (Join-Path $root $relative))) {
+              throw "missing from the archive: $relative"
+            }
+          }
+
+          $env:PYTHONUTF8 = "1"
+          # python.exe imports the launcher module through its .pth hook but
+          # must not launch the app; that is what keeps multiprocessing working.
+          & $python -c "import gannet_launcher as g; assert g.is_launcher_process() is False; assert g.app_args(['GannetNVR.exe','--','--validate-config']) == ['--validate-config']; print('exe launcher hook ok')"
+          if ($LASTEXITCODE -ne 0) { throw "exe launcher hook did not import" }
+
+          & $python -c "import gannet, gannet.util.version as v; print('gannet from', gannet.__file__); print('version', v.VERSION); assert v.VERSION != 'dev', 'distribution metadata missing'"
+          if ($LASTEXITCODE -ne 0) { throw "bundle layout imports failed" }
+          & $python -c "import cv2, numpy, onnxruntime, win32service; print('native imports ok')"
+          if ($LASTEXITCODE -ne 0) { throw "native wheel imports failed" }
+
+          $ffmpegVersion = & (Join-Path $app "ffmpeg\ffmpeg.exe") -version
+          if ($LASTEXITCODE -ne 0) { throw "bundled ffmpeg.exe -version failed" }
+          Write-Host $ffmpegVersion[0]
+
+          # End-to-end .exe test. Replace the app's entry point in this throwaway
+          # extraction with a probe, then launch the real GannetNVR.exe: the
+          # .pth hook must spawn python.exe -m gannet from app/ and forward only
+          # the tokens after --. No production code is altered by this test.
+          $probe = Join-Path $env:RUNNER_TEMP "gannet-launch-probe.txt"
+          if (Test-Path $probe) { Remove-Item -Force $probe }
+          Set-Content -Path (Join-Path $app "gannet\__main__.py") -Encoding ascii -Value @(
+            'import os, sys',
+            'with open(os.environ["GANNET_PROBE_FILE"], "w", encoding="utf-8") as f:',
+            '    f.write("|".join(sys.argv[1:]))'
+          )
+          $env:GANNET_PROBE_FILE = $probe
+          $env:FRIGATE_BASE_DIR = Join-Path $env:RUNNER_TEMP "gannet-probe-data"
+          & $launcher -- --validate-config
+          if ($LASTEXITCODE -ne 0) { throw "GannetNVR.exe exited $LASTEXITCODE" }
+          if (-not (Test-Path $probe)) { throw "GannetNVR.exe did not start the app" }
+          $forwarded = (Get-Content $probe -Raw).Trim()
+          if ($forwarded -ne "--validate-config") {
+            throw "GannetNVR.exe forwarded '$forwarded' instead of '--validate-config'"
+          }
+          Write-Host "GannetNVR.exe launched the app and forwarded: $forwarded"
+
+      - name: Summarize
+        if: always()
+        shell: pwsh
+        run: |
+          $summary = "dist/RELEASE-NOTES.md"
+          if (Test-Path $summary) {
+            Get-Content $summary | Out-File -Append -Encoding utf8 $env:GITHUB_STEP_SUMMARY
+          }
