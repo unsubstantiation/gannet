@@ -25,7 +25,11 @@ DETECTOR_KEY = "onnx"
 
 
 class ONNXDetectorConfig(BaseDetectorConfig):
-    """ONNX detector for running ONNX models; will use available acceleration backends (CUDA/ROCm/OpenVINO) when available."""
+    """ONNX detector using the installed Windows inference runtime.
+
+    Provider selection follows ``device`` and runtime availability, including
+    DirectML, CUDA, OpenVINO, and registered Windows ML catalog providers.
+    """
 
     model_config = ConfigDict(
         title="ONNX",

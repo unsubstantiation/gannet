@@ -26,9 +26,9 @@ and review rules are in [CONTRIBUTING.md](CONTRIBUTING.md).
 - The public HTTP listener (default `0.0.0.0:8971`) is authenticated; the
   internal listener (`127.0.0.1:5000`) is loopback-only and trusted. Never
   trust client-supplied identity headers.
-- Supported detectors are CPU TensorFlow Lite, ONNX Runtime (CPU or
-  DirectML), OpenVINO, and ZMQ remote inference. Detector or acceleration
-  additions must have a maintained native Windows runtime and CPython 3.12
+- Supported detectors are CPU TensorFlow Lite, ONNX Runtime (CPU,
+  DirectML, CUDA, or Windows ML catalog providers), OpenVINO, and ZMQ remote
+  inference. Detector or acceleration additions must have a maintained native Windows runtime and CPython 3.12
   x64 wheels where Python packages are required.
 
 ## Licensing rules an agent must follow
@@ -83,7 +83,7 @@ npm run lint
 npm run build:native
 ```
 
-- `npm run build` builds under a configurable base path; the native server
+- `npm run build` builds with the `/BASE_PATH/` placeholder; the native server
   serves `npm run build:native` output from `/`. The native build is what
   ships.
 - All user-facing strings go through `react-i18next`. English strings live

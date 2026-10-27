@@ -78,8 +78,8 @@ scripts when changing the corresponding source.
 ## Design rules
 
 - Keep platform behavior in `gannet/util/platform.py` where practical. It must
-remain importable during early startup without importing other Gannet
-modules.
+  remain importable during early startup without importing other Gannet
+  modules.
 - Build paths with `pathlib` or `os.path`; do not introduce Unix root paths.
 - Start child processes with Windows-safe argument lists and process flags.
 - Keep the public HTTP listener authenticated and the trusted internal listener
@@ -103,7 +103,7 @@ gannet/                Python application
 web/                   React/TypeScript application
 docs/                  documentation site
 migrations/            SQLite migrations
-scripts/               PowerShell service tooling
+scripts/               packaging, service, runtime, and licensing tools
 testing-scripts/       validation and diagnostic scripts
 winget-manifest/        package-manager manifest template
 ```

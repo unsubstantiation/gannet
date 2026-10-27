@@ -24,7 +24,7 @@ Usage:
     python docs/scripts/generate_ui_tabs.py --check docs/docs/configuration/
 
     # Write generated files to a temp directory for comparison (originals unchanged)
-    python docs/scripts/generate_ui_tabs.py --inject --outdir /tmp/generated docs/docs/configuration/
+    python docs/scripts/generate_ui_tabs.py --inject --outdir .ui-preview docs/docs/configuration/
 
     # Show detailed warnings and diagnostics
     python docs/scripts/generate_ui_tabs.py --verbose docs/docs/configuration/
@@ -37,7 +37,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-# Ensure frigate package is importable
+# Ensure the Gannet package is importable
 sys.path.insert(0, str(Path(__file__).resolve().parents[1].parent))
 
 from lib.i18n_loader import load_i18n

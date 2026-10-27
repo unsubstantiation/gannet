@@ -10,9 +10,7 @@ The script creates the virtual environment, installs the native Windows
 requirements, fetches digest-pinned Windows builds of FFmpeg and go2rtc plus
 the CPU detection and YAMNet audio models into the Frigate data tree, builds
 the web interface when Node.js is available, and writes a launcher that
-restarts Frigate when Frigate asks to be restarted (the UI's restart action
-and watchdog both rely
-on that).
+restarts Gannet when it requests a restart (via the UI or watchdog).
 
 It uses only the Python standard library so it can run before anything is
 installed. Downloads use exact URLs and enforce their vendor-verified SHA-256

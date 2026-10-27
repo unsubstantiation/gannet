@@ -26,7 +26,7 @@ Other useful scripts:
 
 Pages live in `docs/`, and the sidebar order in `sidebars.ts`. Two things are generated and must not be hand-edited:
 
-- `static/frigate-api.yaml`, from the FastAPI app. Regenerate with `python3 generate_api_auth_spec.py` from the repository root.
-- The "Gannet UI" tabs inside configuration pages. See [scripts/README.md](scripts/README.md); `python3 docs/scripts/generate_ui_tabs.py --check docs/docs/configuration/` reports drift.
+- `static/frigate-api.yaml`, from the FastAPI app. Regenerate with `python generate_api_auth_spec.py` from the repository root.
+- The "Gannet UI" tabs inside configuration pages. See [scripts/README.md](scripts/README.md); `python docs/scripts/generate_ui_tabs.py --check docs/docs/configuration/` reports drift.
 
 For the wider contribution guide, see [development/contributing.md](docs/development/contributing.md).

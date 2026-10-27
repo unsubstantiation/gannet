@@ -13,7 +13,7 @@ Install:
 
 - Git for Windows;
 - 64-bit CPython 3.12 with the Python launcher;
-- Node.js 20.19 or newer and npm;
+- Node.js 22.12 or newer and npm;
 - current GPU drivers when changing accelerated code;
 - Visual Studio Build Tools only when a dependency must be compiled locally.
 
@@ -30,10 +30,12 @@ The bootstrap installs pinned native dependencies, verified FFmpeg/go2rtc binari
 
 ## Local configuration
 
-Use a separate writable data root while developing:
+Set a separate writable data root before bootstrapping so dependencies and
+models are installed in the same tree the development process will use:
 
 ```powershell
 $env:FRIGATE_BASE_DIR = "$PWD\.devdata"
+py -3.12 bootstrap_windows.py
 .\run_frigate.ps1
 ```
 
@@ -56,13 +58,16 @@ cameras:
 Run formatting, lint, compilation, and the focused tests for code you changed:
 
 ```powershell
-.\.venv\Scripts\python.exe -m ruff format --check gannet migrations
-.\.venv\Scripts\python.exe -m ruff check gannet migrations
-.\.venv\Scripts\python.exe -m compileall -q gannet
-.\.venv\Scripts\python.exe -m unittest discover -s gannet\test
+ruff format --check bootstrap_windows.py gannet migrations testing-scripts
+ruff check bootstrap_windows.py gannet migrations testing-scripts
+python -m compileall -q bootstrap_windows.py gannet migrations testing-scripts
+python testing-scripts/check_windows_requirements.py
+python testing-scripts/run_windows_unit_suite.py
 ```
 
-Tests that mock Win32 APIs can run on non-Windows hosts, but behavior that depends on the Service Control Manager, Job Objects, named events, DirectML, or Windows GPU drivers must also be exercised on Windows.
+The suite runner reports known Windows exclusions from
+`gannet/test/windows_suite_denylist.txt`; new failures must not be silently
+excluded. Some tests that mock Win32 APIs can run on non-Windows hosts, but behavior that depends on the Service Control Manager, Job Objects, named events, DirectML, or Windows GPU drivers must also be exercised on Windows.
 
 ## Web application
 
