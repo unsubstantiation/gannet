@@ -59,6 +59,12 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
 
+      - name: Test the portable builder
+        shell: pwsh
+        run: |
+          python -m unittest -q gannet.test.test_build_portable
+          if ($LASTEXITCODE -ne 0) { throw "portable builder tests failed" }
+
       # -RequirePinned makes the build fail closed if the committed CPython
       # digest no longer matches what python.org serves. Everything else is the
       # default path: real pinned wheels, artifacts, models, and web build.
@@ -214,6 +220,178 @@ jobs:
             throw "GannetNVR.exe forwarded '$forwarded' instead of '--validate-config'"
           }
           Write-Host "GannetNVR.exe launched the app and forwarded: $forwarded"
+
+      # This deliberately prunes only the disposable extraction above. It does
+      # not replace the full release artifact or claim to test accelerator hardware.
+      - name: Smoke-test optional slim cleanup on CPU
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $dest = Join-Path $env:RUNNER_TEMP "bundle-smoke"
+          $roots = @(Get-ChildItem $dest -Directory)
+          if ($roots.Count -ne 1) { throw "expected one extracted bundle in $dest" }
+          $root = $roots[0].FullName
+          $site = Join-Path $root "python\Lib\site-packages"
+          $app = Join-Path $root "app"
+          $builder = Join-Path $env:GITHUB_WORKSPACE "scripts\build_portable.py"
+          $verify = Join-Path $env:RUNNER_TEMP "verify-slim-metadata.py"
+          @'
+          import csv
+          import hashlib
+          import importlib.util
+          import json
+          import sys
+          from pathlib import Path
+
+          builder_path, site, app = map(Path, sys.argv[1:])
+          spec = importlib.util.spec_from_file_location("build_portable", builder_path)
+          builder = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(builder)
+
+          def files():
+              return {p.relative_to(site).as_posix(): p for p in site.rglob("*") if p.is_file()}
+
+          def records():
+              result = {}
+              for path in sorted(site.glob("*.dist-info/RECORD")):
+                  with path.open(encoding="utf-8", newline="") as handle:
+                      result[path.relative_to(site).as_posix()] = list(csv.reader(handle))
+              return result
+
+          def digest(path):
+              h = hashlib.sha256()
+              with path.open("rb") as handle:
+                  for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                      h.update(chunk)
+              return h.hexdigest()
+
+          before = files()
+          old_records = records()
+          markers = ("license", "licence", "notice", "copying", "copyright")
+          protected = [
+              path for relative, path in before.items()
+              if path.suffix.lower() in {".dll", ".pyd", ".bin"}
+              or any(marker in part.lower() for part in Path(relative).parts for marker in markers)
+              or relative.startswith(("numpy/testing/", "scipy/special/tests/", "onvif/wsdl/"))
+          ]
+          notice_headers = [
+              path for relative, path in before.items()
+              if relative.startswith(("tensorflow/include/", "openvino/include/"))
+              and path.suffix.lower() in {".h", ".hpp", ".inc"}
+              and (any(marker in part.lower() for part in Path(relative).parts for marker in markers)
+                   or builder.has_notice_or_unknown_content(path))
+          ]
+          assert notice_headers, "expected SDK headers with attribution"
+          protected += notice_headers
+          locales = app / "web" / "dist" / "locales"
+          for language in ("en", "es", "fr"):
+              assert (locales / language / "views" / "settings.json").is_file(), language
+          locale_files = [path for path in locales.rglob("*") if path.is_file()]
+          wsdl_files = [path for path in (site / "onvif" / "wsdl").rglob("*") if path.is_file()]
+          assert locale_files and wsdl_files, "locales or ONVIF WSDL files are missing"
+          assert any(p.startswith("tensorflow/include/") and p.endswith(".bin") for p in before)
+          protected += locale_files
+          original_digests = {path: digest(path) for path in set(protected)}
+
+          report = builder.prune_sdk_headers(site)
+          assert report["files_removed"] > 0, "no removable SDK headers were found"
+          for component in ("tensorflow", "openvino"):
+              stats = report["components"][component]
+              assert stats["files_removed"] + stats["headers_retained_for_notices_or_unknown_content"] > 0
+          removed = set(report["removed_paths_relative_to_site_packages"])
+          assert len(removed) == report["files_removed"]
+          after = files()
+          assert set(before) - set(after) == removed
+          assert not (set(after) - set(before)), "unexpected files appeared"
+          assert all(path.is_file() and digest(path) == value for path, value in original_digests.items())
+
+          new_records = records()
+          for relative, rows in old_records.items():
+              changed = any(row[0].replace("\\", "/") in removed for row in rows)
+              expected = []
+              for row in rows:
+                  name = row[0].replace("\\", "/")
+                  if name in removed:
+                      continue
+                  expected.append([row[0], "", ""] if changed and name == relative else row)
+              assert new_records[relative] == expected, f"unexpected RECORD changes: {relative}"
+          print("Slim cleanup and preservation verified:", json.dumps(
+              {key: value for key, value in report.items() if key != "removed_paths_relative_to_site_packages"}
+          ))
+          '@ | Set-Content -Encoding utf8 -Path $verify
+          & python $verify $builder $site $app
+          if ($LASTEXITCODE -ne 0) { throw "slim cleanup or metadata verification failed" }
+
+          $runtime = Join-Path $env:RUNNER_TEMP "verify-slim-runtime.py"
+          @'
+          import os
+          os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+          os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+          os.environ["TF_NUM_INTRAOP_THREADS"] = "2"
+          os.environ["TF_NUM_INTEROP_THREADS"] = "2"
+
+          import cv2
+          import gannet.util.version as version
+          import numpy as np
+          import onnxruntime
+          import openvino as ov
+          import tensorflow as tf
+          import win32service
+          from gannet.api.fastapi_app import create_fastapi_app
+          from gannet.util.classification import ClassificationTrainingProcess
+
+          assert version.VERSION != "dev"
+          assert callable(create_fastapi_app) and callable(ClassificationTrainingProcess)
+          print("App and native imports passed:", cv2.__version__, onnxruntime.__version__, win32service.__name__)
+          tf.config.set_visible_devices([], "GPU")
+          tf.random.set_seed(7)
+          images = np.random.default_rng(7).random((2, 64, 64, 3), dtype=np.float32)
+          labels = np.eye(2, dtype=np.float32)
+          base = tf.keras.applications.MobileNetV2(
+              input_shape=(64, 64, 3), include_top=False, weights=None, alpha=0.35
+          )
+          base.trainable = False
+          model = tf.keras.Sequential([
+              base,
+              tf.keras.layers.GlobalAveragePooling2D(),
+              tf.keras.layers.Dropout(0.3),
+              tf.keras.layers.Dense(2, activation="softmax"),
+          ])
+          model.compile(optimizer="adam", loss="categorical_crossentropy")
+          loss = model.train_on_batch(images, labels)
+          assert np.isfinite(loss), loss
+
+          def representative_dataset():
+              for image in images:
+                  yield [image[np.newaxis, ...]]
+
+          converter = tf.lite.TFLiteConverter.from_keras_model(model)
+          converter.optimizations = [tf.lite.Optimize.DEFAULT]
+          converter.representative_dataset = representative_dataset
+          converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
+          converter.inference_input_type = tf.uint8
+          converter.inference_output_type = tf.uint8
+          converted = converter.convert()
+          interpreter = tf.lite.Interpreter(model_content=converted, num_threads=2)
+          interpreter.allocate_tensors()
+          input_detail = interpreter.get_input_details()[0]
+          output_detail = interpreter.get_output_details()[0]
+          assert input_detail["dtype"] == output_detail["dtype"] == np.uint8
+          interpreter.set_tensor(input_detail["index"], np.zeros(input_detail["shape"], dtype=np.uint8))
+          interpreter.invoke()
+          assert interpreter.get_tensor(output_detail["index"]).shape == (1, 2)
+          print("TensorFlow CPU training and quantized TFLite conversion/inference passed")
+
+          parameter = ov.opset13.parameter([1, 3], np.float32, name="input")
+          offset = ov.opset13.constant(np.array([[2, 3, 4]], dtype=np.float32))
+          graph = ov.Model([ov.opset13.add(parameter, offset)], [parameter], "smoke")
+          compiled = ov.Core().compile_model(graph, "CPU")
+          result = compiled([np.array([[1, 2, 3]], dtype=np.float32)])[compiled.output(0)]
+          np.testing.assert_allclose(result, [[3, 5, 7]])
+          print("OpenVINO CPU inference passed")
+          '@ | Set-Content -Encoding utf8 -Path $runtime
+          & (Join-Path $root "python\python.exe") $runtime
+          if ($LASTEXITCODE -ne 0) { throw "slim TensorFlow/OpenVINO CPU smoke failed" }
 
       - name: Summarize
         if: always()

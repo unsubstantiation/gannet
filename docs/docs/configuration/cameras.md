@@ -13,6 +13,20 @@ The Add Camera Wizard is the recommended way to add a camera. Click **Add Camera
 
 ### Step 1: Name and connection
 
+#### Finding cameras on the network
+
+Select **Find cameras on the network** and then **Discover ONVIF devices**. Gannet sends ONVIF WS-Discovery probes on its active IPv4 interfaces and lists devices that respond, including their advertised service ports. This can find ONVIF cameras on nonstandard ports without guessing the port. Select **Use** on an HTTP ONVIF device to fill in its address and port; then enter its ONVIF credentials and continue the wizard. Discovery runs on the computer running Gannet, not in your browser, and is available to administrators only.
+
+For a camera that does not respond to ONVIF discovery, open **Advanced: scan an address or subnet**. Enter an IPv4 address (for example, `192.168.1.42`) or CIDR subnet (for example, `192.168.1.0/24`) and a comma-separated list of ports and ranges. After ONVIF discovery, the interface can suggest local subnets. Select **Use all ports (1–65535)** to look for services on arbitrary TCP ports, then select **Scan address and ports**. Gannet identifies RTSP responses and standard-path HTTP ONVIF responses, including RTSP services that request authentication; an open port or an ordinary HTTP login is not by itself treated as a camera. An RTSP service could also be something other than a camera.
+
+Select **Use** on an RTSP result to prefill its address and port. Discovery does not determine the video stream path or credentials: complete the URL, or choose a brand template and use the prefilled RTSP port. The brand template's default port is used when the RTSP port field is blank.
+
+Only scan networks and devices you are authorized to use. Active scans are limited to private, link-local, and shared IPv4 addresses and subnets of at most 256 addresses (`/24` or smaller). A full port scan across a subnet can take hours and generate substantial traffic; choose a single address or smaller range when practical. Progress and partial results are shown while the scan runs. **Stop scan**, selecting a result, or closing the wizard stops it; a scan also expires if its progress is no longer polled. Only one scan can run at a time.
+
+Discovery is best effort, not a guarantee: cameras may have ONVIF or RTSP disabled, multicast can be blocked between VLANs or by a firewall, and slow or filtered ports may not respond in time. The active scan does not identify encrypted RTSP, HTTPS ONVIF, or proprietary protocols. ONVIF endpoints advertising HTTPS or a nonstandard service path are listed, but the wizard cannot automatically probe those endpoints. You can always enter a known address and stream URL manually.
+
+#### Connection settings
+
 Enter a name for the camera along with its host or IP address and credentials, then choose how the wizard should find the camera's streams:
 
 - **Probe camera** queries the camera over ONVIF (the ONVIF port is usually 80 or 8080) and asks it for its stream URLs. Some cameras use a separate ONVIF/service account rather than the device admin user, and some require **Use digest authentication** to be enabled.

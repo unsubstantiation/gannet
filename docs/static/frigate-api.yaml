@@ -296,6 +296,97 @@ paths:
       security:
         - frigateAdminAuth: []
       x-required-role: admin
+  /camera_discovery:
+    post:
+      tags:
+        - Camera
+      summary: Start camera discovery
+      description: |-
+        **Access:** Admin role required.
+
+        Start ONVIF WS-Discovery and, optionally, a bounded TCP scan of a local IPv4 address or subnet. Only one scan may run at a time. Poll the returned id for progress; scans expire if not polled.
+      operationId: start_camera_discovery_camera_discovery_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CameraDiscoveryRequest'
+      responses:
+        '202':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CameraDiscoveryResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - frigateAdminAuth: []
+      x-required-role: admin
+  /camera_discovery/{scan_id}:
+    get:
+      tags:
+        - Camera
+      summary: Get camera discovery progress
+      operationId: get_camera_discovery_camera_discovery__scan_id__get
+      parameters:
+        - name: scan_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Scan Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CameraDiscoveryResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - frigateAdminAuth: []
+      x-required-role: admin
+      description: '**Access:** Admin role required.'
+    delete:
+      tags:
+        - Camera
+      summary: Stop camera discovery
+      operationId: stop_camera_discovery_camera_discovery__scan_id__delete
+      parameters:
+        - name: scan_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Scan Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CameraDiscoveryResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - frigateAdminAuth: []
+      x-required-role: admin
+      description: '**Access:** Admin role required.'
   /go2rtc/streams:
     get:
       tags:
@@ -8055,6 +8146,70 @@ components:
       required:
         - file
       title: Body_register_face_faces__name__register_post
+    CameraDiscoveryRequest:
+      properties:
+        target:
+          anyOf:
+            - type: string
+              maxLength: 64
+            - type: 'null'
+          title: Target
+          description: Optional local IPv4 address or subnet, no larger than
+            /24.
+        ports:
+          type: string
+          maxLength: 512
+          title: Ports
+          description: Comma-separated TCP ports and ranges, such as
+            554,8000-9000.
+          default: 80,88,443,554,8000,8001,8080,8081,8554,8899,9000,10554
+      type: object
+      title: CameraDiscoveryRequest
+    CameraDiscoveryResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+        status:
+          type: string
+          title: Status
+        scanned:
+          type: integer
+          title: Scanned
+        total:
+          type: integer
+          title: Total
+        networks:
+          items:
+            type: string
+          type: array
+          title: Networks
+        devices:
+          items:
+            $ref: '#/components/schemas/DiscoveredCamera'
+          type: array
+          title: Devices
+        error:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Error
+        warning:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Warning
+      type: object
+      required:
+        - id
+        - status
+        - scanned
+        - total
+        - networks
+        - devices
+        - error
+        - warning
+      title: CameraDiscoveryResponse
     CameraSetBody:
       properties:
         value:
@@ -8328,6 +8483,64 @@ components:
         - unlimited
       title: DetectionHardware
       description: One kind of inference hardware and its addressable units.
+    DiscoveredCamera:
+      properties:
+        host:
+          type: string
+          title: Host
+        name:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Name
+        model:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Model
+        services:
+          items:
+            $ref: '#/components/schemas/DiscoveredCameraService'
+          type: array
+          title: Services
+      type: object
+      required:
+        - host
+        - name
+        - model
+        - services
+      title: DiscoveredCamera
+    DiscoveredCameraService:
+      properties:
+        protocol:
+          type: string
+          title: Protocol
+        port:
+          type: integer
+          title: Port
+        scheme:
+          type: string
+          title: Scheme
+        path:
+          type: string
+          title: Path
+        sources:
+          items:
+            type: string
+          type: array
+          title: Sources
+        requires_auth:
+          type: boolean
+          title: Requires Auth
+      type: object
+      required:
+        - protocol
+        - port
+        - scheme
+        - path
+        - sources
+        - requires_auth
+      title: DiscoveredCameraService
     EventCreateResponse:
       properties:
         success:

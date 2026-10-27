@@ -15,6 +15,7 @@ from gannet.api import app as main_app
 from gannet.api import (
     auth,
     camera,
+    camera_discovery,
     chat,
     classification,
     debug_replay,
@@ -45,6 +46,7 @@ from gannet.notices.registry import NoticeRegistry
 from gannet.ptz.onvif import OnvifController
 from gannet.stats.emitter import StatsEmitter
 from gannet.storage import StorageMaintainer
+from gannet.util.camera_discovery import CameraDiscoveryManager
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +85,10 @@ def create_fastapi_app(
                 replay_manager, frigate_config, config_publisher
             )
         )
-        yield
+        try:
+            yield
+        finally:
+            await app.state.camera_discovery.close()
 
     logger.info("Starting FastAPI app")
     app = FastAPI(
@@ -127,9 +132,12 @@ def create_fastapi_app(
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
     app.add_middleware(SlowAPIMiddleware)
 
+    app.state.camera_discovery = CameraDiscoveryManager()
+
     # Routes
     # Order of include_router matters: https://fastapi.tiangolo.com/tutorial/path-params/#order-matters
     app.include_router(auth.router)
+    app.include_router(camera_discovery.router)
     app.include_router(camera.router)
     app.include_router(chat.router)
     app.include_router(classification.router)
