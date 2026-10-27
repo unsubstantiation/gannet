@@ -307,6 +307,26 @@ class TestGatewayRoutes(unittest.TestCase):
         )
         self.assertTrue(needs_auth("/cache/preview.jpg"))
 
+    def test_websocket_route_dispatches_to_the_proxy_endpoint(self):
+        """WebSocketRoute passes function endpoints a WebSocket session.
+
+        The proxy used to declare the raw ASGI ``scope, receive, send``
+        signature instead, so every browser connection failed before the
+        endpoint could run.
+        """
+        from starlette.websockets import WebSocketDisconnect
+
+        client = self._client()
+
+        # Avoid opening a real loopback connection. Closing for an unknown
+        # upstream still exercises routing, middleware, and endpoint dispatch.
+        with patch("gannet.api.web.upstream_for", return_value=None):
+            with self.assertRaises(WebSocketDisconnect) as disconnect:
+                with client.websocket_connect("/ws"):
+                    pass
+
+        self.assertEqual(disconnect.exception.code, 1000)
+
     def test_a_refreshed_session_cookie_reaches_the_browser(self):
         """The gateway must not discard ``Set-Cookie`` from the auth check.
 

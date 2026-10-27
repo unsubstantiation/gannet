@@ -24,6 +24,7 @@ from starlette.requests import Request
 from starlette.responses import FileResponse, PlainTextResponse, Response
 from starlette.routing import Mount, Route, WebSocketRoute
 from starlette.staticfiles import StaticFiles
+from starlette.websockets import WebSocket
 
 from gannet.api import vod_native
 from gannet.api.auth import auth as auth_check
@@ -718,8 +719,11 @@ def upstream_for(path: str) -> tuple[str, str] | None:
     return None
 
 
-async def websocket_endpoint(scope: dict, receive: Any, send: Any) -> None:
+async def websocket_endpoint(websocket: WebSocket) -> None:
     """Bridge a browser websocket to the upstream websocket server."""
+    scope = websocket.scope
+    receive = websocket.receive
+    send = websocket.send
     upstream = upstream_for(scope.get("path", ""))
 
     if upstream is None:
