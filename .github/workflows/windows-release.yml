@@ -63,8 +63,15 @@ jobs:
       - name: Test the portable builder
         shell: pwsh
         run: |
-          python -m unittest -q gannet.test.test_build_portable
-          if ($LASTEXITCODE -ne 0) { throw "portable builder tests failed" }
+          $output = & python -m unittest -q gannet.test.test_build_portable 2>&1
+          $testExit = $LASTEXITCODE
+          $output | ForEach-Object { Write-Host $_ }
+          if ($testExit -ne 0) {
+            # Keep diagnostics available through the checks API as well as logs.
+            $details = ($output -join "`n").Replace('%', '%25').Replace("`r", '%0D').Replace("`n", '%0A')
+            Write-Host "::error title=Portable builder tests::$details"
+            throw "portable builder tests failed"
+          }
 
       # -RequirePinned makes the build fail closed if the committed CPython
       # digest no longer matches what python.org serves. Everything else is the
