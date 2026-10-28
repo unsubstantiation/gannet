@@ -309,8 +309,8 @@ export default function Step1NameCamera({
                   <FormLabel className="text-primary-variant">
                     {t("cameraWizard.step1.password")}
                   </FormLabel>
-                  <FormControl>
-                    <div className="relative">
+                  <div className="relative">
+                    <FormControl>
                       <Input
                         className="h-8 pr-10"
                         type={showPassword ? "text" : "password"}
@@ -319,21 +319,21 @@ export default function Step1NameCamera({
                         )}
                         {...field}
                       />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <LuEyeOff className="size-4" />
-                        ) : (
-                          <LuEye className="size-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </FormControl>
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <LuEyeOff className="size-4" />
+                      ) : (
+                        <LuEye className="size-4" />
+                      )}
+                    </Button>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -550,7 +550,8 @@ export default function Step1NameCamera({
                         />
                       </FormControl>
                       <FormDescription>
-                        {t("cameraWizard.step1.customUrlDescription")}
+                        {t("cameraWizard.step1.customUrlDescription")}{" "}
+                        {t("cameraWizard.step1.customUrlCredentialsHelp")}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>

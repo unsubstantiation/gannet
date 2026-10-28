@@ -99,6 +99,39 @@ test.describe("Camera wizard Reolink stream selection @medium @mobile", () => {
     ).toBeVisible();
   });
 
+  test("encodes credentials in the Reolink HTTP stream query", async ({
+    frigateApp,
+  }) => {
+    const page = frigateApp.page;
+    const probed: string[] = [];
+    await page.route("**/api/reolink/detect**", (route) =>
+      route.fulfill({ json: { success: true, protocol: "http-flv" } }),
+    );
+    await page.route("**/api/ffprobe**", (route) => {
+      const path = new URL(route.request().url()).searchParams.get("paths");
+      if (path) probed.push(path);
+      return route.fulfill({ json: FFPROBE_OK });
+    });
+    await page.route("**/api/ffprobe/snapshot**", (route) =>
+      route.fulfill({ status: 500 }),
+    );
+
+    await page.getByRole("button", { name: /Add New Camera/i }).click();
+    const dialog = page.getByRole("dialog");
+    await dialog.getByPlaceholder(/front_door/i).fill("reolink_encoded");
+    await dialog.getByPlaceholder("192.168.1.100").fill("192.168.1.100");
+    await dialog.getByPlaceholder("Optional").first().fill("view&er");
+    await dialog.getByPlaceholder("Optional").last().fill("pa+ss&=/");
+    await dialog.getByText("Manual selection").click();
+    await dialog.getByRole("combobox").click();
+    await page.getByRole("option", { name: "Reolink" }).click();
+    await dialog.getByRole("button", { name: /^Continue$/i }).click();
+    await expect(dialog.getByText("Connection test successful!")).toBeVisible();
+    expect(probed).toEqual([
+      "http://192.168.1.100/flv?port=1935&app=bcs&stream=channel0_main.bcs&user=view%26er&password=pa%2Bss%26%3D%2F",
+    ]);
+  });
+
   test("above 5MP keeps http-flv when it probes", async ({ frigateApp }) => {
     const { dialog, probed } = await gotoStep3(frigateApp.page, {
       protocol: "rtsp",

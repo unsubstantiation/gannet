@@ -19,7 +19,11 @@ import { FaCircleCheck } from "react-icons/fa6";
 import { Card, CardContent, CardTitle } from "../../ui/card";
 import OnvifProbeResults from "./OnvifProbeResults";
 import { CAMERA_BRANDS } from "@/types/cameraWizard";
-import { detectReolinkCamera } from "@/utils/cameraUtil";
+import {
+  detectReolinkCamera,
+  formatCameraStreamTemplate,
+  withRtspCredentials,
+} from "@/utils/cameraUtil";
 
 type Step2ProbeOrSnapshotProps = {
   wizardData: Partial<WizardFormData>;
@@ -61,7 +65,8 @@ export default function Step2ProbeOrSnapshot({
       try {
         const probeResponse = await axios.get("ffprobe", {
           params: { paths: uri, detailed: true },
-          timeout: 10000,
+          // The backend can run two six-second probes (default and TCP).
+          timeout: 15000,
         });
 
         let probeData: FfprobeResponse | null = null;
@@ -324,14 +329,13 @@ export default function Step2ProbeOrSnapshot({
       return protocolKeys
         .filter((key) => key in templates)
         .map((key) =>
-          templates[key]
-            .replace("{username}", data.username || "")
-            .replace("{password}", data.password || "")
-            .replace("{host}", host)
-            .replace(
-              "{port}",
-              String(data.rtspPort ?? (brand.value === "foscam" ? 88 : 554)),
-            ),
+          formatCameraStreamTemplate(
+            templates[key],
+            host,
+            data.rtspPort ?? (brand.value === "foscam" ? 88 : 554),
+            data.username,
+            data.password,
+          ),
         );
     },
     [onUpdate],
@@ -340,7 +344,10 @@ export default function Step2ProbeOrSnapshot({
   const generateStreamUrls = useCallback(
     async (data: Partial<WizardFormData>): Promise<string[]> => {
       if (data.brandTemplate === "other") {
-        return data.customUrl ? [data.customUrl] : [];
+        const url = data.customUrl?.trim();
+        return url
+          ? [withRtspCredentials(url, data.username, data.password)]
+          : [];
       }
 
       const brand = CAMERA_BRANDS.find((b) => b.value === data.brandTemplate);
@@ -351,14 +358,13 @@ export default function Step2ProbeOrSnapshot({
       }
 
       return [
-        brand.template
-          .replace("{username}", data.username || "")
-          .replace("{password}", data.password || "")
-          .replace("{host}", data.host)
-          .replace(
-            "{port}",
-            String(data.rtspPort ?? (brand.value === "foscam" ? 88 : 554)),
-          ),
+        formatCameraStreamTemplate(
+          brand.template,
+          data.host,
+          data.rtspPort ?? (brand.value === "foscam" ? 88 : 554),
+          data.username,
+          data.password,
+        ),
       ];
     },
     [generateDynamicStreamUrls],
@@ -562,6 +568,13 @@ export default function Step2ProbeOrSnapshot({
           {testResult && !testResult.success && (
             <div className="space-y-4">
               <div className="text-sm text-destructive">{testResult.error}</div>
+              {/\b401\b|(?:authorization|authentication) failed/i.test(
+                testResult.error || "",
+              ) && (
+                <p className="text-sm text-muted-foreground">
+                  {t("cameraWizard.step2.unauthorizedHelp")}
+                </p>
+              )}
             </div>
           )}
 

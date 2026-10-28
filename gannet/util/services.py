@@ -421,9 +421,19 @@ def ffprobe_stream(ffmpeg, path: str, detailed: bool = False) -> sp.CompletedPro
 
     result = run()
 
-    # For RTSP: retry with explicit TCP transport if the first attempt failed
-    # (default UDP may be blocked)
-    if result.returncode != 0 and clean_path.startswith("rtsp://"):
+    # A DESCRIBE authentication failure is unrelated to media transport.
+    # Retrying the same credentials can trigger camera account lockouts.
+    auth_failed = re.search(
+        rb"\b40[13]\s+\(?(?:unauthorized|forbidden)|(?:authorization|authentication) failed",
+        result.stderr or b"",
+        re.IGNORECASE,
+    )
+    # Other RTSP failures may be caused by blocked UDP media transport.
+    if (
+        result.returncode != 0
+        and clean_path.lower().startswith(("rtsp://", "rtsps://"))
+        and not auth_failed
+    ):
         result = run(rtsp_transport="tcp")
 
     return result

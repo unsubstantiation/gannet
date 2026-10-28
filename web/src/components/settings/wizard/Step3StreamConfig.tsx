@@ -254,7 +254,7 @@ export default function Step3StreamConfig({
       try {
         const response = await axios.get("ffprobe", {
           params: { paths: stream.url, detailed: true },
-          timeout: 10000,
+          timeout: 15000,
         });
 
         let probeData: FfprobeResponse | null = null;

@@ -6,7 +6,7 @@ import logging
 import re
 from importlib.util import find_spec
 from pathlib import Path
-from urllib.parse import quote_plus
+from urllib.parse import quote, quote_plus
 
 import httpx
 import requests
@@ -37,6 +37,7 @@ from gannet.models import User
 from gannet.util.builtin import (
     clean_camera_user_pass,
     clear_orphaned_comments,
+    escape_special_characters,
     get_record_segment_time,
 )
 from gannet.util.camera_cleanup import cleanup_camera_db, cleanup_camera_files
@@ -57,6 +58,17 @@ from gannet.util.services import (
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=[Tags.camera])
+
+
+def _with_rtsp_credentials(uri: str, username: str, password: str) -> str:
+    """Add encoded credentials to an RTSP URI only if it has no userinfo."""
+    if not username and not password:
+        return uri
+    match = re.match(r"^(rtsps?://)([^/?#]+)([\s\S]*)$", uri, re.IGNORECASE)
+    if not match or "@" in match.group(2):
+        return uri
+    userinfo = f"{quote(username, safe='')}:{quote(password, safe='')}@"
+    return f"{match.group(1)}{userinfo}{match.group(2)}{match.group(3)}"
 
 
 def _is_valid_host(host: str) -> bool:
@@ -490,7 +502,7 @@ def ffprobe_snapshot(request: Request, url: str = "", timeout: int = 10):
     config: FrigateConfig = request.app.frigate_config
 
     image_data, error = run_ffmpeg_snapshot(
-        config.ffmpeg, url, "mjpeg", timeout=timeout
+        config.ffmpeg, escape_special_characters(url), "mjpeg", timeout=timeout
     )
 
     if image_data:
@@ -505,7 +517,7 @@ def ffprobe_snapshot(request: Request, url: str = "", timeout: int = 10):
             status_code=408,
         )
     else:
-        logger.error(f"ffmpeg failed: {error}")
+        logger.error("ffmpeg failed: %s", clean_camera_user_pass(error))
         return JSONResponse(
             content={"success": False, "message": "Failed to capture snapshot"},
             status_code=500,
@@ -1091,51 +1103,19 @@ async def onvif_probe(
                             else getattr(stream_uri_resp, "Uri", None)
                         )
                         if uri:
-                            logger.debug(
-                                f"GetStreamUri returned for token {token}: {uri}"
+                            # A returned URI may itself contain credentials; do not
+                            # include it in debug logs. Encode separate credentials
+                            # before returning candidates for probing and go2rtc.
+                            logger.debug("GetStreamUri returned for token %s", token)
+                            if isinstance(uri, str):
+                                uri = _with_rtsp_credentials(uri, username, password)
+                            rtsp_candidates.append(
+                                {
+                                    "source": "GetStreamUri",
+                                    "profile_token": token,
+                                    "uri": uri,
+                                }
                             )
-                            # If credentials were provided, do NOT add the unauthenticated URI.
-                            try:
-                                if isinstance(uri, str) and uri.startswith("rtsp://"):
-                                    if username and password and "@" not in uri:
-                                        # Inject raw credentials and add only the
-                                        # authenticated version. The credentials will be encoded
-                                        # later by ffprobe_stream or the config system.
-                                        cred = f"{username}:{password}@"
-                                        injected = uri.replace(
-                                            "rtsp://", f"rtsp://{cred}", 1
-                                        )
-                                        rtsp_candidates.append(
-                                            {
-                                                "source": "GetStreamUri",
-                                                "profile_token": token,
-                                                "uri": injected,
-                                            }
-                                        )
-                                    else:
-                                        # No credentials provided or URI already contains
-                                        # credentials — add the URI as returned.
-                                        rtsp_candidates.append(
-                                            {
-                                                "source": "GetStreamUri",
-                                                "profile_token": token,
-                                                "uri": uri,
-                                            }
-                                        )
-                                else:
-                                    # Non-RTSP URIs (e.g., http-flv) — add as returned.
-                                    rtsp_candidates.append(
-                                        {
-                                            "source": "GetStreamUri",
-                                            "profile_token": token,
-                                            "uri": uri,
-                                        }
-                                    )
-                            except Exception as e:
-                                logger.debug(
-                                    f"Skipping stream URI for token {token} due to processing error: {e}"
-                                )
-                                continue
                     except Exception:
                         logger.debug(
                             f"GetStreamUri failed for token {token}", exc_info=True
@@ -1154,11 +1134,11 @@ async def onvif_probe(
                     "/cam/realmonitor?channel=1&subtype=0",
                     "/11",
                 ]
-                # Use raw credentials for pattern fallback URIs when provided
-                auth_str = f"{username}:{password}@" if username and password else ""
                 rtsp_port = 554
                 for path in common_paths:
-                    uri = f"rtsp://{auth_str}{host}:{rtsp_port}{path}"
+                    uri = _with_rtsp_credentials(
+                        f"rtsp://{host}:{rtsp_port}{path}", username, password
+                    )
                     rtsp_candidates.append({"source": "pattern", "uri": uri})
         except Exception:
             logger.debug("Failed to collect RTSP candidates")
@@ -1169,20 +1149,10 @@ async def onvif_probe(
             for c in rtsp_candidates:
                 uri = c["uri"]
                 to_test = [uri]
-                try:
-                    if (
-                        username
-                        and password
-                        and isinstance(uri, str)
-                        and uri.startswith("rtsp://")
-                        and "@" not in uri
-                    ):
-                        cred = f"{username}:{password}@"
-                        cred_uri = uri.replace("rtsp://", f"rtsp://{cred}", 1)
-                        if cred_uri not in to_test:
-                            to_test.append(cred_uri)
-                except Exception:
-                    pass
+                if isinstance(uri, str):
+                    cred_uri = _with_rtsp_credentials(uri, username, password)
+                    if cred_uri not in to_test:
+                        to_test.append(cred_uri)
 
                 for test_uri in to_test:
                     try:
@@ -1213,7 +1183,7 @@ async def onvif_probe(
         if test:
             result["rtsp_tested"] = tested_candidates
 
-        logger.debug(f"ONVIF probe successful: {result}")
+        logger.debug("ONVIF probe successful for %s:%s", host, port)
         return JSONResponse(content=result)
 
     except ONVIFError as e:

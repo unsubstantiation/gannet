@@ -142,17 +142,52 @@ def is_masked_camera_path(path: str) -> bool:
 
 
 def escape_special_characters(path: str) -> str:
-    """Cleans reserved characters to encodings for ffmpeg."""
+    """Encode URL userinfo for ffmpeg without changing the rest of the URL.
+
+    Preserve valid percent escapes so a properly encoded URL can be probed
+    and used as a camera input without encoding its password a second time.
+    Raw percent signs that do not start an escape are encoded. Literal percent
+    sequences in a password must be entered as ``%25`` in a complete URL.
+    """
     if len(path) > 1000:
         raise ValueError("Input too long to check")
 
-    try:
-        found = re.search(REGEX_RTSP_CAMERA_USER_PASS, path).group(0)[3:-1]
-        pw = found[(found.index(":") + 1) :]
-        return path.replace(pw, urllib.parse.quote_plus(pw))
-    except AttributeError:
-        # path does not have user:pass
+    scheme_end = path.find("://")
+    if scheme_end < 0:
         return path
+    userinfo_start = scheme_end + 3
+    authority_end = min(
+        (pos for char in "/?#" if (pos := path.find(char, userinfo_start)) >= 0),
+        default=len(path),
+    )
+    authority = path[userinfo_start:authority_end]
+    userinfo, separator, host = authority.rpartition("@")
+
+    if separator and host:
+        user, colon, password = userinfo.partition(":")
+        if not colon:
+            return path
+        userinfo_end = userinfo_start + len(userinfo)
+    else:
+        # Retain support for older configs with unescaped /, ? or # in a
+        # password. Such URLs are ambiguous, so a normal host:numeric-port
+        # authority is left alone (an @ in the path/query is not userinfo).
+        if re.fullmatch(r"(?:\[[^]]+\]|[^:]+):\d+", authority):
+            return path
+        match = re.compile(REGEX_RTSP_CAMERA_USER_PASS).match(path, scheme_end)
+        if not match:
+            return path
+        userinfo_start = match.start() + 3
+        userinfo_end = match.end() - 1
+        user, _, password = path[userinfo_start:userinfo_end].partition(":")
+
+    def encode(component: str) -> str:
+        component = re.sub(r"%(?![0-9a-fA-F]{2})", "%25", component)
+        return urllib.parse.quote(component, safe="%")
+
+    return (
+        f"{path[:userinfo_start]}{encode(user)}:{encode(password)}{path[userinfo_end:]}"
+    )
 
 
 def get_ffmpeg_arg_list(arg: Any) -> list:
