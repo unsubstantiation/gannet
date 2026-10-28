@@ -62,7 +62,7 @@ def _run_main_and_report(result_queue) -> None:
             patch("gannet.__main__.install_service_stop_watcher"),
             patch("gannet.__main__.long_path_warning", return_value=None),
         ):
-            frigate_main.main()
+            gannet_main.main()
     except Exception as err:
         result_queue.put(f"error: {err!r}")
 

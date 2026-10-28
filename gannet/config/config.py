@@ -1636,7 +1636,6 @@ class FrigateConfig(FrigateBaseModel):
         new_config = False
         if not os.path.isfile(config_path):
             logger.info("No config file found, saving default config")
-            config_path = config_path
             new_config = True
         else:
             # Check if the config file needs to be migrated.

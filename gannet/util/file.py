@@ -334,7 +334,7 @@ def _unlock(fd: int) -> None:
 
 
 class FileLock:
-    """
+    r"""
     A file-based lock for coordinating access to resources across processes.
 
     Uses ``msvcrt.locking`` across Windows processes. Supports timeouts, stale

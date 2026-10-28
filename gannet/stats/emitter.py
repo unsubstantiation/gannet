@@ -13,7 +13,6 @@ from gannet.config import FrigateConfig
 from gannet.const import FREQUENCY_STATS_POINTS
 from gannet.notices import flush_notices, raise_notice, resolve_kind
 from gannet.stats.hardware import HardwareStats
-from gannet.stats.prometheus import update_metrics
 from gannet.stats.util import get_latest_version, is_newer_version, stats_snapshot
 from gannet.types import StatsTrackingTypes
 from gannet.util.version import VERSION
@@ -183,16 +182,6 @@ class StatsEmitter(threading.Thread):
             selected_stats.append(selected)
 
         return selected_stats
-
-    def stats_init(config, camera_metrics, detectors, processes):
-        stats = {
-            "cameras": camera_metrics,
-            "detectors": detectors,
-            "processes": processes,
-        }
-        # Update Prometheus metrics with initial stats
-        update_metrics(stats)
-        return stats
 
     def _check_update_notice(self) -> None:
         """Raise or resolve the update notice from the tracked latest version."""

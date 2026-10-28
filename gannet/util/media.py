@@ -138,8 +138,14 @@ def sync_recordings(
         num_pages = (recordings_count + page_size - 1) // page_size
         recordings_to_delete: list[dict] = []
 
-        for page in range(num_pages):
-            for recording in recordings_query.paginate(page, page_size):
+        # peewee's paginate() is 1-based, so page 1 is the first page: it
+        # maps page 0 to offset 0 as well, and walking range(num_pages) would
+        # visit the first page twice and never read the last one. Ordering by
+        # the primary key keeps LIMIT/OFFSET from skipping or repeating rows.
+        for page in range(1, num_pages + 1):
+            for recording in recordings_query.order_by(Recordings.id).paginate(
+                page, page_size
+            ):
                 if not os.path.exists(recording.path):
                     recordings_to_delete.append(
                         {"id": recording.id, "path": recording.path}

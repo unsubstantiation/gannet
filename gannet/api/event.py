@@ -1665,6 +1665,7 @@ def generate_description_embedding(
     body: EventsDescriptionBody,
 ):
     new_description = body.description
+    result: str | None = None
 
     # If semantic search is enabled, update the index
     if request.app.frigate_config.semantic_search.enabled:
