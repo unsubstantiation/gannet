@@ -13,7 +13,7 @@ for a camera that has autotracking off, because nothing clears them back out.
 import asyncio
 import threading
 import unittest
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from gannet.camera import PTZMetrics
 from gannet.config import FrigateConfig
@@ -212,6 +212,29 @@ class TestManualRelativeMoveMetrics(unittest.IsolatedAsyncioTestCase):
                 1001.0, metrics.start_time.value, metrics.stop_time.value
             )
         )
+
+
+class TestRuntimeOnvifAdds(unittest.IsolatedAsyncioTestCase):
+    async def test_disabled_camera_is_not_connected_when_added(self) -> None:
+        with patch("gannet.config.config._ensure_default_cpu_model"):
+            controller = _make_controller(autotracking_enabled=False)
+        disabled = controller.config.cameras[CAMERA].model_copy(deep=True)
+        disabled.enabled = False
+        controller.config.cameras["disabled"] = disabled
+        controller.config_subscriber = MagicMock()
+        controller.config_subscriber.check_for_updates.return_value = {
+            "add": [CAMERA, "disabled"]
+        }
+        controller._reinit_camera = AsyncMock()
+
+        with patch(
+            "gannet.ptz.onvif.asyncio.sleep",
+            new=AsyncMock(side_effect=[None, asyncio.CancelledError()]),
+        ):
+            with self.assertRaises(asyncio.CancelledError):
+                await controller._poll_config_updates()
+
+        controller._reinit_camera.assert_awaited_once_with(CAMERA)
 
 
 class TestOnvifClose(unittest.TestCase):

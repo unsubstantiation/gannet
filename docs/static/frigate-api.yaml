@@ -2792,6 +2792,39 @@ paths:
       security:
         - frigateAdminAuth: []
       x-required-role: admin
+  /config/cameras/{camera_name}/credentials:
+    get:
+      tags:
+        - App
+      summary: View a camera's configured connection credentials
+      description: |-
+        **Access:** Admin role required.
+
+        Return only this camera's inputs, associated restreams and ONVIF login.
+      operationId:
+        camera_credentials_config_cameras__camera_name__credentials_get
+      parameters:
+        - name: camera_name
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Camera Name
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - frigateAdminAuth: []
+      x-required-role: admin
   /config/raw:
     get:
       tags:
@@ -2929,6 +2962,7 @@ paths:
           schema:
             type: string
             enum:
+              - gannet
               - frigate
               - go2rtc
             title: Service
@@ -9857,7 +9891,7 @@ components:
       name: frigate_token
       description: Authenticated session whose resolved role is 'admin'. The
         session is established via the JWT cookie issued by POST /login, or via
-        proxy auth headers (remote-user / remote-role) when Frigate runs behind
+        proxy auth headers (remote-user / remote-role) when Gannet runs behind
         an authenticating reverse proxy.
     frigateUserAuth:
       type: apiKey
@@ -9865,4 +9899,4 @@ components:
       name: frigate_token
       description: Any authenticated session (role 'viewer' or higher),
         established via the JWT cookie issued by POST /login, or via proxy auth
-        headers when Frigate runs behind an authenticating reverse proxy.
+        headers when Gannet runs behind an authenticating reverse proxy.

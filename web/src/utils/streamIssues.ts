@@ -1,6 +1,7 @@
 import type { TFunction } from "i18next";
 import { parseRestreamStreamName } from "@/components/config-form/theme/fields/streamSource";
 import type { CameraBrand, StreamRole, TestResult } from "@/types/cameraWizard";
+import { parseStreamResolution } from "@/utils/cameraUtil";
 
 export type StreamIssue = {
   type: "good" | "warning" | "error";
@@ -17,6 +18,7 @@ export type StreamIssueInput = {
   useFfmpeg?: boolean;
   restream?: boolean;
   testResult?: TestResult;
+  manualDetectDimensions?: { width: number; height: number };
 };
 
 type ProbeStream = {
@@ -70,8 +72,11 @@ export function ffprobeToTestResult(
       s.codec_name?.includes("mp3"),
   );
 
-  const resolution = videoStream
+  const candidateResolution = videoStream
     ? `${videoStream.width}x${videoStream.height}`
+    : undefined;
+  const resolution = parseStreamResolution(candidateResolution)
+    ? candidateResolution
     : undefined;
   const fps = videoStream?.avg_frame_rate
     ? parseFloat(videoStream.avg_frame_rate.split("/")[0]) /
@@ -83,7 +88,7 @@ export function ffprobeToTestResult(
     resolution,
     videoCodec: videoStream?.codec_name,
     audioCodec: audioStream?.codec_name,
-    fps: fps && !isNaN(fps) ? fps : undefined,
+    fps: fps && Number.isFinite(fps) ? fps : undefined,
   };
 }
 
@@ -132,8 +137,9 @@ export function getStreamIssues(
     }
   }
 
-  if (roles.includes("record")) {
-    if (testResult?.audioCodec) {
+  // A failed or untested stream cannot tell us whether it carries audio.
+  if (roles.includes("record") && testResult?.success) {
+    if (testResult.audioCodec) {
       const audioCodec = testResult.audioCodec.toLowerCase();
       if (audioCodec === "aac") {
         result.push({
@@ -164,7 +170,11 @@ export function getStreamIssues(
     }
   }
 
-  if (roles.includes("audio") && !testResult?.audioCodec) {
+  if (
+    roles.includes("audio") &&
+    testResult?.success &&
+    !testResult.audioCodec
+  ) {
     result.push({
       type: "error",
       rule: "audio-required",
@@ -185,18 +195,12 @@ export function getStreamIssues(
   }
 
   if (roles.includes("detect") && testResult) {
-    const probedResolution = testResult.resolution;
-    let probedWidth = 0;
-    let probedHeight = 0;
-    if (probedResolution) {
-      const [w, h] = probedResolution.split("x").map(Number);
-      if (!isNaN(w) && !isNaN(h)) {
-        probedWidth = w;
-        probedHeight = h;
-      }
-    }
+    const probedResolution = testResult.success
+      ? testResult.resolution
+      : undefined;
+    const probed = parseStreamResolution(probedResolution);
 
-    if (probedWidth <= 0 || probedHeight <= 0) {
+    if (!probed && !input.manualDetectDimensions) {
       result.push({
         type: "error",
         rule: "resolution-unknown",
@@ -204,9 +208,10 @@ export function getStreamIssues(
           ns: "views/settings",
         }),
       });
-    } else {
-      const minDimension = Math.min(probedWidth, probedHeight);
-      const maxDimension = Math.max(probedWidth, probedHeight);
+    } else if (probed) {
+      // A manually entered detect output size is not a measured source size.
+      const minDimension = Math.min(probed.width, probed.height);
+      const maxDimension = Math.max(probed.width, probed.height);
       if (minDimension > 1080) {
         result.push({
           type: "warning",

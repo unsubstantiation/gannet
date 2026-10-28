@@ -577,6 +577,7 @@ export default function LivePlayer({
           minimal={cameraRef !== undefined}
           streamLabel={preferredLiveMode === "jsmpeg" ? undefined : streamLabel}
           streamAuto={streamAuto}
+          detectConfig={cameraConfig.detect}
         />
       )}
     </div>

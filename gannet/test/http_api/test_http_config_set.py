@@ -219,6 +219,65 @@ class TestConfigSetWildcardPropagation(BaseTestHttp):
         return f.name
 
     @patch("gannet.api.app.find_config_file")
+    @patch("gannet.config.config.stream_info_retriever.get_stream_info")
+    @patch("gannet.config.config._ensure_default_cpu_model")
+    def test_add_unreachable_camera_with_manual_dimensions(
+        self, mock_model, mock_probe, mock_find_config
+    ):
+        """Wizard-shaped saves persist and publish without probing the camera."""
+        for enabled in (True, False):
+            with self.subTest(enabled=enabled):
+                config_path = self._write_config_file()
+                mock_find_config.return_value = config_path
+                mock_probe.reset_mock()
+                try:
+                    app, publisher = self._create_app_with_publisher()
+                    path = "rtsp://viewer:pass@198.51.100.10/live"
+                    camera = {
+                        "enabled": enabled,
+                        "detect": {"width": 640, "height": 360},
+                        "ffmpeg": {"inputs": [{"path": path, "roles": ["detect"]}]},
+                        "live": {"streams": {"offline": "offline"}},
+                    }
+                    with AuthTestClient(app) as client:
+                        response = client.put(
+                            "/config/set",
+                            json={
+                                "config_data": {"cameras": {"offline": camera}},
+                                "update_topic": "config/cameras/offline/add",
+                                "requires_restart": 1,
+                            },
+                        )
+                        self.assertEqual(response.status_code, 200, response.text)
+                        response = client.put(
+                            "/config/set",
+                            json={
+                                "config_data": {
+                                    "go2rtc": {"streams": {"offline": [path]}}
+                                },
+                                "requires_restart": 0,
+                            },
+                        )
+                        self.assertEqual(response.status_code, 200, response.text)
+                    mock_probe.assert_not_called()
+                    with open(config_path, encoding="utf-8") as config_file:
+                        saved = ruamel.yaml.YAML(typ="safe").load(config_file)
+                    self.assertEqual(saved["cameras"]["offline"], camera)
+                    self.assertEqual(saved["go2rtc"]["streams"]["offline"], [path])
+                    published_topic, published_camera = (
+                        publisher.publish_update.call_args.args
+                    )
+                    self.assertEqual(
+                        published_topic.update_type, CameraConfigUpdateEnum.add
+                    )
+                    self.assertEqual(published_topic.camera, "offline")
+                    self.assertEqual(published_camera.enabled, enabled)
+                    self.assertEqual(published_camera.detect.width, 640)
+                    self.assertEqual(published_camera.detect.height, 360)
+                finally:
+                    os.unlink(config_path)
+
+    @patch("gannet.api.app.find_config_file")
     def test_wildcard_detect_update_fans_out_to_all_cameras(self, mock_find_config):
         """config/cameras/*/detect fans out to all cameras."""
         config_path = self._write_config_file()
@@ -587,9 +646,7 @@ class TestConfigSetWildcardPropagation(BaseTestHttp):
     # the native env module rebuilds FRIGATE_ENV_VARS from its sources on every
     # config parse, so the value is installed as a process-environment source
     @patch.dict("gannet.util.env._PROCESS_ENV", {"FRIGATE_RTSP_PASSWORD": "s3cret"})
-    @patch.dict(
-        "gannet.util.env.FRIGATE_ENV_VARS", {"FRIGATE_RTSP_PASSWORD": "s3cret"}
-    )
+    @patch.dict("gannet.util.env.FRIGATE_ENV_VARS", {"FRIGATE_RTSP_PASSWORD": "s3cret"})
     @patch("gannet.api.app.find_config_file")
     def test_masked_path_keeps_env_placeholder(self, mock_find_config):
         path = "rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.0.0.1:554/live"

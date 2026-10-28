@@ -44,7 +44,7 @@ In probe mode, the wizard reports what the camera returned (manufacturer, model,
 
 In manual mode, the wizard tests the templated URL and shows the same metadata and snapshot.
 
-If no RTSP URLs are found, the credentials may be wrong or the camera may not support ONVIF. Go back and use manual selection instead.
+If no RTSP URLs are found, the credentials may be wrong or the camera may not support ONVIF. Use **Enter a stream manually** to go back to manual selection. If a manual connection test fails, the URL is retained and **Continue without connecting** lets you finish the setup while the camera is unavailable.
 
 ### Step 3: Stream configuration
 
@@ -64,9 +64,17 @@ Connect each stream to get a live preview, an estimated bandwidth figure, and a 
 
 **Use stream compatibility mode** passes the stream through go2rtc's ffmpeg module. Enable it if a stream fails to load after several attempts. Note that this also prevents [two way talk](/configuration/live#two-way-talk) from being detected for that stream.
 
-**Save New Camera** writes the configuration and starts the camera right away. No restart is required.
+If the detect stream's resolution cannot be probed, enter a detect width and height in this step. Use even pixel dimensions with the same aspect ratio as the actual stream. These are the size Gannet processes for detection, not a change to the camera's stream; you can adjust them later in camera detection settings.
+
+You may save unverified streams after acknowledging the warning. An enabled camera starts immediately and retries its connection; video and recordings are unavailable until it connects. Alternatively, select **Save the camera disabled** to prevent it from starting. A camera saved disabled requires a Gannet restart after it is enabled in the configuration.
+
+**Save New Camera** writes the configuration and, unless disabled, starts the camera right away. No restart is required for an enabled camera.
 
 Other features, including [hardware acceleration](hardware_acceleration_video.md), [two way talk](/configuration/live#two-way-talk), and audio transcoding, is configured after the camera has been added. For camera model specific quirks, see the [camera specific](camera_specific.md) docs.
+
+## Viewing configured credentials
+
+Administrators can open <NavPath path="Settings > Global configuration > Camera management" /> and select the key icon on a camera's row. The dialog shows its FFmpeg inputs, associated go2rtc sources, and ONVIF login. Passwords and URLs are masked until **Show passwords and URLs** is selected; closing the dialog clears the displayed details. These are the credentials configured in Gannet, including resolved environment or secrets-file values where available, and may differ from the camera's current login. Treat them as sensitive.
 
 ## Deleting a camera
 

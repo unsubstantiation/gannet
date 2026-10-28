@@ -30,6 +30,7 @@ import {
   LuTrash2,
 } from "react-icons/lu";
 import CloneCameraDialog from "@/components/settings/CloneCameraDialog";
+import CameraCredentialsDialog from "@/components/settings/CameraCredentialsDialog";
 import { Reorder, useDragControls } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useDocDomain } from "@/hooks/use-doc-domain";
@@ -474,6 +475,7 @@ function ActiveCameraRow({
           <LuGripVertical className="size-4" />
         </button>
         <CameraNameLabel camera={camera} />
+        <CameraCredentialsDialog camera={camera} />
         <CameraDetailsEditor
           cameraName={camera}
           onConfigChanged={onConfigChanged}
@@ -504,6 +506,7 @@ function DisabledCameraRow({
     <div className="flex flex-row items-center justify-between">
       <div className="flex items-center gap-1">
         <CameraNameLabel camera={camera} className="text-muted-foreground" />
+        <CameraCredentialsDialog camera={camera} />
         <CameraDetailsEditor
           cameraName={camera}
           onConfigChanged={onConfigChanged}

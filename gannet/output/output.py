@@ -5,6 +5,7 @@ import logging
 import os
 import shutil
 import threading
+import time
 from multiprocessing.synchronize import Event as MpEvent
 from wsgiref.simple_server import make_server
 
@@ -38,6 +39,44 @@ from gannet.util.image import SharedMemoryFrameManager, get_blank_yuv_frame
 from gannet.util.process import FrigateProcess
 
 logger = logging.getLogger(__name__)
+
+
+class FrameReadFailureTracker:
+    """Report sustained unreadable frames without flooding the logs."""
+
+    def __init__(self, warning_interval: float = 60) -> None:
+        self.warning_interval = warning_interval
+        self.failures: dict[str, int] = {}
+        self.last_warning: dict[str, float] = {}
+
+    def failed(self, camera: str, detect_fps: int, frame_age: float) -> None:
+        count = self.failures.get(camera, 0) + 1
+        self.failures[camera] = count
+        now = time.monotonic()
+        previous = self.last_warning.get(camera)
+
+        if count > max(1, detect_fps) and (
+            previous is None or now - previous >= self.warning_interval
+        ):
+            logger.warning(
+                "%s: %d consecutive frames could not be read from shared memory "
+                "(latest frame was %.1f seconds old). Frames may be overwritten "
+                "when processing falls behind, or their shared memory may be "
+                "unavailable. Check CPU/detector load, detect FPS, and earlier "
+                "capture errors. SHM_MAX_FRAMES controls the frame ring capacity; "
+                "increasing it uses more page-file-backed memory.",
+                camera,
+                count,
+                max(0, frame_age),
+            )
+            self.last_warning[camera] = now
+
+    def succeeded(self, camera: str) -> None:
+        self.failures.pop(camera, None)
+
+    def remove(self, camera: str) -> None:
+        self.succeeded(camera)
+        self.last_warning.pop(camera, None)
 
 
 def check_disabled_camera_update(
@@ -107,6 +146,10 @@ class OutputProcess(FrigateProcess):
         birdseye: Birdseye | None,
     ) -> None:
         camera_config = self.config.cameras[camera]
+        # Match startup behavior for cameras saved disabled at runtime: they
+        # have no capture process and must not start an idle output FFmpeg.
+        if not camera_config.enabled_in_config:
+            return
         jsmpeg_cameras[camera] = JsmpegCamera(
             camera_config, self.config, self.stop_event, websocket_server
         )
@@ -160,7 +203,7 @@ class OutputProcess(FrigateProcess):
         birdseye: Birdseye | None = None
         preview_recorders: dict[str, PreviewRecorder] = {}
         preview_write_times: dict[str, float] = {}
-        failed_frame_requests: dict[str, int] = {}
+        failed_frame_requests = FrameReadFailureTracker()
         last_disabled_cam_check = datetime.datetime.now().timestamp()
 
         move_preview_frames("cache")
@@ -227,6 +270,7 @@ class OutputProcess(FrigateProcess):
             if CameraConfigUpdateEnum.remove in updates:
                 for camera in updates["remove"]:
                     frame_manager.close_camera(camera)
+                    failed_frame_requests.remove(camera)
 
             _result = detection_subscriber.check_for_update(timeout=1)
             if _result is None:
@@ -266,19 +310,12 @@ class OutputProcess(FrigateProcess):
 
             if frame is None:
                 logger.debug(f"Failed to get frame {frame_name} from SHM")
-                failed_frame_requests[camera] = failed_frame_requests.get(camera, 0) + 1
-
-                if (
-                    failed_frame_requests[camera]
-                    > self.config.cameras[camera].detect.fps
-                ):
-                    logger.warning(
-                        f"Failed to retrieve many frames for {camera} from SHM, consider increasing SHM size if this continues."
-                    )
-
+                failed_frame_requests.failed(
+                    camera, self.config.cameras[camera].detect.fps, now - frame_time
+                )
                 continue
-            else:
-                failed_frame_requests[camera] = 0
+
+            failed_frame_requests.succeeded(camera)
 
             # send frames for low fps recording
             preview_recorders[camera].write_data(

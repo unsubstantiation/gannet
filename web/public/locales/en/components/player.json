@@ -36,6 +36,12 @@
       "title": "Bandwidth:",
       "short": "Bandwidth"
     },
+    "resolution": "Playing resolution:",
+    "resolutionShort": "Resolution",
+    "fps": "FPS:",
+    "fpsPlayback": "Playback FPS:",
+    "fpsDecoded": "Decoded FPS:",
+    "detectConfigured": "Detect (configured):",
     "totalFrames": "Total Frames:",
     "droppedFrames": {
       "title": "Dropped Frames:",

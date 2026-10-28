@@ -158,7 +158,7 @@ export default function Step2ProbeOrSnapshot({
           resolution,
           videoCodec: videoStream?.codec_name,
           audioCodec: audioStream?.codec_name,
-          fps: fps && !isNaN(fps) ? fps : undefined,
+          fps: fps && Number.isFinite(fps) ? fps : undefined,
         };
 
         return streamTestResult;
@@ -372,66 +372,56 @@ export default function Step2ProbeOrSnapshot({
 
   const testConnection = useCallback(
     async (showToast = true) => {
-      const streamUrls = await generateStreamUrls(wizardData);
-
-      if (streamUrls.length === 0) {
-        toast.error(t("cameraWizard.commonErrors.noUrl"));
-        return;
-      }
-
       setIsTesting(true);
       setTestStatus("");
       setTestResult(null);
+      let streamUrl = "";
 
       try {
-        let streamUrl = streamUrls[0];
-        let result: TestResult | undefined;
+        const streamUrls = await generateStreamUrls(wizardData);
+        if (streamUrls.length === 0) {
+          toast.error(t("cameraWizard.commonErrors.noUrl"));
+          return;
+        }
 
+        let result: TestResult | undefined;
         for (const url of streamUrls) {
           streamUrl = url;
           setTestStatus(t("cameraWizard.step2.testing.probingMetadata"));
           result = await probeUri(url, true, setTestStatus);
-
-          if (result.success && result.resolution) {
-            break;
-          }
+          if (result.success && result.resolution) break;
         }
 
-        if (result && result.success) {
-          setTestResult(result);
-          const streamId = `stream_${Date.now()}`;
-          onUpdate({
-            streams: [
-              {
-                id: streamId,
-                url: streamUrl,
-                roles: ["detect"] as StreamRole[],
-                testResult: result,
-                useFfmpeg:
-                  wizardData.brandTemplate === "reolink" &&
-                  streamUrl.startsWith("http://"),
-              },
-            ],
-          });
+        const finalResult = result ?? {
+          success: false,
+          error: "Unable to probe stream",
+        };
+        setTestResult(finalResult);
+        // Keep the URL even on failure: it may be correct but temporarily
+        // unreachable. Step 4 asks the user to acknowledge unverified streams.
+        onUpdate({
+          streams: [
+            {
+              id: `stream_${Date.now()}`,
+              url: streamUrl,
+              roles: ["detect"] as StreamRole[],
+              testResult: finalResult,
+              useFfmpeg:
+                wizardData.brandTemplate === "reolink" &&
+                streamUrl.startsWith("http://"),
+            },
+          ],
+        });
 
-          if (showToast) {
-            toast.success(t("cameraWizard.step2.testSuccess"));
-          }
-        } else {
-          const errMsg = result?.error || "Unable to probe stream";
-          setTestResult({
-            success: false,
-            error: errMsg,
-          });
-
-          if (showToast) {
-            toast.error(
-              t("cameraWizard.commonErrors.testFailed", { error: errMsg }),
-              {
-                duration: 6000,
-              },
-            );
-          }
+        if (showToast && finalResult.success) {
+          toast.success(t("cameraWizard.step2.testSuccess"));
+        } else if (showToast) {
+          toast.error(
+            t("cameraWizard.commonErrors.testFailed", {
+              error: finalResult.error || "Unable to probe stream",
+            }),
+            { duration: 6000 },
+          );
         }
       } catch (error) {
         const axiosError = error as {
@@ -443,17 +433,24 @@ export default function Step2ProbeOrSnapshot({
           axiosError.response?.data?.detail ||
           axiosError.message ||
           "Connection failed";
-        setTestResult({
-          success: false,
-          error: errorMessage,
-        });
-
+        const result = { success: false, error: errorMessage };
+        setTestResult(result);
+        if (streamUrl) {
+          onUpdate({
+            streams: [
+              {
+                id: `stream_${Date.now()}`,
+                url: streamUrl,
+                roles: ["detect"],
+                testResult: result,
+              },
+            ],
+          });
+        }
         if (showToast) {
           toast.error(
             t("cameraWizard.commonErrors.testFailed", { error: errorMessage }),
-            {
-              duration: 10000,
-            },
+            { duration: 10000 },
           );
         }
       } finally {
@@ -509,6 +506,16 @@ export default function Step2ProbeOrSnapshot({
             onBack={onBack}
             onTestAll={testAllSelectedCandidates}
             onRetry={probeCamera}
+            onManualSetup={() => {
+              onUpdate({
+                probeMode: false,
+                probeResult: undefined,
+                probeCandidates: [],
+                candidateTests: {},
+                streams: [],
+              });
+              onBack();
+            }}
             // disable next if either the overall testConnection is running or any candidate test is running
             isTesting={
               isTesting || Object.values(testingCandidates).some((v) => v)
@@ -594,6 +601,11 @@ export default function Step2ProbeOrSnapshot({
               ).length
             }
             manualTestSuccess={!!testResult?.success}
+            manualTestFailed={
+              !!testResult &&
+              !testResult.success &&
+              !!wizardData.streams?.length
+            }
             onContinue={handleContinue}
             onManualTest={testConnection}
           />
@@ -654,8 +666,10 @@ type ProbeFooterProps = {
   candidateCount?: number;
   mode?: "probe" | "manual";
   manualTestSuccess?: boolean;
+  manualTestFailed?: boolean;
   onContinue?: () => void;
   onManualTest?: () => void;
+  onManualSetup?: () => void;
 };
 
 function ProbeFooterButtons({
@@ -668,8 +682,10 @@ function ProbeFooterButtons({
   candidateCount = 0,
   mode = "probe",
   manualTestSuccess,
+  manualTestFailed,
   onContinue,
   onManualTest,
+  onManualSetup,
 }: ProbeFooterProps) {
   const { t } = useTranslation(["views/settings"]);
 
@@ -711,11 +727,21 @@ function ProbeFooterButtons({
           <Button
             type="button"
             onClick={onRetry}
-            variant="select"
+            variant="outline"
             className="flex items-center justify-center gap-2 sm:flex-1"
           >
             {t("cameraWizard.step2.retry")}
           </Button>
+          {onManualSetup && (
+            <Button
+              type="button"
+              onClick={onManualSetup}
+              variant="select"
+              className="sm:flex-1"
+            >
+              {t("cameraWizard.step2.manualSetup")}
+            </Button>
+          )}
         </div>
       </div>
     );
@@ -756,6 +782,17 @@ function ProbeFooterButtons({
             )}
           </Button>
         )}
+        {manualTestFailed && (
+          <Button
+            type="button"
+            onClick={onContinue}
+            disabled={isTesting}
+            variant="select"
+            className="sm:flex-1"
+          >
+            {t("cameraWizard.step2.continueOffline")}
+          </Button>
+        )}
       </div>
     );
   }
@@ -766,6 +803,16 @@ function ProbeFooterButtons({
       <Button type="button" onClick={onBack} className="sm:flex-1">
         {t("button.back", { ns: "common" })}
       </Button>
+      {candidateCount === 0 && onManualSetup && (
+        <Button
+          type="button"
+          onClick={onManualSetup}
+          variant="outline"
+          className="sm:flex-1"
+        >
+          {t("cameraWizard.step2.manualSetup")}
+        </Button>
+      )}
       <Button
         type="button"
         onClick={onTestAll}

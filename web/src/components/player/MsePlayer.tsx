@@ -1,5 +1,6 @@
 import { baseUrl } from "@/api/baseUrl";
 import { useUserPersistence } from "@/hooks/use-user-persistence";
+import { measuredFrameRate } from "@/utils/playerStats";
 import {
   LiveHealthSample,
   LivePlayerError,
@@ -765,6 +766,7 @@ function MSEPlayer({
     const video = videoRef.current;
     let lastLoadedBytes = totalBytesLoaded.current;
     let lastTimestamp = Date.now();
+    let lastPresentedFrames: number | undefined;
     let healthBytes = lastLoadedBytes;
     let healthTimestamp = lastTimestamp;
     // a restart mid-stream must not count the existing buffer as new media
@@ -791,19 +793,36 @@ function MSEPlayer({
         lastLoadedBytes = bytesLoaded;
         lastTimestamp = now;
 
-        const videoQuality = video.getVideoPlaybackQuality();
-        const { totalVideoFrames, droppedVideoFrames } = videoQuality;
-        const droppedFrameRate = totalVideoFrames
-          ? (droppedVideoFrames / totalVideoFrames) * 100
-          : 0;
+        const videoQuality = video.getVideoPlaybackQuality?.();
+        const totalVideoFrames = videoQuality?.totalVideoFrames ?? 0;
+        const droppedVideoFrames = videoQuality?.droppedVideoFrames;
+        const presentedFrames = videoQuality
+          ? totalVideoFrames - (droppedVideoFrames ?? 0)
+          : undefined;
+        const fps = measuredFrameRate(
+          presentedFrames,
+          lastPresentedFrames,
+          timeElapsed,
+        );
+        lastPresentedFrames = presentedFrames;
+        const droppedFrameRate =
+          totalVideoFrames && droppedVideoFrames !== undefined
+            ? (droppedVideoFrames / totalVideoFrames) * 100
+            : undefined;
 
         setStats?.({
           streamType: "MSE",
           bandwidth,
           totalFrames: totalVideoFrames,
-          droppedFrames: droppedVideoFrames || undefined,
-          decodedFrames: totalVideoFrames - droppedVideoFrames,
+          droppedFrames: droppedVideoFrames,
+          decodedFrames: presentedFrames,
           droppedFrameRate,
+          resolution:
+            video.videoWidth && video.videoHeight
+              ? { width: video.videoWidth, height: video.videoHeight }
+              : undefined,
+          fps,
+          fpsKind: "playback",
         });
       }
 

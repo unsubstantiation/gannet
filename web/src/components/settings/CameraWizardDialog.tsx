@@ -22,8 +22,8 @@ import type {
 } from "@/types/cameraWizard";
 import {
   processCameraName,
-  calculateDetectDimensions,
   hevcRecordingStreamId,
+  wizardDetectDimensions,
 } from "@/utils/cameraUtil";
 import { cn } from "@/lib/utils";
 
@@ -130,7 +130,10 @@ export default function CameraWizardDialog({
         const onvif = state.wizardData.onvif;
         const onvifOk =
           !onvif?.enabled || (!!onvif.host?.trim() && !!onvif.port);
-        return hasDetect && onvifOk;
+        const streamsOk = state.wizardData.streams?.every(
+          (stream) => !!stream.url.trim() && stream.roles.length > 0,
+        );
+        return hasDetect && onvifOk && !!streamsOk;
       }
       case 3:
         // Step 4: Always can proceed from final step (save will be handled there)
@@ -179,6 +182,16 @@ export default function CameraWizardDialog({
         return;
       }
 
+      const detectDimensions = wizardDetectDimensions(
+        wizardData.streams,
+        wizardData.manualDetectWidth,
+        wizardData.manualDetectHeight,
+      );
+      if (!detectDimensions) {
+        toast.error(t("cameraWizard.step4.manualResolution.invalid"));
+        return;
+      }
+
       setIsLoading(true);
 
       // Process camera name and friendly name
@@ -195,7 +208,11 @@ export default function CameraWizardDialog({
       const configData: CameraConfigData = {
         cameras: {
           [finalCameraName]: {
-            enabled: true,
+            enabled: !wizardData.saveDisabled,
+            detect: {
+              width: detectDimensions.width,
+              height: detectDimensions.height,
+            },
             ...(friendlyName && { friendly_name: friendlyName }),
             ffmpeg: {
               ...(appleCompatibility && { apple_compatibility: true }),
@@ -221,25 +238,6 @@ export default function CameraWizardDialog({
           },
         },
       };
-
-      // Calculate detect dimensions from the detect stream's probed resolution
-      const detectStream = wizardData.streams.find((stream) =>
-        stream.roles.includes("detect"),
-      );
-      if (detectStream?.testResult?.resolution) {
-        const [streamWidth, streamHeight] = detectStream.testResult.resolution
-          .split("x")
-          .map(Number);
-        if (streamWidth > 0 && streamHeight > 0) {
-          const detectDimensions = calculateDetectDimensions(
-            streamWidth,
-            streamHeight,
-          );
-          if (detectDimensions) {
-            configData.cameras[finalCameraName].detect = detectDimensions;
-          }
-        }
-      }
 
       // Add live.streams configuration for go2rtc streams
       if (wizardData.streams && wizardData.streams.length > 0) {

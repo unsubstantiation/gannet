@@ -205,6 +205,64 @@ export function calculateDetectDimensions(
   return { width, height };
 }
 
+/** A probe result must contain two real positive integer dimensions. */
+export function parseStreamResolution(
+  resolution?: string,
+): { width: number; height: number } | undefined {
+  const match = resolution?.match(/^(\d+)x(\d+)$/i);
+  if (!match) return undefined;
+  const width = Number(match[1]);
+  const height = Number(match[2]);
+  if (!Number.isSafeInteger(width) || !Number.isSafeInteger(height)) {
+    return undefined;
+  }
+  return width > 0 && height > 0 ? { width, height } : undefined;
+}
+
+/** A manual detect size is used as-is, so both YUV dimensions must be even. */
+export function parseManualDetectDimensions(
+  width?: string,
+  height?: string,
+): { width: number; height: number } | undefined {
+  if (!width || !height || !/^\d+$/.test(width) || !/^\d+$/.test(height)) {
+    return undefined;
+  }
+  const w = Number(width);
+  const h = Number(height);
+  if (
+    !Number.isSafeInteger(w) ||
+    !Number.isSafeInteger(h) ||
+    w < 2 ||
+    h < 2 ||
+    w > 16384 ||
+    h > 16384 ||
+    w % 2 !== 0 ||
+    h % 2 !== 0
+  ) {
+    return undefined;
+  }
+  return { width: w, height: h };
+}
+
+/** Resolve the exact detect size that the camera wizard will persist. */
+export function wizardDetectDimensions(
+  streams: StreamConfig[],
+  manualWidth?: string,
+  manualHeight?: string,
+): { width: number; height: number; source: "probe" | "manual" } | undefined {
+  const detect = streams.find((stream) => stream.roles.includes("detect"));
+  if (!detect) return undefined;
+  const resolution = detect.testResult?.success
+    ? parseStreamResolution(detect.testResult.resolution)
+    : undefined;
+  const scaled = resolution
+    ? calculateDetectDimensions(resolution.width, resolution.height)
+    : null;
+  if (scaled) return { ...scaled, source: "probe" };
+  const manual = parseManualDetectDimensions(manualWidth, manualHeight);
+  return manual ? { ...manual, source: "manual" } : undefined;
+}
+
 export function detectCameraAudioFeatures(
   metadata: LiveStreamMetadata | null | undefined,
   requireSecureContext: boolean = true,
