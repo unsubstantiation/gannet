@@ -1,13 +1,13 @@
 {
   "documentTitle": {
-    "storage": "Frigate - Estatísticas de Armazenamento",
-    "general": "Frigate - Estatísticas Gerais",
-    "enrichments": "Frigate - Estatísticas de Enriquecimento",
+    "storage": "Gannet - Estatísticas de Armazenamento",
+    "general": "Gannet - Estatísticas Gerais",
+    "enrichments": "Gannet - Estatísticas de Enriquecimento",
     "logs": {
-      "frigate": "Frigate - Registos de Eventos do Frigate",
-      "go2rtc": "Frigate - Registos de Eventos do Go2RTC"
+      "gannet": "Gannet - Registos de Eventos do Gannet",
+      "go2rtc": "Gannet - Registos de Eventos do Go2RTC"
     },
-    "cameras": "Frigate - Estatísticas das Câmaras"
+    "cameras": "Gannet - Estatísticas das Câmaras"
   },
   "title": "Sistema",
   "metrics": "Métricas do sistema",
@@ -41,7 +41,7 @@
       "percentageOfTotalUsed": "Porcentagem do total",
       "bandwidth": "Largura de banda",
       "unused": {
-        "tips": "Este valor pode não representar com precisão o espaço livre disponível para o Frigate se você tiver outros ficheiros armazenados em sua unidade além das gravações do Frigate. O Frigate não rastreia o uso de armazenamento fora de suas gravações.",
+        "tips": "Este valor pode não representar com precisão o espaço livre disponível para o Gannet se você tiver outros ficheiros armazenados em sua unidade além das gravações do Gannet. O Gannet não rastreia o uso de armazenamento fora de suas gravações.",
         "title": "Não utilizado"
       },
       "unusedStorageInformation": "Informações de armazenamento não utilizado",
@@ -52,7 +52,7 @@
     "recordings": {
       "title": "Gravações",
       "earliestRecording": "Primeira gravação disponível:",
-      "tips": "Este valor representa o armazenamento total utilizado pelas gravações na base de dados do Frigate. O Frigate não acompanha a utilização do armazenamento de todos os ficheiros no seu disco."
+      "tips": "Este valor representa o armazenamento total utilizado pelas gravações na base de dados do Gannet. O Gannet não acompanha a utilização do armazenamento de todos os ficheiros no seu disco."
     },
     "shm": {
       "title": "Alocação SHM (memória partilhada)",

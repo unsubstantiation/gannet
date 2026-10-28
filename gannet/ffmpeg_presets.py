@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 FPS_VFR_PARAM = "-fps_mode vfr" if LIBAVFORMAT_VERSION_MAJOR >= 59 else "-vsync 2"
 TIMEOUT_PARAM = "-timeout" if LIBAVFORMAT_VERSION_MAJOR >= 59 else "-stimeout"
 
-_user_agent_args = ["-user_agent", f"FFmpeg Frigate/{VERSION}"]
+_user_agent_args = ["-user_agent", f"FFmpeg Gannet/{VERSION}"]
 
 # Detect-stream decoding. Presets that keep hardware frames on the GPU have a
 # matching scale filter below; D3D11VA/DXVA2 transfer frames to system memory.
@@ -237,7 +237,7 @@ PRESETS_INPUT = {
     "preset-rtsp-blue-iris": _user_agent_args
     + [
         "-user_agent",
-        f"FFmpeg Frigate/{VERSION}",
+        f"FFmpeg Gannet/{VERSION}",
         "-avoid_negative_ts",
         "make_zero",
         "-flags",

@@ -21,7 +21,7 @@ Adjust the path for an interactive or custom data root. If the executable is mis
 Open the management UI through Gannet's authenticated gateway:
 
 ```text
-https://frigate-host:8971/go2rtc/
+https://gannet-host:8971/go2rtc/
 ```
 
 Do not expose port `1984`; the generated native config binds it to loopback. Stream diagnostics can contain camera credentials, so redact them before sharing.

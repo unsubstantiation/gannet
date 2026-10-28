@@ -62,7 +62,7 @@ On desktop, the **Actions** menu (the film icon) collects the things you can do 
 - **Motion Search**: scan this camera's recordings for changes in a region you draw. This is the same tool documented under [Reviewing Motion](/usage/review#motion-search).
 - **Debug Replay** (admins): replay a recorded range back through Gannet's detection pipeline to see how it would be processed.
 
-You can also capture an instant snapshot of the current frame, and submit a frame to [Frigate+](/integrations/plus) directly from the player (admins only).
+You can also capture an instant snapshot of the current frame, and submit a frame to [upstream Frigate+](/integrations/plus) directly from the player (admins only).
 
 ## AI review summaries
 

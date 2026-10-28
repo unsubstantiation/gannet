@@ -5,7 +5,7 @@
         "description": "Cameranaam is vereist"
     },
     "friendly_name": {
-        "description": "Cameranaam te gebruiken in de Frigate UI",
+        "description": "Cameranaam te gebruiken in de Gannet UI",
         "label": "Eenvoudige naam"
     },
     "enabled": {
@@ -156,7 +156,7 @@
         "description": "Met zones kun je een specifiek deel van het frame definiëren, zodat je kunt bepalen of een object zich binnen dat specifieke gebied bevindt.",
         "friendly_name": {
             "label": "Zone naam",
-            "description": "Een gebruiksvriendelijke naam voor de zone, die wordt weergegeven in de Frigate-gebruikersinterface. Als deze niet is ingesteld, wordt een opgemaakte versie van de zonenaam gebruikt."
+            "description": "Een gebruiksvriendelijke naam voor de zone, die wordt weergegeven in de Gannet-gebruikersinterface. Als deze niet is ingesteld, wordt een opgemaakte versie van de zonenaam gebruikt."
         },
         "enabled": {
             "label": "Ingeschakeld",
@@ -949,7 +949,7 @@
             },
             "calibrate_on_startup": {
                 "label": "Kalibreren bij opstarten",
-                "description": "PTZ-motorsnelheden meten bij opstarten voor nauwkeurigere volging. Frigate werkt de configuratie bij met movement_weights na kalibratie."
+                "description": "PTZ-motorsnelheden meten bij opstarten voor nauwkeurigere volging. Gannet werkt de configuratie bij met movement_weights na kalibratie."
             },
             "zooming": {
                 "label": "Zoommodus",
@@ -986,7 +986,7 @@
         },
         "ignore_time_mismatch": {
             "label": "Tijdsverschil negeren",
-            "description": "Tijdsynchronisatieverschillen tussen camera en Frigate-server negeren voor ONVIF-communicatie."
+            "description": "Tijdsynchronisatieverschillen tussen camera en Gannet-server negeren voor ONVIF-communicatie."
         }
     },
     "best_image_timeout": {

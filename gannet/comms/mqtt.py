@@ -37,7 +37,7 @@ class QueuedPublish:
 
 
 class MqttClient(Communicator):
-    """Frigate wrapper for mqtt client."""
+    """Gannet wrapper for mqtt client."""
 
     def __init__(self, config: FrigateConfig) -> None:
         self.config = config
@@ -327,9 +327,9 @@ class MqttClient(Communicator):
         """Run the worker loop.
 
         An unexpected crash disables MQTT for this session rather than taking
-        Frigate down with it, so it has to announce itself: without the offline
+        Gannet down with it, so it has to announce itself: without the offline
         publish, consumers keep the last retained values and see a healthy
-        Frigate that has simply stopped updating.
+        Gannet that has simply stopped updating.
         """
         try:
             self._mqtt_loop_worker()
@@ -374,7 +374,7 @@ class MqttClient(Communicator):
                     break
         except Exception:
             logger.warning(
-                "MQTT is dormant and the broker could not be told Frigate is offline",
+                "MQTT is dormant and the broker could not be told Gannet is offline",
                 exc_info=True,
             )
 
@@ -806,7 +806,7 @@ class MqttClient(Communicator):
     def _is_supported_command_topic(self, topic: str) -> bool:
         """Filter the wildcard subscription down to Dispatcher's command surface.
 
-        Load-bearing rather than an optimization: the broker echoes Frigate's own
+        Load-bearing rather than an optimization: the broker echoes Gannet's own
         publishes back through frigate/#, and Dispatcher republishes topics it
         does not recognize, so forwarding unfiltered would loop.
         """
@@ -898,7 +898,7 @@ class MqttClient(Communicator):
         """Queue inbound MQTT messages for processing in the worker loop."""
         topic = self._strip_topic_prefix(message.topic)
 
-        # Ignore everything outside Frigate's command surface before decoding or
+        # Ignore everything outside Gannet's command surface before decoding or
         # dispatching into the rest of the app.
         if not self._is_supported_command_topic(topic):
             return

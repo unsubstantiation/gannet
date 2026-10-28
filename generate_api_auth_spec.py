@@ -111,7 +111,7 @@ SECURITY_SCHEMES = {
         "description": (
             "Authenticated session whose resolved role is 'admin'. The session "
             "is established via the JWT cookie issued by POST /login, or via "
-            "proxy auth headers (remote-user / remote-role) when Frigate runs "
+            "proxy auth headers (remote-user / remote-role) when Gannet runs "
             "behind an authenticating reverse proxy."
         ),
     },
@@ -122,7 +122,7 @@ SECURITY_SCHEMES = {
         "description": (
             "Any authenticated session (role 'viewer' or higher), established "
             "via the JWT cookie issued by POST /login, or via proxy auth "
-            "headers when Frigate runs behind an authenticating reverse proxy."
+            "headers when Gannet runs behind an authenticating reverse proxy."
         ),
     },
 }

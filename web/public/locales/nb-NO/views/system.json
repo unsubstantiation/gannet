@@ -1,14 +1,14 @@
 {
   "documentTitle": {
-    "cameras": "Kamerastatistikk - Frigate",
-    "storage": "Lagringsstatistikk - Frigate",
+    "cameras": "Kamerastatistikk - Gannet",
+    "storage": "Lagringsstatistikk - Gannet",
     "logs": {
-      "frigate": "Frigate-logger - Frigate",
-      "go2rtc": "Go2RTC-logger - Frigate",
-      "websocket": "Meldingslogger - Frigate"
+      "gannet": "Gannet-logger - Gannet",
+      "go2rtc": "Go2RTC-logger - Gannet",
+      "websocket": "Meldingslogger - Gannet"
     },
-    "general": "Generell statistikk - Frigate",
-    "enrichments": "Statistikk for utvidelser - Frigate"
+    "general": "Generell statistikk - Gannet",
+    "enrichments": "Statistikk for utvidelser - Gannet"
   },
   "logs": {
     "copy": {
@@ -124,7 +124,7 @@
     "recordings": {
       "earliestRecording": "Tidligste opptak tilgjengelig:",
       "title": "Opptak",
-      "tips": "Denne verdien representerer total lagringsplass brukt av opptakene i Frigates database. Frigate sporer ikke lagringsbruk for alle filer på disken din."
+      "tips": "Denne verdien representerer total lagringsplass brukt av opptakene i Frigates database. Gannet sporer ikke lagringsbruk for alle filer på disken din."
     },
     "cameraStorage": {
       "storageUsed": "Lagringsbruk",
@@ -135,7 +135,7 @@
       "percentageOfTotalUsed": "Prosentandel av tilgjengelig",
       "unused": {
         "title": "Ubrukt",
-        "tips": "Denne verdien representerer kanskje ikke nøyaktig den ledige plassen Frigate har tilgang til, dersom det finnes andre filer lagret på disken. Frigate sporer kun lagring brukt av egne opptak."
+        "tips": "Denne verdien representerer kanskje ikke nøyaktig den ledige plassen Gannet har tilgang til, dersom det finnes andre filer lagret på disken. Gannet sporer kun lagring brukt av egne opptak."
       }
     },
     "title": "Lagring",

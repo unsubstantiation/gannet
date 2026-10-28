@@ -1,6 +1,6 @@
 """Generate go2rtc's configuration file.
 
-go2rtc is an external Windows child process. Frigate stages its generated
+go2rtc is an external Windows child process. Gannet stages its generated
 configuration in the runtime directory before starting it, so
 ``python -m gannet`` is the only application command a user needs.
 """
@@ -43,7 +43,7 @@ def prepare_homekit_config(path: str | None = None) -> str:
 
     go2rtc writes pairing state back to its first config file. Keep only the
     ``homekit`` section there so streams and other generated settings continue
-    to come from Frigate's configuration.
+    to come from Gannet's configuration.
     """
     config_path = Path(path or go2rtc_homekit_config_path())
     config_path.parent.mkdir(parents=True, exist_ok=True)
@@ -97,7 +97,7 @@ def load_raw_config(config_file: str | None = None) -> dict[str, Any]:
     """Read the user's config file without validating it.
 
     The go2rtc config has to be staged before go2rtc starts, which is before
-    Frigate's own config validation runs, so a config that Frigate would reject
+    Gannet's own config validation runs, so a config that Gannet would reject
     still has to produce a usable go2rtc config.
     """
     config_file = config_file or find_config_file()
@@ -119,10 +119,10 @@ def load_raw_config(config_file: str | None = None) -> dict[str, Any]:
 
 
 def build_go2rtc_config(config: dict[str, Any]) -> dict[str, Any]:
-    """Build the go2rtc config for a raw Frigate config.
+    """Build the go2rtc config for a raw Gannet config.
 
     Args:
-        config: the raw (unvalidated) Frigate config
+        config: the raw (unvalidated) Gannet config
 
     Returns:
         The go2rtc configuration, ready to be dumped as yaml.
@@ -143,7 +143,7 @@ def build_go2rtc_config(config: dict[str, Any]) -> dict[str, Any]:
 
     go2rtc_config: dict[str, Any] = dict(config.get("go2rtc", {}) or {})
 
-    # The management API is reached through Frigate's authenticated gateway.
+    # The management API is reached through Gannet's authenticated gateway.
     # Binding it to loopback prevents camera credentials from being exposed on
     # the LAN if the Windows firewall is permissive.
     if go2rtc_config.get("api") is None:
@@ -270,7 +270,7 @@ def build_go2rtc_config(config: dict[str, Any]) -> dict[str, Any]:
                 continue
 
     # add transcoded live streams; a user stream with the same name wins here and
-    # fails Frigate's config validation
+    # fails Gannet's config validation
     transcoded_streams = raw_transcode_streams(config)
 
     if transcoded_streams:

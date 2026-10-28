@@ -1,8 +1,8 @@
 {
   "documentTitle": {
-    "default": "实时监控 - Frigate"
+    "default": "实时监控 - Gannet"
   },
-  "documentTitle.withCamera": "{{camera}} - 实时监控 - Frigate",
+  "documentTitle.withCamera": "{{camera}} - 实时监控 - Gannet",
   "lowBandwidthMode": "低带宽模式",
   "twoWayTalk": {
     "enable": "开启实时对话",
@@ -174,7 +174,7 @@
   },
   "noCameras": {
     "title": "未设置摄像头",
-    "description": "准备开始连接摄像头至 Frigate 。",
+    "description": "准备开始连接摄像头至 Gannet 。",
     "buttonText": "添加摄像头",
     "restricted": {
       "title": "无可用摄像头",
@@ -182,7 +182,7 @@
     },
     "default": {
       "title": "没有配置摄像头",
-      "description": "现在就将摄像头接入到 Frigate 吧。",
+      "description": "现在就将摄像头接入到 Gannet 吧。",
       "buttonText": "添加摄像头"
     },
     "group": {

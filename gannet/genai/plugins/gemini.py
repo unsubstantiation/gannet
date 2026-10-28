@@ -1,4 +1,4 @@
-"""Gemini Provider for Frigate AI."""
+"""Gemini Provider for Gannet AI."""
 
 import base64
 import binascii
@@ -90,7 +90,7 @@ def _stats_from_gemini_usage(usage: Any) -> dict[str, Any] | None:
 
 @register_genai_provider(GenAIProviderEnum.gemini)
 class GeminiClient(GenAIClient):
-    """Generative AI client for Frigate using Gemini."""
+    """Generative AI client for Gannet using Gemini."""
 
     provider: genai.Client
 

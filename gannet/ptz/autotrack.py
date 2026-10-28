@@ -543,7 +543,7 @@ class PtzAutoTracker(threading.Thread):
 
             if not coefficients_valid:
                 logger.warning(
-                    f"{camera}: Autotracking calibration failed. See the Frigate documentation."
+                    f"{camera}: Autotracking calibration failed. See the Gannet documentation."
                 )
                 return False
 

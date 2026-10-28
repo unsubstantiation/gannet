@@ -1,16 +1,16 @@
 {
   "documentTitle": {
-    "cameras": "Cameras Stats - Frigate",
-    "storage": "Storage Stats - Frigate",
-    "general": "General Stats - Frigate",
-    "enrichments": "Enrichments Stats - Frigate",
+    "cameras": "Cameras Stats - Gannet",
+    "storage": "Storage Stats - Gannet",
+    "general": "General Stats - Gannet",
+    "enrichments": "Enrichments Stats - Gannet",
     "logs": {
-      "frigate": "Frigate Logs - Frigate",
-      "go2rtc": "Go2RTC Logs - Frigate",
-      "websocket": "Messages Logs - Frigate",
-      "nginx": "Nginx Logs - Frigate"
+      "gannet": "Gannet Logs - Gannet",
+      "go2rtc": "Go2RTC Logs - Gannet",
+      "websocket": "Messages Logs - Gannet",
+      "nginx": "Nginx Logs - Gannet"
     },
-    "health": "Health - Frigate"
+    "health": "Health - Gannet"
   },
   "title": "System",
   "metrics": "System metrics",
@@ -20,7 +20,7 @@
     "title": "Health",
     "notices": {
       "title": "Notices",
-      "empty": "Your Frigate installation is healthy",
+      "empty": "Your Gannet installation is healthy",
       "acknowledge": "Acknowledge",
       "acknowledgeHint": "Hide until this happens again",
       "mute": "Mute",
@@ -52,10 +52,10 @@
         "skipped_detections": "Detection could not keep up and skipped {{pct}}% of frames for over a minute",
         "ffmpeg_high_cpu": "FFmpeg CPU usage is high ({{cpu}}% average)",
         "detect_high_cpu": "Detection CPU usage is high ({{cpu}}% average)",
-        "object_processing_behind": "Tracked object processing could not keep up, so camera frames were dropped. Check CPU utilization, and whether CPU limits or pinning on the container or VM are leaving Frigate too little CPU",
+        "object_processing_behind": "Tracked object processing could not keep up, so camera frames were dropped. Check CPU utilization, and whether CPU limits or pinning on the container or VM are leaving Gannet too little CPU",
         "failed_login_one": "Failed login attempt for {{user}}",
         "failed_login_other": "Failed login attempts for {{user}}",
-        "update_available": "Frigate {{version}} is available",
+        "update_available": "Gannet {{version}} is available",
         "shm_too_low": "/dev/shm allocation ({{total}} MB) should be increased to at least {{min}} MB"
       },
       "streamPrefix": "Stream {{index}}: {{message}}",
@@ -80,7 +80,7 @@
       "nothingConfigured": "Nothing configured",
       "allCameras": "All cameras",
       "probeUnavailable": "Hardware detection is unavailable",
-      "justStarted": "Frigate just started",
+      "justStarted": "Gannet just started",
       "deviceNotFound": "{{devices}} was not found on this system",
       "detectorNotRunning": "Detector process is not running",
       "inferenceVerySlow": "Inference is very slow ({{speed}} ms)",
@@ -239,7 +239,7 @@
     "overview": "Overview",
     "recordings": {
       "title": "Recordings",
-      "tips": "This value represents the total storage used by the recordings in Frigate's database. Frigate does not track storage usage for all files on your disk.",
+      "tips": "This value represents the total storage used by the recordings in Gannet's database. Gannet does not track storage usage for all files on your disk.",
       "earliestRecording": "Earliest recording available:"
     },
     "cache": {
@@ -263,7 +263,7 @@
       "bandwidth": "Bandwidth",
       "unused": {
         "title": "Unused",
-        "tips": "This value may not accurately represent the free space available to Frigate if you have other files stored on your drive beyond Frigate's recordings. Frigate does not track storage usage outside of its recordings."
+        "tips": "This value may not accurately represent the free space available to Gannet if you have other files stored on your drive beyond Gannet's recordings. Gannet does not track storage usage outside of its recordings."
       },
       "subStream": {
         "information": "Sub Stream Storage Information",

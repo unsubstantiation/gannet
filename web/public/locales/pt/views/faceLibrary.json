@@ -10,7 +10,7 @@
     "scoreInfo": "A pontuação da subetiqueta é a pontuação ponderada de todas as confianças de rostos reconhecidos, portanto, ela pode ser diferente da pontuação exibida na captura de imagem.",
     "unknown": "Desconhecido"
   },
-  "documentTitle": "Biblioteca de rostos - Frigate",
+  "documentTitle": "Biblioteca de rostos - Gannet",
   "uploadFaceImage": {
     "title": "Carregar imagem do rosto",
     "desc": "Carregue uma imagem para procurar rostos e incluir em {{pageToggle}}"

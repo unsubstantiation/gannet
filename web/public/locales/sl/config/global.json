@@ -847,7 +847,7 @@
         },
         "topic_prefix": {
             "label": "Predpona teme (Topic prefix)",
-            "description": "Predpona teme MQTT za vse teme Frigate; mora biti edinstvena, če poganjaš več instanc."
+            "description": "Predpona teme MQTT za vse teme Gannet; mora biti edinstvena, če poganjaš več instanc."
         },
         "client_id": {
             "label": "ID odjemalca",
@@ -984,7 +984,7 @@
     },
     "safe_mode": {
         "label": "Varni način",
-        "description": "Ko je omogočeno, se Frigate zažene v varnem načinu z omejenimi funkcijami za odpravljanje težav."
+        "description": "Ko je omogočeno, se Gannet zažene v varnem načinu z omejenimi funkcijami za odpravljanje težav."
     },
     "environment_vars": {
         "label": "Okoljske spremenljivke"
@@ -1006,7 +1006,7 @@
         "description": "Nastavitve avtentikacije in sej, vključno z možnostmi piškotkov in omejevanjem hitrosti zahtev.",
         "enabled": {
             "label": "Omogoči avtentikacijo",
-            "description": "Omogoči izvorno avtentikacijo za uporabniški vmesnik Frigate."
+            "description": "Omogoči izvorno avtentikacijo za uporabniški vmesnik Gannet."
         },
         "reset_admin_password": {
             "label": "Ponastavi geslo skrbnika",
@@ -1051,10 +1051,10 @@
     },
     "database": {
         "label": "Zbirka podatkov",
-        "description": "Nastavitve za zbirko podatkov SQLite, ki jo Frigate uporablja za shranjevanje sledenih objektov in metapodatkov posnetkov.",
+        "description": "Nastavitve za zbirko podatkov SQLite, ki jo Gannet uporablja za shranjevanje sledenih objektov in metapodatkov posnetkov.",
         "path": {
             "label": "Pot do zbirke podatkov",
-            "description": "Pot v datotečnem sistemu, kjer bo shranjena SQLite datoteka zbirke podatkov Frigate."
+            "description": "Pot v datotečnem sistemu, kjer bo shranjena SQLite datoteka zbirke podatkov Gannet."
         }
     },
     "go2rtc": {
@@ -1063,33 +1063,33 @@
     },
     "networking": {
         "label": "Omrežje",
-        "description": "Nastavitve, povezane z omrežjem, kot je omogočanje IPv6 za dostopne točke Frigate.",
+        "description": "Nastavitve, povezane z omrežjem, kot je omogočanje IPv6 za dostopne točke Gannet.",
         "ipv6": {
             "label": "Konfiguracija IPv6",
-            "description": "Specifične nastavitve IPv6 za omrežne storitve Frigate.",
+            "description": "Specifične nastavitve IPv6 za omrežne storitve Gannet.",
             "enabled": {
                 "label": "Omogoči IPv6",
-                "description": "Omogoči podporo za IPv6 za storitve Frigate (API in vmesnik), kjer je to mogoče."
+                "description": "Omogoči podporo za IPv6 za storitve Gannet (API in vmesnik), kjer je to mogoče."
             }
         },
         "listen": {
             "label": "Konfiguracija vrat za poslušanje",
             "internal": {
                 "label": "Notranja vrata",
-                "description": "Notranja vrata za poslušanje za Frigate (privzeto 5000)."
+                "description": "Notranja vrata za poslušanje za Gannet (privzeto 5000)."
             },
             "external": {
                 "label": "Zunanja vrata",
-                "description": "Zunanja vrata za poslušanje za Frigate (privzeto 8971)."
+                "description": "Zunanja vrata za poslušanje za Gannet (privzeto 8971)."
             }
         }
     },
     "proxy": {
         "label": "Proksi",
-        "description": "Nastavitve za integracijo Frigate za povratnim proksijem (reverse proxy), ki posreduje glave z avtenticiranimi uporabniki.",
+        "description": "Nastavitve za integracijo Gannet za povratnim proksijem (reverse proxy), ki posreduje glave z avtenticiranimi uporabniki.",
         "header_map": {
             "label": "Preslikava glav (Headers)",
-            "description": "Preslikaj dohodne glave proksija v polja za uporabnika in vlogo v Frigate za avtentikacijo prek proksija.",
+            "description": "Preslikaj dohodne glave proksija v polja za uporabnika in vlogo v Gannet za avtentikacijo prek proksija.",
             "user": {
                 "label": "Glava uporabnika",
                 "description": "Glava, ki vsebuje avtenticirano uporabniško ime, ki ga posreduje nadrejeni proksi."
@@ -1100,7 +1100,7 @@
             },
             "role_map": {
                 "label": "Preslikava vlog",
-                "description": "Preslikaj vrednosti skupin iz nadrejenega sistema v vloge Frigate (npr. preslikaj skupine skrbnikov v vlogo 'admin')."
+                "description": "Preslikaj vrednosti skupin iz nadrejenega sistema v vloge Gannet (npr. preslikaj skupine skrbnikov v vlogo 'admin')."
             }
         },
         "logout_url": {
@@ -1149,15 +1149,15 @@
         },
         "version_check": {
             "label": "Preverjanje različice",
-            "description": "Omogoči odhodno preverjanje, da ugotoviš, ali je na voljo novejša različica Frigate."
+            "description": "Omogoči odhodno preverjanje, da ugotoviš, ali je na voljo novejša različica Gannet."
         }
     },
     "tls": {
         "label": "TLS",
-        "description": "Nastavitve TLS za spletne dostopne točke Frigate (vrata 8971).",
+        "description": "Nastavitve TLS za spletne dostopne točke Gannet (vrata 8971).",
         "enabled": {
             "label": "Omogoči TLS",
-            "description": "Omogoči TLS za spletni vmesnik in API Frigate na konfiguriranih vratih TLS."
+            "description": "Omogoči TLS za spletni vmesnik in API Gannet na konfiguriranih vratih TLS."
         }
     },
     "ui": {
@@ -1329,7 +1329,7 @@
         },
         "dashboard": {
             "label": "Prikaži v vmesniku",
-            "description": "Preklopi vidljivost kamere v Frigate vmesniku. Če to izklopiš, boš moral ročno urediti konfiguracijo, da jo spet vidiš."
+            "description": "Preklopi vidljivost kamere v Gannet vmesniku. Če to izklopiš, boš moral ročno urediti konfiguracijo, da jo spet vidiš."
         }
     }
 }

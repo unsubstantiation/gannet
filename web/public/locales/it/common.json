@@ -15,7 +15,7 @@
     "second_one": "{{time}} secondo",
     "second_many": "{{time}} secondi",
     "second_other": "{{time}} secondi",
-    "untilForRestart": "Fino al riavvio di Frigate.",
+    "untilForRestart": "Fino al riavvio di Gannet.",
     "ago": "{{timeAgo}} fa",
     "justNow": "Adesso",
     "today": "Oggi",
@@ -252,9 +252,9 @@
     "help": "Aiuto",
     "documentation": {
       "title": "Documentazione",
-      "label": "Documentazione di Frigate"
+      "label": "Documentazione di Gannet"
     },
-    "restart": "Riavvia Frigate",
+    "restart": "Riavvia Gannet",
     "review": "Revisiona",
     "explore": "Esplora",
     "export": "Esporta",
@@ -291,16 +291,16 @@
     "title": "Ruolo",
     "admin": "Amministratore",
     "viewer": "Visualizzatore",
-    "desc": "Gli amministratori hanno accesso completo a tutte le funzionalità dell'interfaccia utente di Frigate. I visualizzatori possono visualizzare solo le telecamere, gli elementi di revisione e i filmati storici nell'interfaccia utente."
+    "desc": "Gli amministratori hanno accesso completo a tutte le funzionalità dell'interfaccia utente di Gannet. I visualizzatori possono visualizzare solo le telecamere, gli elementi di revisione e i filmati storici nell'interfaccia utente."
   },
   "accessDenied": {
     "desc": "Non hai i permessi per visualizzare questa pagina.",
-    "documentTitle": "Accesso vietato - Frigate",
+    "documentTitle": "Accesso vietato - Gannet",
     "title": "Accesso vietato"
   },
   "notFound": {
     "desc": "Pagina non trovata",
-    "documentTitle": "Non trovato - Frigate",
+    "documentTitle": "Non trovato - Gannet",
     "title": "404"
   },
   "toast": {
@@ -326,7 +326,7 @@
   },
   "field": {
     "optional": "Opzionale",
-    "internalID": "L'ID interno che Frigate utilizza nella configurazione e nel database"
+    "internalID": "L'ID interno che Gannet utilizza nella configurazione e nel database"
   },
   "no_items": "Nessun elemento",
   "validation_errors": "Errori di convalida",
@@ -337,7 +337,7 @@
     "title": "Questa pagina ha smesso di funzionare",
     "desc": "Si è verificato un errore imprevisto nella pagina. Di solito, ricaricare la pagina risolve il problema. Se l'errore persiste, copia i dettagli e allegali a una discussione su GitHub.",
     "staleTitle": "È necessario ricaricare la pagina",
-    "staleDesc": "Non è stato possibile caricare parte dell'interfaccia; di solito ciò indica che Frigate è stato aggiornato mentre questa scheda era aperta. Ricarica la pagina per passare alla nuova versione.",
+    "staleDesc": "Non è stato possibile caricare parte dell'interfaccia; di solito ciò indica che Gannet è stato aggiornato mentre questa scheda era aperta. Ricarica la pagina per passare alla nuova versione.",
     "partial": "Una parte dell'interfaccia ha smesso di funzionare.",
     "copyDetails": "Copia dettagli",
     "copyFailed": "Impossibile copiare i dettagli negli appunti"

@@ -1,14 +1,14 @@
 # SPDX-License-Identifier: LicenseRef-GNCL-1.0
-"""Make sure child processes die when Frigate does, on Windows.
+"""Make sure child processes die when Gannet does, on Windows.
 
-Frigate runs a lot of processes: one ffmpeg per camera stream, go2rtc for live
+Gannet runs a lot of processes: one ffmpeg per camera stream, go2rtc for live
 view, and a multiprocessing child for detection, recording, output and each
 other service. Several of those children start ffmpeg processes of their own.
 
 ``multiprocessing.Process.terminate()`` calls ``TerminateProcess`` and can
 leave grandchildren such as FFmpeg running after their parent is gone.
 
-Orphans hold on to the loopback ports Frigate numbers its IPC endpoints from
+Orphans hold on to the loopback ports Gannet numbers its IPC endpoints from
 (see :func:`gannet.util.platform.ipc_endpoint`), so the next start cannot bind
 them; they keep pulling streams from the cameras; and they keep recording
 segments open, which turns the recording maintainer's move into a
@@ -16,7 +16,7 @@ segments open, which turns the recording maintainer's move into a
 
 A Windows Job Object with ``JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE`` fixes the
 whole class of problem. Membership is inherited by every child, and when the
-last handle to the job is closed every remaining member is terminated. Frigate
+last handle to the job is closed every remaining member is terminated. Gannet
 never closes the handle itself, so the operating system does it as soon as the
 process exits -- including when it crashes or is killed, which is exactly the
 case nothing else covers.
@@ -25,7 +25,7 @@ Two things are worth knowing about holding the handle open:
 
 - Closing it while children are still running would kill them immediately, so
   the handle lives for the lifetime of the process.
-- A Frigate that is already inside a job (started by a service wrapper, for
+- A Gannet that is already inside a job (started by a service wrapper, for
   example) can only be added to a second one on Windows 8 and later, which
   added nested jobs. Failure is logged and ignored, leaving the previous
   behaviour in place.
@@ -191,7 +191,7 @@ def install() -> bool:
         _error = f"AssignProcessToJobObject failed: {_last_error_text()}"
         logger.warning(
             "Unable to join the Windows job object (%s). Child processes will "
-            "not be cleaned up automatically if Frigate exits unexpectedly; "
+            "not be cleaned up automatically if Gannet exits unexpectedly; "
             "set %s=1 to silence this warning.",
             _error,
             DISABLE_VAR,

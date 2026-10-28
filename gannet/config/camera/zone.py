@@ -15,7 +15,7 @@ class ZoneConfig(BaseModel):
     friendly_name: str | None = Field(
         None,
         title="Zone name",
-        description="A user-friendly name for the zone, displayed in the Frigate UI. If not set, a formatted version of the zone name will be used.",
+        description="A user-friendly name for the zone, displayed in the Gannet UI. If not set, a formatted version of the zone name will be used.",
     )
     enabled: bool = Field(
         default=True,

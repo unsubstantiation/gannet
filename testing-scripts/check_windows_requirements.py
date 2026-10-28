@@ -14,7 +14,7 @@ Windows machine:
    that an unchanged ``norfair`` cannot accept, makes ``pip install -r`` abort
    with "ResolutionImpossible" on the user's machine and in CI; this reports
    it here, naming both lines.
-3. Every module Frigate imports at module scope that is not in the standard
+3. Every module Gannet imports at module scope that is not in the standard
    library is provided by a requirement, either directly or as a dependency of
    one. A package that arrives only transitively today can disappear with an
    upstream release, and the failure shows up as an ImportError on a user's

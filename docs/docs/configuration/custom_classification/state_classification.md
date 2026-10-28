@@ -7,7 +7,7 @@ import ConfigTabs from "@site/src/components/ConfigTabs";
 import TabItem from "@theme/TabItem";
 import NavPath from "@site/src/components/NavPath";
 
-State classification allows you to train a custom MobileNetV2 classification model on a fixed region of your camera frame(s) to determine a current state. The model can be configured to run on a schedule and/or when motion is detected in that region. Classification results are available through the `frigate/<camera_name>/classification/<model_name>` MQTT topic and in Home Assistant sensors via the official Frigate integration.
+State classification allows you to train a custom MobileNetV2 classification model on a fixed region of your camera frame(s) to determine a current state. The model can be configured to run on a schedule and/or when motion is detected in that region. Classification results are available through the `frigate/<camera_name>/classification/<model_name>` MQTT topic and in Home Assistant sensors via the official Gannet integration.
 
 :::info
 
@@ -117,7 +117,7 @@ Once some images are assigned, training will begin automatically.
 
 Selecting dozens of nearly identical images is one of the fastest ways to degrade model performance. MobileNetV2 can overfit quickly when trained on homogeneous data. The model learns what _that exact moment_ looked like rather than what actually defines the state. This often leads to models that work perfectly under the original conditions but become unstable when day turns to night, weather changes, or seasonal lighting shifts. **This is why Gannet does not implement bulk training in the UI.**
 
-For more detail, see [Frigate Tip: Best Practices for Training Face and Custom Classification Models](https://github.com/blakeblackshear/frigate/discussions/21374).
+For more detail, see [Gannet Tip: Best Practices for Training Face and Custom Classification Models](https://github.com/blakeblackshear/frigate/discussions/21374).
 
 :::
 

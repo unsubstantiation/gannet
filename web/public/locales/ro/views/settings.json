@@ -1,21 +1,21 @@
 {
   "documentTitle": {
-    "authentication": "Setări Autentificare - Frigate",
-    "default": "Setări - Frigate",
-    "masksAndZones": "Editor Mască și Zonă - Frigate",
-    "notifications": "Setări Notificări - Frigate",
-    "motionTuner": "Reglaj Mișcare - Frigate",
-    "object": "Depanare - Frigate",
-    "general": "Setări interfață - Frigate",
-    "frigatePlus": "Setări Frigate+ - Frigate",
-    "enrichments": "Setări Îmbunătățiri - Frigate",
-    "cameraManagement": "Gestionare Camere - Frigate",
-    "cameraReview": "Setări Review Cameră - Frigate",
-    "globalConfig": "Configurație Globală - Frigate",
-    "cameraConfig": "Configurație Cameră - Frigate",
-    "maintenance": "Mentenanță - Frigate",
-    "profiles": "Profile - Frigate",
-    "detectorsAndModel": "Detectoare și model - Frigate"
+    "authentication": "Setări Autentificare - Gannet",
+    "default": "Setări - Gannet",
+    "masksAndZones": "Editor Mască și Zonă - Gannet",
+    "notifications": "Setări Notificări - Gannet",
+    "motionTuner": "Reglaj Mișcare - Gannet",
+    "object": "Depanare - Gannet",
+    "general": "Setări interfață - Gannet",
+    "frigatePlus": "Setări Frigate+ - Gannet",
+    "enrichments": "Setări Îmbunătățiri - Gannet",
+    "cameraManagement": "Gestionare Camere - Gannet",
+    "cameraReview": "Setări Review Cameră - Gannet",
+    "globalConfig": "Configurație Globală - Gannet",
+    "cameraConfig": "Configurație Cameră - Gannet",
+    "maintenance": "Mentenanță - Gannet",
+    "profiles": "Profile - Gannet",
+    "detectorsAndModel": "Detectoare și model - Gannet"
   },
   "menu": {
     "ui": "Interfață (UI)",
@@ -167,8 +167,8 @@
         "exportUiSettingsFailed": "Exportarea setărilor a eșuat",
         "importNothingToApply": "Importarea setărilor a eșuat: fișierul nu conține setări",
         "importInvalidJson": "Importarea setărilor a eșuat: fișierul nu este un JSON valid",
-        "importWrongType": "Importarea setărilor a eșuat: fișierul nu este un export de setări Frigate",
-        "importUnsupportedVersion": "Importarea setărilor a eșuat: fișierul necesită o versiune mai nouă de Frigate",
+        "importWrongType": "Importarea setărilor a eșuat: fișierul nu este un export de setări Gannet",
+        "importUnsupportedVersion": "Importarea setărilor a eșuat: fișierul necesită o versiune mai nouă de Gannet",
         "importInvalidSchema": "Importarea setărilor a eșuat: fișierul este incorect formatat",
         "importUiSettingsFailed": "Importarea setărilor a eșuat"
       }
@@ -183,8 +183,8 @@
       },
       "importDialog": {
         "title": "Importă setările",
-        "desc": "Alege ce dorești să aplici din acest fișier. Frigate se va reîncărca la finalizarea importului.",
-        "exportedFrom": "Exportat pe {{date}} din versiunea de configurare Frigate {{version}}",
+        "desc": "Alege ce dorești să aplici din acest fișier. Gannet se va reîncărca la finalizarea importului.",
+        "exportedFrom": "Exportat pe {{date}} din versiunea de configurare Gannet {{version}}",
         "layouts_one": "Aranjamente grupuri de camere (1 grup)",
         "layouts_few": "Aranjamente grupuri de camere ({{count}} grupuri)",
         "layouts_other": "Aranjamente grupuri de camere ({{count}} de grupuri)",
@@ -222,7 +222,7 @@
         "label": "Mărime Model"
       },
       "title": "Recunoaștere Facială",
-      "desc": "Recunoașterea facială permite alocarea de nume persoanelor; când o față este recunoscută, Frigate va asocia numele ca sub-etichetă. Informația apare în UI, filtre și notificări."
+      "desc": "Recunoașterea facială permite alocarea de nume persoanelor; când o față este recunoscută, Gannet va asocia numele ca sub-etichetă. Informația apare în UI, filtre și notificări."
     },
     "semanticSearch": {
       "reindexNow": {
@@ -236,7 +236,7 @@
         "error": "Eșec la pornirea reindexării: {{errorMessage}}"
       },
       "title": "Căutare Semantică",
-      "desc": "Căutarea semantică în Frigate îți permite să găsești obiecte urmărite folosind fie imaginea în sine, o descriere text definită de utilizator, sau una generată automat.",
+      "desc": "Căutarea semantică în Gannet îți permite să găsești obiecte urmărite folosind fie imaginea în sine, o descriere text definită de utilizator, sau una generată automat.",
       "modelSize": {
         "label": "Mărime Model",
         "desc": "Mărimea modelului folosit pentru înglobarea căutării semantice.",
@@ -251,7 +251,7 @@
       }
     },
     "licensePlateRecognition": {
-      "desc": "Frigate poate recunoaște plăcuțele de înmatriculare și poate adăuga caracterele detectate în câmpul recognized_license_plate sau un nume cunoscut ca sub-etichetă pentru obiectele de tip mașină. Util pentru mașini care intră pe alee sau trec pe stradă.",
+      "desc": "Gannet poate recunoaște plăcuțele de înmatriculare și poate adăuga caracterele detectate în câmpul recognized_license_plate sau un nume cunoscut ca sub-etichetă pentru obiectele de tip mașină. Util pentru mașini care intră pe alee sau trec pe stradă.",
       "title": "Recunoaștere Numere Înmatriculare"
     },
     "title": "Setări Îmbunătățiri",
@@ -262,7 +262,7 @@
     },
     "restart_required": "Repornire necesară (setările de îmbunătățiri s-au modificat)",
     "toast": {
-      "success": "Setările de îmbunătățiri au fost salvate. Repornește Frigate pentru a aplica modificările.",
+      "success": "Setările de îmbunătățiri au fost salvate. Repornește Gannet pentru a aplica modificările.",
       "error": "Eșec la salvarea modificărilor de configurare: {{errorMessage}}"
     }
   },
@@ -308,7 +308,7 @@
         "title": "Prag viteză ({{unit}})",
         "desc": "Specifică viteza minimă pentru ca obiectele să fie luate în considerare în această zonă."
       },
-      "documentTitle": "Editare Zonă - Frigate",
+      "documentTitle": "Editare Zonă - Gannet",
       "clickDrawPolygon": "Click pentru a desena un poligon pe imagine.",
       "toast": {
         "success": "Zona ({{zoneName}}) a fost salvată."
@@ -330,7 +330,7 @@
       "point_other": "{{count}} de puncte",
       "clickDrawPolygon": "Click pentru a desena un poligon pe imagine.",
       "label": "Mască de mișcare",
-      "documentTitle": "Editare mască de mișcare - Frigate",
+      "documentTitle": "Editare mască de mișcare - Gannet",
       "desc": {
         "documentation": "Documentație",
         "title": "Măștile de mișcare sunt folosite pentru a preveni declanșarea detecției de către tipuri de mișcare nedorite. Mascarea excesivă va îngreuna urmărirea obiectelor."
@@ -361,7 +361,7 @@
       "point_one": "{{count}} punct",
       "point_few": "{{count}} puncte",
       "point_other": "{{count}} de puncte",
-      "documentTitle": "Editare mască de obiect - Frigate",
+      "documentTitle": "Editare mască de obiect - Gannet",
       "add": "Adaugă mască de obiect",
       "edit": "Editează masca de obiect",
       "desc": {
@@ -520,7 +520,7 @@
       "desc": "Afișează poligoanele măștilor de mișcare",
       "title": "Măști de mișcare"
     },
-    "detectorDesc": "Frigate folosește detectoarele tale ({{detectors}}) pentru a detecta obiecte în stream-ul video al camerei.",
+    "detectorDesc": "Gannet folosește detectoarele tale ({{detectors}}) pentru a detecta obiecte în stream-ul video al camerei.",
     "timestamp": {
       "title": "Marcaj temporal",
       "desc": "Suprapune un marcaj temporal pe imagine"
@@ -609,7 +609,7 @@
       "createUser": {
         "confirmPassword": "Te rugăm să confirmi parola",
         "title": "Creează utilizator nou",
-        "desc": "Adaugă un cont nou și specifică un rol pentru accesul în interfața Frigate.",
+        "desc": "Adaugă un cont nou și specifică un rol pentru accesul în interfața Gannet.",
         "usernameOnlyInclude": "Numele de utilizator poate conține doar litere, cifre, puncte (.) sau sublinieri (_)",
         "usernameOnlyDots": "Numele de utilizator nu poate conține doar puncte"
       },
@@ -628,7 +628,7 @@
     },
     "addUser": "Adaugă utilizator",
     "management": {
-      "desc": "Gestionează conturile de utilizator ale acestei instanțe Frigate.",
+      "desc": "Gestionează conturile de utilizator ale acestei instanțe Gannet.",
       "title": "Administrare utilizatori"
     },
     "toast": {
@@ -660,7 +660,7 @@
   "notification": {
     "notificationSettings": {
       "title": "Setări Notificări",
-      "desc": "Frigate poate trimite notificări push direct pe dispozitivul tău când rulează în browser sau este instalat ca PWA."
+      "desc": "Gannet poate trimite notificări push direct pe dispozitivul tău când rulează în browser sau este instalat ca PWA."
     },
     "globalSettings": {
       "desc": "Suspendă temporar notificările pentru anumite camere pe toate dispozitivele înregistrate.",
@@ -672,8 +672,8 @@
       "title": "Email"
     },
     "notificationUnavailable": {
-      "desc": "Notificările web push necesită un context securizat (https://…). Aceasta este o limitare a browserului. Accesează Frigate printr-o conexiune securizată pentru a utiliza notificările.Trimite următorul șir de caractere când ești gata.",
-      "descPwa": "Pe iOS, notificările web push sunt disponibile doar când Frigate este instalat pe ecranul principal. Deschide meniul de partajare, alege „Adaugă pe ecranul principal”, apoi deschide Frigate din noua pictogramă pentru a înregistra acest dispozitiv pentru notificări."
+      "desc": "Notificările web push necesită un context securizat (https://…). Aceasta este o limitare a browserului. Accesează Gannet printr-o conexiune securizată pentru a utiliza notificările.Trimite următorul șir de caractere când ești gata.",
+      "descPwa": "Pe iOS, notificările web push sunt disponibile doar când Gannet este instalat pe ecranul principal. Deschide meniul de partajare, alege „Adaugă pe ecranul principal”, apoi deschide Gannet din noua pictogramă pentru a înregistra acest dispozitiv pentru notificări."
     },
     "cameras": {
       "title": "Camere",
@@ -696,7 +696,7 @@
     },
     "toast": {
       "success": {
-        "registered": "Înregistrarea pentru notificări a reușit. Este necesară repornirea Frigate înainte de a putea trimite orice notificare (inclusiv cea de test).",
+        "registered": "Înregistrarea pentru notificări a reușit. Este necesară repornirea Gannet înainte de a putea trimite orice notificare (inclusiv cea de test).",
         "settingSaved": "Setările pentru notificări au fost salvate."
       },
       "error": {
@@ -754,7 +754,7 @@
     },
     "toast": {
       "error": "Eroare la salvarea modificărilor de config: {{errorMessage}}",
-      "success": "Setările Frigate+ au fost salvate. Repornește Frigate pentru a aplica modificările."
+      "success": "Setările Frigate+ au fost salvate. Repornește Gannet pentru a aplica modificările."
     },
     "restart_required": "Repornire necesară (modelul Frigate+ a fost schimbat)",
     "unsavedChanges": "Modificări Frigate+ nesalvate",
@@ -783,7 +783,7 @@
       "desc": "Îmbunătățește contrastul pentru scenele întunecate. <em>Implicit: ACTIVAT</em>"
     },
     "desc": {
-      "title": "Frigate folosește detecția de mișcare ca prim pas pentru a verifica dacă se întâmplă ceva în cadru ce merită verificat cu detecția de obiecte.",
+      "title": "Gannet folosește detecția de mișcare ca prim pas pentru a verifica dacă se întâmplă ceva în cadru ce merită verificat cu detecția de obiecte.",
       "documentation": "Citește Ghidul de reglare a mișcării"
     },
     "toast": {
@@ -871,7 +871,7 @@
         },
         "actions": {
           "title": "Acțiuni",
-          "desc": "În mod implicit, Frigate trimite un mesaj MQTT pentru toate triggerele. Sub-etichetele adaugă numele triggerului la eticheta obiectului. Atributele sunt metadate căutabile stocate separat.",
+          "desc": "În mod implicit, Gannet trimite un mesaj MQTT pentru toate triggerele. Sub-etichetele adaugă numele triggerului la eticheta obiectului. Atributele sunt metadate căutabile stocate separat.",
           "error": {
             "min": "Trebuie selectată cel puțin o acțiune."
           }
@@ -914,7 +914,7 @@
   "roles": {
     "management": {
       "title": "Administrare roluri vizualizator",
-      "desc": "Gestionează rolurile de vizualizator personalizate și permisiunile de acces la camere pentru această instanță Frigate."
+      "desc": "Gestionează rolurile de vizualizator personalizate și permisiunile de acces la camere pentru această instanță Gannet."
     },
     "addRole": "Adaugă rol",
     "table": {
@@ -978,7 +978,7 @@
   },
   "cameraWizard": {
     "title": "Adaugă Cameră",
-    "description": "Urmează pașii de mai jos pentru a adăuga o cameră nouă în instalația Frigate.",
+    "description": "Urmează pașii de mai jos pentru a adăuga o cameră nouă în instalația Gannet.",
     "steps": {
       "nameAndConnection": "Nume și Conexiune",
       "streamConfiguration": "Configurare Stream",
@@ -1150,7 +1150,7 @@
       "estimatedBandwidth": "Lățime de bandă estimată",
       "roles": "Roluri",
       "ffmpegModule": "Folosește modul de compatibilitate de stream-uri",
-      "ffmpegModuleDescription": "Dacă stream-ul nu se încarcă după mai multe încercări, activează asta. Frigate va folosi modulul ffmpeg cu go2rtc, ceea ce poate ajuta la compatibilitatea cu anumite camere.",
+      "ffmpegModuleDescription": "Dacă stream-ul nu se încarcă după mai multe încercări, activează asta. Gannet va folosi modulul ffmpeg cu go2rtc, ceea ce poate ajuta la compatibilitatea cu anumite camere.",
       "none": "Niciunul",
       "error": "Eroare",
       "streamValidated": "Stream-ul {{number}} a fost validat cu succes",
@@ -1189,16 +1189,16 @@
     "backToSettings": "Înapoi la Setări Cameră",
     "streams": {
       "title": "Stare și detalii cameră",
-      "enableSuccess": "S-a activat {{cameraName}}. Repornește Frigate pentru a aplica.",
+      "enableSuccess": "S-a activat {{cameraName}}. Repornește Gannet pentru a aplica.",
       "reorderHandle": "Trage pentru a reordona",
       "saving": "Se salvează…",
       "saved": "Salvat",
       "details": {
         "edit": "Editează detaliile camerei",
         "title": "Editează detaliile camerei",
-        "description": "Actualizează numele de afișare, URL-ul extern și vizibilitatea folosite pentru această cameră în tot UI-ul Frigate.",
+        "description": "Actualizează numele de afișare, URL-ul extern și vizibilitatea folosite pentru această cameră în tot UI-ul Gannet.",
         "friendlyNameLabel": "Nume afișat",
-        "friendlyNameHelp": "Numele prietenos afișat pentru această cameră în întreaga interfață Frigate. Lasă gol pentru a utiliza ID-ul camerei.",
+        "friendlyNameHelp": "Numele prietenos afișat pentru această cameră în întreaga interfață Gannet. Lasă gol pentru a utiliza ID-ul camerei.",
         "webuiUrlLabel": "URL-ul interfeței web a camerei",
         "webuiUrlHelp": "URL pentru a vizita interfața web a camerei direct din vizualizarea Depanare (Debug). Lasă gol pentru a dezactiva linkul.",
         "webuiUrlInvalid": "Trebuie să fie un URL valid (de exemplu, https://exemplu.com).",
@@ -1208,7 +1208,7 @@
         "reviewHelp": "Arată această cameră în revizuiri, inclusiv filtrul de camere, revizuirea mișcărilor și vizualizarea istoricului."
       },
       "label": "Stare cameră",
-      "description": "Setează starea de funcționare pentru fiecare cameră.<br /><br /><strong>Pornit</strong>: stream-urile sunt procesate normal.<br /><strong>Oprit</strong>: pune temporar pe pauză procesarea. Nu se menține după repornirile Frigate.<br /><strong>Dezactivat</strong>: oprește procesarea și salvează modificarea în configurația ta. Este necesară o repornire pentru a reactiva o cameră dezactivată.<br /><br /><em>Notă: Dezactivarea nu afectează restream-urile go2rtc.</em><br /><br />Trage⋮ pentru a reordona camerele active așa cum apar în interfață, inclusiv în panoul Live și în meniurile drop-down de selecție a camerei.",
+      "description": "Setează starea de funcționare pentru fiecare cameră.<br /><br /><strong>Pornit</strong>: stream-urile sunt procesate normal.<br /><strong>Oprit</strong>: pune temporar pe pauză procesarea. Nu se menține după repornirile Gannet.<br /><strong>Dezactivat</strong>: oprește procesarea și salvează modificarea în configurația ta. Este necesară o repornire pentru a reactiva o cameră dezactivată.<br /><br /><em>Notă: Dezactivarea nu afectează restream-urile go2rtc.</em><br /><br />Trage⋮ pentru a reordona camerele active așa cum apar în interfață, inclusiv în panoul Live și în meniurile drop-down de selecție a camerei.",
       "disabledSubheading": "Dezactivat în configurație",
       "status": {
         "on": "Pornit",
@@ -1272,7 +1272,7 @@
       "description": "Setează tipul pentru fiecare cameră. Camerele LPR dedicate sunt camere cu un singur scop, cu zoom optic puternic pentru a captura plăcuțele de înmatriculare ale vehiculelor aflate la distanță. Majoritatea camerelor ar trebui să folosească tipul normal de cameră, cu excepția cazului în care camera este special pentru LPR și are o vedere strâns focalizată pe plăcuțele de înmatriculare.",
       "normal": "Normal",
       "dedicatedLpr": "LPR dedicat",
-      "saveSuccess": "Tipul camerei a fost actualizat pentru {{cameraName}}. Repornește Frigate pentru a aplica modificările."
+      "saveSuccess": "Tipul camerei a fost actualizat pentru {{cameraName}}. Repornește Gannet pentru a aplica modificările."
     },
     "description": "Adaugă, editează și șterge camere, controlează starea fiecărei camere și configurează excepții pe profil și pe tip de cameră. Pentru a configura stream-uri, detecție, mișcare și alte setări specifice camerelor, alege secțiunea corespunzătoare din Configurare cameră.",
     "clone": {
@@ -1349,14 +1349,14 @@
       },
       "toast": {
         "success": "Setări copiate la {{cameraName}}",
-        "successWithRestart": "Setări copiate la {{cameraName}}. Reporniți Frigate pentru a aplica toate modificările.",
+        "successWithRestart": "Setări copiate la {{cameraName}}. Reporniți Gannet pentru a aplica toate modificările.",
         "successMulti_one": "Setări copiate la {{count}} cameră",
         "successMulti_few": "Setări copiate la {{count}} camere",
         "successMulti_other": "Setări copiate la {{count}} de camere",
         "partialFailure": "{{successCount}} secțiuni aplicate; '{{failedSection}}' a eșuat: {{errorMessage}}",
-        "successMultiWithRestart_one": "Setări copiate la {{count}} cameră. Reporniți Frigate pentru a aplica toate modificările.",
-        "successMultiWithRestart_few": "Setări copiate la {{count}} camere. Reporniți Frigate pentru a aplica toate modificările.",
-        "successMultiWithRestart_other": "Setări copiate la {{count}} de camere. Reporniți Frigate pentru a aplica toate modificările.",
+        "successMultiWithRestart_one": "Setări copiate la {{count}} cameră. Reporniți Gannet pentru a aplica toate modificările.",
+        "successMultiWithRestart_few": "Setări copiate la {{count}} camere. Reporniți Gannet pentru a aplica toate modificările.",
+        "successMultiWithRestart_other": "Setări copiate la {{count}} de camere. Reporniți Gannet pentru a aplica toate modificările.",
         "partialFailureMulti": "Copiat la {{successCount}} cameră(e); a eșuat pentru {{failed}}: {{errorMessage}}",
         "newCameraPartialFailure": "Camera {{cameraName}} a fost creată, dar unele setări nu au putut fi copiate: {{errorMessage}}",
         "sourceMissing": "Camera sursă nu mai există",
@@ -1376,13 +1376,13 @@
     },
     "review": {
       "title": "Revizuire",
-      "desc": "Activează/dezactivează temporar alertele și detecțiile pentru această cameră până la repornirea Frigate. Când sunt dezactivate, nu se vor genera elemente noi de review. ",
+      "desc": "Activează/dezactivează temporar alertele și detecțiile pentru această cameră până la repornirea Gannet. Când sunt dezactivate, nu se vor genera elemente noi de review. ",
       "alerts": "Alerte ",
       "detections": "Detecții "
     },
     "reviewClassification": {
       "title": "Clasificare Review",
-      "desc": "Frigate clasifică elementele de review ca Alerte sau Detecții. Implicit, toate obiectele de tip <em>persoană</em> și <em>mașină</em> sunt considerate Alerte. Poți rafina clasificarea configurând zone obligatorii.",
+      "desc": "Gannet clasifică elementele de review ca Alerte sau Detecții. Implicit, toate obiectele de tip <em>persoană</em> și <em>mașină</em> sunt considerate Alerte. Poți rafina clasificarea configurând zone obligatorii.",
       "noDefinedZones": "Nu există zone definite pentru această cameră.",
       "objectAlertsTips": "Toate obiectele {{alertsLabels}} de pe {{cameraName}} vor apărea ca Alerte.",
       "zoneObjectAlertsTips": "Toate obiectele {{alertsLabels}} detectate în {{zone}} pe {{cameraName}} vor apărea ca Alerte.",
@@ -1397,7 +1397,7 @@
       "selectDetectionsZones": "Selectează zonele pentru Detecții",
       "limitDetections": "Limitează detecțiile la anumite zone",
       "toast": {
-        "success": "Configurația Clasificării Review a fost salvată. Repornește Frigate pentru aplicare."
+        "success": "Configurația Clasificării Review a fost salvată. Repornește Gannet pentru aplicare."
       }
     }
   },
@@ -1425,7 +1425,7 @@
     "title": "Mentenanță",
     "sync": {
       "title": "Sincronizare Media",
-      "desc": "Frigate va curăța periodic fișierele media conform setărilor de retenție. Este normal să apară câteva fișiere orfane în timp ce Frigate rulează. Folosește această funcție pentru a șterge fișierele media de pe disc care nu mai sunt referențiate în baza de date.",
+      "desc": "Gannet va curăța periodic fișierele media conform setărilor de retenție. Este normal să apară câteva fișiere orfane în timp ce Gannet rulează. Folosește această funcție pentru a șterge fișierele media de pe disc care nu mai sunt referențiate în baza de date.",
       "started": "Sincronizarea media a început.",
       "alreadyRunning": "O sarcină de sincronizare rulează deja",
       "error": "Eroare la pornirea sincronizării",
@@ -1474,10 +1474,10 @@
     },
     "regionGrid": {
       "title": "Grilă regiune",
-      "desc": "Grila de regiune este o optimizare care învață unde apar de obicei obiectele de diferite dimensiuni în câmpul vizual al fiecărei camere. Frigate folosește aceste date pentru a redimensiona eficient regiunile de detecție. Grila este construită automat în timp, pe baza datelor de la obiectele urmărite.",
+      "desc": "Grila de regiune este o optimizare care învață unde apar de obicei obiectele de diferite dimensiuni în câmpul vizual al fiecărei camere. Gannet folosește aceste date pentru a redimensiona eficient regiunile de detecție. Grila este construită automat în timp, pe baza datelor de la obiectele urmărite.",
       "clear": "Șterge grila regiune",
       "clearConfirmTitle": "Șterge grila regiune",
-      "clearConfirmDesc": "Curățarea grilei de regiune nu este recomandată decât dacă ai schimbat recent mărimea modelului de detecție sau ai schimbat poziția fizică a camerei și ai probleme cu urmărirea obiectelor. Grila va fi reconstruită automat în timp, pe măsură ce obiectele sunt urmărite. Este necesară o repornire a Frigate pentru ca modificările să intre în vigoare.",
+      "clearConfirmDesc": "Curățarea grilei de regiune nu este recomandată decât dacă ai schimbat recent mărimea modelului de detecție sau ai schimbat poziția fizică a camerei și ai probleme cu urmărirea obiectelor. Grila va fi reconstruită automat în timp, pe măsură ce obiectele sunt urmărite. Este necesară o repornire a Gannet pentru ca modificările să intre în vigoare.",
       "clearSuccess": "Grila de regiune a fost ștearsă cu succes",
       "clearError": "Eșec la ștergerea grilei de regiune",
       "restartRequired": "Este necesară o repornire pentru ca modificările grilei de regiune să intre în vigoare"
@@ -1775,7 +1775,7 @@
   },
   "toast": {
     "success": "Setările au fost salvate cu succes",
-    "successRestartRequired": "Setările au fost salvate cu succes. Repornește Frigate pentru a aplica modificările.",
+    "successRestartRequired": "Setările au fost salvate cu succes. Repornește Gannet pentru a aplica modificările.",
     "error": "Eroare la salvarea setărilor",
     "validationError": "Validarea a eșuat: {{message}}",
     "resetSuccess": "Resetat la valorile globale implicite",
@@ -1788,10 +1788,10 @@
     "saveAllPartial_other": "{{successCount}} din {{totalCount}} de secțiuni salvate. {{failCount}} eșuate.",
     "saveAllFailure": "Eroare la salvarea tuturor secțiunilor.",
     "applied": "Setările au fost aplicate cu succes",
-    "saveAllSuccessRestartRequired_one": "{{count}} secțiune salvată cu succes. Repornește Frigate pentru a aplica modificările.",
-    "saveAllSuccessRestartRequired_few": "{{count}} secțiuni salvate cu succes. Repornește Frigate pentru a aplica modificările.",
-    "saveAllSuccessRestartRequired_other": "{{count}} de secțiuni salvate cu succes. Repornește Frigate pentru a aplica modificările.",
-    "go2rtcSyncFailed": "Salvat, dar go2rtc nu a putut fi actualizat. Repornește Frigate pentru a aplica."
+    "saveAllSuccessRestartRequired_one": "{{count}} secțiune salvată cu succes. Repornește Gannet pentru a aplica modificările.",
+    "saveAllSuccessRestartRequired_few": "{{count}} secțiuni salvate cu succes. Repornește Gannet pentru a aplica modificările.",
+    "saveAllSuccessRestartRequired_other": "{{count}} de secțiuni salvate cu succes. Repornește Gannet pentru a aplica modificările.",
+    "go2rtcSyncFailed": "Salvat, dar go2rtc nu a putut fi actualizat. Repornește Gannet pentru a aplica."
   },
   "unsavedChanges": "Ai modificări nesalvate",
   "confirmReset": "Confirmă Resetarea",
@@ -1826,7 +1826,7 @@
     "overriddenBaseConfigHeading_other": "Profilul {{profile}} suprascrie {{count}} de câmpuri din configurația de bază:",
     "overriddenBaseConfigNoDeltas": "Profilul {{profile}} suprascrie această secțiune, dar nicio valoare a câmpurilor nu diferă de configurația de bază.",
     "overriddenLive": "Suprascris (Live)",
-    "overriddenLiveTooltip": "Această cameră rulează cu o valoare diferită de cea salvată în configurația ta, care este afișată aici. Vizualizarea live, MQTT sau un profil activ pot modifica această valoare în timp ce Frigate rulează.",
+    "overriddenLiveTooltip": "Această cameră rulează cu o valoare diferită de cea salvată în configurația ta, care este afișată aici. Vizualizarea live, MQTT sau un profil activ pot modifica această valoare în timp ce Gannet rulează.",
     "overriddenLiveValue": "Valoare în rulare: {{value}}"
   },
   "profiles": {
@@ -1942,10 +1942,10 @@
       "recordDisabled": "Înregistrarea este dezactivată, elementele de revizuire nu vor fi generate.",
       "detectDisabled": "Detecția obiectelor este dezactivată. Elementele de revizuire necesită obiecte detectate pentru a categorisi alertele și detecțiile.",
       "allNonAlertDetections": "Toată activitatea fără alertă va fi inclusă ca detecții.",
-      "genaiImageSourceRecordingsRecordDisabled": "Sursa imaginii este setată pe 'recordings', dar înregistrarea este dezactivată. Frigate va reveni la imaginile de previzualizare.",
+      "genaiImageSourceRecordingsRecordDisabled": "Sursa imaginii este setată pe 'recordings', dar înregistrarea este dezactivată. Gannet va reveni la imaginile de previzualizare.",
       "recordRuntimeDisabled": "Înregistrarea este activată în configurația ta, dar este dezactivată în prezent pentru această cameră, așa că elementele de recenzie nu vor fi generate. Pornește-o din nou din vizualizarea live a camerei sau verifică dacă un profil activ o dezactivează.",
       "detectRuntimeDisabled": "Detecția obiectelor este activată în configurația ta, dar este dezactivată în prezent pentru această cameră. Elementele de recenzie necesită obiecte detectate pentru a categorisi alertele și detecțiile. Pornește-o din nou din vizualizarea live a camerei sau verifică dacă un profil activ o dezactivează.",
-      "genaiImageSourceRecordingsRecordRuntimeDisabled": "Sursa de imagini este setată la 'recordings', dar înregistrarea este dezactivată în prezent pentru această cameră, deși este activată în configurația ta. Frigate va folosi ca rezervă imaginile de previzualizare."
+      "genaiImageSourceRecordingsRecordRuntimeDisabled": "Sursa de imagini este setată la 'recordings', dar înregistrarea este dezactivată în prezent pentru această cameră, deși este activată în configurația ta. Gannet va folosi ca rezervă imaginile de previzualizare."
     },
     "audio": {
       "noAudioRole": "Niciun flux nu are rolul audio definit. Trebuie să activați rolul audio pentru ca detecția audio să funcționeze."
@@ -2000,7 +2000,7 @@
       "inputsMissingGo2rtcStream": "Un câmp de mai jos indică o retransmisie go2rtc care nu mai există. Selectează o retransmisie existentă sau introdu manual URL-ul camerei, altfel această cameră nu se va putea conecta."
     },
     "model": {
-      "optimizedFor320": "Frigate este optimizat pentru un model de 320x320, care este cea mai bună alegere pentru majoritatea configurațiilor. Un model de 640x640 este mai lent și ajută doar în scenarii specifice.",
+      "optimizedFor320": "Gannet este optimizat pentru un model de 320x320, care este cea mai bună alegere pentru majoritatea configurațiilor. Un model de 640x640 este mai lent și ajută doar în scenarii specifice.",
       "inputDimensionsNotDetectResolution": "Lățimea și înălțimea de intrare ale modelului reprezintă dimensiunile de intrare ale modelului de detectare a obiectelor, nu rezoluția de detecție a camerei tale. Acestea ar trebui să se potrivească cu dimensiunile modelului pe care îl folosești — de obicei o dimensiune pătrată, cum ar fi 320x320 sau 640x640."
     },
     "birdseye": {

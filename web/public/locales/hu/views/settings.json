@@ -1,20 +1,20 @@
 {
   "documentTitle": {
-    "default": "Beállítások - Frigate",
-    "authentication": "Hitelesítési beállítások - Frigate",
-    "masksAndZones": "Maszk és zónaszerkesztő - Frigate",
-    "object": "Hibakeresés - Frigate",
-    "general": "Felhasználói felület beállításai - Frigate",
-    "frigatePlus": "Frigate+ beállítások - Frigate",
-    "notifications": "Értesítések beállítása - Frigate",
-    "motionTuner": "Mozgás Hangoló - Frigate",
-    "enrichments": "Kiegészítés Beállítások - Frigate",
-    "cameraManagement": "Kamerák kezelése - Frigate",
-    "cameraReview": "Kamera beállítások áttekintése – Frigate",
-    "globalConfig": "Globális Konfiguráció - Frigate",
-    "cameraConfig": "Kamera Konfiguráció - Frigate",
-    "maintenance": "Karbantartás - Frigate",
-    "profiles": "Profilok - Frigate"
+    "default": "Beállítások - Gannet",
+    "authentication": "Hitelesítési beállítások - Gannet",
+    "masksAndZones": "Maszk és zónaszerkesztő - Gannet",
+    "object": "Hibakeresés - Gannet",
+    "general": "Felhasználói felület beállításai - Gannet",
+    "frigatePlus": "Frigate+ beállítások - Gannet",
+    "notifications": "Értesítések beállítása - Gannet",
+    "motionTuner": "Mozgás Hangoló - Gannet",
+    "enrichments": "Kiegészítés Beállítások - Gannet",
+    "cameraManagement": "Kamerák kezelése - Gannet",
+    "cameraReview": "Kamera beállítások áttekintése – Gannet",
+    "globalConfig": "Globális Konfiguráció - Gannet",
+    "cameraConfig": "Kamera Konfiguráció - Gannet",
+    "maintenance": "Karbantartás - Gannet",
+    "profiles": "Profilok - Gannet"
   },
   "menu": {
     "ui": "UI",
@@ -139,7 +139,7 @@
         "desc": "A szemantikus keresés beágyazásaihoz használt modell mérete."
       },
       "title": "Szemantikus keresés",
-      "desc": "A Frigate szemantikus keresés funkciója lehetővé teszi, hogy a felülvizsgálati elemekben szereplő követett objektumokat megtalálja akár magával a képpel, egy felhasználó által megadott szöveges leírással, vagy egy automatikusan generált leírással."
+      "desc": "A Gannet szemantikus keresés funkciója lehetővé teszi, hogy a felülvizsgálati elemekben szereplő követett objektumokat megtalálja akár magával a képpel, egy felhasználó által megadott szöveges leírással, vagy egy automatikusan generált leírással."
     },
     "birdClassification": {
       "title": "Madár Osztályozás",
@@ -159,15 +159,15 @@
           "desc": "A <em>large</em> használata egy ArcFace arcbeágyazási modellt alkalmaz, és automatikusan a GPU-n fut, ha az elérhető."
         }
       },
-      "desc": "Az arcfelismerés lehetővé teszi, hogy személyekhez neveket rendeljenek, és amikor az arcukat felismeri a Frigate, akkor a személy nevét alcímkeként rendeli hozzá. Ez az információ megjelenik a felhasználói felületen, a szűrőkben és az értesítésekben is."
+      "desc": "Az arcfelismerés lehetővé teszi, hogy személyekhez neveket rendeljenek, és amikor az arcukat felismeri a Gannet, akkor a személy nevét alcímkeként rendeli hozzá. Ez az információ megjelenik a felhasználói felületen, a szűrőkben és az értesítésekben is."
     },
     "licensePlateRecognition": {
       "title": "Rendszámtábla Felismerés",
-      "desc": "A Frigate képes felismerni a járművek rendszámtábláit, és automatikusan hozzáadja a felismert karaktereket a recognized_license_plate mezőhöz, vagy egy ismert nevet al_címkeként rendel az autótípusú objektumokhoz. Egy gyakori felhasználási eset lehet a bejáróra behajtó vagy az utcán elhaladó autók rendszámtáblájának olvasása."
+      "desc": "A Gannet képes felismerni a járművek rendszámtábláit, és automatikusan hozzáadja a felismert karaktereket a recognized_license_plate mezőhöz, vagy egy ismert nevet al_címkeként rendel az autótípusú objektumokhoz. Egy gyakori felhasználási eset lehet a bejáróra behajtó vagy az utcán elhaladó autók rendszámtáblájának olvasása."
     },
     "toast": {
       "error": "Konfigurációs változtatások mentése sikertelen: {{errorMessage}}",
-      "success": "A kiegészítő beállítások elmentésre kerültek. A módosítások alkalmazásához indítsa újra a Frigate-et."
+      "success": "A kiegészítő beállítások elmentésre kerültek. A módosítások alkalmazásához indítsa újra a Gannet-et."
     },
     "unsavedChanges": "Mentetlen gazdagítási beállítás változtatások",
     "title": "Kiegészítők Beállítása",
@@ -177,7 +177,7 @@
     "title": "Értesítések",
     "notificationSettings": {
       "title": "Értesítési Beállítások",
-      "desc": "A Frigate natívan képes push értesítéseket küldeni az eszközére, ha böngészőben fut vagy PWA-ként van telepítve."
+      "desc": "A Gannet natívan képes push értesítéseket küldeni az eszközére, ha böngészőben fut vagy PWA-ként van telepítve."
     },
     "globalSettings": {
       "title": "Globális Beállítások",
@@ -203,14 +203,14 @@
     "toast": {
       "success": {
         "settingSaved": "Értesítési beállítások elmentve.",
-        "registered": "Sikeresen regisztrált az értesítések fogadására. Az értesítések (beleértve a tesztértesítést is) küldése előtt újra kell indítani a Frigate-et."
+        "registered": "Sikeresen regisztrált az értesítések fogadására. Az értesítések (beleértve a tesztértesítést is) küldése előtt újra kell indítani a Gannet-et."
       },
       "error": {
         "registerFailed": "Nem sikerült elmenteni az értesítési regisztrációt."
       }
     },
     "notificationUnavailable": {
-      "desc": "A webes push értesítésekhez biztonságos környezet (<code>https://…</code>) szükséges. Ez egy böngészői korlátozás. A értesítések használatához férjen hozzá biztonságosan a Frigate-hez."
+      "desc": "A webes push értesítésekhez biztonságos környezet (<code>https://…</code>) szükséges. Ez egy böngészői korlátozás. A értesítések használatához férjen hozzá biztonságosan a Gannet-hez."
     },
     "sendTestNotification": "Teszt értesítés küldése",
     "deviceSpecific": "Eszköz Specifikus Beállítások",
@@ -261,7 +261,7 @@
     },
     "restart_required": "Újraindítás szükséges ( Frigate+ modell megváltozott)",
     "toast": {
-      "success": "Frigate+ beállítások elmentve. Indítsa újra a Frigate-et a változtatások érvényrejutásához.",
+      "success": "Frigate+ beállítások elmentve. Indítsa újra a Gannet-et a változtatások érvényrejutásához.",
       "error": "Konfigurációs módosítások mentése sikertelen: {{errorMessage}}"
     },
     "title": "Frigate+ Beállítások",
@@ -319,7 +319,7 @@
         "usernameOnlyInclude": "A felhasználói név csak betűket, számokat, .-t vagy _-t tartalmazhat",
         "title": "Új Felhasználó Létrehozása",
         "confirmPassword": "Erősítse meg a jelszavát",
-        "desc": "Új felhasználói fiók hozzáadása, és egy szerepkör megadása a Frigate felhasználói felületének területeihez való hozzáféréshez."
+        "desc": "Új felhasználói fiók hozzáadása, és egy szerepkör megadása a Gannet felhasználói felületének területeihez való hozzáféréshez."
       },
       "deleteUser": {
         "title": "Felhasználó Törlése",
@@ -360,7 +360,7 @@
     "addUser": "Felhasználó hozzáadása",
     "updatePassword": "Jelszó Módosítása",
     "management": {
-      "desc": "Ezen Frigate példány felhasználóinak kezelése.",
+      "desc": "Ezen Gannet példány felhasználóinak kezelése.",
       "title": "Felhasználó kezelés"
     },
     "title": "Felhasználók"
@@ -373,7 +373,7 @@
       },
       "edit": "Zóne Módosítása",
       "label": "Zónák",
-      "documentTitle": "Zóna Módosítása - Frigate",
+      "documentTitle": "Zóna Módosítása - Gannet",
       "name": {
         "title": "Név",
         "tips": "A névnek legalább 2 karakterből kell állnia és nem a kamera neve vagy egy másik zónáé.",
@@ -415,7 +415,7 @@
         "desc": "Beállítja a zónában tartózkodás minimális idejét másodpercben, amelynek teljesülnie kell az aktiváláshoz. <em>Alapértelmezett: 0</em>"
       },
       "toast": {
-        "success": "A(z) {{zoneName}} zóna elmentésre került. A módosítások alkalmazásához indítsa újra a Frigate-et."
+        "success": "A(z) {{zoneName}} zóna elmentésre került. A módosítások alkalmazásához indítsa újra a Gannet-et."
       }
     },
     "objectMasks": {
@@ -426,7 +426,7 @@
         "documentation": "Dokumentáció",
         "title": "Az objektumszűrő maszkokat arra használják, hogy hely alapján kiszűrjék a téves egyezéseket adott objektumtípus esetén."
       },
-      "documentTitle": "Tárgymaszk módosítása - Frigate",
+      "documentTitle": "Tárgymaszk módosítása - Gannet",
       "objects": {
         "title": "Tárgyak",
         "allObjectTypes": "Minden tárgytípus",
@@ -438,8 +438,8 @@
       "clickDrawPolygon": "Kattintson a képre, hogy poligont rajzoljon.",
       "toast": {
         "success": {
-          "title": "A(z) {{polygonName}} elmentve. A módosítások alkalmazásához indítsa újra a Frigate-et.",
-          "noName": "Az objektummaszk elmentésre került. A módosítások alkalmazásához indítsa újra a Frigate-et."
+          "title": "A(z) {{polygonName}} elmentve. A módosítások alkalmazásához indítsa újra a Gannet-et.",
+          "noName": "Az objektummaszk elmentésre került. A módosítások alkalmazásához indítsa újra a Gannet-et."
         }
       }
     },
@@ -506,7 +506,7 @@
         "title": "A mozgásmaszk a kamera képkockájának {{polygonArea}}%-át fedi le. Nagy mozgásmaszkok használata nem ajánlott.",
         "tips": "A mozgásmaszkok nem akadályozzák meg az objektumok észlelését. Ehelyett ajánlott kötelező zónát használni."
       },
-      "documentTitle": "Mozgási Maszk Módosítása - Frigate",
+      "documentTitle": "Mozgási Maszk Módosítása - Gannet",
       "add": "Új Mozgási Maszk",
       "point_one": "{{count}} pont",
       "point_other": "{{count}} pont",
@@ -514,8 +514,8 @@
       "clickDrawPolygon": "Kattintson a sokszög rajzoláshoz a képre.",
       "toast": {
         "success": {
-          "title": "{{polygonName}} neve mentve. Indítsa újra a Frigate-et a módosítások érvényesítéséhez.",
-          "noName": "A mozgásmaszk elmentésre került. A módosítások alkalmazásához indítsa újra a Frigate-et."
+          "title": "{{polygonName}} neve mentve. Indítsa újra a Gannet-et a módosítások érvényesítéséhez.",
+          "noName": "A mozgásmaszk elmentésre került. A módosítások alkalmazásához indítsa újra a Gannet-et."
         }
       }
     },
@@ -560,7 +560,7 @@
     },
     "title": "Hibakeresés",
     "noObjects": "Nincs tárgy",
-    "detectorDesc": "A Frigate a(z) {{detectors}} érzékelőit használja az objektumok észlelésére a kamera videófolyamában.",
+    "detectorDesc": "A Gannet a(z) {{detectors}} érzékelőit használja az objektumok észlelésére a kamera videófolyamában.",
     "desc": "A hibakereső nézet valós idejű képet mutat a követett objektumokról és azok statisztikáiról. Az objektumlista késleltetett összefoglalót ad az észlelt objektumokról.",
     "boundingBoxes": {
       "title": "Határoló keretek",
@@ -608,7 +608,7 @@
     "title": "Mozgásérzékelő hangoló",
     "unsavedChanges": "Nem mentett mozgásérzékelő hangolási módosítások ({{camera}})",
     "desc": {
-      "title": "A Frigate a mozgásérzékelést elsődleges ellenőrzésként használja, hogy megállapítsa, van-e a képkockában olyan esemény, amely érdemes az objektumfelismeréssel való vizsgálatra.",
+      "title": "A Gannet a mozgásérzékelést elsődleges ellenőrzésként használja, hogy megállapítsa, van-e a képkockában olyan esemény, amely érdemes az objektumfelismeréssel való vizsgálatra.",
       "documentation": "Olvassa el a mozgásérzékelő hangolási útmutatót"
     },
     "contourArea": {
@@ -690,7 +690,7 @@
         },
         "actions": {
           "title": "Akciók",
-          "desc": "Alapértelmezés szerint a Frigate minden trigger esetén MQTT üzenetet küld. Válasszon ki egy további műveletet, amelyet a trigger aktiválásakor végre kell hajtani.",
+          "desc": "Alapértelmezés szerint a Gannet minden trigger esetén MQTT üzenetet küld. Válasszon ki egy további műveletet, amelyet a trigger aktiválásakor végre kell hajtani.",
           "error": {
             "min": "Legalább egy műveletet ki kell választani."
           }
@@ -722,7 +722,7 @@
   "roles": {
     "management": {
       "title": "Megtekintői szerepkör-kezelés",
-      "desc": "Kezelje az egyéni nézői szerepköröket és a kamera-hozzáférési engedélyeiket ehhez a Frigate-példányhoz."
+      "desc": "Kezelje az egyéni nézői szerepköröket és a kamera-hozzáférési engedélyeiket ehhez a Gannet-példányhoz."
     },
     "addRole": "Szerepkör hozzáadása",
     "table": {
@@ -782,7 +782,7 @@
   },
   "cameraWizard": {
     "title": "Kamera hozzáadása",
-    "description": "Kövesse az alábbi lépéseket, hogy új kamerát adjon hozzá a Frigate telepítéséhez.",
+    "description": "Kövesse az alábbi lépéseket, hogy új kamerát adjon hozzá a Gannet telepítéséhez.",
     "steps": {
       "nameAndConnection": "Név & adatkapcsolat",
       "streamConfiguration": "Stream beállítások",

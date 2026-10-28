@@ -1,5 +1,5 @@
 {
-  "documentTitle": "浏览 - Frigate",
+  "documentTitle": "浏览 - Gannet",
   "generativeAI": "生成式 AI",
   "exploreIsUnavailable": {
     "title": "浏览功能不可用",
@@ -15,7 +15,7 @@
       }
     },
     "downloadingModels": {
-      "context": "Frigate正在下载支持语义搜索功能所需的嵌入模型。根据网络连接速度，这可能需要几分钟。",
+      "context": "Gannet正在下载支持语义搜索功能所需的嵌入模型。根据网络连接速度，这可能需要几分钟。",
       "setup": {
         "visionModel": "视觉模型",
         "visionModelFeatureExtractor": "视觉模型特征提取器",
@@ -25,7 +25,7 @@
       "tips": {
         "context": "模型下载完成后，您可能需要重新索引追踪目标的嵌入。"
       },
-      "error": "发生错误。请检查Frigate日志。"
+      "error": "发生错误。请检查Gannet日志。"
     }
   },
   "trackedObjectDetails": "目标追踪详情",
@@ -49,14 +49,14 @@
       },
       "tips": {
         "mismatch_other": "检测到 {{count}} 个不可用的目标，并已包含在此核查项中。这些目标可能未达到警报或检测标准，或者已被清理/删除。",
-        "hasMissingObjects": "如果希望 Frigate 保存 <em>{{objects}}</em> 标签的追踪目标，请调整您的配置"
+        "hasMissingObjects": "如果希望 Gannet 保存 <em>{{objects}}</em> 标签的追踪目标，请调整您的配置"
       },
       "toast": {
         "success": {
           "regenerate": "已向 {{provider}} 请求新的描述。根据提供商的速度，生成新描述可能需要一些时间。",
           "updatedSublabel": "成功更新子标签。",
           "updatedLPR": "成功更新车牌。",
-          "audioTranscription": "成功请求音频转录。根据你运行 Frigate 的服务器速度，转录可能需要一些时间才能完成。",
+          "audioTranscription": "成功请求音频转录。根据你运行 Gannet 的服务器速度，转录可能需要一些时间才能完成。",
           "updatedAttributes": "更新属性成功。"
         },
         "error": {
@@ -93,7 +93,7 @@
     "description": {
       "label": "描述",
       "placeholder": "追踪目标的描述",
-      "aiTips": "在追踪目标的目标全周期结束之前，Frigate 不会向您的生成式 AI 提供商请求描述。"
+      "aiTips": "在追踪目标的目标全周期结束之前，Gannet 不会向您的生成式 AI 提供商请求描述。"
     },
     "expandRegenerationMenu": "展开重新生成菜单",
     "regenerateFromSnapshot": "从快照重新生成",

@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: LicenseRef-GNCL-1.0
 <#
 .SYNOPSIS
-    Install, configure, start, stop or remove the Frigate Windows SCM service.
+    Install, configure, start, stop or remove the Gannet Windows SCM service.
 
 .DESCRIPTION
-    Registers FrigateService (gannet.util.windows_service) with the Windows
+    Registers the Gannet service class (gannet.util.windows_service) with the Windows
     Service Control Manager through pywin32, and supplies the three things a
     service needs that a process started from a desktop shell gets for free.
 
@@ -17,15 +17,15 @@
 
     The data directory
         A service does not inherit the installing user's environment, so
-        LOCALAPPDATA belongs to the service account and Frigate would keep the
+        LOCALAPPDATA belongs to the service account and Gannet would keep the
         config and the recordings in the service profile. This resolves the
         directory once, creates it, gives the service account access to it, and
-        pins it in the service's own environment as FRIGATE_BASE_DIR (along
-        with other FRIGATE_* variables, `PLUS_API_KEY`, and the explicit go2rtc
+        pins it in the service's own environment as GANNET_BASE_DIR (along
+        with other GANNET_* variables, `PLUS_API_KEY`, and the explicit go2rtc
         exec opt-in from this session, so startup settings carry over).
 
     Recovery
-        The service reports a failure when Frigate dies, but the SCM does
+        The service reports a failure when Gannet dies, but the SCM does
         nothing about a failed service unless it is told to. This configures
         the recovery actions that turn a failure into a restart 30 seconds
         later, three times a day, and sets the flag that makes a non-zero exit
@@ -45,11 +45,12 @@
 
 .PARAMETER BaseDir
     Where the service keeps config, media, cache and tmp. Defaults to
-    FRIGATE_BASE_DIR when it is set, otherwise %ProgramData%\Frigate. It has to
+    GANNET_BASE_DIR (or the legacy FRIGATE_BASE_DIR) when it is set, otherwise
+    %ProgramData%\Gannet. It has to
     be somewhere the service account can reach, which a user profile is not.
 
 .PARAMETER PythonPath
-    The interpreter that has Frigate and pywin32 installed. Defaults to the
+    The interpreter that has Gannet and pywin32 installed. Defaults to the
     repository's virtual environment, then to python on PATH.
 
 .PARAMETER SkipAccessCheck
@@ -58,10 +59,10 @@
     have been arranged by hand.
 
 .EXAMPLE
-    .\install_frigate_service.ps1 -Action Install
+    .\install_gannet_service.ps1 -Action Install
 
 .EXAMPLE
-    .\install_frigate_service.ps1 -Action Configure -BaseDir D:\Frigate
+    .\install_gannet_service.ps1 -Action Configure -BaseDir D:\Gannet
 #>
 [CmdletBinding()]
 param(
@@ -76,6 +77,8 @@ param(
     [switch]$SkipAccessCheck
 )
 
+# SCM install identity: changing this key orphans installed services.
+# The display name shown to operators is Gannet (see windows_service.py).
 $serviceName = "Frigate"
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 # the account, and its SID so a non-English Windows works too
@@ -109,7 +112,7 @@ function Resolve-Python {
 
     $command = Get-Command python -ErrorAction SilentlyContinue
     if (-not $command) {
-        throw "Python was not found. Pass -PythonPath with the interpreter Frigate is installed in."
+        throw "Python was not found. Pass -PythonPath with the interpreter Gannet is installed in."
     }
     return $command.Source
 }
@@ -118,10 +121,13 @@ function Resolve-BaseDirectory {
     if ($BaseDir) {
         return [System.IO.Path]::GetFullPath($BaseDir)
     }
+    if ($env:GANNET_BASE_DIR) {
+        return [System.IO.Path]::GetFullPath($env:GANNET_BASE_DIR)
+    }
     if ($env:FRIGATE_BASE_DIR) {
         return [System.IO.Path]::GetFullPath($env:FRIGATE_BASE_DIR)
     }
-    return [System.IO.Path]::GetFullPath((Join-Path $env:ProgramData "Frigate"))
+    return [System.IO.Path]::GetFullPath((Join-Path $env:ProgramData "Gannet"))
 }
 
 function Test-InUserProfile {
@@ -153,15 +159,15 @@ $What is inside a user profile:
 
 The service runs as $serviceAccount, and Windows does not let one account read
 another account's profile, so it could not reach this. Either move it somewhere
-shared (C:\Frigate and D:\Frigate are common choices; pass -BaseDir for the data
-directory), or keep running Frigate from the launcher instead of as a service,
+shared (C:\Gannet and D:\Gannet are common choices; pass -BaseDir for the data
+directory), or keep running Gannet from the launcher instead of as a service,
 which runs as you. Pass -SkipAccessCheck if you have already granted the
 service account access.
 "@
     }
 }
 
-function Test-FrigateImportable {
+function Test-GannetImportable {
     param([string]$Python)
 
     Push-Location $repoRoot
@@ -226,7 +232,7 @@ function Format-ServiceEnvironment {
 
     return (($Variables | ForEach-Object {
                 $name, $value = $_ -split "=", 2
-                if ($name -eq "FRIGATE_BASE_DIR") {
+                if ($name -in @("GANNET_BASE_DIR", "FRIGATE_BASE_DIR")) {
                     "$name=$value"
                 }
                 else {
@@ -238,15 +244,19 @@ function Format-ServiceEnvironment {
 function Set-ServiceEnvironment {
     param([string]$Path)
 
-    $variables = @("FRIGATE_BASE_DIR=$Path")
+    $variables = @("GANNET_BASE_DIR=$Path")
 
-    # the rest of this session's Frigate configuration describes this install
-    # too, so the service gets the same overrides (minus the two variables the
-    # service itself sets for the process it starts)
-    $skip = @("FRIGATE_BASE_DIR", "FRIGATE_SERVICE_MODE", "FRIGATE_SERVICE_STOP_EVENT")
+    # The rest of this session's Gannet configuration describes this install
+    # too, so the service gets the same overrides. Both GANNET_* and the legacy
+    # FRIGATE_* spelling are carried over; the preferred name wins in the app.
+    $skip = @(
+        "GANNET_BASE_DIR", "FRIGATE_BASE_DIR",
+        "GANNET_SERVICE_MODE", "FRIGATE_SERVICE_MODE",
+        "GANNET_SERVICE_STOP_EVENT", "FRIGATE_SERVICE_STOP_EVENT"
+    )
     $configured = Get-ChildItem Env: |
         Where-Object {
-            ($_.Name -like "FRIGATE_*" -or $_.Name -in @("PLUS_API_KEY", "GO2RTC_ALLOW_ARBITRARY_EXEC")) -and
+            ($_.Name -like "GANNET_*" -or $_.Name -like "FRIGATE_*" -or $_.Name -in @("PLUS_API_KEY", "GO2RTC_ALLOW_ARBITRARY_EXEC")) -and
             $skip -notcontains $_.Name
         } |
         Sort-Object Name
@@ -279,7 +289,7 @@ function Set-ServiceRecovery {
     Write-Host "Recovery:         restart 30s after a failure, three times a day"
 }
 
-function Invoke-FrigateServiceCommand {
+function Invoke-GannetServiceCommand {
     param([string]$Python, [string[]]$Arguments)
 
     Push-Location $repoRoot
@@ -294,7 +304,7 @@ function Invoke-FrigateServiceCommand {
     }
 }
 
-function Start-FrigateService {
+function Start-GannetService {
     param([string]$Python)
 
     try {
@@ -318,7 +328,7 @@ function Invoke-ServiceAction {
         "Status" {
             if (-not (Test-ServiceRegistered)) {
                 Write-Host "Service '$serviceName' is not registered."
-                Write-Host "Install it with: .\install_frigate_service.ps1 -Action Install"
+                Write-Host "Install it with: .\install_gannet_service.ps1 -Action Install"
                 return
             }
 
@@ -332,7 +342,7 @@ function Invoke-ServiceAction {
                 Write-Host "Service env:      $(Format-ServiceEnvironment -Variables $environment)"
             }
             else {
-                Write-Host "Service env:      not set, so Frigate will use the service account's"
+                Write-Host "Service env:      not set, so Gannet will use the service account's"
                 Write-Host "                  own directory. Run -Action Configure to pin it."
             }
             return
@@ -364,19 +374,27 @@ function Invoke-ServiceAction {
             Write-Host "Interpreter:      $python"
             Write-Host "Checkout:         $repoRoot"
             Assert-ServiceAccountCanReach -Path $python -What "The interpreter"
-            Assert-ServiceAccountCanReach -Path $repoRoot -What "The Frigate checkout"
+            Assert-ServiceAccountCanReach -Path $repoRoot -What "The Gannet checkout"
             Assert-ServiceAccountCanReach -Path $base -What "The data directory"
 
-            if (-not $BaseDir -and -not $env:FRIGATE_BASE_DIR) {
-                $userTree = Join-Path $env:LOCALAPPDATA "Frigate"
+            if (-not $BaseDir -and -not $env:GANNET_BASE_DIR -and -not $env:FRIGATE_BASE_DIR) {
+                $userTree = Join-Path $env:LOCALAPPDATA "Gannet"
+                $legacyTree = Join-Path $env:LOCALAPPDATA "Gannet"
+                if (-not (Test-Path -LiteralPath $userTree) -and (Test-Path -LiteralPath $legacyTree)) {
+                    Write-Host ""
+                    Write-Host "Note: a legacy data directory exists at $legacyTree."
+                    Write-Host "      This version does not use it automatically; pass"
+                    Write-Host "      -BaseDir $legacyTree to keep the existing data."
+                    Write-Host ""
+                }
                 if ((Test-Path -LiteralPath $userTree) -and ($userTree -ne $base)) {
                     Write-Host ""
-                    Write-Host "Note: this user's own Frigate install uses:"
+                    Write-Host "Note: this user's own Gannet install uses:"
                     Write-Host "          $userTree"
                     Write-Host "      the service will use:"
                     Write-Host "          $base"
                     Write-Host "      A service cannot read a user profile, so sharing one tree means"
-                    Write-Host "      moving it outside one (for example D:\Frigate) and passing"
+                    Write-Host "      moving it outside one (for example D:\Gannet) and passing"
                     Write-Host "      -BaseDir there."
                     Write-Host ""
                 }
@@ -384,8 +402,8 @@ function Invoke-ServiceAction {
 
             Install-PyWin32 -Python $python
 
-            if (-not (Test-FrigateImportable -Python $python)) {
-                throw "$python cannot import gannet.util.windows_service from $repoRoot. Pass -PythonPath with the interpreter Frigate is installed in (the repository's own virtual environment by default)."
+            if (-not (Test-GannetImportable -Python $python)) {
+                throw "$python cannot import gannet.util.windows_service from $repoRoot. Pass -PythonPath with the interpreter Gannet is installed in (the repository's own virtual environment by default)."
             }
 
             Initialize-BaseDirectory -Path $base
@@ -395,7 +413,7 @@ function Invoke-ServiceAction {
             # takes the name, display name and description from that class.
             # The options have to come before the command: pywin32 reads them
             # with getopt, which stops at the first non-option argument.
-            Invoke-FrigateServiceCommand -Python $python -Arguments @(
+            Invoke-GannetServiceCommand -Python $python -Arguments @(
                 "--startup", "delayed",
                 "--username", $serviceAccount,
                 "install"
@@ -403,7 +421,7 @@ function Invoke-ServiceAction {
 
             Set-ServiceEnvironment -Path $base
             Set-ServiceRecovery
-            Start-FrigateService -Python $python
+            Start-GannetService -Python $python
             return
         }
 
@@ -426,7 +444,7 @@ function Invoke-ServiceAction {
             Set-ServiceRecovery
 
             if ($wasRunning) {
-                Start-FrigateService -Python (Get-PythonHint)
+                Start-GannetService -Python (Get-PythonHint)
             }
             else {
                 Write-Host "Service '$serviceName' configured. Start it with -Action Start."
@@ -438,7 +456,7 @@ function Invoke-ServiceAction {
             if (-not (Test-ServiceRegistered)) {
                 throw "The '$serviceName' service is not installed. Use -Action Install first."
             }
-            Start-FrigateService -Python (Get-PythonHint)
+            Start-GannetService -Python (Get-PythonHint)
             return
         }
 
@@ -446,7 +464,7 @@ function Invoke-ServiceAction {
             if (-not (Test-ServiceRegistered)) {
                 throw "The '$serviceName' service is not installed."
             }
-            Write-Host "Stopping service '$serviceName'; Frigate is given 20 seconds to shut down cleanly."
+            Write-Host "Stopping service '$serviceName'; Gannet is given 20 seconds to shut down cleanly."
             Stop-Service -Name $serviceName -Force -ErrorAction SilentlyContinue
             Write-Host "Service stopped."
             return

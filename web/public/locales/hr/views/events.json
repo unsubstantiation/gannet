@@ -40,9 +40,9 @@
     "trackedPoint": "Praćena točka",
     "clickToSeek": "Kliknite za pomicanje na ovo vrijeme"
   },
-  "documentTitle": "Pregled - Frigate",
+  "documentTitle": "Pregled - Gannet",
   "recordings": {
-    "documentTitle": "Snimke - Frigate"
+    "documentTitle": "Snimke - Gannet"
   },
   "calendarFilter": {
     "last24Hours": "Zadnja 24 sata"

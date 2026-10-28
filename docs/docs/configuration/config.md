@@ -60,7 +60,7 @@ From the installation directory:
 The authenticated public API serves the configuration schema. Add this first line and replace the host as needed:
 
 ```yaml
-# yaml-language-server: $schema=https://frigate-host:8971/api/config/schema.json
+# yaml-language-server: $schema=https://gannet-host:8971/api/config/schema.json
 ```
 
 If a certificate is self-signed, VS Code must trust that certificate. Never expose the unauthenticated loopback listener to retrieve the schema remotely.
@@ -71,15 +71,15 @@ Values marked as supporting substitution in the [reference configuration](./adva
 
 ```yaml
 mqtt:
-  host: "{FRIGATE_MQTT_HOST}"
-  user: "{FRIGATE_MQTT_USER}"
-  password: "{FRIGATE_MQTT_PASSWORD}"
+  host: "{GANNET_MQTT_HOST}"
+  user: "{GANNET_MQTT_USER}"
+  password: "{GANNET_MQTT_PASSWORD}"
 
 cameras:
   front:
     ffmpeg:
       inputs:
-        - path: rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@camera/stream
+        - path: rtsp://{GANNET_RTSP_USER}:{GANNET_RTSP_PASSWORD}@camera/stream
           roles: [detect, record]
 ```
 
@@ -123,9 +123,9 @@ cameras:
       fps: 5
     ffmpeg:
       inputs:
-        - path: rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@camera/substream
+        - path: rtsp://{GANNET_RTSP_USER}:{GANNET_RTSP_PASSWORD}@camera/substream
           roles: [detect]
-        - path: rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@camera/mainstream
+        - path: rtsp://{GANNET_RTSP_USER}:{GANNET_RTSP_PASSWORD}@camera/mainstream
           roles: [record]
 ```
 

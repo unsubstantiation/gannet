@@ -1,12 +1,12 @@
 {
   "documentTitle": {
-    "cameras": "Kameru statistika - Frigate",
-    "storage": "Uzglabāšanas statistika - Frigate",
-    "general": "Vispārīgā statistika - Frigate",
-    "enrichments": "Bagātināšanas statistika - Frigate",
+    "cameras": "Kameru statistika - Gannet",
+    "storage": "Uzglabāšanas statistika - Gannet",
+    "general": "Vispārīgā statistika - Gannet",
+    "enrichments": "Bagātināšanas statistika - Gannet",
     "logs": {
-      "frigate": "Frigate konfigurācija - Frigate",
-      "go2rtc": "Logi Go2RTC - Frigate"
+      "gannet": "Gannet konfigurācija - Gannet",
+      "go2rtc": "Logi Go2RTC - Gannet"
     }
   },
   "stats": {

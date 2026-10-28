@@ -44,9 +44,9 @@
     }
   },
   "documentTitle": {
-    "default": "Live - Frigate"
+    "default": "Live - Gannet"
   },
-  "documentTitle.withCamera": "{{camera}} - Directe - Frigate",
+  "documentTitle.withCamera": "{{camera}} - Directe - Gannet",
   "lowBandwidthMode": "Mode de baix ample de banda",
   "twoWayTalk": {
     "enable": "Activa la comunicació bidireccional",
@@ -135,7 +135,7 @@
       "tips": "La vista en directe està en mode de baix ample de banda a causa d'errors de transmissió o de buffering.",
       "force": {
         "label": "Força el mode d'amplada de banda baixa",
-        "desc": "Reprodueix sempre el canal d'amplada de banda baixa integrat per Frigate en lloc del flux seleccionat. Funciona en qualsevol connexió, però té menor qualitat i sense àudio."
+        "desc": "Reprodueix sempre el canal d'amplada de banda baixa integrat per Gannet en lloc del flux seleccionat. Funciona en qualsevol connexió, però té menor qualitat i sense àudio."
       }
     },
     "playInBackground": {
@@ -148,7 +148,7 @@
     },
     "mode": "Tecnologia Streaming",
     "technology": {
-      "description": "Tria la teva tecnologia de streaming preferida. Frigate encara pot tornar al mode d'amplada de banda baixa en la reproducció o els errors de xarxa.",
+      "description": "Tria la teva tecnologia de streaming preferida. Gannet encara pot tornar al mode d'amplada de banda baixa en la reproducció o els errors de xarxa.",
       "tips": {
         "mse": "Predeterminada recomanada, compatibilitat àmplia i reproducció suau",
         "webrtc": "Necessita configuració addicional i no està suportat en tots els dispositius"
@@ -224,7 +224,7 @@
   },
   "noCameras": {
     "title": "No s'ha configurat cap càmera",
-    "description": "Comenceu connectant una càmera a Frigate.",
+    "description": "Comenceu connectant una càmera a Gannet.",
     "buttonText": "Afegeix una càmera",
     "restricted": {
       "title": "No hi ha càmeres disponibles",
@@ -232,7 +232,7 @@
     },
     "default": {
       "title": "No s'ha configurat cap càmera",
-      "description": "Comenceu connectant una càmera a Frigate.",
+      "description": "Comenceu connectant una càmera a Gannet.",
       "buttonText": "Afegeix una càmera"
     },
     "group": {

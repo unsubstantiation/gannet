@@ -35,7 +35,11 @@ from gannet.api.media_auth import (
     split_request_uri,
 )
 from gannet.config import AuthConfig, ProxyConfig
-from gannet.const import CONFIG_DIR, JWT_SECRET_ENV_VAR, PASSWORD_HASH_ALGORITHM
+from gannet.const import (
+    CONFIG_DIR,
+    JWT_SECRET_ENV_VARS,
+    PASSWORD_HASH_ALGORITHM,
+)
 from gannet.models import User
 from gannet.notices import raise_notice
 from gannet.util.origin import origin_allowed
@@ -384,12 +388,12 @@ def _cleanup_first_load_seen() -> None:
 
 def get_jwt_secret() -> str:
     jwt_secret = None
-    # check env var
-    if JWT_SECRET_ENV_VAR in os.environ:
-        logger.debug(
-            f"Using jwt secret from {JWT_SECRET_ENV_VAR} environment variable."
-        )
-        jwt_secret = os.environ.get(JWT_SECRET_ENV_VAR)
+    # Check the environment variables, preferred name first.
+    for name in JWT_SECRET_ENV_VARS:
+        if os.environ.get(name):
+            logger.debug(f"Using jwt secret from {name} environment variable.")
+            jwt_secret = os.environ[name]
+            break
     if jwt_secret is None:
         jwt_secret_file = os.path.join(CONFIG_DIR, ".jwt_secret")
         # check .jwt_secrets file
@@ -498,7 +502,7 @@ def is_secure_request(request: Request) -> bool:
 
     The native gateway terminates TLS itself, so the ASGI scheme is the
     authoritative signal there. ``X-Forwarded-Proto`` remains for a reverse
-    proxy that terminates TLS before a plain-HTTP Frigate listener.
+    proxy that terminates TLS before a plain-HTTP Gannet listener.
     """
     return (
         request.app.frigate_config.auth.cookie_secure
@@ -512,7 +516,7 @@ def set_jwt_cookie(response: Response, cookie_name, encoded_jwt, max_age, secure
     # same-site iframes (e.g. Home Assistant on the same host or domain), but
     # not to cross-site ones. CSRF is also mitigated by requiring a custom
     # X-CSRF-TOKEN header, which cross-origin pages cannot set without a CORS
-    # preflight that Frigate never grants (see check_csrf in api/fastapi_app.py).
+    # preflight that Gannet never grants (see check_csrf in api/fastapi_app.py).
     response.set_cookie(
         key=cookie_name,
         value=encoded_jwt,
@@ -688,7 +692,7 @@ def _header_port(request: Request) -> int | None:
     """The listener port the request arrived on, or None when unusable.
 
     The native gateway sets ``x-server-port`` itself and drops a client
-    supplied one, so this is normally the port Frigate is listening on. A
+    supplied one, so this is normally the port Gannet is listening on. A
     malformed value still has to answer as a failed login rather than as an
     unhandled error.
     """

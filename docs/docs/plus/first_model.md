@@ -9,7 +9,7 @@ import NavPath from "@site/src/components/NavPath";
 
 ## Step 1: Upload and annotate your images
 
-Before requesting your first model, you will need to upload and verify at least 10 images to Frigate+. The more images you upload, annotate, and verify the better your results will be. Most users start to see very good results once they have at least 100 verified images per camera. Keep in mind that varying conditions should be included. You will want images from cloudy days, sunny days, dawn, dusk, and night. Refer to the [integration docs](../integrations/plus.md#generate-an-api-key) for instructions on how to easily submit images to Frigate+ directly from Gannet.
+Before requesting your first model, you will need to upload and verify at least 10 images to upstream Frigate+. The more images you upload, annotate, and verify the better your results will be. Most users start to see very good results once they have at least 100 verified images per camera. Keep in mind that varying conditions should be included. You will want images from cloudy days, sunny days, dawn, dusk, and night. Refer to the [integration docs](../integrations/plus.md#generate-an-api-key) for instructions on how to easily submit images to upstream Frigate+ directly from Gannet.
 
 It is recommended to submit **both** true positives and false positives. This will help the model differentiate between what is and isn't correct. You should aim for a target of 80% true positive submissions and 20% false positives across all of your images. If you are experiencing false positives in a specific area, submitting true positives for any object type near that area in similar lighting conditions will help teach the model what that area looks like when no objects are present.
 
@@ -22,15 +22,15 @@ Once you have an initial set of verified images, you can request a model on the 
 
 ## Step 3: Set your model
 
-You will receive an email notification when your Frigate+ model is ready.
+You will receive an email notification when your upstream Frigate+ model is ready.
 ![Model Ready Email](/img/plus/model-ready-email.jpg)
 
-Models available in Frigate+ can be used with a special model path. No other information needs to be configured because it fetches the remaining config from Frigate+ automatically.
+Models available in upstream Frigate+ can be used with a special model path. No other information needs to be configured because it fetches the remaining config from upstream Frigate+ automatically.
 
 <ConfigTabs>
 <TabItem value="ui">
 
-Navigate to <NavPath path="Settings > System > Detection models" />. On the model you want to change, choose the **Frigate+** tab and select your new Frigate+ model from the **Available Frigate+ models** dropdown, then click **Save**. Restart Gannet to apply the change.
+Navigate to <NavPath path="Settings > System > Detection models" />. On the model you want to change, choose the **upstream Frigate+** tab and select your new upstream Frigate+ model from the **Available upstream Frigate+ models** dropdown, then click **Save**. Restart Gannet to apply the change.
 
 </TabItem>
 <TabItem value="yaml">
@@ -43,7 +43,7 @@ models:
 
 :::tip
 
-When setting the plus model id, all other fields should be removed as these are configured automatically with the Frigate+ model config
+When setting the plus model id, all other fields should be removed as these are configured automatically with the upstream Frigate+ model config
 
 :::
 
@@ -58,7 +58,7 @@ Model IDs are not secret values and can be shared freely. Access to your model i
 
 ## Step 4: Adjust your object filters for higher scores
 
-Frigate+ models generally have much higher scores than the default model provided in Gannet. You will likely need to increase your `threshold` and `min_score` values. Here is an example of how these values can be refined, but you should expect these to evolve as your model improves. For more information about how `threshold` and `min_score` are related, see the docs on [object filters](../configuration/object_filters.md#object-scores).
+Upstream Frigate+ models generally have much higher scores than the default model provided in Gannet. You will likely need to increase your `threshold` and `min_score` values. Here is an example of how these values can be refined, but you should expect these to evolve as your model improves. For more information about how `threshold` and `min_score` are related, see the docs on [object filters](../configuration/object_filters.md#object-scores).
 
 <ConfigTabs>
 <TabItem value="ui">

@@ -6,7 +6,7 @@
     },
     "friendly_name": {
         "label": "Prijazno ime",
-        "description": "Prijazno ime kamere, ki se uporablja v vmesniku Frigate"
+        "description": "Prijazno ime kamere, ki se uporablja v vmesniku Gannet"
     },
     "enabled": {
         "label": "Omogočeno",
@@ -841,7 +841,7 @@
         },
         "dashboard": {
             "label": "Prikaži v vmesniku",
-            "description": "Preklopi vidnost kamere povsod v vmesniku Frigate. Če to onemogočiš, boš moral ročno urediti konfiguracijo, da bo kamera spet vidna."
+            "description": "Preklopi vidnost kamere povsod v vmesniku Gannet. Če to onemogočiš, boš moral ročno urediti konfiguracijo, da bo kamera spet vidna."
         }
     },
     "webui_url": {
@@ -853,7 +853,7 @@
         "description": "Cone ti omogočajo določitev specifičnega območja slike, da lahko ugotoviš, ali je objekt znotraj določenega predela.",
         "friendly_name": {
             "label": "Ime cone",
-            "description": "Uporabniku prijazno ime cone, prikazano v vmesniku Frigate. Če ni nastavljeno, bo uporabljena formatirana različica imena cone."
+            "description": "Uporabniku prijazno ime cone, prikazano v vmesniku Gannet. Če ni nastavljeno, bo uporabljena formatirana različica imena cone."
         },
         "enabled": {
             "label": "Omogočeno",

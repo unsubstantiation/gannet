@@ -49,7 +49,7 @@ class TestListenConfig(unittest.TestCase):
             "5000\n": 5000,
             " 127.0.0.1:5000 ": "127.0.0.1:5000",
             "localhost:5000": "localhost:5000",
-            "frigate-host.lan:5000": "frigate-host.lan:5000",
+            "gannet-host.lan:5000": "gannet-host.lan:5000",
             "*:5000": "*:5000",
         }
 

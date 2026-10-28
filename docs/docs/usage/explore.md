@@ -51,7 +51,7 @@ The most common filter tokens are:
 | **Min / Max Score**          | Restrict by the object's confidence score.                                         |
 | **Min / Max Speed**          | Restrict by estimated speed (when speed estimation is configured).                 |
 | **Has Snapshot / Has Clip**  | Only objects that saved a snapshot or recording.                                   |
-| **Submitted to Frigate+**    | Only objects already submitted (when Frigate+ is enabled).                         |
+| **Submitted to upstream Frigate+**    | Only objects already submitted (when upstream Frigate+ is enabled).                         |
 | **Search Type**              | Whether semantic search matches the object's **Thumbnail** or its **Description**. |
 
 ### Sorting
@@ -73,7 +73,7 @@ Selecting an object opens the **Tracked Object Details** dialog. Use the arrows 
 
 The details pane shows the object's **label**, **scores**, **camera**, **timestamp**, estimated **speed**, any **recognized license plate** and **classification attributes**, and its **description**. Admins can edit the sub label, license plate, and attributes inline.
 
-The **description** can be edited by hand, and, when [Generative AI descriptions](/configuration/genai/genai_objects) are enabled and the object's lifecycle has ended, regenerated from the snapshot or from thumbnails. For `speech` objects, a **Transcribe** action is available when audio transcription is enabled. When [Frigate+](/integrations/plus) is enabled, admins can submit a snapshot to improve their model directly from this pane.
+The **description** can be edited by hand, and, when [Generative AI descriptions](/configuration/genai/genai_objects) are enabled and the object's lifecycle has ended, regenerated from the snapshot or from thumbnails. For `speech` objects, a **Transcribe** action is available when audio transcription is enabled. When [upstream Frigate+](/integrations/plus) is enabled, admins can submit a snapshot to improve their model directly from this pane.
 
 ## Actions and bulk selection
 

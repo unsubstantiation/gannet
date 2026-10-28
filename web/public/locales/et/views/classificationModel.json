@@ -19,14 +19,14 @@
       "deleteCategoryFailed": "Klassi kustutamine ei õnnestunud: {{errorMessage}}",
       "deleteModelFailed": "Mudeli kustutamine ei õnnestunud: {{errorMessage}}",
       "categorizeFailed": "Pildi kategoriseerimine ei õnnestunud: {{errorMessage}}",
-      "trainingFailed": "Mudeli koolitamine ei õnnestunud. Üksikasjalikumat teavet leiad Frigate'i logidest.",
+      "trainingFailed": "Mudeli koolitamine ei õnnestunud. Üksikasjalikumat teavet leiad Gannet'i logidest.",
       "trainingFailedToStart": "Mudeli koolitamise alustamine ei õnnestunud: {{errorMessage}}",
       "updateModelFailed": "Mudeli uuendamine ei õnnestunud: {{errorMessage}}",
       "renameCategoryFailed": "Klassi nime muutmine ei õnnestunud: {{errorMessage}}",
       "reclassifyFailed": "Pildi klassifitseerimise muutmine ei õnnestunud: {{errorMessage}}"
     }
   },
-  "documentTitle": "Klassifitseerimise mudelid - Frigate",
+  "documentTitle": "Klassifitseerimise mudelid - Gannet",
   "details": {
     "scoreInfo": "Punktiskoor näitab selle objekti kõigi tuvastuste keskmist klassifitseerimise usaldusväärsust.",
     "none": "Puudub",

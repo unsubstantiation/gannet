@@ -21,8 +21,13 @@ _CERTIFICATE_NAME = "fullchain.pem"
 _PRIVATE_KEY_NAME = "privkey.pem"
 
 #: organization written into the generated certificate; it is how a pair
-#: Frigate created itself is told apart from one an administrator installed
-_GENERATED_ORGANIZATION = "Frigate Native Windows"
+#: Gannet created itself is told apart from one an administrator installed
+_GENERATED_ORGANIZATION = "Gannet Native Windows"
+#: the organization earlier releases wrote. Pairs generated before the rename
+#: are still Gannet's to renew, so they must keep being recognized; otherwise
+#: an install upgraded from a renamed build serves its old certificate until
+#: it expires for good.
+_LEGACY_GENERATED_ORGANIZATIONS = ("Frigate Native Windows",)
 _GENERATED_LIFETIME = timedelta(days=365)
 #: a generated certificate is replaced once this little of its lifetime is left
 _RENEW_WITHIN = timedelta(days=30)
@@ -150,8 +155,10 @@ def is_generated_certificate(certificate: x509.Certificate) -> bool:
     if certificate.issuer != certificate.subject:
         return False
 
+    organizations = {_GENERATED_ORGANIZATION, *_LEGACY_GENERATED_ORGANIZATIONS}
+
     return any(
-        attribute.value == _GENERATED_ORGANIZATION
+        attribute.value in organizations
         for attribute in certificate.subject.get_attributes_for_oid(
             NameOID.ORGANIZATION_NAME
         )
@@ -161,7 +168,7 @@ def is_generated_certificate(certificate: x509.Certificate) -> bool:
 def _needs_renewal(cert_file: Path) -> bool:
     """Decide whether an existing certificate should be regenerated.
 
-    Only a certificate Frigate generated itself is ever replaced, and only once
+    Only a certificate Gannet generated itself is ever replaced, and only once
     it has expired or is inside the renewal window; before this check the
     generated pair simply expired after a year and the gateway kept serving a
     certificate every browser rejected. A certificate an administrator
@@ -196,7 +203,7 @@ def _needs_renewal(cert_file: Path) -> bool:
 
     logger.warning(
         "The TLS certificate %s %s on %s; renew it, replace the files, and "
-        "restart Frigate",
+        "restart Gannet",
         cert_file,
         state,
         expires.date(),
@@ -208,7 +215,7 @@ def ensure_tls_certificate(cert_path: str, key_path: str) -> tuple[str, str]:
     """Return a usable TLS pair, generating the default pair when needed.
 
     A pair is generated when both files are absent, and regenerated when the
-    existing certificate is one Frigate generated earlier that has expired or
+    existing certificate is one Gannet generated earlier that has expired or
     is about to. Any other existing files are treated as administrator-managed
     and are never overwritten. A partial pair is rejected rather than silently
     replacing a certificate or private key.

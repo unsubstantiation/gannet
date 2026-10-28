@@ -1,6 +1,6 @@
 {
-    "documentTitle": "Chat - Frigate",
-    "title": "Chat Frigate",
+    "documentTitle": "Chat - Gannet",
+    "title": "Chat Gannet",
     "subtitle": "Asistentul tău AI pentru gestionarea camerelor și informații",
     "placeholder": "Întreabă orice...",
     "error": "Ceva a mers prost. Te rog încearcă din nou.",
@@ -77,7 +77,7 @@
     },
     "approval": {
         "title": "Aprobă {{tool}}?",
-        "desc": "Această acțiune modifică ceva în Frigate. Verifică detaliile înainte de a aproba.",
+        "desc": "Această acțiune modifică ceva în Gannet. Verifică detaliile înainte de a aproba.",
         "approve": "Aprobă",
         "always_allow": "Permite mereu",
         "reject": "Respinge",

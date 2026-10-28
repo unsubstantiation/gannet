@@ -133,10 +133,10 @@ cameras:
     enabled: True
     ffmpeg:
       inputs:
-        - path: rtsp://viewer:{FRIGATE_RTSP_PASSWORD}@10.0.10.10:554/cam/realmonitor?channel=1&subtype=2
+        - path: rtsp://viewer:{GANNET_RTSP_PASSWORD}@10.0.10.10:554/cam/realmonitor?channel=1&subtype=2
           roles:
             - detect
-        - path: rtsp://viewer:{FRIGATE_RTSP_PASSWORD}@10.0.10.10:554/live
+        - path: rtsp://viewer:{GANNET_RTSP_PASSWORD}@10.0.10.10:554/live
           roles:
             - record
     detect:

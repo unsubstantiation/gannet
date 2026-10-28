@@ -1,12 +1,12 @@
 {
   "documentTitle": {
-    "cameras": "Στατιστικά Καμερών - Frigate",
-    "storage": "Στατιστικά αποθήκευσης - Frigate",
-    "general": "Γενικά στατιστικά - Frigate",
-    "enrichments": "Στατιστικά Εμπλουτισμού - Frigate",
+    "cameras": "Στατιστικά Καμερών - Gannet",
+    "storage": "Στατιστικά αποθήκευσης - Gannet",
+    "general": "Γενικά στατιστικά - Gannet",
+    "enrichments": "Στατιστικά Εμπλουτισμού - Gannet",
     "logs": {
-      "frigate": "Frigate αρχέιο καταγραφών - Frigate",
-      "go2rtc": "Αρχείο καταγραφής Go2RTC - Frigate"
+      "gannet": "Gannet αρχέιο καταγραφών - Gannet",
+      "go2rtc": "Αρχείο καταγραφής Go2RTC - Gannet"
     }
   },
   "title": "Σύστημα",

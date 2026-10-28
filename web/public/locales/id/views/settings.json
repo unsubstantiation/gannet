@@ -1,21 +1,21 @@
 {
   "documentTitle": {
-    "default": "Pengaturan - Frigate",
-    "authentication": "Pengaturan Autentikasi - Frigate",
-    "masksAndZones": "Editor Masker dan Zona - Frigate",
-    "motionTuner": "Penyetel Gerakan - Frigate",
-    "general": "Pengaturan UI - Frigate",
-    "object": "Debug - Frigate",
-    "enrichments": "Pengaturan Pengayaan - Frigate",
-    "cameraManagement": "Kelola Kamera - Frigate",
-    "cameraReview": "Pengaturan Tinjauan Kamera - Frigate",
-    "frigatePlus": "Pengaturan Frigate+ - Frigate",
-    "notifications": "Pengaturan Notifikasi - Frigate",
-    "globalConfig": "Konfigurasi Global - Frigate",
-    "cameraConfig": "Konfigurasi Kamera - Frigate",
-    "detectorsAndModel": "Detektor dan model - Frigate",
-    "maintenance": "Pemeliharaan - Frigate",
-    "profiles": "Profil - Frigate"
+    "default": "Pengaturan - Gannet",
+    "authentication": "Pengaturan Autentikasi - Gannet",
+    "masksAndZones": "Editor Masker dan Zona - Gannet",
+    "motionTuner": "Penyetel Gerakan - Gannet",
+    "general": "Pengaturan UI - Gannet",
+    "object": "Debug - Gannet",
+    "enrichments": "Pengaturan Pengayaan - Gannet",
+    "cameraManagement": "Kelola Kamera - Gannet",
+    "cameraReview": "Pengaturan Tinjauan Kamera - Gannet",
+    "frigatePlus": "Pengaturan Frigate+ - Gannet",
+    "notifications": "Pengaturan Notifikasi - Gannet",
+    "globalConfig": "Konfigurasi Global - Gannet",
+    "cameraConfig": "Konfigurasi Kamera - Gannet",
+    "detectorsAndModel": "Detektor dan model - Gannet",
+    "maintenance": "Pemeliharaan - Gannet",
+    "profiles": "Profil - Gannet"
   },
   "menu": {
     "cameraManagement": "Manajemen kamera",
@@ -160,8 +160,8 @@
         "exportUiSettingsFailed": "Gagal mengekspor pengaturan",
         "importNothingToApply": "Gagal mengimpor pengaturan: file tidak berisi pengaturan",
         "importInvalidJson": "Gagal mengimpor pengaturan: file bukan JSON yang valid",
-        "importWrongType": "Gagal mengimpor pengaturan: file bukan ekspor pengaturan Frigate",
-        "importUnsupportedVersion": "Gagal mengimpor pengaturan: file memerlukan versi Frigate yang lebih baru",
+        "importWrongType": "Gagal mengimpor pengaturan: file bukan ekspor pengaturan Gannet",
+        "importUnsupportedVersion": "Gagal mengimpor pengaturan: file memerlukan versi Gannet yang lebih baru",
         "importInvalidSchema": "Gagal mengimpor pengaturan: file tidak valid",
         "importUiSettingsFailed": "Gagal mengimpor pengaturan"
       }
@@ -176,8 +176,8 @@
       },
       "importDialog": {
         "title": "Impor Pengaturan",
-        "desc": "Pilih yang akan diterapkan dari file ini. Frigate akan dimuat ulang setelah impor selesai.",
-        "exportedFrom": "Diekspor pada {{date}} dari konfigurasi Frigate versi {{version}}",
+        "desc": "Pilih yang akan diterapkan dari file ini. Gannet akan dimuat ulang setelah impor selesai.",
+        "exportedFrom": "Diekspor pada {{date}} dari konfigurasi Gannet versi {{version}}",
         "layouts_other": "Tata letak grup kamera ({{count}} grup)",
         "streaming_other": "Pengaturan streaming ({{count}} kamera)",
         "preferences_other": "Preferensi UI ({{count}} pengaturan)",
@@ -219,10 +219,10 @@
       "recordDisabled": "Perekaman dinonaktifkan, item tinjauan tidak akan dibuat.",
       "detectDisabled": "Deteksi objek dinonaktifkan. Item tinjauan memerlukan objek yang terdeteksi untuk mengategorikan alert dan deteksi.",
       "allNonAlertDetections": "Semua aktivitas non-alert akan disertakan sebagai deteksi.",
-      "genaiImageSourceRecordingsRecordDisabled": "Sumber gambar disetel ke 'rekaman', tetapi perekaman dinonaktifkan. Frigate akan kembali ke gambar pratinjau.",
+      "genaiImageSourceRecordingsRecordDisabled": "Sumber gambar disetel ke 'rekaman', tetapi perekaman dinonaktifkan. Gannet akan kembali ke gambar pratinjau.",
       "recordRuntimeDisabled": "Perekaman diaktifkan dalam konfigurasi Anda, tetapi saat ini dinonaktifkan untuk kamera ini, sehingga item tinjauan tidak akan dibuat. Aktifkan kembali dari tampilan langsung kamera, atau periksa apakah profil aktif menonaktifkannya.",
       "detectRuntimeDisabled": "Deteksi objek diaktifkan dalam konfigurasi Anda, tetapi saat ini dinonaktifkan untuk kamera ini. Item tinjauan memerlukan objek yang terdeteksi untuk mengategorikan peringatan dan deteksi. Aktifkan kembali dari tampilan langsung kamera, atau periksa apakah profil aktif menonaktifkannya.",
-      "genaiImageSourceRecordingsRecordRuntimeDisabled": "Sumber gambar diatur ke “recordings”, tetapi perekaman saat ini dinonaktifkan untuk kamera ini meskipun konfigurasi Anda mengaktifkannya. Frigate akan menggunakan gambar pratinjau sebagai pengganti."
+      "genaiImageSourceRecordingsRecordRuntimeDisabled": "Sumber gambar diatur ke “recordings”, tetapi perekaman saat ini dinonaktifkan untuk kamera ini meskipun konfigurasi Anda mengaktifkannya. Gannet akan menggunakan gambar pratinjau sebagai pengganti."
     },
     "audio": {
       "noAudioRole": "Tidak ada stream yang memiliki peran audio yang didefinisikan. Anda harus mengaktifkan peran audio agar deteksi audio berfungsi."
@@ -245,7 +245,7 @@
       "autotrackingNoZones": "Pelacakan otomatis memerlukan setidaknya satu zona. Tentukan zona untuk kamera ini di Masker / Zona, lalu tetapkan sebagai zona wajib di bawah."
     },
     "model": {
-      "optimizedFor320": "Frigate dioptimalkan untuk model 320x320, yang merupakan pilihan terbaik untuk sebagian besar konfigurasi. Model 640x640 lebih lambat dan hanya membantu dalam skenario tertentu.",
+      "optimizedFor320": "Gannet dioptimalkan untuk model 320x320, yang merupakan pilihan terbaik untuk sebagian besar konfigurasi. Model 640x640 lebih lambat dan hanya membantu dalam skenario tertentu.",
       "inputDimensionsNotDetectResolution": "Lebar dan tinggi input model adalah dimensi input model deteksi objek, bukan resolusi deteksi kamera Anda. Nilainya harus sesuai dengan dimensi model yang digunakan—biasanya ukuran persegi seperti 320x320 atau 640x640."
     },
     "ffmpeg": {
@@ -274,7 +274,7 @@
       "profilePrefix": "Profil {{profile}}: {{fields}}"
     },
     "overriddenLive": "Ditimpa (Langsung)",
-    "overriddenLiveTooltip": "Kamera ini berjalan dengan nilai yang berbeda dari nilai yang tersimpan dalam konfigurasi Anda, yang ditampilkan di sini. Tampilan langsung, MQTT, atau profil aktif dapat mengubahnya saat Frigate berjalan.",
+    "overriddenLiveTooltip": "Kamera ini berjalan dengan nilai yang berbeda dari nilai yang tersimpan dalam konfigurasi Anda, yang ditampilkan di sini. Tampilan langsung, MQTT, atau profil aktif dapat mengubahnya saat Gannet berjalan.",
     "overriddenLiveValue": "Nilai yang berjalan: {{value}}"
   },
   "menuDot": {
@@ -311,7 +311,7 @@
     },
     "semanticSearch": {
       "title": "Pencarian Semantik",
-      "desc": "Pencarian Semantik di Frigate memungkinkan Anda menemukan objek yang terlacak dalam item tinjauan menggunakan gambar itu sendiri, deskripsi teks yang ditentukan pengguna, atau deskripsi yang dibuat secara otomatis.",
+      "desc": "Pencarian Semantik di Gannet memungkinkan Anda menemukan objek yang terlacak dalam item tinjauan menggunakan gambar itu sendiri, deskripsi teks yang ditentukan pengguna, atau deskripsi yang dibuat secara otomatis.",
       "reindexNow": {
         "label": "Indeks Ulang Sekarang",
         "desc": "Pengindeksan ulang akan membuat ulang embedding untuk semua objek yang terlacak. Proses ini berjalan di latar belakang dan dapat memaksimalkan penggunaan CPU Anda serta memerlukan waktu cukup lama tergantung pada jumlah objek yang terlacak yang Anda miliki.",
@@ -337,7 +337,7 @@
     },
     "faceRecognition": {
       "title": "Pengenalan Wajah",
-      "desc": "Pengenalan wajah memungkinkan orang diberi nama, dan saat wajah mereka dikenali Frigate akan menetapkan nama orang tersebut sebagai sub_label. Informasi ini disertakan dalam UI, filter, serta notifikasi.",
+      "desc": "Pengenalan wajah memungkinkan orang diberi nama, dan saat wajah mereka dikenali Gannet akan menetapkan nama orang tersebut sebagai sub_label. Informasi ini disertakan dalam UI, filter, serta notifikasi.",
       "modelSize": {
         "label": "Ukuran Model",
         "desc": "Ukuran model yang digunakan untuk pengenalan wajah.",
@@ -353,17 +353,17 @@
     },
     "licensePlateRecognition": {
       "title": "Pengenalan Pelat Nomor",
-      "desc": "Frigate dapat mengenali pelat nomor pada kendaraan dan secara otomatis menambahkan karakter yang terdeteksi ke field recognized_license_plate atau nama yang dikenal sebagai sub_label pada objek bertipe mobil. Kasus penggunaan yang umum adalah membaca pelat nomor mobil yang masuk ke jalan masuk rumah atau mobil yang melintas di jalan."
+      "desc": "Gannet dapat mengenali pelat nomor pada kendaraan dan secara otomatis menambahkan karakter yang terdeteksi ke field recognized_license_plate atau nama yang dikenal sebagai sub_label pada objek bertipe mobil. Kasus penggunaan yang umum adalah membaca pelat nomor mobil yang masuk ke jalan masuk rumah atau mobil yang melintas di jalan."
     },
     "restart_required": "Perlu mulai ulang (pengaturan Pengayaan berubah)",
     "toast": {
-      "success": "Pengaturan Pengayaan telah disimpan. Mulai ulang Frigate untuk menerapkan perubahan Anda.",
+      "success": "Pengaturan Pengayaan telah disimpan. Mulai ulang Gannet untuk menerapkan perubahan Anda.",
       "error": "Gagal menyimpan perubahan konfigurasi: {{errorMessage}}"
     }
   },
   "cameraWizard": {
     "title": "Tambah Kamera",
-    "description": "Ikuti langkah-langkah di bawah ini untuk menambahkan kamera baru ke instalasi Frigate Anda.",
+    "description": "Ikuti langkah-langkah di bawah ini untuk menambahkan kamera baru ke instalasi Gannet Anda.",
     "steps": {
       "nameAndConnection": "Nama & Koneksi",
       "probeOrSnapshot": "Probe atau Cuplikan",
@@ -535,7 +535,7 @@
       "estimatedBandwidth": "Perkiraan Bandwidth",
       "roles": "Peran",
       "ffmpegModule": "Gunakan mode kompatibilitas stream",
-      "ffmpegModuleDescription": "Jika stream tidak dimuat setelah beberapa kali percobaan, coba aktifkan ini. Saat diaktifkan, Frigate akan menggunakan modul ffmpeg dengan go2rtc. Ini dapat memberikan kompatibilitas yang lebih baik dengan beberapa stream kamera.",
+      "ffmpegModuleDescription": "Jika stream tidak dimuat setelah beberapa kali percobaan, coba aktifkan ini. Saat diaktifkan, Gannet akan menggunakan modul ffmpeg dengan go2rtc. Ini dapat memberikan kompatibilitas yang lebih baik dengan beberapa stream kamera.",
       "none": "Tidak ada",
       "error": "Kesalahan",
       "streamValidated": "Stream {{number}} berhasil divalidasi",
@@ -587,12 +587,12 @@
     "backToSettings": "Kembali ke Pengaturan Kamera",
     "streams": {
       "title": "Status dan Detail Kamera",
-      "enableSuccess": "{{cameraName}} diaktifkan. Restart Frigate untuk menerapkan.",
+      "enableSuccess": "{{cameraName}} diaktifkan. Restart Gannet untuk menerapkan.",
       "reorderHandle": "Seret untuk mengubah urutan",
       "saving": "Menyimpan…",
       "saved": "Tersimpan",
       "label": "Status kamera",
-      "description": "Atur status operasi untuk setiap kamera.<br /><br /><strong>Nyala</strong>: stream diproses secara normal.<br /><strong>Mati</strong>: mem jeda pemrosesan untuk sementara. Tidak tetap setelah Frigate dimulai ulang.<br /><strong>Nonaktif</strong>: menghentikan pemrosesan dan menyimpan perubahan ke konfigurasi Anda. Restart diperlukan untuk mengaktifkan kembali kamera yang dinonaktifkan.<br /><br /><em>Catatan: Menonaktifkan tidak memengaruhi restream go2rtc.</em><br /><br />Seret pegangan untuk mengubah urutan kamera aktif sebagaimana tampil di seluruh UI, termasuk dasbor Live dan menu dropdown pemilihan kamera.",
+      "description": "Atur status operasi untuk setiap kamera.<br /><br /><strong>Nyala</strong>: stream diproses secara normal.<br /><strong>Mati</strong>: mem jeda pemrosesan untuk sementara. Tidak tetap setelah Gannet dimulai ulang.<br /><strong>Nonaktif</strong>: menghentikan pemrosesan dan menyimpan perubahan ke konfigurasi Anda. Restart diperlukan untuk mengaktifkan kembali kamera yang dinonaktifkan.<br /><br /><em>Catatan: Menonaktifkan tidak memengaruhi restream go2rtc.</em><br /><br />Seret pegangan untuk mengubah urutan kamera aktif sebagaimana tampil di seluruh UI, termasuk dasbor Live dan menu dropdown pemilihan kamera.",
       "disabledSubheading": "Dinonaktifkan dalam konfigurasi",
       "status": {
         "on": "Nyala",
@@ -603,9 +603,9 @@
       "details": {
         "edit": "Edit detail kamera",
         "title": "Edit Detail Kamera",
-        "description": "Perbarui nama tampilan, URL eksternal, dan visibilitas yang digunakan untuk kamera ini di seluruh UI Frigate.",
+        "description": "Perbarui nama tampilan, URL eksternal, dan visibilitas yang digunakan untuk kamera ini di seluruh UI Gannet.",
         "friendlyNameLabel": "Nama Tampilan",
-        "friendlyNameHelp": "Nama ramah yang ditampilkan untuk kamera ini di seluruh UI Frigate. Biarkan kosong untuk menggunakan ID kamera.",
+        "friendlyNameHelp": "Nama ramah yang ditampilkan untuk kamera ini di seluruh UI Gannet. Biarkan kosong untuk menggunakan ID kamera.",
         "webuiUrlLabel": "URL Web UI Kamera",
         "webuiUrlHelp": "URL untuk membuka web UI kamera langsung dari tampilan Debug. Biarkan kosong untuk menonaktifkan tautan.",
         "webuiUrlInvalid": "Harus berupa URL yang valid (misalnya, https://example.com).",
@@ -658,7 +658,7 @@
       "description": "Tetapkan tipe untuk setiap kamera. Kamera LPR khusus adalah kamera satu fungsi dengan zoom optik kuat untuk menangkap pelat nomor pada kendaraan yang jauh. Sebagian besar kamera sebaiknya menggunakan tipe kamera normal kecuali kamera tersebut memang khusus untuk LPR dan memiliki tampilan yang sangat terfokus pada pelat nomor.",
       "normal": "Normal",
       "dedicatedLpr": "LPR Khusus",
-      "saveSuccess": "Tipe kamera untuk {{cameraName}} telah diperbarui. Mulai ulang Frigate untuk menerapkan perubahan."
+      "saveSuccess": "Tipe kamera untuk {{cameraName}} telah diperbarui. Mulai ulang Gannet untuk menerapkan perubahan."
     },
     "clone": {
       "sectionTitle": "Kloning pengaturan",
@@ -732,9 +732,9 @@
       },
       "toast": {
         "success": "Pengaturan disalin ke {{cameraName}}",
-        "successWithRestart": "Pengaturan disalin ke {{cameraName}}. Restart Frigate untuk menerapkan semua perubahan.",
+        "successWithRestart": "Pengaturan disalin ke {{cameraName}}. Restart Gannet untuk menerapkan semua perubahan.",
         "successMulti_other": "Pengaturan disalin ke {{count}} kamera",
-        "successMultiWithRestart_other": "Pengaturan disalin ke {{count}} kamera. Restart Frigate untuk menerapkan semua perubahan.",
+        "successMultiWithRestart_other": "Pengaturan disalin ke {{count}} kamera. Restart Gannet untuk menerapkan semua perubahan.",
         "partialFailure": "{{successCount}} bagian diterapkan; '{{failedSection}}' gagal: {{errorMessage}}",
         "partialFailureMulti": "Disalin ke {{successCount}} kamera; gagal untuk {{failed}}: {{errorMessage}}",
         "newCameraPartialFailure": "Kamera {{cameraName}} berhasil dibuat, tetapi beberapa pengaturan gagal disalin: {{errorMessage}}",
@@ -747,21 +747,21 @@
     "title": "Pengaturan Tinjauan Kamera",
     "object_descriptions": {
       "title": "Deskripsi Objek AI Generatif",
-      "desc": "Aktifkan/nonaktifkan sementara deskripsi objek AI Generatif untuk kamera ini hingga Frigate dimulai ulang. Saat dinonaktifkan, deskripsi yang dihasilkan AI tidak akan diminta untuk objek terlacak pada kamera ini."
+      "desc": "Aktifkan/nonaktifkan sementara deskripsi objek AI Generatif untuk kamera ini hingga Gannet dimulai ulang. Saat dinonaktifkan, deskripsi yang dihasilkan AI tidak akan diminta untuk objek terlacak pada kamera ini."
     },
     "review_descriptions": {
       "title": "Deskripsi Tinjauan AI Generatif",
-      "desc": "Aktifkan/nonaktifkan sementara deskripsi tinjauan AI Generatif untuk kamera ini hingga Frigate dimulai ulang. Saat dinonaktifkan, deskripsi yang dihasilkan AI tidak akan diminta untuk item tinjauan pada kamera ini."
+      "desc": "Aktifkan/nonaktifkan sementara deskripsi tinjauan AI Generatif untuk kamera ini hingga Gannet dimulai ulang. Saat dinonaktifkan, deskripsi yang dihasilkan AI tidak akan diminta untuk item tinjauan pada kamera ini."
     },
     "review": {
       "title": "Tinjauan",
-      "desc": "Aktifkan/nonaktifkan sementara alert dan deteksi untuk kamera ini hingga Frigate dimulai ulang. Saat dinonaktifkan, tidak ada item tinjauan baru yang akan dibuat. ",
+      "desc": "Aktifkan/nonaktifkan sementara alert dan deteksi untuk kamera ini hingga Gannet dimulai ulang. Saat dinonaktifkan, tidak ada item tinjauan baru yang akan dibuat. ",
       "alerts": "Alert ",
       "detections": "Deteksi "
     },
     "reviewClassification": {
       "title": "Klasifikasi Tinjauan",
-      "desc": "Frigate mengategorikan item tinjauan sebagai Alert dan Deteksi. Secara default, semua objek <em>person</em> dan <em>car</em> dianggap sebagai Alert. Anda dapat menyempurnakan kategorisasi item tinjauan Anda dengan mengonfigurasi zona yang diwajibkan untuk item tersebut.",
+      "desc": "Gannet mengategorikan item tinjauan sebagai Alert dan Deteksi. Secara default, semua objek <em>person</em> dan <em>car</em> dianggap sebagai Alert. Anda dapat menyempurnakan kategorisasi item tinjauan Anda dengan mengonfigurasi zona yang diwajibkan untuk item tersebut.",
       "noDefinedZones": "Tidak ada zona yang didefinisikan untuk kamera ini.",
       "objectAlertsTips": "Semua objek {{alertsLabels}} pada {{cameraName}} akan ditampilkan sebagai Alert.",
       "zoneObjectAlertsTips": "Semua objek {{alertsLabels}} yang terdeteksi di {{zone}} pada {{cameraName}} akan ditampilkan sebagai Alert.",
@@ -776,7 +776,7 @@
       "selectDetectionsZones": "Pilih zona untuk Deteksi",
       "limitDetections": "Batasi deteksi ke zona tertentu",
       "toast": {
-        "success": "Konfigurasi Klasifikasi Tinjauan telah disimpan. Mulai ulang Frigate untuk menerapkan perubahan."
+        "success": "Konfigurasi Klasifikasi Tinjauan telah disimpan. Mulai ulang Gannet untuk menerapkan perubahan."
       }
     }
   },
@@ -872,7 +872,7 @@
     },
     "zones": {
       "label": "Zona",
-      "documentTitle": "Edit Zona - Frigate",
+      "documentTitle": "Edit Zona - Gannet",
       "desc": {
         "title": "Zona memungkinkan Anda menentukan area tertentu pada frame sehingga Anda dapat menentukan apakah suatu objek berada di dalam area tertentu atau tidak.",
         "documentation": "Dokumentasi"
@@ -927,7 +927,7 @@
     },
     "motionMasks": {
       "label": "Masker Gerakan",
-      "documentTitle": "Edit Masker Gerakan - Frigate",
+      "documentTitle": "Edit Masker Gerakan - Gannet",
       "desc": {
         "title": "Masker gerakan digunakan untuk mencegah jenis gerakan yang tidak diinginkan memicu deteksi. Masking yang berlebihan akan membuat objek lebih sulit dilacak.",
         "documentation": "Dokumentasi"
@@ -958,7 +958,7 @@
     },
     "objectMasks": {
       "label": "Masker Objek",
-      "documentTitle": "Edit Masker Objek - Frigate",
+      "documentTitle": "Edit Masker Objek - Gannet",
       "desc": {
         "title": "Masker filter objek digunakan untuk menyaring positif palsu untuk tipe objek tertentu berdasarkan lokasi.",
         "documentation": "Dokumentasi"
@@ -996,7 +996,7 @@
     "title": "Penyetel Deteksi Gerakan",
     "unsavedChanges": "Perubahan Penyetel Gerakan yang belum disimpan ({{camera}})",
     "desc": {
-      "title": "Frigate menggunakan deteksi gerakan sebagai pemeriksaan awal untuk melihat apakah ada sesuatu yang terjadi dalam frame yang layak diperiksa dengan deteksi objek.",
+      "title": "Gannet menggunakan deteksi gerakan sebagai pemeriksaan awal untuk melihat apakah ada sesuatu yang terjadi dalam frame yang layak diperiksa dengan deteksi objek.",
       "documentation": "Baca Panduan Penyetelan Gerakan"
     },
     "Threshold": {
@@ -1017,7 +1017,7 @@
   },
   "debug": {
     "title": "Debug",
-    "detectorDesc": "Frigate menggunakan detektor Anda ({{detectors}}) untuk mendeteksi objek di stream video kamera Anda.",
+    "detectorDesc": "Gannet menggunakan detektor Anda ({{detectors}}) untuk mendeteksi objek di stream video kamera Anda.",
     "desc": "Tampilan debug menunjukkan tampilan real-time objek yang dilacak dan statistiknya. Daftar objek menampilkan ringkasan objek yang terdeteksi dengan sedikit jeda waktu.",
     "openCameraWebUI": "Buka UI Web milik {{camera}}",
     "debugging": "Debugging",
@@ -1084,7 +1084,7 @@
     "title": "Pengguna",
     "management": {
       "title": "Manajemen Pengguna",
-      "desc": "Kelola akun pengguna untuk instance Frigate ini."
+      "desc": "Kelola akun pengguna untuk instance Gannet ini."
     },
     "addUser": "Tambah Pengguna",
     "updatePassword": "Atur Ulang Kata Sandi",
@@ -1157,7 +1157,7 @@
       },
       "createUser": {
         "title": "Buat Pengguna Baru",
-        "desc": "Tambahkan akun pengguna baru dan tentukan peran untuk akses ke area UI Frigate.",
+        "desc": "Tambahkan akun pengguna baru dan tentukan peran untuk akses ke area UI Gannet.",
         "usernameOnlyInclude": "Nama pengguna hanya boleh berisi huruf, angka, . atau _",
         "confirmPassword": "Harap konfirmasi kata sandi Anda"
       },
@@ -1196,7 +1196,7 @@
   "roles": {
     "management": {
       "title": "Manajemen Peran Viewer",
-      "desc": "Kelola peran viewer kustom dan izin akses kameranya untuk instance Frigate ini."
+      "desc": "Kelola peran viewer kustom dan izin akses kameranya untuk instance Gannet ini."
     },
     "addRole": "Tambah Peran",
     "table": {
@@ -1257,11 +1257,11 @@
     "title": "Notifikasi",
     "notificationSettings": {
       "title": "Pengaturan Notifikasi",
-      "desc": "Frigate dapat secara native mengirim notifikasi push ke perangkat Anda saat berjalan di browser atau diinstal sebagai PWA."
+      "desc": "Gannet dapat secara native mengirim notifikasi push ke perangkat Anda saat berjalan di browser atau diinstal sebagai PWA."
     },
     "notificationUnavailable": {
-      "desc": "Notifikasi push web memerlukan konteks aman ([https://…](https://…)). Ini merupakan batasan browser. Akses Frigate secara aman untuk menggunakan notifikasi.",
-      "descPwa": "Di iOS, notifikasi push web hanya tersedia jika Frigate dipasang ke Layar Utama. Buka menu Bagikan, pilih Tambahkan ke Layar Utama, lalu buka Frigate dari ikon baru untuk mendaftarkan perangkat ini untuk notifikasi."
+      "desc": "Notifikasi push web memerlukan konteks aman ([https://…](https://…)). Ini merupakan batasan browser. Akses Gannet secara aman untuk menggunakan notifikasi.",
+      "descPwa": "Di iOS, notifikasi push web hanya tersedia jika Gannet dipasang ke Layar Utama. Buka menu Bagikan, pilih Tambahkan ke Layar Utama, lalu buka Gannet dari ikon baru untuk mendaftarkan perangkat ini untuk notifikasi."
     },
     "globalSettings": {
       "title": "Pengaturan Global",
@@ -1298,7 +1298,7 @@
     "cancelSuspension": "Batalkan Penangguhan",
     "toast": {
       "success": {
-        "registered": "Berhasil terdaftar untuk notifikasi. Mulai ulang Frigate diperlukan sebelum notifikasi apa pun (termasuk notifikasi uji) dapat dikirim.",
+        "registered": "Berhasil terdaftar untuk notifikasi. Mulai ulang Gannet diperlukan sebelum notifikasi apa pun (termasuk notifikasi uji) dapat dikirim.",
         "settingSaved": "Pengaturan notifikasi telah disimpan."
       },
       "error": {
@@ -1308,7 +1308,7 @@
   },
   "frigatePlus": {
     "title": "Pengaturan Frigate+",
-    "description": "Frigate+ adalah layanan berlangganan yang menyediakan akses ke fitur dan kemampuan tambahan untuk instance Frigate Anda, termasuk kemampuan menggunakan model deteksi objek kustom yang dilatih dengan data Anda sendiri. Anda dapat mengelola pengaturan model Frigate+ Anda di sini.",
+    "description": "Frigate+ adalah layanan berlangganan yang menyediakan akses ke fitur dan kemampuan tambahan untuk instance Gannet Anda, termasuk kemampuan menggunakan model deteksi objek kustom yang dilatih dengan data Anda sendiri. Anda dapat mengelola pengaturan model Frigate+ Anda di sini.",
     "cardTitles": {
       "api": "API",
       "currentModel": "Model Saat Ini",
@@ -1360,7 +1360,7 @@
     "unsavedChanges": "Perubahan pengaturan Frigate+ yang belum disimpan",
     "restart_required": "Perlu mulai ulang (model Frigate+ berubah)",
     "toast": {
-      "success": "Pengaturan Frigate+ telah disimpan. Mulai ulang Frigate untuk menerapkan perubahan.",
+      "success": "Pengaturan Frigate+ telah disimpan. Mulai ulang Gannet untuk menerapkan perubahan.",
       "error": "Gagal menyimpan perubahan konfigurasi: {{errorMessage}}"
     }
   },
@@ -1447,7 +1447,7 @@
         },
         "actions": {
           "title": "Tindakan",
-          "desc": "Secara default, Frigate mengirim pesan MQTT untuk semua pemicu. Sub label menambahkan nama pemicu ke label objek. Atribut adalah metadata yang dapat dicari dan disimpan secara terpisah dalam metadata objek terlacak.",
+          "desc": "Secara default, Gannet mengirim pesan MQTT untuk semua pemicu. Sub label menambahkan nama pemicu ke label objek. Atribut adalah metadata yang dapat dicari dan disimpan secara terpisah dalam metadata objek terlacak.",
           "error": {
             "min": "Setidaknya satu tindakan harus dipilih."
           }
@@ -1488,7 +1488,7 @@
     "title": "Pemeliharaan",
     "sync": {
       "title": "Sinkronisasi Media",
-      "desc": "Frigate akan secara berkala membersihkan media sesuai jadwal reguler berdasarkan konfigurasi retensi Anda. Wajar jika ada beberapa file yatim piatu saat Frigate berjalan. Gunakan fitur ini untuk menghapus file media yatim piatu dari disk yang tidak lagi direferensikan dalam basis data.",
+      "desc": "Gannet akan secara berkala membersihkan media sesuai jadwal reguler berdasarkan konfigurasi retensi Anda. Wajar jika ada beberapa file yatim piatu saat Gannet berjalan. Gunakan fitur ini untuk menghapus file media yatim piatu dari disk yang tidak lagi direferensikan dalam basis data.",
       "started": "Sinkronisasi media dimulai.",
       "alreadyRunning": "Pekerjaan sinkronisasi sudah sedang berjalan",
       "error": "Gagal memulai sinkronisasi",
@@ -1537,10 +1537,10 @@
     },
     "regionGrid": {
       "title": "Grid Wilayah",
-      "desc": "Grid wilayah adalah optimasi yang mempelajari di mana objek dengan ukuran berbeda biasanya muncul dalam bidang pandang tiap kamera. Frigate menggunakan data ini untuk menentukan ukuran wilayah deteksi secara efisien. Grid ini dibangun secara otomatis seiring waktu dari data objek terlacak.",
+      "desc": "Grid wilayah adalah optimasi yang mempelajari di mana objek dengan ukuran berbeda biasanya muncul dalam bidang pandang tiap kamera. Gannet menggunakan data ini untuk menentukan ukuran wilayah deteksi secara efisien. Grid ini dibangun secara otomatis seiring waktu dari data objek terlacak.",
       "clear": "Hapus grid wilayah",
       "clearConfirmTitle": "Hapus Grid Wilayah",
-      "clearConfirmDesc": "Menghapus grid wilayah tidak direkomendasikan kecuali Anda baru-baru ini mengubah ukuran model detektor atau mengubah posisi fisik kamera dan mengalami masalah pelacakan objek. Grid akan dibangun ulang secara otomatis seiring waktu saat objek dilacak. Frigate perlu dimulai ulang agar perubahan diterapkan.",
+      "clearConfirmDesc": "Menghapus grid wilayah tidak direkomendasikan kecuali Anda baru-baru ini mengubah ukuran model detektor atau mengubah posisi fisik kamera dan mengalami masalah pelacakan objek. Grid akan dibangun ulang secara otomatis seiring waktu saat objek dilacak. Gannet perlu dimulai ulang agar perubahan diterapkan.",
       "clearSuccess": "Grid wilayah berhasil dihapus",
       "clearError": "Gagal menghapus grid wilayah",
       "restartRequired": "Perlu mulai ulang agar perubahan grid wilayah diterapkan"
@@ -1819,13 +1819,13 @@
   "toast": {
     "success": "Pengaturan berhasil disimpan",
     "applied": "Pengaturan berhasil diterapkan",
-    "successRestartRequired": "Pengaturan berhasil disimpan. Mulai ulang Frigate untuk menerapkan perubahan Anda.",
+    "successRestartRequired": "Pengaturan berhasil disimpan. Mulai ulang Gannet untuk menerapkan perubahan Anda.",
     "error": "Gagal menyimpan pengaturan",
     "validationError": "Validasi gagal: {{message}}",
     "resetSuccess": "Atur ulang ke default global",
     "resetError": "Gagal mengatur ulang pengaturan",
     "saveAllSuccess_other": "Semua {{count}} bagian berhasil disimpan.",
-    "saveAllSuccessRestartRequired_other": "Semua {{count}} bagian berhasil disimpan. Mulai ulang Frigate untuk menerapkan perubahan Anda.",
+    "saveAllSuccessRestartRequired_other": "Semua {{count}} bagian berhasil disimpan. Mulai ulang Gannet untuk menerapkan perubahan Anda.",
     "saveAllPartial_other": "{{successCount}} dari {{totalCount}} bagian berhasil disimpan. {{failCount}} gagal.",
     "saveAllFailure": "Gagal menyimpan semua bagian."
   },

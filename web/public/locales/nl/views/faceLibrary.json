@@ -4,7 +4,7 @@
     "scoreInfo": "De sublabelscore is het gewogen gemiddelde van hoe zeker de gezichtsherkenningen zijn. Deze score kan anders zijn dan die op de snapshot.",
     "unknown": "Onbekend"
   },
-  "documentTitle": "Gezichtsbibliotheek - Frigate",
+  "documentTitle": "Gezichtsbibliotheek - Gannet",
   "description": {
     "placeholder": "Voer een naam in voor deze verzameling",
     "addFace": "Voeg een nieuwe collectie toe aan de gezichtenbibliotheek door je eerste afbeelding te uploaden.",

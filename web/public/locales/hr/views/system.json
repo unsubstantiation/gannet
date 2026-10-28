@@ -1,13 +1,13 @@
 {
   "documentTitle": {
-    "cameras": "Statistika Kamera - Frigate",
-    "general": "Opća Statistika - Frigate",
+    "cameras": "Statistika Kamera - Gannet",
+    "general": "Opća Statistika - Gannet",
     "logs": {
-      "go2rtc": "Zapisnici Go2RTC - Frigate",
-      "frigate": "Zapisnici Frigate - Frigate"
+      "go2rtc": "Zapisnici Go2RTC - Gannet",
+      "gannet": "Zapisnici Gannet - Gannet"
     },
-    "storage": "Statistika Pohrane - Frigate",
-    "enrichments": "Statistika Obogaćenja - Frigate"
+    "storage": "Statistika Pohrane - Gannet",
+    "enrichments": "Statistika Obogaćenja - Gannet"
   },
   "title": "Sustav",
   "logs": {
@@ -95,7 +95,7 @@
     "overview": "Pregled",
     "recordings": {
       "title": "Snimke",
-      "tips": "Ova vrijednost predstavlja ukupno korištenje prostora za snimke u Frigate bazi podataka. Frigate ne prati korištenje prostora za sve datoteke na disku.",
+      "tips": "Ova vrijednost predstavlja ukupno korištenje prostora za snimke u Gannet bazi podataka. Gannet ne prati korištenje prostora za sve datoteke na disku.",
       "earliestRecording": "Najranija dostupna snimka:"
     },
     "shm": {
@@ -111,7 +111,7 @@
       "bandwidth": "Propusnost",
       "unused": {
         "title": "Neiskorišteno",
-        "tips": "Ova vrijednost možda ne prikazuje točno slobodan prostor dostupan Frigate-u ako imate druge datoteke pohranjene na disku osim Frigate snimaka. Frigate ne prati korištenje prostora izvan svojih snimki."
+        "tips": "Ova vrijednost možda ne prikazuje točno slobodan prostor dostupan Gannet-u ako imate druge datoteke pohranjene na disku osim Gannet snimaka. Gannet ne prati korištenje prostora izvan svojih snimki."
       }
     }
   },

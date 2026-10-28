@@ -1,6 +1,6 @@
 {
-    "documentTitle": "Xat - Frigate",
-    "title": "Xat Frigate",
+    "documentTitle": "Xat - Gannet",
+    "title": "Xat Gannet",
     "subtitle": "El teu assistent d'AI per a gestionar càmeres i coneixements",
     "placeholder": "Pregunta qualsevol cosa...",
     "error": "Alguna cosa ha fallat. Torna-ho a provar.",
@@ -77,7 +77,7 @@
     },
     "approval": {
         "title": "Aprova {{tool}}?",
-        "desc": "Aquesta acció canvia alguna cosa a Frigate. Revisa els detalls abans d'aprovar.",
+        "desc": "Aquesta acció canvia alguna cosa a Gannet. Revisa els detalls abans d'aprovar.",
         "approve": "Aprova",
         "always_allow": "Permet sempre",
         "reject": "Rebutja",

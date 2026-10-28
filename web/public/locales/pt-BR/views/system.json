@@ -1,15 +1,15 @@
 {
   "documentTitle": {
-    "cameras": "Estatísticas das Câmeras - Frigate",
-    "storage": "Status de Armazenamento - Frigate",
-    "general": "Estatísticas Gerais - Frigate",
-    "enrichments": "Estatísticas de Enriquecimento - Frigate",
+    "cameras": "Estatísticas das Câmeras - Gannet",
+    "storage": "Status de Armazenamento - Gannet",
+    "general": "Estatísticas Gerais - Gannet",
+    "enrichments": "Estatísticas de Enriquecimento - Gannet",
     "logs": {
-      "frigate": "Registros Frigate - Frigate",
-      "go2rtc": "Registros GoRTC - Frigate",
-      "websocket": "Registros de Mensagem - Frigate"
+      "gannet": "Registros Gannet - Gannet",
+      "go2rtc": "Registros GoRTC - Gannet",
+      "websocket": "Registros de Mensagem - Gannet"
     },
-    "health": "Saúde - Frigate"
+    "health": "Saúde - Gannet"
   },
   "title": "Sistema",
   "metrics": "Métricas do sistema",
@@ -128,7 +128,7 @@
     "recordings": {
       "title": "Gravações",
       "earliestRecording": "Gravação mais recente disponível:",
-      "tips": "Esse valor representa o armazenamento total usado pelas gravações no banco de dados do Frigate. O Frigate não rastreia o uso de armazenamento para todos os arquivos do seu disco."
+      "tips": "Esse valor representa o armazenamento total usado pelas gravações no banco de dados do Gannet. O Gannet não rastreia o uso de armazenamento para todos os arquivos do seu disco."
     },
     "cameraStorage": {
       "title": "Armazenamento da Câmera",
@@ -139,7 +139,7 @@
       "bandwidth": "Largura de Banda",
       "unused": {
         "title": "Não Utilizado",
-        "tips": "Esse valor por não representar com precisão o espaço livre disponí®el para o Frigate se você possui outros arquivos armazenados no seu drive além das gravações do Frigate. O Frigate não rastreia a utilização do armazenamento além de suas próprias gravações."
+        "tips": "Esse valor por não representar com precisão o espaço livre disponí®el para o Gannet se você possui outros arquivos armazenados no seu drive além das gravações do Gannet. O Gannet não rastreia a utilização do armazenamento além de suas próprias gravações."
       },
       "subStream": {
         "information": "Informações de armazenamento do substream",
@@ -278,7 +278,7 @@
   "health": {
     "title": "Saúde",
     "notices": {
-      "empty": "Sua instalação do Frigate está saudável",
+      "empty": "Sua instalação do Gannet está saudável",
       "openSettings": "Abrir configurações",
       "openLink": "Abrir link",
       "noMatches": "Nenhum aviso corresponde ao filtro",
@@ -296,7 +296,7 @@
         "skipped_detections": "A detecção não conseguiu acompanhar e ignorou {{pct}}% dos quadros por mais de um minuto",
         "failed_login_other": "Tentativas de login malsucedidas para {{user}}",
         "failed_login_one": "Tentativa de login malsucedida para {{user}}",
-        "update_available": "O Frigate {{version}} está disponível",
+        "update_available": "O Gannet {{version}} está disponível",
         "ffmpeg_high_cpu": "O uso de CPU do FFmpeg está alto ({{cpu}}% em média)",
         "detect_high_cpu": "O uso de CPU da detecção está alto ({{cpu}}% em média)"
       },
@@ -334,7 +334,7 @@
       "fps": "{{camera}} / {{expected}} fps",
       "allCameras": "Todas as câmeras",
       "probeUnavailable": "A detecção de hardware não está disponível",
-      "justStarted": "O Frigate acabou de iniciar",
+      "justStarted": "O Gannet acabou de iniciar",
       "deviceNotFound": "{{devices}} não foi encontrado neste sistema",
       "detectorNotRunning": "O processo do detector não está em execução",
       "inferenceVerySlow": "A inferência está muito lenta ({{speed}} ms)",

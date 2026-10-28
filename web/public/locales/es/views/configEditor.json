@@ -11,8 +11,8 @@
       "savingError": "Error al guardar la configuración"
     }
   },
-  "documentTitle": "Editor de Configuración - Frigate",
+  "documentTitle": "Editor de Configuración - Gannet",
   "confirm": "¿Salir sin guardar?",
   "safeConfigEditor": "Editor de Configuración (Modo Seguro)",
-  "safeModeDescription": "Frigate se encuentra en modo seguro debido a un error de validación en la configuración."
+  "safeModeDescription": "Gannet se encuentra en modo seguro debido a un error de validación en la configuración."
 }

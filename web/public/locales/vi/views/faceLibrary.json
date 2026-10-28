@@ -79,7 +79,7 @@
     "empty": "Không có nỗ lực nhận dạng khuôn mặt nào gần đây",
     "aria": "Chọn các nhận dạng gần đây"
   },
-  "documentTitle": "Thư viện Khuôn mặt - Frigate",
+  "documentTitle": "Thư viện Khuôn mặt - Gannet",
   "uploadFaceImage": {
     "title": "Tải lên hình ảnh khuôn mặt",
     "desc": "Tải lên một hình ảnh để quét khuôn mặt và bao gồm cho {{pageToggle}}"

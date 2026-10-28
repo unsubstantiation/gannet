@@ -70,7 +70,7 @@ def register_ready_providers(ort_module: Any) -> set[str]:
     """Register already-ready vendor EP libraries with this Python ORT runtime.
 
     This function never downloads a provider implicitly. Use the management
-    command to acquire EPs explicitly, then Frigate registers them when it
+    command to acquire EPs explicitly, then Gannet registers them when it
     creates model sessions.
     """
     runtime_id = id(ort_module)
@@ -153,7 +153,7 @@ def ensure_provider_ready(name: str) -> tuple[str, str]:
     """Acquire one Windows ML provider using the OS catalog.
 
     Returns its provider name and readiness state. Intended for the explicit
-    management command; never called from Frigate startup or an inference path.
+    management command; never called from Gannet startup or an inference path.
     """
     try:
         from windowsml import EpCatalog

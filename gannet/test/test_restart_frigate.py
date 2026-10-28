@@ -35,6 +35,42 @@ class TestRestartFrigate(unittest.TestCase):
 
     @patch("gannet.util.services.get_tmp_dir")
     @patch("gannet.util.services.signal.raise_signal")
+    def test_restart_records_the_reason_for_the_launcher(self, _mock_raise, mock_tmp):
+        """A restart loop is diagnosable only if the marker says why."""
+        with tempfile.TemporaryDirectory() as tmp:
+            mock_tmp.return_value = tmp
+
+            restart_frigate("detector ov (PID 42) exited with code 1")
+
+            with open(os.path.join(tmp, RESTART_MARKER_NAME), encoding="utf-8") as file:
+                self.assertEqual(file.read(), "detector ov (PID 42) exited with code 1")
+
+    @patch("gannet.util.services.get_tmp_dir")
+    @patch("gannet.util.services.signal.raise_signal")
+    def test_default_reason_is_explicit(self, _mock_raise, mock_tmp):
+        with tempfile.TemporaryDirectory() as tmp:
+            mock_tmp.return_value = tmp
+
+            restart_frigate()
+
+            with open(os.path.join(tmp, RESTART_MARKER_NAME), encoding="utf-8") as file:
+                self.assertEqual(file.read(), "unspecified")
+
+    @patch("gannet.util.services.get_tmp_dir")
+    @patch("gannet.util.services.signal.raise_signal")
+    def test_reason_is_one_short_line(self, _mock_raise, mock_tmp):
+        with tempfile.TemporaryDirectory() as tmp:
+            mock_tmp.return_value = tmp
+
+            restart_frigate("bad\nreason " + "x" * 300)
+
+            with open(os.path.join(tmp, RESTART_MARKER_NAME), encoding="utf-8") as file:
+                content = file.read()
+            self.assertNotIn("\n", content)
+            self.assertLessEqual(len(content), 200)
+
+    @patch("gannet.util.services.get_tmp_dir")
+    @patch("gannet.util.services.signal.raise_signal")
     def test_unwritable_restart_marker_does_not_stop_the_shutdown(
         self, mock_raise, mock_tmp
     ):

@@ -33,7 +33,7 @@ Install from an ordinary PowerShell window:
 git clone https://github.com/unsubstantiation/gannet.git
 cd gannet
 py -3.12 bootstrap_windows.py
-powershell -ExecutionPolicy Bypass -File .\run_frigate.ps1
+powershell -ExecutionPolicy Bypass -File .\run_gannet.ps1
 ```
 
 The bootstrap script needs 64-bit CPython 3.12. It creates the venv, installs the Windows requirements, fetches pinned FFmpeg and go2rtc builds plus the detection and audio models, builds the web interface when Node.js is available, and writes a launcher that restarts Gannet when Gannet asks to be restarted. Node.js is only needed for that frontend build; a packaged bundle can ship `web/dist` prebuilt.
@@ -47,14 +47,22 @@ Windows-specific behaviour:
 
 - Inference: CPU (TFLite and ONNX Runtime), Intel GPU/NPU through OpenVINO, and selectable ONNX Runtime DirectML, CUDA, or Windows ML catalog providers. DirectML is installed by default; bootstrap profiles are `--directml`, `--cuda`, `--windows-ml`, and `--no-directml` (CPU). CUDA targets NVIDIA and installs the official CUDA 13/cuDNN 9 runtime extras. Windows ML vendor providers (including MIGraphX, TensorRT-RTX, OpenVINO, QNN, and Vitis AI when the catalog reports them compatible) are installed explicitly with `python scripts/manage_windows_ml.py`; see the [acceleration guide](docs/docs/configuration/hardware_acceleration_enrichments.md). The Windows ML profile uses the ONNX Runtime version pinned by Microsoft's `windowsml` package; do not mix runtime profiles in one environment. Provider, model, driver, and hardware support varies. Coral, Hailo and accelerators requiring Linux-only drivers are unavailable.
 - Video: `preset-windows-d3d11va`, `preset-windows-dxva2`, `preset-windows-qsv` and `preset-windows-nvenc`, and `ffmpeg.hwaccel_args: auto` detects which one to use.
-- Files: everything lives under one base directory, `%LOCALAPPDATA%\Frigate` by default, relocatable with `FRIGATE_BASE_DIR`.
+- Files: everything lives under one base directory, `%LOCALAPPDATA%\Gannet` by default, relocatable with `GANNET_BASE_DIR`.
 - Optional SCM service: `bootstrap_windows.py --install-service`.
+
+`GANNET_*` is the preferred environment-variable prefix; the older
+`FRIGATE_*` names are still accepted as aliases. New installs default to
+`%LOCALAPPDATA%\Gannet` and write logs to `tmp\logs\gannet\current`.
+**Upgrading from an older build:** the old `%LOCALAPPDATA%\Frigate` tree is
+not adopted automatically. Set `GANNET_BASE_DIR` (or `FRIGATE_BASE_DIR`) to
+that path before first launch to keep your existing config, database and
+recordings; startup and the launchers warn when a legacy folder is present.
 
 Read the [Windows installation guide](docs/docs/frigate/installation.md#windows) for setup, ports and tuning, and [WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md) for the port audit: what was changed, what is verified, and what is still open.
 
 ## Documentation
 
-The documentation site is currently configured with Frigate's upstream host, https://docs.frigate.video. To build this fork's docs locally or configure a Gannet-specific host, see [docs/README.md](docs/README.md).
+The documentation site is currently configured with upstream Frigate's documentation host, https://docs.frigate.video. To build this fork's docs locally or configure a Gannet-specific host, see [docs/README.md](docs/README.md).
 
 ## License
 
@@ -68,7 +76,7 @@ terms are deliberately narrower and more specific than a badge can carry:
   same terms; **not** for commercial use of any kind, including free-of-charge
   internal use by a business; and not for training AI models or publishing
   AI-generated forks.
-- **Code inherited from [Frigate](https://github.com/blakeblackshear/frigate)** stays
+- **Code inherited from [upstream Frigate](https://github.com/blakeblackshear/frigate)** stays
   under its [MIT License](LICENSES/MIT.txt), unaltered, because a fork cannot take
   rights back from the people upstream granted them. That includes commercial use of
   those files, and it is most of this repository.
@@ -132,6 +140,6 @@ We use [Weblate](https://hosted.weblate.org/projects/frigate-nvr/) to support la
 
 ---
 
-**Copyright © 2026 Frigate, Inc.** for the Frigate code in this repository, under the
+**Copyright © 2026 Frigate, Inc.** for the upstream Frigate code in this repository, under the
 MIT License. **Copyright © 2026 unsubstantiation** for the material this fork authored,
 under the Gannet Noncommercial License. See [LICENSING.md](LICENSING.md).

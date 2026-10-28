@@ -11,5 +11,5 @@ class DatabaseConfig(FrigateBaseModel):
     path: str = Field(
         default=DEFAULT_DB_PATH,
         title="Database path",
-        description="Filesystem path where the Frigate SQLite database file will be stored.",
+        description="Filesystem path where the Gannet SQLite database file will be stored.",
     )  # noqa: F821

@@ -43,7 +43,7 @@
     "invalidName": "Neplatné jméno. Jména smějí obsahovat pouze písmena, číslice, mezery, apostrofy, podtržítka a spojovníky.",
     "nameCannotContainHash": "Jméno nesmí obsahovat #."
   },
-  "documentTitle": "Knihovna obličejů - Frigate",
+  "documentTitle": "Knihovna obličejů - Gannet",
   "uploadFaceImage": {
     "title": "Nahrát obrázek obličeje",
     "desc": "Nahrajte obrázek pro skenování tváří a zahrňte jej pro {{pageToggle}}"

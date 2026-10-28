@@ -56,7 +56,7 @@
         },
         "model": {
             "label": "Model přepisu zvuku nebo název poskytovatele generativní AI",
-            "description": "Zpracování přepisu: 'whisper' pro vestavěné místní modely Frigate nebo název poskytovatele generativní AI s rolí transcribe."
+            "description": "Zpracování přepisu: 'whisper' pro vestavěné místní modely Gannet nebo název poskytovatele generativní AI s rolí transcribe."
         },
         "device": {
             "label": "Zařízení pro přepis",
@@ -993,7 +993,7 @@
         },
         "topic_prefix": {
             "label": "Prefix témat",
-            "description": "Prefix všech témat MQTT Frigate; při provozu více instancí musí být jedinečný."
+            "description": "Prefix všech témat MQTT Gannet; při provozu více instancí musí být jedinečný."
         },
         "client_id": {
             "label": "ID klienta",
@@ -1088,7 +1088,7 @@
             },
             "calibrate_on_startup": {
                 "label": "Kalibrovat při spuštění",
-                "description": "Při spuštění změřit rychlosti motorů PTZ pro zlepšení přesnosti sledování. Frigate po kalibraci aktualizuje movement_weights v konfiguraci."
+                "description": "Při spuštění změřit rychlosti motorů PTZ pro zlepšení přesnosti sledování. Gannet po kalibraci aktualizuje movement_weights v konfiguraci."
             },
             "zooming": {
                 "label": "Režim zoomu",
@@ -1125,7 +1125,7 @@
         },
         "ignore_time_mismatch": {
             "label": "Ignorovat rozdíl času",
-            "description": "Ignorovat rozdíly v synchronizaci času mezi kamerou a serverem Frigate při komunikaci ONVIF."
+            "description": "Ignorovat rozdíly v synchronizaci času mezi kamerou a serverem Gannet při komunikaci ONVIF."
         }
     },
     "profiles": {
@@ -1142,7 +1142,7 @@
     },
     "safe_mode": {
         "label": "Nouzový režim",
-        "description": "Při zapnutí se Frigate spustí v nouzovém režimu s omezenými funkcemi pro řešení problémů."
+        "description": "Při zapnutí se Gannet spustí v nouzovém režimu s omezenými funkcemi pro řešení problémů."
     },
     "environment_vars": {
         "label": "Proměnné prostředí"
@@ -1164,7 +1164,7 @@
         "description": "Nastavení ověřování a relací včetně cookies a omezení četnosti požadavků.",
         "enabled": {
             "label": "Povolit ověřování",
-            "description": "Povolit vestavěné ověřování v uživatelském rozhraní Frigate."
+            "description": "Povolit vestavěné ověřování v uživatelském rozhraní Gannet."
         },
         "reset_admin_password": {
             "label": "Obnovit heslo správce",
@@ -1209,10 +1209,10 @@
     },
     "database": {
         "label": "Databáze",
-        "description": "Nastavení databáze SQLite, do které Frigate ukládá metadata sledovaných objektů a záznamů.",
+        "description": "Nastavení databáze SQLite, do které Gannet ukládá metadata sledovaných objektů a záznamů.",
         "path": {
             "label": "Cesta k databázi",
-            "description": "Cesta v souborovém systému, kam se uloží soubor databáze SQLite Frigate."
+            "description": "Cesta v souborovém systému, kam se uloží soubor databáze SQLite Gannet."
         }
     },
     "go2rtc": {
@@ -1221,33 +1221,33 @@
     },
     "networking": {
         "label": "Síť",
-        "description": "Síťová nastavení, například povolení IPv6 pro koncové body Frigate.",
+        "description": "Síťová nastavení, například povolení IPv6 pro koncové body Gannet.",
         "ipv6": {
             "label": "Konfigurace IPv6",
-            "description": "Nastavení IPv6 pro síťové služby Frigate.",
+            "description": "Nastavení IPv6 pro síťové služby Gannet.",
             "enabled": {
                 "label": "Povolit IPv6",
-                "description": "Povolit podporu IPv6 ve službách Frigate (API a uživatelské rozhraní), kde je to možné."
+                "description": "Povolit podporu IPv6 ve službách Gannet (API a uživatelské rozhraní), kde je to možné."
             }
         },
         "listen": {
             "label": "Konfigurace naslouchajících portů",
             "internal": {
                 "label": "Interní port",
-                "description": "Interní naslouchající port Frigate (výchozí 5000)."
+                "description": "Interní naslouchající port Gannet (výchozí 5000)."
             },
             "external": {
                 "label": "Externí port",
-                "description": "Externí naslouchající port Frigate (výchozí 8971)."
+                "description": "Externí naslouchající port Gannet (výchozí 8971)."
             }
         }
     },
     "proxy": {
         "label": "Proxy",
-        "description": "Nastavení integrace Frigate za reverzní proxy, která předává hlavičky ověřeného uživatele.",
+        "description": "Nastavení integrace Gannet za reverzní proxy, která předává hlavičky ověřeného uživatele.",
         "header_map": {
             "label": "Mapování hlaviček",
-            "description": "Mapování příchozích hlaviček proxy na pole uživatele a role Frigate pro ověřování pomocí proxy.",
+            "description": "Mapování příchozích hlaviček proxy na pole uživatele a role Gannet pro ověřování pomocí proxy.",
             "user": {
                 "label": "Hlavička uživatele",
                 "description": "Hlavička obsahující ověřené uživatelské jméno předané nadřazenou proxy."
@@ -1258,7 +1258,7 @@
             },
             "role_map": {
                 "label": "Mapování rolí",
-                "description": "Mapování hodnot skupin z nadřazené proxy na role Frigate (například skupin správců na roli admin)."
+                "description": "Mapování hodnot skupin z nadřazené proxy na role Gannet (například skupin správců na roli admin)."
             }
         },
         "logout_url": {
@@ -1306,15 +1306,15 @@
         },
         "version_check": {
             "label": "Kontrola verze",
-            "description": "Povolit odchozí kontrolu dostupnosti novější verze Frigate."
+            "description": "Povolit odchozí kontrolu dostupnosti novější verze Gannet."
         }
     },
     "tls": {
         "label": "TLS",
-        "description": "Nastavení TLS pro webové koncové body Frigate (port 8971).",
+        "description": "Nastavení TLS pro webové koncové body Gannet (port 8971).",
         "enabled": {
             "label": "Povolit TLS",
-            "description": "Povolit TLS pro webové rozhraní a API Frigate na nastaveném portu TLS."
+            "description": "Povolit TLS pro webové rozhraní a API Gannet na nastaveném portu TLS."
         }
     },
     "ui": {

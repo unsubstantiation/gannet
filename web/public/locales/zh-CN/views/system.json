@@ -1,13 +1,13 @@
 {
   "documentTitle": {
-    "cameras": "摄像头统计 - Frigate",
-    "storage": "存储统计 - Frigate",
-    "general": "常规统计 - Frigate",
-    "enrichments": "增强功能统计 - Frigate",
+    "cameras": "摄像头统计 - Gannet",
+    "storage": "存储统计 - Gannet",
+    "general": "常规统计 - Gannet",
+    "enrichments": "增强功能统计 - Gannet",
     "logs": {
-      "frigate": "Frigate 日志 - Frigate",
-      "go2rtc": "Go2RTC 日志 - Frigate",
-      "websocket": "消息日志 - Frigate"
+      "gannet": "Gannet 日志 - Gannet",
+      "go2rtc": "Go2RTC 日志 - Gannet",
+      "websocket": "消息日志 - Gannet"
     }
   },
   "title": "系统",
@@ -126,7 +126,7 @@
     "overview": "概览",
     "recordings": {
       "title": "录制内容",
-      "tips": "该值表示 Frigate 数据库中录制内容所使用的总存储空间。Frigate 不会追踪磁盘上所有文件的存储使用情况。",
+      "tips": "该值表示 Gannet 数据库中录制内容所使用的总存储空间。Gannet 不会追踪磁盘上所有文件的存储使用情况。",
       "earliestRecording": "最早的可用录制："
     },
     "cameraStorage": {
@@ -138,7 +138,7 @@
       "bandwidth": "带宽",
       "unused": {
         "title": "未使用",
-        "tips": "如果您的驱动器上存储了除 Frigate 录制内容之外的其他文件，该值可能无法准确反映 Frigate 可用的剩余空间。Frigate 不会追踪录制内容以外的存储使用情况。"
+        "tips": "如果您的驱动器上存储了除 Gannet 录制内容之外的其他文件，该值可能无法准确反映 Gannet 可用的剩余空间。Gannet 不会追踪录制内容以外的存储使用情况。"
       }
     },
     "shm": {

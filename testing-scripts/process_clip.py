@@ -12,7 +12,7 @@ import cv2
 import numpy as np
 
 # The script runs against this checkout rather than an installed package, so
-# the repository root has to be importable before the Frigate imports below.
+# the repository root has to be importable before the Gannet imports below.
 # Deriving it from this file keeps the script usable from any directory on any
 # drive; upstream's absolute /workspace/frigate path only resolved inside its
 # Linux container.

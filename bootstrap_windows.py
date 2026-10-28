@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: LicenseRef-GNCL-1.0
-"""Bootstrap a native Windows Frigate install.
+"""Bootstrap a native Windows Gannet install.
 
 Sets up everything the manual recipe in the installation docs asks for, in
 one command run from an ordinary PowerShell window:
@@ -8,7 +8,7 @@ one command run from an ordinary PowerShell window:
 
 The script creates the virtual environment, installs the native Windows
 requirements, fetches digest-pinned Windows builds of FFmpeg and go2rtc plus
-the CPU detection and YAMNet audio models into the Frigate data tree, builds
+the CPU detection and YAMNet audio models into the Gannet data tree, builds
 the web interface when Node.js is available, and writes a launcher that
 restarts Gannet when it requests a restart (via the UI or watchdog).
 
@@ -18,7 +18,11 @@ digests. `--print-digests` reports any legacy trust-on-first-use entries.
 """
 
 import argparse
+import ast
+import base64
+import csv
 import hashlib
+import io
 import json
 import logging
 import os
@@ -27,8 +31,11 @@ import shutil
 import struct
 import subprocess
 import sys
+import tempfile
+import tokenize
 import urllib.request
 import venv
+import warnings
 import zipfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -37,8 +44,37 @@ logger = logging.getLogger("bootstrap")
 
 REPO_ROOT = Path(__file__).resolve().parent
 REQUIREMENTS = REPO_ROOT / "requirements.txt"
-LAUNCHER_NAME = "run_frigate.ps1"
+LAUNCHER_NAME = "run_gannet.ps1"
 RESTART_MARKER_NAME = "restart.requested"
+
+# Preferred environment prefix. The FRIGATE_* spelling is still read so an
+# existing install keeps working; GANNET_* wins when both are set.
+PREFERRED_ENV_PREFIX = "GANNET_"
+LEGACY_ENV_PREFIX = "FRIGATE_"
+DATA_DIR_NAME = "Gannet"
+LEGACY_DATA_DIR_NAME = "Frigate"
+
+
+def env_value(name: str) -> str | None:
+    """Read one setting under its preferred name, then its legacy alias."""
+    legacy = LEGACY_ENV_PREFIX + name[len(PREFERRED_ENV_PREFIX) :]
+    return os.environ.get(name) or os.environ.get(legacy)
+
+
+def legacy_data_dir_warning(default_root: Path) -> str | None:
+    """A clean cutover: never adopt the old folder, but do not hide it."""
+    if env_value("GANNET_BASE_DIR"):
+        return None
+    legacy = default_root / LEGACY_DATA_DIR_NAME
+    if not legacy.is_dir():
+        return None
+    return (
+        f"A legacy data directory exists at {legacy}, but this version uses "
+        f"{default_root / DATA_DIR_NAME}. Set GANNET_BASE_DIR (or the legacy "
+        "FRIGATE_BASE_DIR) to the old path before installing to keep the "
+        "existing config, database, and recordings."
+    )
+
 
 # These packages all provide the onnxruntime import and must be installed as
 # mutually exclusive alternatives. DirectML currently trails upstream ORT; the
@@ -59,7 +95,7 @@ WINDOWS_ML_PACKAGE = "windowsml[with-ort]==2.4.*"
 
 @dataclass(frozen=True)
 class PinnedArtifact:
-    """A Windows binary build Frigate can fetch, pinned to one URL.
+    """A Windows binary build Gannet can fetch, pinned to one URL.
 
     `expected_sha256` empty means the digest is recorded on first download
     (trust on first use) and enforced afterwards. Once a maintainer has
@@ -154,7 +190,7 @@ class BaseLayout:
     """The directories of a native install, computed like the app computes them.
 
     Mirrors gannet/util/platform.py without importing it: this script runs
-    before Frigate's dependencies are installed, so the app package may not
+    before Gannet's dependencies are installed, so the app package may not
     even be importable yet.
     """
 
@@ -166,19 +202,16 @@ class BaseLayout:
                 os.environ.get("LOCALAPPDATA", "~/AppData/Local")
             ).expanduser()
 
+        self.default_root = default_root
         self.base_dir = Path(
-            os.environ.get("FRIGATE_BASE_DIR") or default_root / "Frigate"
+            env_value("GANNET_BASE_DIR") or default_root / DATA_DIR_NAME
         ).expanduser()
         self.config_dir = Path(
-            os.environ.get("FRIGATE_CONFIG_DIR") or self.base_dir / "config"
+            env_value("GANNET_CONFIG_DIR") or self.base_dir / "config"
         )
-        self.media_dir = Path(
-            os.environ.get("FRIGATE_MEDIA_DIR") or self.base_dir / "media"
-        )
-        self.cache_dir = Path(
-            os.environ.get("FRIGATE_CACHE_DIR") or self.base_dir / "cache"
-        )
-        self.tmp_dir = Path(os.environ.get("FRIGATE_TMP_DIR") or self.base_dir / "tmp")
+        self.media_dir = Path(env_value("GANNET_MEDIA_DIR") or self.base_dir / "media")
+        self.cache_dir = Path(env_value("GANNET_CACHE_DIR") or self.base_dir / "cache")
+        self.tmp_dir = Path(env_value("GANNET_TMP_DIR") or self.base_dir / "tmp")
 
     def ensure_dirs(self) -> None:
         for directory in (
@@ -462,7 +495,7 @@ def check_interpreter() -> None:
 
     if pointer_size != 8:
         raise BootstrapError(
-            "64-bit Python is required; the Windows wheels Frigate installs "
+            "64-bit Python is required; the Windows wheels Gannet installs "
             "do not exist for 32-bit Python"
         )
 
@@ -489,6 +522,241 @@ def run(command: list[str], *, cwd: Path | None = None) -> None:
         )
 
 
+### Third-party source fix: filterpy's invalid escape sequences
+
+# norfair 2.3.0 requires filterpy>=1.4.5,<2.0.0, and 1.4.5 is its last release.
+# Its docstrings hold LaTeX in ordinary (non-raw) string literals -- the
+# `P = \Sum ...` in filterpy/common/helpers.py is the one users see. CPython
+# 3.12 reports those backslashes as SyntaxWarning when it compiles the source.
+# The portable bundle ships no bytecode by design, so its first launch compiles
+# every module and prints the warning to stderr. Doubling a backslash that
+# begins an *invalid* escape preserves the string exactly: Python already keeps
+# `\S` as two characters and `\\S` evaluates to the same two characters. Fix
+# the installed sources in both install paths instead of hiding the warning at
+# runtime, and keep the owning wheel's RECORD digests accurate.
+_VALID_ESCAPE_FOLLOWERS = frozenset("\\'\"abfnrtv01234567xNuU\r\n")
+
+
+class VendorPatchError(BootstrapError):
+    """An installed third-party source could not be patched safely."""
+
+
+def _double_invalid_escapes(literal: str, prefix_len: int) -> tuple[str, int]:
+    """Double only the backslashes that begin an invalid escape sequence."""
+    pieces: list[str] = []
+    index = prefix_len
+    fixed = 0
+    while index < len(literal):
+        if literal[index] != "\\":
+            pieces.append(literal[index])
+            index += 1
+            continue
+        follower = literal[index + 1] if index + 1 < len(literal) else ""
+        if follower and follower in _VALID_ESCAPE_FOLLOWERS:
+            # A valid escape (including `\\`, `\n`, `\xHH`, octal and a line
+            # continuation) is copied unchanged and skipped as a unit.
+            pieces.append(literal[index : index + 2])
+            index += 2
+            continue
+        pieces.append("\\\\")
+        index += 1
+        fixed += 1
+    return "".join(pieces), fixed
+
+
+def _patched_source(source: bytes, filename: str) -> tuple[bytes, int]:
+    """Rewrite string literals with invalid escapes, preserving the rest.
+
+    ``tokenize`` is what keeps raw strings, f-strings and comments untouched;
+    replacements are spliced into the original text so the encoding, CRLF line
+    endings and all other bytes survive unchanged.
+    """
+    encoding, _ = tokenize.detect_encoding(io.BytesIO(source).readline)
+    try:
+        text = source.decode(encoding)
+    except UnicodeDecodeError as exc:
+        raise VendorPatchError(f"cannot decode {filename}: {exc}") from exc
+
+    reader = io.StringIO(text, newline="")
+    line_starts = [0]
+    position = 0
+    for line in reader:
+        position += len(line)
+        line_starts.append(position)
+    reader.seek(0)
+    try:
+        tokens = list(tokenize.generate_tokens(reader.readline))
+    except (tokenize.TokenError, SyntaxError) as exc:
+        raise VendorPatchError(f"cannot tokenize {filename}: {exc}") from exc
+
+    edits: list[tuple[int, int, str]] = []
+    fixed_total = 0
+    for token in tokens:
+        if token.type != tokenize.STRING:
+            continue
+        literal = token.string
+        prefix_len = next(
+            (i for i, char in enumerate(literal) if char in "'\""), len(literal)
+        )
+        if any(flag in literal[:prefix_len] for flag in "rRfF"):
+            continue
+        fixed, found = _double_invalid_escapes(literal, prefix_len)
+        if not found:
+            continue
+        start = line_starts[token.start[0] - 1] + token.start[1]
+        end = line_starts[token.end[0] - 1] + token.end[1]
+        if text[start:end] != literal:
+            raise VendorPatchError(f"cannot locate a string literal in {filename}")
+        edits.append((start, end, fixed))
+        fixed_total += found
+    for start, end, fixed in reversed(edits):
+        text = text[:start] + fixed + text[end:]
+    return text.encode(encoding), fixed_total
+
+
+def _compiles_cleanly(source: bytes, filename: str) -> bool | None:
+    """True when a file compiles with no invalid-escape warning.
+
+    ``None`` means the host interpreter cannot compile the file at all; such a
+    file is not importable and therefore cannot warn at runtime.
+    """
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        try:
+            compile(source, filename, "exec")
+        except (SyntaxError, ValueError):
+            return None
+    return not any("invalid escape sequence" in str(item.message) for item in caught)
+
+
+def _ast_fingerprint(source: bytes) -> str:
+    """All literal values and code structure, for the before/after comparison."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        try:
+            return ast.dump(ast.parse(source), include_attributes=False)
+        except SyntaxError as exc:
+            raise VendorPatchError(f"cannot parse patched source: {exc}") from exc
+
+
+def _apply_patch(site_packages: Path, changes: dict[str, bytes]) -> None:
+    """Write patched sources and refresh every owning wheel RECORD digest.
+
+    Ownership and signatures are checked before anything is written, so a
+    surprising install fails the build instead of leaving metadata that lies.
+    """
+    updates: list[tuple[Path, list[list[str]]]] = []
+    owned: set[str] = set()
+    for record in sorted(site_packages.glob("*.dist-info/RECORD")):
+        if record.is_symlink() or record.parent.is_symlink():
+            raise VendorPatchError(f"refusing to modify a symlinked RECORD: {record}")
+        try:
+            with record.open(encoding="utf-8", newline="") as handle:
+                rows = list(csv.reader(handle, strict=True))
+        except (OSError, UnicodeError, csv.Error) as exc:
+            raise VendorPatchError(f"cannot read wheel RECORD {record}: {exc}") from exc
+        if any(len(row) != 3 for row in rows):
+            raise VendorPatchError(f"malformed wheel RECORD: {record}")
+
+        record_path = record.relative_to(site_packages).as_posix()
+        rewritten: list[list[str]] = []
+        changed = False
+        for row in rows:
+            relative = row[0].replace("\\", "/")
+            if relative in changes:
+                owned.add(relative)
+                data = changes[relative]
+                digest = (
+                    base64.urlsafe_b64encode(hashlib.sha256(data).digest())
+                    .decode("ascii")
+                    .rstrip("=")
+                )
+                row = [row[0], f"sha256={digest}", str(len(data))]
+                changed = True
+            elif relative == record_path:
+                # A RECORD cannot keep a digest of its own previous contents.
+                row = [row[0], "", ""]
+            rewritten.append(row)
+        if changed:
+            for signature in ("RECORD.jws", "RECORD.p7s"):
+                if (record.parent / signature).exists():
+                    raise VendorPatchError(f"cannot patch a signed RECORD: {record}")
+            updates.append((record, rewritten))
+
+    missing = set(changes) - owned
+    if missing:
+        raise VendorPatchError(
+            "patched filterpy files have no owning wheel RECORD; first: "
+            + sorted(missing)[0]
+        )
+
+    temporaries: list[tuple[Path, Path]] = []
+    try:
+        for record, rows in updates:
+            with tempfile.NamedTemporaryFile(
+                mode="w",
+                encoding="utf-8",
+                newline="",
+                prefix=".RECORD-patch-",
+                dir=record.parent,
+                delete=False,
+            ) as handle:
+                temporaries.append((record, Path(handle.name)))
+                csv.writer(handle, lineterminator="\n").writerows(rows)
+        for relative, data in changes.items():
+            (site_packages / relative).write_bytes(data)
+        for record, temporary in temporaries:
+            temporary.replace(record)
+    finally:
+        for _, temporary in temporaries:
+            temporary.unlink(missing_ok=True)
+
+
+def fix_filterpy_escapes(site_packages: Path) -> list[str]:
+    """Remove CPython 3.12 invalid-escape warnings from installed filterpy.
+
+    Returns the site-packages-relative paths that were rewritten. It is a no-op
+    when filterpy is absent or an upstream release has fixed its docstrings.
+    """
+    package = site_packages / "filterpy"
+    if not package.is_dir():
+        return []
+
+    changes: dict[str, bytes] = {}
+    for path in sorted(package.rglob("*.py")):
+        if path.is_symlink() or not path.is_file():
+            continue
+        relative = path.relative_to(site_packages).as_posix()
+        source = path.read_bytes()
+        if _compiles_cleanly(source, relative) is not False:
+            continue
+        patched, count = _patched_source(source, relative)
+        if not count or _ast_fingerprint(source) != _ast_fingerprint(patched):
+            raise VendorPatchError(
+                f"cannot fix {relative} without changing its meaning; "
+                "inspect the installed filterpy sources"
+            )
+        if _compiles_cleanly(patched, relative) is not True:
+            raise VendorPatchError(
+                f"invalid escapes remain in {relative} after patching"
+            )
+        changes[relative] = patched
+
+    if changes:
+        _apply_patch(site_packages, changes)
+    return sorted(changes)
+
+
+def site_packages_for(python: Path) -> Path:
+    """Where pip installed the requirements for a bootstrap-created venv."""
+    if python.parent.name.lower() == "scripts":
+        return python.parent.parent / "Lib" / "site-packages"
+    # python_executable_in uses this layout off Windows; only the stdlib-only
+    # tests and development shells can reach it.
+    version = f"python{sys.version_info.major}.{sys.version_info.minor}"
+    return python.parent.parent / "lib" / version / "site-packages"
+
+
 def install_requirements(python: Path, accelerator: str = "directml") -> None:
     if accelerator not in {"cpu", "directml", "cuda", "windows-ml"}:
         raise BootstrapError(
@@ -498,6 +766,8 @@ def install_requirements(python: Path, accelerator: str = "directml") -> None:
 
     run([str(python), "-m", "pip", "install", "--upgrade", "pip"])
     run([str(python), "-m", "pip", "install", "-r", str(REQUIREMENTS)])
+    for fixed in fix_filterpy_escapes(site_packages_for(python)):
+        logger.info("Removed invalid escape sequences from %s", fixed)
     run(
         [str(python), "-m", "pip", "install", "--editable", str(REPO_ROOT), "--no-deps"]
     )
@@ -546,32 +816,32 @@ def powershell_literal(value: str | Path) -> str:
 
 
 def build_launcher_script(venv_dir: Path, layout: BaseLayout) -> str:
-    """The PowerShell launcher that keeps Frigate restartable.
+    """The PowerShell launcher that keeps Gannet restartable.
 
-    Frigate signals a restart by writing a marker file (see
-    gannet/util/services.py). The launcher starts Frigate again only when
+    Gannet signals a restart by writing a marker file (see
+    gannet/util/services.py). The launcher starts Gannet again only when
     the marker is there, so Ctrl+C and closing the console still stop it.
     """
     python = python_executable_in(venv_dir).resolve()
     configured_paths = {
-        "FRIGATE_BASE_DIR": layout.base_dir,
-        "FRIGATE_CONFIG_DIR": layout.config_dir,
-        "FRIGATE_MEDIA_DIR": layout.media_dir,
-        "FRIGATE_CACHE_DIR": layout.cache_dir,
-        "FRIGATE_TMP_DIR": layout.tmp_dir,
+        "GANNET_BASE_DIR": layout.base_dir,
+        "GANNET_CONFIG_DIR": layout.config_dir,
+        "GANNET_MEDIA_DIR": layout.media_dir,
+        "GANNET_CACHE_DIR": layout.cache_dir,
+        "GANNET_TMP_DIR": layout.tmp_dir,
     }
     environment = "\n".join(
         f"if (-not $env:{name}) {{ $env:{name} = {powershell_literal(path)} }}"
         for name, path in configured_paths.items()
     )
-    return f"""# Generated by bootstrap_windows.py. Start Frigate with this script.
+    return f"""# Generated by bootstrap_windows.py. Start Gannet with this script.
 $ErrorActionPreference = "Stop"
 $python = {powershell_literal(python)}
 {environment}
-# Frigate reads and writes its text files as UTF-8; UTF-8 mode makes the
+# Gannet reads and writes its text files as UTF-8; UTF-8 mode makes the
 # console and anything that still relies on the default encoding agree.
 if (-not $env:PYTHONUTF8) {{ $env:PYTHONUTF8 = "1" }}
-$marker = Join-Path $env:FRIGATE_TMP_DIR "{RESTART_MARKER_NAME}"
+$marker = Join-Path $env:GANNET_TMP_DIR "{RESTART_MARKER_NAME}"
 
 while ($true) {{
     & $python -m gannet @args
@@ -579,12 +849,12 @@ while ($true) {{
 
     if (Test-Path $marker) {{
         Remove-Item $marker -ErrorAction SilentlyContinue
-        Write-Host "Frigate requested a restart, starting it again"
+        Write-Host "Gannet requested a restart, starting it again"
         continue
     }}
 
     if ($code -ne 0) {{
-        Write-Host "Frigate exited with code $code"
+        Write-Host "Gannet exited with code $code"
     }}
 
     break
@@ -608,7 +878,7 @@ def install_start_menu_shortcut(launcher: Path) -> bool:
     programs = Path(os.environ.get("APPDATA", "")) / (
         "Microsoft/Windows/Start Menu/Programs"
     )
-    target = programs / "Frigate.lnk"
+    target = programs / "Gannet NVR.lnk"
     script = (
         "$shell = New-Object -ComObject WScript.Shell; "
         f"$shortcut = $shell.CreateShortcut('{target}'); "
@@ -639,7 +909,7 @@ def install_start_menu_shortcut(launcher: Path) -> bool:
 
 
 def add_defender_exclusion(layout: BaseLayout) -> None:
-    """Ask Defender to skip the Frigate directories.
+    """Ask Defender to skip the Gannet directories.
 
     Needs an elevated PowerShell; a normal one fails with a clear message
     rather than silently doing nothing.
@@ -674,7 +944,7 @@ def add_defender_exclusion(layout: BaseLayout) -> None:
 
 
 def install_service(python: Path, layout: BaseLayout) -> None:
-    """Register Frigate with the SCM, through the PowerShell installer.
+    """Register Gannet with the SCM, through the PowerShell installer.
 
     The installer resolves the service's data directory, pins it in the
     service's own environment and checks that the service account can reach the
@@ -683,7 +953,7 @@ def install_service(python: Path, layout: BaseLayout) -> None:
     refuses, so a failed install is reported rather than passed over.
     """
     logger.info("Installing the SCM service (needs an elevated shell)...")
-    service_script = REPO_ROOT / "scripts" / "install_frigate_service.ps1"
+    service_script = REPO_ROOT / "scripts" / "install_gannet_service.ps1"
 
     if not service_script.exists():
         raise BootstrapError(f"Service install script not found: {service_script}")
@@ -731,7 +1001,7 @@ def print_digests(download_dir: Path) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="bootstrap_windows",
-        description="Set up a native Windows Frigate install",
+        description="Set up a native Windows Gannet install",
     )
     parser.add_argument(
         "--venv",
@@ -791,12 +1061,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--add-defender-exclusion",
         action="store_true",
-        help="exclude the Frigate base directory from Microsoft Defender",
+        help="exclude the Gannet base directory from Microsoft Defender",
     )
     parser.add_argument(
         "--install-service",
         action="store_true",
-        help="install the Frigate SCM service (needs an elevated shell)",
+        help="install the Gannet SCM service (needs an elevated shell)",
     )
     parser.add_argument(
         "--print-digests",
@@ -814,6 +1084,9 @@ def main(argv: list[str] | None = None) -> int:
     try:
         check_interpreter()
         layout = BaseLayout(service_mode=args.install_service)
+        warning = legacy_data_dir_warning(layout.default_root)
+        if warning:
+            logger.warning("%s", warning)
         layout.ensure_dirs()
         download_dir = layout.cache_dir / "downloads"
 
@@ -849,7 +1122,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     logger.info("")
-    logger.info("Frigate is installed. Start it with:")
+    logger.info("Gannet is installed. Start it with:")
     logger.info(
         "    powershell -ExecutionPolicy Bypass -File %s", REPO_ROOT / LAUNCHER_NAME
     )

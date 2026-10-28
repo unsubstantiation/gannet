@@ -3,7 +3,7 @@
     "lastWeek": "Geçen Hafta",
     "thisWeek": "Bu Hafta",
     "lastMonth": "Geçen Ay",
-    "untilForRestart": "Frigate yeniden başlatılana kadar.",
+    "untilForRestart": "Gannet yeniden başlatılana kadar.",
     "untilRestart": "Yeniden başlatmaya kadar",
     "ago": "{{timeAgo}} önce",
     "justNow": "Az önce",
@@ -202,7 +202,7 @@
       "nord": "Kuzey",
       "highcontrast": "Yüksek Kontrast"
     },
-    "restart": "Frigate'i yeniden başlat",
+    "restart": "Gannet'i yeniden başlat",
     "live": {
       "title": "Canlı",
       "allCameras": "Tüm Kameralar",
@@ -217,7 +217,7 @@
     "system": "Sistem",
     "documentation": {
       "title": "Dökümantasyon",
-      "label": "Frigate dökümantasyonu"
+      "label": "Gannet dökümantasyonu"
     },
     "settings": "Ayarlar",
     "appearance": "Görünüm",
@@ -251,7 +251,7 @@
     "other": "Diğer"
   },
   "notFound": {
-    "documentTitle": "Bulunamadı - Frigate",
+    "documentTitle": "Bulunamadı - Gannet",
     "desc": "Sayfa bulunamadı",
     "title": "404"
   },
@@ -288,7 +288,7 @@
   "accessDenied": {
     "title": "Erişim Reddedildi",
     "desc": "Bu sayfayı görüntüleme yetkiniz yok.",
-    "documentTitle": "Erişim Reddedildi - Frigate"
+    "documentTitle": "Erişim Reddedildi - Gannet"
   },
   "toast": {
     "copyUrlToClipboard": "URL panoya kopyalandı.",
@@ -306,7 +306,7 @@
     "title": "Rol",
     "viewer": "Görüntüleyici",
     "admin": "Yönetici",
-    "desc": "Yöneticiler Frigate arayüzündeki tüm özelliklere tam erişim sahibidir. Görüntüleyiciler ise yalnızca kameraları, eski görüntüleri ve inceleme öğelerini görüntüleyebilirler."
+    "desc": "Yöneticiler Gannet arayüzündeki tüm özelliklere tam erişim sahibidir. Görüntüleyiciler ise yalnızca kameraları, eski görüntüleri ve inceleme öğelerini görüntüleyebilirler."
   },
   "readTheDocumentation": "Dökümantasyonu oku",
   "list": {
@@ -316,7 +316,7 @@
   },
   "field": {
     "optional": "İsteğe bağlı",
-    "internalID": "Frigate’ın yapılandırma ve veritabanında kullandığı Dahili Kimlik"
+    "internalID": "Gannet’ın yapılandırma ve veritabanında kullandığı Dahili Kimlik"
   },
   "information": {
     "pixels": "{{area}}px"
@@ -330,7 +330,7 @@
     "title": "Bu sayfanın çalışması durdu",
     "desc": "Sayfada beklenmedik bir hata oluştu. Sayfayı yenilemek genelde sorunu çözer. Sürekli devam ederse ayrıntıları kopyalayıp GitHub'da bir tartışmaya iliştirin.",
     "staleTitle": "Yenilenmesi gerekiyor",
-    "staleDesc": "Arayüzün bir kısmı yüklenemedi. Bu genelde sekme açıkken Frigate güncellendiği için olur. Yeni sürümü edinmek için sayfayı yenileyin.",
+    "staleDesc": "Arayüzün bir kısmı yüklenemedi. Bu genelde sekme açıkken Gannet güncellendiği için olur. Yeni sürümü edinmek için sayfayı yenileyin.",
     "partial": "Arayüzün bir kısmının çalışması durdu.",
     "copyDetails": "Ayrıntıları kopyala",
     "copyFailed": "Ayrıntılar panoya kopyalanamadı"

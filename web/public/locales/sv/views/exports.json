@@ -1,6 +1,6 @@
 {
   "search": "Sök",
-  "documentTitle": "Exporter - Frigate",
+  "documentTitle": "Exporter - Gannet",
   "noExports": "Inga exporter hittade",
   "deleteExport.desc": "Är du säker på att du vill ta bort {{exportName}}?",
   "editExport": {

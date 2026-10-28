@@ -15,7 +15,7 @@ A few things to keep in mind:
 
 - Snapshots are saved per tracked object, so a camera with no detected objects produces no snapshots even if recording is enabled.
 - Snapshots and recordings are configured and retained independently. Enabling one does not enable the other.
-- Snapshots are accessible in the UI in the Explore pane, which allows for quick submission to the Frigate+ service.
+- Snapshots are accessible in the UI in the Explore pane, which allows for quick submission to the upstream Frigate+ service.
 - To only save snapshots for objects that enter a specific zone, [see the zone docs](./zones.md#restricting-snapshots-to-specific-zones).
 - Snapshots sent via MQTT are configured separately under the camera MQTT settings, not here.
 
@@ -143,6 +143,6 @@ Gannet stores a single clean snapshot on disk:
 | Stored file                              | `<camera>-<id>-clean.webp`, always unannotated                                                        |
 | `/api/events/<id>/snapshot.jpg`          | Starts from the camera's `snapshots` defaults, then applies any query param overrides at request time |
 | `/api/events/<id>/snapshot-clean.webp`   | Returns the same stored snapshot without annotations                                                  |
-| [Frigate+](/plus/first_model) submission | Uses the same stored clean snapshot                                                                   |
+| [upstream Frigate+](/plus/first_model) submission | Uses the same stored clean snapshot                                                                   |
 
 MQTT snapshots are configured separately under the camera MQTT settings and are unrelated to the stored event snapshot.

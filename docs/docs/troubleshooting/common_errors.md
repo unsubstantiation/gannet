@@ -5,7 +5,7 @@ title: Common Errors
 
 # Common Windows errors
 
-Start with `%LOCALAPPDATA%\Gannet\tmp\logs\frigate\current` for an interactive install or `%ProgramData%\Gannet\tmp\logs\frigate\current` for the default service install. If another base directory was selected, use the same `tmp\logs\frigate\current` path below that root.
+Start with `%LOCALAPPDATA%\Gannet\tmp\logs\gannet\current` for an interactive install or `%ProgramData%\Gannet\tmp\logs\gannet\current` for the default service install. If another base directory was selected, use the same `tmp\logs\gannet\current` path below that root.
 
 ## Gannet requires 64-bit Windows and CPython 3.12
 
@@ -25,7 +25,7 @@ Rerun the bootstrap from the repository root:
 py -3.12 bootstrap_windows.py --skip-web
 ```
 
-Do not rename downloaded files. Antivirus quarantine, an incomplete archive, or changing `FRIGATE_BASE_DIR` after installation are common causes. Gannet checks executable names and rejects a directory where a file is required.
+Do not rename downloaded files. Antivirus quarantine, an incomplete archive, or changing `GANNET_BASE_DIR` after installation are common causes. Gannet checks executable names and rejects a directory where a file is required.
 
 ## Port 8971 is already in use
 
@@ -46,10 +46,60 @@ Run these commands from an elevated shell:
 Get-Service Gannet
 Get-WinEvent -LogName Application -MaxEvents 50 |
   Where-Object ProviderName -Match 'Gannet|Python'
-Get-Content "$env:ProgramData\Gannet\tmp\logs\frigate\current" -Tail 200
+Get-Content "$env:ProgramData\Gannet\tmp\logs\gannet\current" -Tail 200
 ```
 
 Typical causes are an invalid config, a missing service environment variable, a data-directory ACL that excludes the service account, or a partial TLS certificate pair. Validate using the service installation's interpreter and environment.
+
+## The app keeps restarting ("the process resets")
+
+A restart is not always a crash. Gannet writes `tmp\restart.requested` when the
+UI or API asks for a restart, or when the watchdog sees a detector process die;
+the launcher then starts the whole application again. Current builds also record
+every restart — with the child's exit code and the reason from the marker — in
+`tmp\logs\launcher.log`, and back off briefly after five restarts in two minutes.
+The 0.19.0 bundle predates that log, so use the application log and the event
+log there:
+
+```powershell
+$Data = if ($env:GANNET_BASE_DIR) { $env:GANNET_BASE_DIR } `
+        elseif ($env:FRIGATE_BASE_DIR) { $env:FRIGATE_BASE_DIR } `
+        else { Join-Path $env:LOCALAPPDATA 'Gannet' }
+Get-Content (Join-Path $Data 'tmp\logs\launcher.log') -Tail 50 -ErrorAction SilentlyContinue
+Get-Content (Join-Path $Data 'tmp\logs\gannet\current') -Tail 200
+Get-Content (Join-Path $Data 'tmp\logs\gannet\current.1') -Tail 200 -ErrorAction SilentlyContinue
+```
+
+New builds write the application log to `tmp\logs\gannet\current`; older
+builds used `tmp\logs\frigate\current`. If you upgraded from an older build
+without setting `GANNET_BASE_DIR`, the new process is reading the new
+`%LOCALAPPDATA%\Gannet` tree — set the variable to the legacy
+`%LOCALAPPDATA%\Gannet` path to see the logs from the install that has been
+running.
+
+The application log is a rotating 5 MiB file; `current.1` and `current.2` hold
+the previous runs, which is where the first failure of a fast restart loop ends
+up. Look for `Detection appears to have stopped: detector ... exited with code N`:
+that is a detector subprocess dying (commonly a missing model file, an
+unavailable inference device, or a failing native runtime) and the watchdog
+restarting everything. Repeated `config saved with restart option` or
+`restart command received over inter-process comms` reasons point at an UI or
+automation loop instead.
+
+If there is no Python traceback, check the Windows Application event log for a
+native crash of `python.exe` or one of the inference runtimes:
+
+```powershell
+Get-WinEvent -FilterHashtable @{LogName='Application'; StartTime=(Get-Date).AddDays(-1)} |
+  Where-Object { $_.LevelDisplayName -in @('Error','Critical') -and
+                 $_.Message -match 'python|GannetNVR|go2rtc|ffmpeg|onnxruntime|openvino' } |
+  Select-Object -First 20 TimeCreated, ProviderName, Id, Message | Format-List
+```
+
+When you start the portable bundle with `python\GannetNVR.exe` directly, its
+console messages disappear as soon as the window closes. Start `GannetNVR.cmd`
+from the bundle root instead, or redirect the output to a file, so the restart
+messages are kept.
 
 ## Permission denied or database cannot be opened
 
@@ -94,7 +144,7 @@ Validation rejects Unix device paths, sockets, unsupported detector names, and n
 
 ## Long path or reserved-name error
 
-Keep `FRIGATE_BASE_DIR` short and enable Windows long-path support. Camera names are case-insensitive and cannot use reserved device names such as `CON`, `PRN`, `AUX`, `NUL`, `COM1`, or `LPT1`.
+Keep `GANNET_BASE_DIR` short and enable Windows long-path support. Camera names are case-insensitive and cannot use reserved device names such as `CON`, `PRN`, `AUX`, `NUL`, `COM1`, or `LPT1`.
 
 ## Recording errors
 

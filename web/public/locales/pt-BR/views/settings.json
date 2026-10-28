@@ -1,21 +1,21 @@
 {
   "documentTitle": {
-    "default": "Configurações - Frigate",
-    "authentication": "Configurações de Autenticação - Frigate",
-    "enrichments": "Configurações de Enriquecimento - Frigate",
-    "masksAndZones": "Editor de Máscara e Zona - Frigate",
-    "motionTuner": "Ajuste de Movimento - Frigate",
-    "object": "Debug - Frigate",
-    "general": "Configurações da interface - Frigate",
-    "frigatePlus": "Frigate+ Configurações- Frigate",
-    "notifications": "Configurações de notificação - Frigate",
-    "cameraManagement": "Gerenciar Câmeras - Frigate",
-    "cameraReview": "Configurações de Revisão de Câmera - Frigate",
-    "globalConfig": "Configuração Global - Frigate",
-    "cameraConfig": "Configuração da Câmera - Frigate",
-    "maintenance": "Manutenção - Frigate",
-    "profiles": "Perfis - Frigate",
-    "detectorsAndModel": "Detectores e modelo - Frigate"
+    "default": "Configurações - Gannet",
+    "authentication": "Configurações de Autenticação - Gannet",
+    "enrichments": "Configurações de Enriquecimento - Gannet",
+    "masksAndZones": "Editor de Máscara e Zona - Gannet",
+    "motionTuner": "Ajuste de Movimento - Gannet",
+    "object": "Debug - Gannet",
+    "general": "Configurações da interface - Gannet",
+    "frigatePlus": "Frigate+ Configurações- Gannet",
+    "notifications": "Configurações de notificação - Gannet",
+    "cameraManagement": "Gerenciar Câmeras - Gannet",
+    "cameraReview": "Configurações de Revisão de Câmera - Gannet",
+    "globalConfig": "Configuração Global - Gannet",
+    "cameraConfig": "Configuração da Câmera - Gannet",
+    "maintenance": "Manutenção - Gannet",
+    "profiles": "Perfis - Gannet",
+    "detectorsAndModel": "Detectores e modelo - Gannet"
   },
   "menu": {
     "ui": "UI",
@@ -159,8 +159,8 @@
         "clearStreamingSettingsFailed": "Não foi possível apagar os ajustes de streaming:{{errorMessage}}",
         "exportUiSettingsFailed": "Falha ao exportar as configurações",
         "importNothingToApply": "Falha ao importar as configurações: o arquivo não contém configurações",
-        "importWrongType": "Falha ao importar as configurações: o arquivo não é uma exportação de configurações do Frigate",
-        "importUnsupportedVersion": "Falha ao importar as configurações: o arquivo exige uma versão mais recente do Frigate",
+        "importWrongType": "Falha ao importar as configurações: o arquivo não é uma exportação de configurações do Gannet",
+        "importUnsupportedVersion": "Falha ao importar as configurações: o arquivo exige uma versão mais recente do Gannet",
         "importInvalidJson": "Falha ao importar as configurações: o arquivo não é um JSON válido",
         "importUiSettingsFailed": "Falha ao importar as configurações",
         "importInvalidSchema": "Falha ao importar as configurações: o arquivo está malformado"
@@ -176,8 +176,8 @@
       "title": "Backup e restauração",
       "importDialog": {
         "title": "Importar configurações",
-        "desc": "Escolha o que aplicar a partir deste arquivo. O Frigate será recarregado quando a importação terminar.",
-        "exportedFrom": "Exportado em {{date}} da versão de configuração {{version}} do Frigate",
+        "desc": "Escolha o que aplicar a partir deste arquivo. O Gannet será recarregado quando a importação terminar.",
+        "exportedFrom": "Exportado em {{date}} da versão de configuração {{version}} do Gannet",
         "layouts_one": "Layouts de grupos de câmeras ({{count}} grupo)",
         "layouts_many": "Layouts de grupos de câmeras ({{count}} grupos)",
         "layouts_other": "Layouts de grupos de câmeras ({{count}} grupos)",
@@ -206,7 +206,7 @@
     },
     "semanticSearch": {
       "title": "Busca Semântica",
-      "desc": "A Busca Semântica no Frigate permite você encontrar objetos rastreados dentro dos seus itens revisados, usando ou a imagem em si, uma descrição de texto definida pelo usuário ou uma gerada automaticamente.",
+      "desc": "A Busca Semântica no Gannet permite você encontrar objetos rastreados dentro dos seus itens revisados, usando ou a imagem em si, uma descrição de texto definida pelo usuário ou uma gerada automaticamente.",
       "reindexNow": {
         "label": "Reindexar Agora",
         "desc": "A reindexação irá regenerar os embeddings para todos os objetos rastreados. Esse processo roda em segundo plano e pode demandar 100% da CPU e levar um tempo considerável dependendo do número de objetos rastreados que você possui.",
@@ -232,7 +232,7 @@
     },
     "faceRecognition": {
       "title": "Reconhecimento Facial",
-      "desc": "O reconhecimento facial permite que pessoas sejam associadas a nomes e quando seus rostos forem reconhecidos, o Frigate associará o nome da pessoa como um sub-rótulo. Essa informação é inclusa na UI, filtros e notificações.",
+      "desc": "O reconhecimento facial permite que pessoas sejam associadas a nomes e quando seus rostos forem reconhecidos, o Gannet associará o nome da pessoa como um sub-rótulo. Essa informação é inclusa na UI, filtros e notificações.",
       "modelSize": {
         "label": "Tamanho do Modelo",
         "desc": "O tamanho do modelo usado para reconhecimento facial.",
@@ -248,11 +248,11 @@
     },
     "licensePlateRecognition": {
       "title": "Reconhecimento de Placa de Identificação",
-      "desc": "O Frigate pode reconhecer placas de identificação em veículos e automáticamente adicionar os caracteres detectados ao campo placas_de_identificação_reconhecidas ou um nome conhecido como um sub-rótulo a objetos que são do tipo carro. Um uso típico é ler a placa de carros entrando em uma garagem ou carros passando pela rua."
+      "desc": "O Gannet pode reconhecer placas de identificação em veículos e automáticamente adicionar os caracteres detectados ao campo placas_de_identificação_reconhecidas ou um nome conhecido como um sub-rótulo a objetos que são do tipo carro. Um uso típico é ler a placa de carros entrando em uma garagem ou carros passando pela rua."
     },
     "restart_required": "Necessário reiniciar (configurações de enriquecimento foram alteradas)",
     "toast": {
-      "success": "As regras de enriquecimento foram salvas. Reinicie o Frigate para aplicar as alterações.",
+      "success": "As regras de enriquecimento foram salvas. Reinicie o Gannet para aplicar as alterações.",
       "error": "Falha ao salvar alterações de configurações: {{errorMessage}}"
     }
   },
@@ -344,7 +344,7 @@
     },
     "zones": {
       "label": "Zonas",
-      "documentTitle": "Editar Zona - Frigate",
+      "documentTitle": "Editar Zona - Gannet",
       "desc": {
         "title": "Zonas permitem que você defina uma área específica do quadro para que você possa determinar se um objeto está ou não em uma área em particular.",
         "documentation": "Documentação"
@@ -412,7 +412,7 @@
         }
       },
       "label": "Máscaras de Objeto",
-      "documentTitle": "Editar Máscara de Objeto - Frigate",
+      "documentTitle": "Editar Máscara de Objeto - Gannet",
       "desc": {
         "title": "Máscaras de filtro de objetos são usadas para filtrar falsos positivos para um determinado tipo de objeto baseado na localização.",
         "documentation": "Documentação"
@@ -432,7 +432,7 @@
     },
     "motionMasks": {
       "label": "Máscara de Movimento",
-      "documentTitle": "Editar Máscara de Movimento - Frigate",
+      "documentTitle": "Editar Máscara de Movimento - Gannet",
       "desc": {
         "title": "Máscaras de movimento são usadas para prevenir tipos de movimento de ativarem uma detecção. Excesso de mascaramento tornará mais difícil que objetos sejam rastreados.",
         "documentation": "Documentação"
@@ -476,7 +476,7 @@
   },
   "motionDetectionTuner": {
     "desc": {
-      "title": "O Frigate usa a detecção de movimento como uma verificação de primeira linha para ver se há algo acontecendo no quadro que valha a pena verificar com a detecção de objetos.",
+      "title": "O Gannet usa a detecção de movimento como uma verificação de primeira linha para ver se há algo acontecendo no quadro que valha a pena verificar com a detecção de objetos.",
       "documentation": "Leia o Guia de Ajuste de Movimento"
     },
     "Threshold": {
@@ -498,7 +498,7 @@
     "unsavedChanges": "Alterações do Ajuste de Movimento Não Salvas ({{camera}})"
   },
   "debug": {
-    "detectorDesc": "O Frigate usa seus detectores ({{detectors}}) para detectar objetos no fluxo de vídeo da sua câmera.",
+    "detectorDesc": "O Gannet usa seus detectores ({{detectors}}) para detectar objetos no fluxo de vídeo da sua câmera.",
     "desc": "A visualização de depuração mostra uma visão em tempo real dos objetos rastreados e suas estatísticas. A lista de objetos mostra um resumo com atraso de tempo dos objetos detectados.",
     "objectList": "Lista de Objetos",
     "boundingBoxes": {
@@ -560,7 +560,7 @@
     "title": "Usuários",
     "management": {
       "title": "Gerenciamento de Usuário",
-      "desc": "Gerenciar as contas de usuário dessa instância do Frigate."
+      "desc": "Gerenciar as contas de usuário dessa instância do Gannet."
     },
     "addUser": "Adicionar Usuário",
     "updatePassword": "Resetar Senha",
@@ -624,7 +624,7 @@
       },
       "createUser": {
         "title": "Criar Novo Usuário",
-        "desc": "Adicionar um novo usuário e especificar um papel para acesso às áreas da interface do Frigate.",
+        "desc": "Adicionar um novo usuário e especificar um papel para acesso às áreas da interface do Gannet.",
         "usernameOnlyInclude": "O nome de usuário pode conter apenas letras, números, . ou _",
         "confirmPassword": "Por favor confirme a sua senha"
       },
@@ -683,7 +683,7 @@
     "cancelSuspension": "Cancelar Suspensão",
     "toast": {
       "success": {
-        "registered": "Registrados para notificações com sucesso. É necessário reiniciar o Frigate para que as notificações possam ser enviadas (incluindo a notificação de teste).",
+        "registered": "Registrados para notificações com sucesso. É necessário reiniciar o Gannet para que as notificações possam ser enviadas (incluindo a notificação de teste).",
         "settingSaved": "As configurações de notificações foram salvas."
       },
       "error": {
@@ -693,11 +693,11 @@
     "title": "Notificações",
     "notificationSettings": {
       "title": "Configurações de Notificação",
-      "desc": "O Frigate pode enviar notificações push nativamente ao seu dispositivo quando estiver sendo executado no navegador ou instalado como um PWA."
+      "desc": "O Gannet pode enviar notificações push nativamente ao seu dispositivo quando estiver sendo executado no navegador ou instalado como um PWA."
     },
     "notificationUnavailable": {
-      "desc": "As notificações push da Web exigem um contexto seguro (https://…). Isso é uma limitação do navegador. Acesse o Frigate de forma segura para usar as notificações.",
-      "descPwa": "No iOS, as notificações push da Web só estão disponíveis quando o Frigate está instalado na Tela de Início. Abra o menu Compartilhar, escolha Adicionar à Tela de Início e, em seguida, abra o Frigate pelo novo ícone para registrar este dispositivo para receber notificações."
+      "desc": "As notificações push da Web exigem um contexto seguro (https://…). Isso é uma limitação do navegador. Acesse o Gannet de forma segura para usar as notificações.",
+      "descPwa": "No iOS, as notificações push da Web só estão disponíveis quando o Gannet está instalado na Tela de Início. Abra o menu Compartilhar, escolha Adicionar à Tela de Início e, em seguida, abra o Gannet pelo novo ícone para registrar este dispositivo para receber notificações."
     },
     "globalSettings": {
       "title": "Configurações Globais",
@@ -768,10 +768,10 @@
     "unsavedChanges": "Alterações de configurações do Frigate+ não salvas",
     "restart_required": "Reinicialização necessária (modelo do Frigate+ foi alterado)",
     "toast": {
-      "success": "As configurações do Frigate+ foram salvas. Reinicie o Frigate para aplicar as alterações.",
+      "success": "As configurações do Frigate+ foram salvas. Reinicie o Gannet para aplicar as alterações.",
       "error": "Falha ao salvar as alterações de configuração: {{errorMessage}}"
     },
-    "description": "O Frigate+ é um serviço por assinatura que oferece acesso a recursos e funcionalidades adicionais para a sua instância do Frigate, incluindo a possibilidade de usar modelos personalizados de detecção de objetos treinados com os seus próprios dados. Você pode gerenciar as configurações do seu modelo Frigate+ aqui.",
+    "description": "O Frigate+ é um serviço por assinatura que oferece acesso a recursos e funcionalidades adicionais para a sua instância do Gannet, incluindo a possibilidade de usar modelos personalizados de detecção de objetos treinados com os seus próprios dados. Você pode gerenciar as configurações do seu modelo Frigate+ aqui.",
     "cardTitles": {
       "api": "API",
       "currentModel": "Modelo atual",
@@ -860,7 +860,7 @@
         },
         "actions": {
           "title": "Ações",
-          "desc": "Por padrão, o Frigate dispara uma mensagem MQTT para todos os gatilhos. Sub-etiquetas adicionam o nome do gatilho à etiqueta do objeto. Atributos são metadados pesquisáveis armazenados separadamente nos metadados de objetos rastreados.",
+          "desc": "Por padrão, o Gannet dispara uma mensagem MQTT para todos os gatilhos. Sub-etiquetas adicionam o nome do gatilho à etiqueta do objeto. Atributos são metadados pesquisáveis armazenados separadamente nos metadados de objetos rastreados.",
           "error": {
             "min": "Ao menos uma ação deve ser selecionada."
           }
@@ -903,7 +903,7 @@
   "roles": {
     "management": {
       "title": "Gerenciamento do Papel de Visualizador",
-      "desc": "Gerenciar papéis de visualizador customizados e suas permissões de acesso para essa instância do Frigate."
+      "desc": "Gerenciar papéis de visualizador customizados e suas permissões de acesso para essa instância do Gannet."
     },
     "addRole": "Adicionar Papel",
     "table": {
@@ -964,7 +964,7 @@
   },
   "cameraWizard": {
     "title": "Adicionar Câmera",
-    "description": "Siga os passos abaixo para adicionar uma câmera nova no seu Frigate.",
+    "description": "Siga os passos abaixo para adicionar uma câmera nova no seu Gannet.",
     "steps": {
       "nameAndConnection": "Nome e Conexão",
       "streamConfiguration": "Configuração de Stream",
@@ -1143,7 +1143,7 @@
         "resolutionUnknown": "Não foi possível sondar a resolução deste stream. Você deve definir manualmente a resolução de detecção em Configurações ou na sua configuração."
       },
       "notTested": "Não testado",
-      "ffmpegModuleDescription": "Se o stream não carregar após várias tentativas, tente habilitar esta opção. Quando habilitada, o Frigate usará o módulo ffmpeg com o go2rtc. Isso pode oferecer melhor compatibilidade com alguns streams de câmera.",
+      "ffmpegModuleDescription": "Se o stream não carregar após várias tentativas, tente habilitar esta opção. Quando habilitada, o Gannet usará o módulo ffmpeg com o go2rtc. Isso pode oferecer melhor compatibilidade com alguns streams de câmera.",
       "none": "Nenhum",
       "streamValidated": "Stream {{number}} validado com sucesso",
       "saveAndApply": "Salvar nova câmera",
@@ -1196,7 +1196,7 @@
     "overriddenBaseConfigHeading_other": "O perfil {{profile}} substitui {{count}} campos da configuração base:",
     "overriddenGlobalNoDeltas": "Esta câmera substitui a configuração global, mas nenhum valor de campo é diferente.",
     "overriddenLive": "Substituído (ao vivo)",
-    "overriddenLiveTooltip": "Esta câmera está sendo executada com um valor diferente do salvo na sua configuração, que é o exibido aqui. A visualização ao vivo, o MQTT ou um perfil ativo podem alterá-lo enquanto o Frigate está em execução.",
+    "overriddenLiveTooltip": "Esta câmera está sendo executada com um valor diferente do salvo na sua configuração, que é o exibido aqui. A visualização ao vivo, o MQTT ou um perfil ativo podem alterá-lo enquanto o Gannet está em execução.",
     "overriddenLiveValue": "Valor em execução: {{value}}"
   },
   "menuDot": {
@@ -1212,7 +1212,7 @@
     "backToSettings": "Voltar para as configurações da câmera",
     "streams": {
       "title": "Estado e detalhes da câmera",
-      "enableSuccess": "{{cameraName}} habilitada. Reinicie o Frigate para aplicar.",
+      "enableSuccess": "{{cameraName}} habilitada. Reinicie o Gannet para aplicar.",
       "reorderHandle": "Arraste para reordenar",
       "saving": "Salvando…",
       "saved": "Salvo",
@@ -1220,8 +1220,8 @@
         "title": "Editar detalhes da câmera",
         "edit": "Editar detalhes da câmera",
         "friendlyNameLabel": "Nome de exibição",
-        "friendlyNameHelp": "Nome amigável exibido para esta câmera em toda a interface do Frigate. Deixe em branco para usar o ID da câmera.",
-        "description": "Atualize o nome de exibição, a URL externa e a visibilidade usados por esta câmera em toda a interface do Frigate.",
+        "friendlyNameHelp": "Nome amigável exibido para esta câmera em toda a interface do Gannet. Deixe em branco para usar o ID da câmera.",
+        "description": "Atualize o nome de exibição, a URL externa e a visibilidade usados por esta câmera em toda a interface do Gannet.",
         "webuiUrlLabel": "URL da interface web da câmera",
         "webuiUrlHelp": "URL para acessar diretamente a interface web da câmera a partir da visualização de depuração. Deixe em branco para desabilitar o link.",
         "webuiUrlInvalid": "Deve ser uma URL válida (por ex., https://exemplo.com).",
@@ -1237,7 +1237,7 @@
         "off": "Desligada",
         "disabled": "Desabilitada"
       },
-      "description": "Defina o estado de operação de cada câmera.<br /><br /><strong>Ligada</strong>: os streams são processados normalmente.<br /><strong>Desligada</strong>: pausa temporariamente o processamento. Não persiste entre reinicializações do Frigate.<br /><strong>Desabilitada</strong>: interrompe o processamento e salva a alteração na sua configuração. É necessário reiniciar para reabilitar uma câmera desabilitada.<br /><br /><em>Observação: desabilitar não afeta os restreams do go2rtc.</em><br /><br />Arraste a alça para reordenar as câmeras ativas conforme aparecem em toda a interface, incluindo o painel ao vivo e os menus de seleção de câmera.",
+      "description": "Defina o estado de operação de cada câmera.<br /><br /><strong>Ligada</strong>: os streams são processados normalmente.<br /><strong>Desligada</strong>: pausa temporariamente o processamento. Não persiste entre reinicializações do Gannet.<br /><strong>Desabilitada</strong>: interrompe o processamento e salva a alteração na sua configuração. É necessário reiniciar para reabilitar uma câmera desabilitada.<br /><br /><em>Observação: desabilitar não afeta os restreams do go2rtc.</em><br /><br />Arraste a alça para reordenar as câmeras ativas conforme aparecem em toda a interface, incluindo o painel ao vivo e os menus de seleção de câmera.",
       "disableSuccess": "{{cameraName}} desabilitada e salva na configuração."
     },
     "cameraConfig": {
@@ -1294,7 +1294,7 @@
       "description": "Defina o tipo de cada câmera. Câmeras LPR dedicadas são câmeras de finalidade única, com zoom óptico potente, para capturar placas de veículos distantes. A maioria das câmeras deve usar o tipo normal, a menos que a câmera seja específica para LPR e tenha uma visão bem focada nas placas.",
       "normal": "Normal",
       "dedicatedLpr": "LPR dedicada",
-      "saveSuccess": "Tipo de câmera atualizado para {{cameraName}}. Reinicie o Frigate para aplicar as alterações.",
+      "saveSuccess": "Tipo de câmera atualizado para {{cameraName}}. Reinicie o Gannet para aplicar as alterações.",
       "label": "Tipo de câmera"
     },
     "description": "Adicione, edite e exclua câmeras, controle o estado de cada câmera e configure substituições por perfil e por tipo de câmera. Para configurar streams, detecção, movimento e outras configurações específicas da câmera, escolha a seção desejada em Configuração da câmera.",
@@ -1375,10 +1375,10 @@
         "successMulti_one": "Configurações copiadas para {{count}} câmera",
         "successMulti_many": "Configurações copiadas para {{count}} câmeras",
         "successMulti_other": "Configurações copiadas para {{count}} câmeras",
-        "successWithRestart": "Configurações copiadas para {{cameraName}}. Reinicie o Frigate para aplicar todas as alterações.",
-        "successMultiWithRestart_one": "Configurações copiadas para {{count}} câmera. Reinicie o Frigate para aplicar todas as alterações.",
-        "successMultiWithRestart_many": "Configurações copiadas para {{count}} câmeras. Reinicie o Frigate para aplicar todas as alterações.",
-        "successMultiWithRestart_other": "Configurações copiadas para {{count}} câmeras. Reinicie o Frigate para aplicar todas as alterações.",
+        "successWithRestart": "Configurações copiadas para {{cameraName}}. Reinicie o Gannet para aplicar todas as alterações.",
+        "successMultiWithRestart_one": "Configurações copiadas para {{count}} câmera. Reinicie o Gannet para aplicar todas as alterações.",
+        "successMultiWithRestart_many": "Configurações copiadas para {{count}} câmeras. Reinicie o Gannet para aplicar todas as alterações.",
+        "successMultiWithRestart_other": "Configurações copiadas para {{count}} câmeras. Reinicie o Gannet para aplicar todas as alterações.",
         "partialFailure": "{{successCount}} seções aplicadas; '{{failedSection}}' falhou: {{errorMessage}}",
         "newCameraPartialFailure": "A câmera {{cameraName}} foi criada, mas algumas configurações não puderam ser copiadas: {{errorMessage}}",
         "partialFailureMulti": "Copiado para {{successCount}} câmera(s); falhou em {{failed}}: {{errorMessage}}",
@@ -1391,21 +1391,21 @@
     "title": "Configurações de revisão da câmera",
     "object_descriptions": {
       "title": "Descrições de objetos por IA generativa",
-      "desc": "Habilita/desabilita temporariamente as descrições de objetos por IA generativa nesta câmera até o Frigate ser reiniciado. Quando desabilitado, descrições geradas por IA não serão solicitadas para os objetos rastreados desta câmera."
+      "desc": "Habilita/desabilita temporariamente as descrições de objetos por IA generativa nesta câmera até o Gannet ser reiniciado. Quando desabilitado, descrições geradas por IA não serão solicitadas para os objetos rastreados desta câmera."
     },
     "review_descriptions": {
       "title": "Descrições de revisão por IA generativa",
-      "desc": "Habilita/desabilita temporariamente as descrições de revisão por IA generativa nesta câmera até o Frigate ser reiniciado. Quando desabilitado, descrições geradas por IA não serão solicitadas para os itens de revisão desta câmera."
+      "desc": "Habilita/desabilita temporariamente as descrições de revisão por IA generativa nesta câmera até o Gannet ser reiniciado. Quando desabilitado, descrições geradas por IA não serão solicitadas para os itens de revisão desta câmera."
     },
     "review": {
       "title": "Revisão",
-      "desc": "Habilita/desabilita temporariamente alertas e detecções nesta câmera até o Frigate ser reiniciado. Quando desabilitado, nenhum novo item de revisão será gerado. ",
+      "desc": "Habilita/desabilita temporariamente alertas e detecções nesta câmera até o Gannet ser reiniciado. Quando desabilitado, nenhum novo item de revisão será gerado. ",
       "alerts": "Alertas ",
       "detections": "Detecções "
     },
     "reviewClassification": {
       "title": "Classificação de revisão",
-      "desc": "O Frigate categoriza os itens de revisão como Alertas e Detecções. Por padrão, todos os objetos <em>pessoa</em> e <em>carro</em> são considerados Alertas. Você pode refinar a categorização dos seus itens de revisão configurando zonas obrigatórias para eles.",
+      "desc": "O Gannet categoriza os itens de revisão como Alertas e Detecções. Por padrão, todos os objetos <em>pessoa</em> e <em>carro</em> são considerados Alertas. Você pode refinar a categorização dos seus itens de revisão configurando zonas obrigatórias para eles.",
       "noDefinedZones": "Nenhuma zona foi definida para esta câmera.",
       "objectAlertsTips": "Todos os objetos {{alertsLabels}} em {{cameraName}} serão exibidos como Alertas.",
       "zoneObjectAlertsTips": "Todos os objetos {{alertsLabels}} detectados em {{zone}} em {{cameraName}} serão exibidos como Alertas.",
@@ -1420,7 +1420,7 @@
       "selectDetectionsZones": "Selecione as zonas para Detecções",
       "limitDetections": "Limitar detecções a zonas específicas",
       "toast": {
-        "success": "A configuração de classificação de revisão foi salva. Reinicie o Frigate para aplicar as alterações."
+        "success": "A configuração de classificação de revisão foi salva. Reinicie o Gannet para aplicar as alterações."
       }
     }
   },
@@ -1428,7 +1428,7 @@
     "sync": {
       "error": "Falha ao iniciar a sincronização",
       "title": "Sincronização de mídia",
-      "desc": "O Frigate limpará periodicamente a mídia em intervalos regulares, de acordo com a sua configuração de retenção. É normal ver alguns arquivos órfãos enquanto o Frigate está em execução. Use este recurso para remover do disco os arquivos de mídia órfãos que não são mais referenciados no banco de dados.",
+      "desc": "O Gannet limpará periodicamente a mídia em intervalos regulares, de acordo com a sua configuração de retenção. É normal ver alguns arquivos órfãos enquanto o Gannet está em execução. Use este recurso para remover do disco os arquivos de mídia órfãos que não são mais referenciados no banco de dados.",
       "alreadyRunning": "Já existe uma sincronização em andamento",
       "startTime": "Hora de início",
       "started": "Sincronização de mídia iniciada.",
@@ -1477,10 +1477,10 @@
     "title": "Manutenção",
     "regionGrid": {
       "title": "Grade de regiões",
-      "desc": "A grade de regiões é uma otimização que aprende onde objetos de diferentes tamanhos costumam aparecer no campo de visão de cada câmera. O Frigate usa esses dados para dimensionar de forma eficiente as regiões de detecção. A grade é construída automaticamente ao longo do tempo a partir dos dados dos objetos rastreados.",
+      "desc": "A grade de regiões é uma otimização que aprende onde objetos de diferentes tamanhos costumam aparecer no campo de visão de cada câmera. O Gannet usa esses dados para dimensionar de forma eficiente as regiões de detecção. A grade é construída automaticamente ao longo do tempo a partir dos dados dos objetos rastreados.",
       "clearConfirmTitle": "Limpar grade de regiões",
       "clear": "Limpar grade de regiões",
-      "clearConfirmDesc": "Não é recomendado limpar a grade de regiões, a menos que você tenha alterado recentemente o tamanho do modelo do detector ou a posição física da câmera e esteja tendo problemas de rastreamento de objetos. A grade será reconstruída automaticamente ao longo do tempo conforme os objetos forem rastreados. É necessário reiniciar o Frigate para que as alterações tenham efeito.",
+      "clearConfirmDesc": "Não é recomendado limpar a grade de regiões, a menos que você tenha alterado recentemente o tamanho do modelo do detector ou a posição física da câmera e esteja tendo problemas de rastreamento de objetos. A grade será reconstruída automaticamente ao longo do tempo conforme os objetos forem rastreados. É necessário reiniciar o Gannet para que as alterações tenham efeito.",
       "clearSuccess": "Grade de regiões limpa com sucesso",
       "clearError": "Falha ao limpar a grade de regiões",
       "restartRequired": "É necessário reiniciar para que as alterações na grade de regiões tenham efeito"
@@ -1778,7 +1778,7 @@
   },
   "toast": {
     "success": "Configurações salvas com sucesso",
-    "successRestartRequired": "Configurações salvas com sucesso. Reinicie o Frigate para aplicar as alterações.",
+    "successRestartRequired": "Configurações salvas com sucesso. Reinicie o Gannet para aplicar as alterações.",
     "error": "Falha ao salvar as configurações",
     "validationError": "Falha na validação: {{message}}",
     "resetSuccess": "Redefinir para os padrões globais",
@@ -1791,9 +1791,9 @@
     "saveAllPartial_other": "{{successCount}} de {{totalCount}} seções salvas. {{failCount}} falharam.",
     "saveAllFailure": "Falha ao salvar todas as seções.",
     "applied": "Configurações aplicadas com sucesso",
-    "saveAllSuccessRestartRequired_one": "Salva {{count}} seção com sucesso. Reinicie o Frigate para aplicar as alterações.",
-    "saveAllSuccessRestartRequired_many": "Todas as {{count}} seções foram salvas com sucesso. Reinicie o Frigate para aplicar as alterações.",
-    "saveAllSuccessRestartRequired_other": "Todas as {{count}} seções foram salvas com sucesso. Reinicie o Frigate para aplicar as alterações."
+    "saveAllSuccessRestartRequired_one": "Salva {{count}} seção com sucesso. Reinicie o Gannet para aplicar as alterações.",
+    "saveAllSuccessRestartRequired_many": "Todas as {{count}} seções foram salvas com sucesso. Reinicie o Gannet para aplicar as alterações.",
+    "saveAllSuccessRestartRequired_other": "Todas as {{count}} seções foram salvas com sucesso. Reinicie o Gannet para aplicar as alterações."
   },
   "unsavedChanges": "Você tem alterações não salvas",
   "confirmReset": "Confirmar redefinição",
@@ -1912,9 +1912,9 @@
       "recordDisabled": "A gravação está desabilitada; itens de revisão não serão gerados.",
       "detectDisabled": "A detecção de objetos está desabilitada. Os itens de revisão dependem dos objetos detectados para categorizar alertas e detecções.",
       "allNonAlertDetections": "Toda atividade que não seja alerta será incluída como detecção.",
-      "genaiImageSourceRecordingsRecordDisabled": "A fonte de imagem está definida como 'recordings', mas a gravação está desabilitada. O Frigate usará as imagens de prévia como alternativa.",
+      "genaiImageSourceRecordingsRecordDisabled": "A fonte de imagem está definida como 'recordings', mas a gravação está desabilitada. O Gannet usará as imagens de prévia como alternativa.",
       "detectRuntimeDisabled": "A detecção de objetos está habilitada na sua configuração, mas está desligada no momento para esta câmera. Os itens de revisão dependem dos objetos detectados para categorizar alertas e detecções. Ligue-a novamente na visualização ao vivo da câmera ou verifique se um perfil ativo a está desabilitando.",
-      "genaiImageSourceRecordingsRecordRuntimeDisabled": "A fonte de imagem está definida como 'recordings', mas a gravação está desligada no momento para esta câmera, embora a sua configuração a habilite. O Frigate usará as imagens de prévia como alternativa.",
+      "genaiImageSourceRecordingsRecordRuntimeDisabled": "A fonte de imagem está definida como 'recordings', mas a gravação está desligada no momento para esta câmera, embora a sua configuração a habilite. O Gannet usará as imagens de prévia como alternativa.",
       "recordRuntimeDisabled": "A gravação está habilitada na sua configuração, mas está desligada no momento para esta câmera, portanto itens de revisão não serão gerados. Ligue-a novamente na visualização ao vivo da câmera ou verifique se um perfil ativo a está desabilitando."
     },
     "audio": {
@@ -1969,7 +1969,7 @@
       "inputsMissingGo2rtcStream": "Uma das entradas abaixo aponta para um restream do go2rtc que não existe mais. Selecione um restream existente ou insira manualmente a URL da câmera; caso contrário, esta câmera não conseguirá se conectar."
     },
     "model": {
-      "optimizedFor320": "O Frigate é otimizado para um modelo 320x320, que é a melhor escolha para a maioria das configurações. Um modelo 640x640 é mais lento e só ajuda em cenários específicos.",
+      "optimizedFor320": "O Gannet é otimizado para um modelo 320x320, que é a melhor escolha para a maioria das configurações. Um modelo 640x640 é mais lento e só ajuda em cenários específicos.",
       "inputDimensionsNotDetectResolution": "A largura e a altura de entrada do modelo são as dimensões de entrada do modelo de detecção de objetos, não a resolução de detecção da sua câmera. Elas devem corresponder às dimensões do modelo que você está usando — normalmente um tamanho quadrado, como 320x320 ou 640x640."
     },
     "birdseye": {

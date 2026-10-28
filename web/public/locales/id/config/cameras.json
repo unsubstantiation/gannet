@@ -6,7 +6,7 @@
     },
     "friendly_name": {
         "label": "Nama Singkat",
-        "description": "Nama Singkat kamera digunakan pada tampilan UI Frigate"
+        "description": "Nama Singkat kamera digunakan pada tampilan UI Gannet"
     },
     "audio": {
         "label": "Deteksi Suara",

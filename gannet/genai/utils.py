@@ -14,7 +14,7 @@ def to_jpeg(img_bytes: bytes) -> bytes | None:
     """Convert image bytes to JPEG.
 
     Some provider image decoders (e.g. llama.cpp's STB) do not support WebP,
-    which is the format Frigate stores thumbnails in.
+    which is the format Gannet stores thumbnails in.
     """
     try:
         img = Image.open(io.BytesIO(img_bytes))

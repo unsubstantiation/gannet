@@ -50,4 +50,4 @@ Validate before restarting production:
 2. Restore the previous application directory and virtual environment.
 3. Restore the matching configuration/database backup if the newer version performed an incompatible migration.
 4. Reinstall or repoint the Windows service.
-5. Start Gannet and inspect the logs under `%LOCALAPPDATA%\Gannet\logs`.
+5. Start Gannet and inspect the logs under `%LOCALAPPDATA%\Gannet\tmp\logs\gannet\current`.

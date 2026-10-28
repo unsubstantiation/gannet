@@ -37,16 +37,16 @@
     }
   },
   "documentTitle": {
-    "cameras": "Kameroiden tilastot - Frigate",
+    "cameras": "Kameroiden tilastot - Gannet",
     "storage": "Tallenteiden tilastot - Fgirage",
-    "general": "Yleiset tilastot - Frigate",
-    "enrichments": "Rikastetut tilastot - Frigate",
+    "general": "Yleiset tilastot - Gannet",
+    "enrichments": "Rikastetut tilastot - Gannet",
     "logs": {
-      "frigate": "Frigaten lokit - Frigate",
-      "go2rtc": "Go2RTC lokit - Frigate",
-      "websocket": "Viestilokit - Frigate"
+      "gannet": "Frigaten lokit - Gannet",
+      "go2rtc": "Go2RTC lokit - Gannet",
+      "websocket": "Viestilokit - Gannet"
     },
-    "health": "Kunto - Frigate"
+    "health": "Kunto - Gannet"
   },
   "title": "Järjestelmä",
   "metrics": "Järjestelmämittarit",
@@ -103,7 +103,7 @@
     "title": "Kunto",
     "notices": {
       "title": "Tiedotteet",
-      "empty": "Frigate asennuksesi on kunnossa",
+      "empty": "Gannet asennuksesi on kunnossa",
       "acknowledge": "Hyväksy",
       "acknowledgeHint": "Pillota kunnes tapahtuu uudestaan",
       "mute": "Mykistä",
@@ -135,7 +135,7 @@
         "detect_high_cpu": "Tunnistuksen prosessorikäyttö on korkea ({{cpu}}% keskiarvo)",
         "failed_login_one": "Epäonnistunut kirjautuminen käyttäjälle {{user}}",
         "failed_login_other": "Epäonnistuneet kirjautumisyritykset käyttäjälle {{user}}",
-        "update_available": "Frigate {{version}} on saatavilla"
+        "update_available": "Gannet {{version}} on saatavilla"
       },
       "streamPrefix": "Striimi {{index}}: {{message}}"
     }

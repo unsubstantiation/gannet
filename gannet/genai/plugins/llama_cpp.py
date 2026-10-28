@@ -1,4 +1,4 @@
-"""llama.cpp Provider for Frigate AI."""
+"""llama.cpp Provider for Gannet AI."""
 
 import base64
 import json
@@ -80,7 +80,7 @@ def _parse_launch_arg(args: list[str], flag: str) -> str | None:
 
 @register_genai_provider(GenAIProviderEnum.llamacpp)
 class LlamaCppClient(GenAIClient):
-    """Generative AI client for Frigate using llama.cpp server."""
+    """Generative AI client for Gannet using llama.cpp server."""
 
     provider: str | None  # base_url
     provider_options: dict[str, Any]

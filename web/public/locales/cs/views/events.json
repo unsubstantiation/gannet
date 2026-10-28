@@ -21,7 +21,7 @@
     "aria": "Zvolit události",
     "noFoundForTimePeriod": "Pro toto časové období nebyly nalezeny žádné události."
   },
-  "documentTitle": "Revize – Frigate",
+  "documentTitle": "Revize – Gannet",
   "camera": "Kamera",
   "calendarFilter": {
     "last24Hours": "Posledních 24 hodin"
@@ -33,7 +33,7 @@
     "button": "Nové položky ke kontrole"
   },
   "recordings": {
-    "documentTitle": "Záznamy - Frigate",
+    "documentTitle": "Záznamy - Gannet",
     "invalidSharedLink": "Odkaz na záznam s časovou značkou nelze otevřít kvůli chybě při jeho zpracování.",
     "invalidSharedCamera": "Odkaz na záznam s časovou značkou nelze otevřít, protože kamera není známá nebo k ní nemáte oprávnění."
   },

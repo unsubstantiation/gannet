@@ -68,7 +68,7 @@ class ModelConfig(BaseModel):
     path: str | None = Field(
         None,
         title="Custom object detector model path",
-        description="Path to a custom detection model file (or plus://<model_id> for Frigate+ models).",
+        description="Path to a custom detection model file (or plus://<model_id> for upstream Frigate+ models).",
     )
     labelmap_path: str | None = Field(
         None,
@@ -148,7 +148,7 @@ class ModelConfig(BaseModel):
 
     @property
     def plus_id(self) -> str | None:
-        """The Frigate+ model id, once a plus:// path has been resolved."""
+        """The upstream Frigate+ model id, once a plus:// path has been resolved."""
         return self._plus_id
 
     def __init__(self, **config):
@@ -196,7 +196,7 @@ class ModelConfig(BaseModel):
                 r = requests.get(download_url)
             except requests.exceptions.ConnectionError as e:
                 raise ValueError(
-                    f"Unable to connect to Frigate+ to download model {model_id}"
+                    f"Unable to connect to upstream Frigate+ to download model {model_id}"
                 ) from e
 
             with open(self.path, "wb") as f:
@@ -208,7 +208,7 @@ class ModelConfig(BaseModel):
                 model_info = plus_api.get_model_info(model_id)
             except requests.exceptions.ConnectionError as e:
                 raise ValueError(
-                    f"Unable to connect to Frigate+ to download model info for {model_id}"
+                    f"Unable to connect to upstream Frigate+ to download model info for {model_id}"
                 ) from e
 
             with open(model_info_path, "w", encoding="utf-8") as f:

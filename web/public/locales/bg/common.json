@@ -59,7 +59,7 @@
     },
     "ago": "Преди {{timeAgo}}",
     "untilForTime": "До {{time}}",
-    "untilForRestart": "Докато Frigate рестартира.",
+    "untilForRestart": "Докато Gannet рестартира.",
     "untilRestart": "До рестарт",
     "mo": "{{time}}мес",
     "m": "{{time}}м",

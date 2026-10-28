@@ -14,7 +14,7 @@
     "10minutes": "10 minut",
     "30minutes": "30 minut",
     "untilForTime": "Do {{time}}",
-    "untilForRestart": "Do czasu restartu Frigate.",
+    "untilForRestart": "Do czasu restartu Gannet.",
     "untilRestart": "Do restartu",
     "ago": "{{timeAgo}} temu",
     "justNow": "W tej chwili",
@@ -237,7 +237,7 @@
       "nord": "Nordycki",
       "highcontrast": "Wysoki kontrast"
     },
-    "restart": "Uruchom ponownie Frigate",
+    "restart": "Uruchom ponownie Gannet",
     "live": {
       "title": "Na żywo",
       "allCameras": "Wszystkie kamery",
@@ -261,7 +261,7 @@
     },
     "documentation": {
       "title": "Dokumentacja",
-      "label": "Dokumentacja Frigate"
+      "label": "Dokumentacja Gannet"
     },
     "explore": "Przeglądaj",
     "configurationEditor": "Edytor konfiguracji",
@@ -276,7 +276,7 @@
   },
   "role": {
     "viewer": "Przeglądający",
-    "desc": "Administratorzy mają pełny dostęp do wszystkich funkcji w interfejsie Frigate. Przeglądający mają ograniczony dostęp tylko do podglądu kamer, przeglądania nagrań i historycznych materiałów w interfejsie.",
+    "desc": "Administratorzy mają pełny dostęp do wszystkich funkcji w interfejsie Gannet. Przeglądający mają ograniczony dostęp tylko do podglądu kamer, przeglądania nagrań i historycznych materiałów w interfejsie.",
     "title": "Rola",
     "admin": "Administrator"
   },
@@ -295,12 +295,12 @@
   "accessDenied": {
     "title": "Dostęp Zabroniony",
     "desc": "Nie masz uprawnień do wyświetlenia tej strony.",
-    "documentTitle": "Dostęp Zabroniony - Frigate"
+    "documentTitle": "Dostęp Zabroniony - Gannet"
   },
   "notFound": {
     "title": "404",
     "desc": "Strona nie znaleziona",
-    "documentTitle": "Nie Znaleziono - Frigate"
+    "documentTitle": "Nie Znaleziono - Gannet"
   },
   "selectItem": "Wybierz {{item}}",
   "toast": {
@@ -325,7 +325,7 @@
   },
   "field": {
     "optional": "Opcjonalny",
-    "internalID": "Wewnętrzny identyfikator używany przez Frigate w konfiguracji i bazie danych"
+    "internalID": "Wewnętrzny identyfikator używany przez Gannet w konfiguracji i bazie danych"
   },
   "no_items": "Brak elementów",
   "validation_errors": "Błędy walidacji",

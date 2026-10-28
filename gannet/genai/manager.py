@@ -1,6 +1,6 @@
-"""GenAI client manager for Frigate.
+"""GenAI client manager for Gannet.
 
-Manages GenAI provider clients from Frigate config. Clients are created lazily
+Manages GenAI provider clients from Gannet config. Clients are created lazily
 on first access so that providers whose roles are never used (e.g. chat when
 no chat feature is active) are never initialized.
 """
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class GenAIClientManager:
-    """Manages GenAI provider clients from Frigate config."""
+    """Manages GenAI provider clients from Gannet config."""
 
     def __init__(self, config: FrigateConfig) -> None:
         self._configs: dict[str, GenAIConfig] = {}

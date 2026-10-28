@@ -336,7 +336,7 @@ def get_tool_definitions(
     embeddings_language: Literal["english", "multi"] = "multi",
 ) -> list[dict[str, Any]]:
     """
-    Get OpenAI-compatible tool definitions for Frigate.
+    Get OpenAI-compatible tool definitions for Gannet.
 
     Returns a list of tool definitions that can be used with OpenAI-compatible
     function calling APIs. When semantic search is enabled, the search_objects
@@ -351,7 +351,7 @@ def get_tool_definitions(
     filters relate to each other, is stated once in the system prompt so the
     guidance is not paid for twice on every request.
 
-    Each definition carries a Frigate-only `access` field ("read" or "write");
+    Each definition carries a Gannet-only `access` field ("read" or "write");
     write tools pause for user approval in the chat loop. Strip it with
     `strip_tool_access` before sending the list to a provider.
     """
@@ -818,7 +818,7 @@ def get_write_tool_names(tools: list[dict[str, Any]]) -> set[str]:
 
 
 def strip_tool_access(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Drop the Frigate-only `access` field before handing tools to a provider."""
+    """Drop the Gannet-only `access` field before handing tools to a provider."""
     return [{k: v for k, v in tool.items() if k != "access"} for tool in tools]
 
 
@@ -899,7 +899,7 @@ def build_chat_system_prompt(
             "When the user's request matches one of these classifications, set the search_objects `attribute` field to the matching label (case-sensitive) rather than using `semantic_query`. Reserve `semantic_query` for descriptive phrases outside the configured attribute labels."
         )
 
-    return f"""You are a helpful assistant for Frigate, a security camera NVR system. You help users answer questions about their cameras, detected objects, and events.
+    return f"""You are a helpful assistant for Gannet, a security camera NVR system. You help users answer questions about their cameras, detected objects, and events.
 
 Current server local date and time: {current_date_str} at {current_time_str}
 

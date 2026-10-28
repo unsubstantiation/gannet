@@ -1,6 +1,6 @@
 {
-    "documentTitle": "Frigate-Chat",
-    "title": "Chat-Frigate",
+    "documentTitle": "Gannet-Chat",
+    "title": "Chat-Gannet",
     "subtitle": "Seu assistente de IA para gerenciamento de câmeras e insights",
     "placeholder": "Pergunte o que quiser...",
     "error": "Algo deu errado. Por favor, tente novamente.",
@@ -77,7 +77,7 @@
     },
     "approval": {
         "title": "Aprovar {{tool}}?",
-        "desc": "Esta ação muda algo no Frigate. Revise os detalhes antes de aprovar.",
+        "desc": "Esta ação muda algo no Gannet. Revise os detalhes antes de aprovar.",
         "approve": "Aprovar",
         "always_allow": "Sempre permitir",
         "reject": "Rejeitar",

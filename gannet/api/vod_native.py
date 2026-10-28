@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 # and forth within this window is served from the cache.
 VOD_CACHE_TTL = 3600
 
-# the longest range a single playlist may cover. Frigate's own player asks for
+# the longest range a single playlist may cover. Gannet's own player asks for
 # an hour at a time; anything larger is a sign of a bad request.
 MAX_VOD_RANGE = 4 * 3600
 

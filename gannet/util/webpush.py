@@ -14,7 +14,7 @@ def validate_push_endpoint(endpoint: Any) -> str | None:
 
     Push endpoints are supplied by browser vendors and should be public HTTPS
     services. Validate persisted subscriptions again at send time: old database
-    rows may predate registration validation, and can otherwise make Frigate
+    rows may predate registration validation, and can otherwise make Gannet
     send requests to local services.
     """
     if not isinstance(endpoint, str) or not endpoint:

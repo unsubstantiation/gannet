@@ -108,7 +108,7 @@ _PROBE_OUTER_TIMEOUT_SECONDS = 15
     "/", response_class=PlainTextResponse, dependencies=[Depends(allow_public())]
 )
 def is_healthy():
-    return "Frigate is running. Alive and healthy!"
+    return "Gannet is running. Alive and healthy!"
 
 
 @router.get("/config/schema.json", dependencies=[Depends(allow_public())])
@@ -416,7 +416,7 @@ def config(request: Request):
         model_dict["labelmap"] = model.merged_labelmap
 
         # report the configured reference rather than the resolved cache path,
-        # so saving the config back doesn't lose the Frigate+ model
+        # so saving the config back doesn't lose the upstream Frigate+ model
         if model.plus_id:
             model_dict["path"] = f"plus://{model.plus_id}"
 
@@ -555,7 +555,7 @@ def config_raw():
 
 
 def _go2rtc_streams(raw_config: str) -> Any:
-    """Load go2rtc.streams with the same loader Frigate and go2rtc startup use.
+    """Load go2rtc.streams with the same loader Gannet and go2rtc startup use.
 
     Raises ruamel.yaml.YAMLError when the config cannot be parsed.
     """
@@ -711,7 +711,7 @@ def config_save(save_option: str, body: Any = Body(media_type="text/plain")):
             content=(
                 {
                     "success": False,
-                    "message": "Could not write config file, be sure that Frigate has write permission on the config file.",
+                    "message": "Could not write config file, be sure that Gannet has write permission on the config file.",
                 }
             ),
             status_code=400,
@@ -719,14 +719,14 @@ def config_save(save_option: str, body: Any = Body(media_type="text/plain")):
 
     if save_option == "restart":
         try:
-            restart_frigate()
+            restart_frigate("config saved with restart option")
         except Exception as e:
-            logging.error(f"Error restarting Frigate: {e}")
+            logging.error(f"Error restarting Gannet: {e}")
             return JSONResponse(
                 content=(
                     {
                         "success": True,
-                        "message": "Config successfully saved, unable to restart Frigate",
+                        "message": "Config successfully saved, unable to restart Gannet",
                     }
                 ),
                 status_code=200,
@@ -1256,11 +1256,11 @@ def config_set(request: Request, body: AppConfigSetBody):
 
 @router.get("/gpuinfo", dependencies=[Depends(allow_any_authenticated())])
 def gpuinfo(request: Request):
-    """Describe the video hardware Windows exposes to Frigate.
+    """Describe the video hardware Windows exposes to Gannet.
 
     Reports the active display adapters, the processor, the hardware
     acceleration methods compiled into the installed FFmpeg, the accelerators
-    go2rtc could open, and the ``preset-windows-*`` decoder families Frigate
+    go2rtc could open, and the ``preset-windows-*`` decoder families Gannet
     recommends. This is the native replacement for the Linux ``vainfo`` output.
     """
     config: FrigateConfig = request.app.frigate_config
@@ -1278,13 +1278,13 @@ def nvinfo():
     dependencies=[Depends(require_role(["admin"]))],
 )
 async def logs(
-    service: str = Path(enum=["frigate", "go2rtc"]),
+    service: str = Path(enum=["gannet", "frigate", "go2rtc"]),
     download: str | None = None,
     stream: bool | None = False,
     start: int | None = 0,
     end: int | None = None,
 ):
-    """Get logs for a native Frigate or go2rtc process."""
+    """Get logs for a native Gannet or go2rtc process."""
 
     def download_logs(service_location: str):
         try:
@@ -1322,8 +1322,12 @@ async def logs(
         except FileNotFoundError:
             yield "Log file not found.\n"
 
+    # "frigate" stays as an API alias for older clients; the file itself has
+    # moved to the Gannet name.
+    gannet_log = get_service_log_path("gannet")
     log_locations = {
-        "frigate": get_service_log_path("frigate"),
+        "gannet": gannet_log,
+        "frigate": gannet_log,
         "go2rtc": get_service_log_path("go2rtc"),
     }
     service_location = log_locations.get(service)
@@ -1363,14 +1367,14 @@ async def logs(
 @router.post("/restart", dependencies=[Depends(require_role(["admin"]))])
 def restart():
     try:
-        restart_frigate()
+        restart_frigate("API /restart requested by an admin")
     except Exception as e:
-        logging.error(f"Error restarting Frigate: {e}")
+        logging.error(f"Error restarting Gannet: {e}")
         return JSONResponse(
             content=(
                 {
                     "success": False,
-                    "message": "Unable to restart Frigate.",
+                    "message": "Unable to restart Gannet.",
                 }
             ),
             status_code=500,
@@ -1595,7 +1599,7 @@ def get_audio_labels(request: Request):
 def plusModels(request: Request, filterByCurrentModelDetector: bool = False):
     if not request.app.frigate_config.plus_api.is_active():
         return JSONResponse(
-            content=({"success": False, "message": "Frigate+ is not enabled"}),
+            content=({"success": False, "message": "upstream Frigate+ is not enabled"}),
             status_code=400,
         )
 

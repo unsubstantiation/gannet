@@ -12,7 +12,7 @@ A looped local recording helps separate Gannet configuration problems from camer
 Copy an H.264 MP4 file to a short local path such as:
 
 ```text
-C:\FrigateSamples\camera.mp4
+C:\GannetSamples\camera.mp4
 ```
 
 The account running Gannet must have read access. Do not use a mapped drive letter for a Windows service.
@@ -24,7 +24,7 @@ cameras:
   test_camera:
     ffmpeg:
       inputs:
-        - path: 'C:\FrigateSamples\camera.mp4'
+        - path: 'C:\GannetSamples\camera.mp4'
           input_args: -re -stream_loop -1 -fflags +genpts
           roles: [detect, record]
     detect:
@@ -41,8 +41,8 @@ Use the bundled tools:
 
 ```powershell
 $ffmpeg = "$env:LOCALAPPDATA\Gannet\ffmpeg\bin"
-& "$ffmpeg\ffprobe.exe" -hide_banner 'C:\FrigateSamples\camera.mp4'
-& "$ffmpeg\ffplay.exe" -stream_loop -1 'C:\FrigateSamples\camera.mp4'
+& "$ffmpeg\ffprobe.exe" -hide_banner 'C:\GannetSamples\camera.mp4'
+& "$ffmpeg\ffplay.exe" -stream_loop -1 'C:\GannetSamples\camera.mp4'
 ```
 
 For a service installation with another base directory, adjust the executable path.

@@ -16,7 +16,7 @@
       "deleteCategoryFailed": "刪除分類標籤失敗: {{errorMessage}}",
       "deleteModelFailed": "刪除模型失敗: {{errorMessage}}",
       "categorizeFailed": "圖片分類失敗: {{errorMessage}}",
-      "trainingFailed": "模型訓練失敗。請至Frigate 日誌查看詳情。",
+      "trainingFailed": "模型訓練失敗。請至Gannet 日誌查看詳情。",
       "trainingFailedToStart": "模型訓練啟動失敗: {{errorMessage}}",
       "updateModelFailed": "模型更新失敗: {{errorMessage}}",
       "renameCategoryFailed": "類別重新命名失敗: {{errorMessage}}",
@@ -151,7 +151,7 @@
       "allImagesRequired_other": "請對所有圖片進行分類。還有 {{count}} 張圖片需要分類。",
       "generating": {
         "title": "正在生成樣本圖片",
-        "description": "Frigate 正在從錄影中提取代表性圖片。這可能需要一些時間……"
+        "description": "Gannet 正在從錄影中提取代表性圖片。這可能需要一些時間……"
       },
       "training": {
         "title": "正在訓練模型",

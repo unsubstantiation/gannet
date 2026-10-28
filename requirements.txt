@@ -45,6 +45,9 @@ pyzmq == 27.2.*
 ruamel.yaml == 0.19.*
 tzlocal == 5.4.4
 requests == 2.34.*
+# norfair 2.3.0 pulls in filterpy 1.4.5, whose LaTeX docstrings make CPython
+# 3.12 print invalid-escape SyntaxWarnings. Both installers patch the installed
+# sources after pip runs; see DEPENDENCIES.md section 1.5.
 norfair == 2.3.*
 ws4py == 0.6.*
 unidecode == 1.4.*
@@ -83,7 +86,7 @@ pywebpush == 2.5.*
 
 # Windows service (SCM) support: gannet/util/windows_service.py imports
 # servicemanager, win32event, win32service and win32serviceutil, and
-# scripts/install_frigate_service.ps1 drives the install through them. pywin32
+# scripts/install_gannet_service.ps1 drives the install through them. pywin32
 # ships those as compiled extension modules in its cp312 win_amd64 wheel, so
 # `bootstrap_windows.py --install-service` has nothing left to fetch.
 pywin32 == 312

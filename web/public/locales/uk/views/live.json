@@ -103,7 +103,7 @@
       "label": "Редагувати групу камер"
     }
   },
-  "documentTitle.withCamera": "{{camera}} - Пряма трансляція - Frigate",
+  "documentTitle.withCamera": "{{camera}} - Пряма трансляція - Gannet",
   "lowBandwidthMode": "Економічний режим",
   "twoWayTalk": {
     "enable": "Увімкнути двосторонню розмову",
@@ -164,7 +164,7 @@
   },
   "noCameras": {
     "title": "Немає налаштованих камер",
-    "description": "Почніть з підключення камери до Frigate.",
+    "description": "Почніть з підключення камери до Gannet.",
     "buttonText": "Додати камеру",
     "restricted": {
       "title": "Немає Доступних Камер",
@@ -172,7 +172,7 @@
     },
     "default": {
       "title": "Немає Налаштованих Камер",
-      "description": "Почніть з підключення камери до Frigate.",
+      "description": "Почніть з підключення камери до Gannet.",
       "buttonText": "Додати Камеру"
     },
     "group": {

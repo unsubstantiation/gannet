@@ -1,15 +1,15 @@
 {
   "documentTitle": {
-    "storage": "Statistici Stocare - Frigate",
-    "cameras": "Statistici Camere - Frigate",
-    "general": "Statistici Generale - Frigate",
+    "storage": "Statistici Stocare - Gannet",
+    "cameras": "Statistici Camere - Gannet",
+    "general": "Statistici Generale - Gannet",
     "logs": {
-      "go2rtc": "Jurnale Go2RTC - Frigate",
-      "frigate": "Jurnale Frigate - Frigate",
-      "websocket": "Jurnale de mesaje - Frigate"
+      "go2rtc": "Jurnale Go2RTC - Gannet",
+      "gannet": "Jurnale Gannet - Gannet",
+      "websocket": "Jurnale de mesaje - Gannet"
     },
-    "enrichments": "Statistici Procesări Avansate - Frigate",
-    "health": "Stare sistem - Frigate"
+    "enrichments": "Statistici Procesări Avansate - Gannet",
+    "health": "Stare sistem - Gannet"
   },
   "general": {
     "hardwareInfo": {
@@ -74,7 +74,7 @@
     "recordings": {
       "title": "Înregistrări",
       "earliestRecording": "Cea mai veche înregistrare disponibilă:",
-      "tips": "Această valoare reprezintă stocarea totală folosită de înregistrări în baza de date Frigate. Frigate nu monitorizează utilizarea stocării pentru toate fișierele de pe disc."
+      "tips": "Această valoare reprezintă stocarea totală folosită de înregistrări în baza de date Gannet. Gannet nu monitorizează utilizarea stocării pentru toate fișierele de pe disc."
     },
     "title": "Stocare",
     "cameraStorage": {
@@ -85,7 +85,7 @@
       "percentageOfTotalUsed": "Procent din total",
       "unused": {
         "title": "Neutilizat",
-        "tips": "Este posibil ca această valoare să nu reprezinte cu precizie spațiul liber disponibil pentru Frigate dacă ai și alte fișiere pe disc în afara înregistrărilor Frigate. Frigate nu urmărește utilizarea stocării în afara propriilor înregistrări."
+        "tips": "Este posibil ca această valoare să nu reprezinte cu precizie spațiul liber disponibil pentru Gannet dacă ai și alte fișiere pe disc în afara înregistrărilor Gannet. Gannet nu urmărește utilizarea stocării în afara propriilor înregistrări."
       },
       "bandwidth": "Lățime de bandă",
       "subStream": {
@@ -280,7 +280,7 @@
     "title": "Stare sistem",
     "notices": {
       "title": "Notificări",
-      "empty": "Instalația ta Frigate este în stare bună",
+      "empty": "Instalația ta Gannet este în stare bună",
       "openSettings": "Deschide setările",
       "openLink": "Deschide linkul",
       "noMatches": "Nicio notificare nu se potrivește cu filtrul",
@@ -297,10 +297,10 @@
         "skipped_detections": "Detecția nu a putut ține pasul și a omis {{pct}}% din cadre timp de mai mult de un minut",
         "failed_login_one": "Încercare eșuată de autentificare pentru {{user}}",
         "failed_login_other": "Încercări eșuate de autentificare pentru {{user}}",
-        "update_available": "Frigate {{version}} este disponibil",
+        "update_available": "Gannet {{version}} este disponibil",
         "ffmpeg_high_cpu": "Utilizarea CPU FFmpeg este ridicată (medie {{cpu}}%)",
         "detect_high_cpu": "Utilizarea CPU pentru detecție este ridicată (medie {{cpu}}%)",
-        "object_processing_behind": "Procesarea obiectelor urmărite nu a făcut față, așa că au fost omise cadre de la cameră. Verifică utilizarea CPU-ului și dacă limitele sau fixarea (pinning) CPU-ului pe container sau VM lasă prea puține resurse de procesare pentru Frigate"
+        "object_processing_behind": "Procesarea obiectelor urmărite nu a făcut față, așa că au fost omise cadre de la cameră. Verifică utilizarea CPU-ului și dacă limitele sau fixarea (pinning) CPU-ului pe container sau VM lasă prea puține resurse de procesare pentru Gannet"
       },
       "streamPrefix": "Stream {{index}}: {{message}}",
       "streamPrefixRestream": "Stream {{index}} (via go2rtc): {{message}}",
@@ -337,7 +337,7 @@
       "nothingConfigured": "Nimic configurat",
       "allCameras": "Toate camerele",
       "probeUnavailable": "Detecția hardware este indisponibilă",
-      "justStarted": "Frigate tocmai a pornit",
+      "justStarted": "Gannet tocmai a pornit",
       "deviceNotFound": "{{devices}} nu a fost găsit pe acest sistem",
       "detectorNotRunning": "Procesul detectorului nu rulează",
       "inferenceVerySlow": "Inferența este foarte lentă ({{speed}} ms)",

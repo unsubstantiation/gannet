@@ -37,28 +37,60 @@ def require_windows() -> None:
         )
 
 
-BASE_DIR_VAR = "FRIGATE_BASE_DIR"
-CONFIG_DIR_VAR = "FRIGATE_CONFIG_DIR"
-MEDIA_DIR_VAR = "FRIGATE_MEDIA_DIR"
-CACHE_DIR_VAR = "FRIGATE_CACHE_DIR"
-TMP_DIR_VAR = "FRIGATE_TMP_DIR"
-SERVICE_STOP_EVENT_VAR = "FRIGATE_SERVICE_STOP_EVENT"
-WEB_DIR_VAR = "FRIGATE_WEB_DIR"
-BIRDSEYE_PORT_VAR = "FRIGATE_BIRDSEYE_PORT"
-FFMPEG_DIR_VAR = "FRIGATE_FFMPEG_DIR"
-IPC_PORT_BASE_VAR = "FRIGATE_IPC_PORT_BASE"
-WEB_HOST_VAR = "FRIGATE_WEB_HOST"
-WEB_PORT_VAR = "FRIGATE_WEB_PORT"
+#: Preferred environment prefix. Every setting also accepts its old
+#: ``FRIGATE_*`` spelling; the preferred name wins when both are set.
+PREFERRED_ENV_PREFIX = "GANNET_"
+LEGACY_ENV_PREFIX = "FRIGATE_"
+
+#: The directory a new install writes to. Installs made before this rename used
+#: "Frigate"; see ``warn_about_legacy_base_dir`` and the migration notes.
+DATA_DIR_NAME = "Gannet"
+LEGACY_DATA_DIR_NAME = "Frigate"
+
+BASE_DIR_VAR = "GANNET_BASE_DIR"
+CONFIG_DIR_VAR = "GANNET_CONFIG_DIR"
+MEDIA_DIR_VAR = "GANNET_MEDIA_DIR"
+CACHE_DIR_VAR = "GANNET_CACHE_DIR"
+TMP_DIR_VAR = "GANNET_TMP_DIR"
+SERVICE_MODE_VAR = "GANNET_SERVICE_MODE"
+SERVICE_STOP_EVENT_VAR = "GANNET_SERVICE_STOP_EVENT"
+WEB_DIR_VAR = "GANNET_WEB_DIR"
+BIRDSEYE_PORT_VAR = "GANNET_BIRDSEYE_PORT"
+FFMPEG_DIR_VAR = "GANNET_FFMPEG_DIR"
+IPC_PORT_BASE_VAR = "GANNET_IPC_PORT_BASE"
+WEB_HOST_VAR = "GANNET_WEB_HOST"
+WEB_PORT_VAR = "GANNET_WEB_PORT"
 
 MEDIA_URL_COMPONENTS = ("clips", "recordings", "exports")
 CACHE_URL_COMPONENT = "cache"
 
 
+def legacy_env_name(name: str) -> str:
+    """Return the deprecated FRIGATE_* spelling of a GANNET_* variable."""
+    if name.startswith(PREFERRED_ENV_PREFIX):
+        return LEGACY_ENV_PREFIX + name[len(PREFERRED_ENV_PREFIX) :]
+    return name
+
+
+def env_names(name: str) -> tuple[str, ...]:
+    """Preferred name first, then the legacy alias."""
+    return (name, legacy_env_name(name))
+
+
+def first_env_value(name: str) -> str | None:
+    """Read a setting under either spelling, preferred name first."""
+    for candidate in env_names(name):
+        value = os.environ.get(candidate)
+        if value and value.strip():
+            return value.strip()
+    return None
+
+
 def _env_path(name: str) -> str | None:
-    value = os.environ.get(name)
-    if not value or not value.strip():
+    value = first_env_value(name)
+    if value is None:
         return None
-    return os.path.abspath(os.path.expanduser(os.path.expandvars(value.strip())))
+    return os.path.abspath(os.path.expanduser(os.path.expandvars(value)))
 
 
 def base_dir_is_overridden() -> bool:
@@ -86,16 +118,42 @@ def get_install_dir() -> str:
     return get_source_root()
 
 
+def _default_root() -> str:
+    local_app_data = os.environ.get("LOCALAPPDATA")
+    return local_app_data or os.path.expanduser("~")
+
+
 def get_base_dir() -> str:
-    """Writable root, defaulting to ``%LOCALAPPDATA%\\Frigate``."""
+    """Writable root, defaulting to ``%LOCALAPPDATA%\\Gannet``."""
     override = _env_path(BASE_DIR_VAR)
     if override:
         return override
+    return os.path.abspath(os.path.join(_default_root(), DATA_DIR_NAME))
 
-    local_app_data = os.environ.get("LOCALAPPDATA")
-    if local_app_data:
-        return os.path.abspath(os.path.join(local_app_data, "Frigate"))
-    return os.path.abspath(os.path.join(os.path.expanduser("~"), "Frigate"))
+
+def get_legacy_default_base_dir() -> str:
+    """The default data root used by installs made before the rename."""
+    return os.path.abspath(os.path.join(_default_root(), LEGACY_DATA_DIR_NAME))
+
+
+def legacy_base_dir_warning() -> str | None:
+    """Warn, without silently switching, when a legacy data folder is present.
+
+    This is a clean cutover: the application never reads the old directory on
+    its own. An existing install has to point GANNET_BASE_DIR (or the legacy
+    FRIGATE_BASE_DIR alias) at it, so the operator cannot miss the change.
+    """
+    if base_dir_is_overridden():
+        return None
+    legacy = get_legacy_default_base_dir()
+    if legacy == get_base_dir() or not os.path.isdir(legacy):
+        return None
+    return (
+        f"A legacy data directory exists at {legacy}, but this version uses "
+        f"{get_base_dir()}. Set {BASE_DIR_VAR}={legacy} (or its legacy alias "
+        f"{legacy_env_name(BASE_DIR_VAR)}) to keep using the existing config, "
+        "database, and recordings."
+    )
 
 
 def _runtime_dir(variable: str, child: str) -> str:
@@ -162,6 +220,10 @@ def web_dir_has_build() -> bool:
 
 def ensure_runtime_dirs() -> None:
     """Create the Windows data layout before services start."""
+    warning = legacy_base_dir_warning()
+    if warning:
+        logger.warning("%s", warning)
+
     media_dir = get_media_dir()
     for path in (
         get_config_dir(),
@@ -202,7 +264,7 @@ def is_ipv6_address(value: str) -> bool:
 def get_web_host(ipv6_enabled: bool = False, configured_host: str | None = None) -> str:
     """Address the public listener binds.
 
-    ``FRIGATE_WEB_HOST`` is an explicit operator override and always wins. Next
+    ``GANNET_WEB_HOST`` is an explicit operator override and always wins. Next
     is the address named by a ``host:port`` value in
     ``networking.listen.external``; ``*`` there means the wildcard, the same as
     nginx's ``listen *:port``. With neither, ``networking.ipv6.enabled`` decides
@@ -212,7 +274,7 @@ def get_web_host(ipv6_enabled: bool = False, configured_host: str | None = None)
     reported: the firewall rule and the documented port behaviour both assume
     the config is what is in effect.
     """
-    override = os.environ.get(WEB_HOST_VAR, "").strip()
+    override = first_env_value(WEB_HOST_VAR) or ""
 
     if not override and configured_host:
         override = "" if configured_host == "*" else configured_host
@@ -232,7 +294,7 @@ def get_web_host(ipv6_enabled: bool = False, configured_host: str | None = None)
 
 
 def get_web_port(default_port: int) -> int:
-    override = os.environ.get(WEB_PORT_VAR, "").strip()
+    override = first_env_value(WEB_PORT_VAR) or ""
     if override.isdigit() and 1 <= int(override) <= 65535:
         return int(override)
     return default_port
@@ -493,7 +555,7 @@ def set_process_priority(priority: int) -> None:
 
 
 def install_signal_handlers(stop_event) -> None:
-    """Ask Frigate to stop when the console asks it to.
+    """Ask Gannet to stop when the console asks it to.
 
     Windows delivers two console control events to a process that has a
     console: Ctrl+C, which CPython reports as ``SIGINT``, and Ctrl+Break or a
@@ -508,7 +570,7 @@ def install_signal_handlers(stop_event) -> None:
     except (ValueError, OSError):
         pass
 
-    if os.environ.get("FRIGATE_SERVICE_MODE", "0") != "1":
+    if (first_env_value(SERVICE_MODE_VAR) or "0") != "1":
         break_signal = getattr(signal, "SIGBREAK", None)
         if break_signal is not None:
             try:
@@ -521,7 +583,7 @@ def install_service_stop_watcher(stop_event) -> bool:
     """Watch the named event through which the SCM requests graceful stop."""
     if not IS_WINDOWS:
         return False
-    name = os.environ.get(SERVICE_STOP_EVENT_VAR)
+    name = first_env_value(SERVICE_STOP_EVENT_VAR)
     if not name:
         return False
     try:
@@ -553,7 +615,7 @@ def _wait_for_service_stop(win32event, name: str, stop_event) -> None:
         win32event.WaitForSingleObject(handle, win32event.INFINITE)
     finally:
         handle.Close()
-    logger.info("The Windows service asked Frigate to stop")
+    logger.info("The Windows service asked Gannet to stop")
     stop_event.set()
 
 
@@ -572,7 +634,7 @@ BIRDSEYE_PORT = 5620
 
 
 def _env_port(name: str, default: int) -> int:
-    value = os.environ.get(name, "").strip()
+    value = first_env_value(name) or ""
     if value.isdigit() and 1 <= int(value) <= 65535:
         return int(value)
     return default
@@ -736,7 +798,7 @@ def long_path_warning(camera_names: Iterable[str]) -> str | None:
         return None
     return (
         f"Recording paths can reach {len(longest)} characters, past the "
-        f"{MAX_PATH_LIMIT}-character Win32 limit. Shorten FRIGATE_BASE_DIR "
+        f"{MAX_PATH_LIMIT}-character Win32 limit. Shorten GANNET_BASE_DIR "
         f"(currently {get_base_dir()}) or camera names, or enable the "
         "LongPathsEnabled registry value."
     )

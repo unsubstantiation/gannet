@@ -51,7 +51,7 @@
     "disable": "停用雙向通話"
   },
   "lowBandwidthMode": "低頻寬模式",
-  "documentTitle.withCamera": "{{camera}} - 即時畫面 - Frigate",
+  "documentTitle.withCamera": "{{camera}} - 即時畫面 - Gannet",
   "recording": {
     "disable": "停用錄影",
     "enable": "啟用錄影"
@@ -164,7 +164,7 @@
   },
   "noCameras": {
     "title": "未設定任何鏡頭",
-    "description": "請先將鏡頭連接到 Frigate 以開始使用。",
+    "description": "請先將鏡頭連接到 Gannet 以開始使用。",
     "buttonText": "新增鏡頭",
     "restricted": {
       "title": "沒有可用鏡頭",
@@ -172,7 +172,7 @@
     },
     "default": {
       "title": "未設定任何鏡頭",
-      "description": "請先將鏡頭連接到 Frigate 以開始使用。",
+      "description": "請先將鏡頭連接到 Gannet 以開始使用。",
       "buttonText": "新增鏡頭"
     },
     "group": {

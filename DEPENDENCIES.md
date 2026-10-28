@@ -188,6 +188,46 @@ decision, so they are listed rather than unilaterally dropped.
 | `tzdata` | `== 2026.5` | consumed indirectly by `zoneinfo` on Windows |
 | `click` | `== 8.5.*` | used by `testing-scripts/process_clip.py` and the `uvicorn` CLI, not by `gannet/` |
 
+### 1.5 Local modification to a Python dependency: `filterpy`
+
+`norfair 2.3.0` requires `filterpy>=1.4.5,<2.0.0`; 1.4.5 is that package's last
+release and publishes no wheel, so `scripts/build_portable.py` builds one from
+the sdist. Its docstrings contain LaTeX in ordinary (non-raw) string literals —
+`P = \Sum ...` in `filterpy/common/helpers.py` is the one that reaches users.
+CPython 3.12 turns those backslashes into `SyntaxWarning: invalid escape
+sequence '\S'` when it compiles the file, and the portable bundle deliberately
+ships no `.pyc`, so the first launch prints the warning on stderr. It is
+harmless, but it looks like a startup failure.
+
+Both install paths therefore call `bootstrap_windows.py`'s
+`fix_filterpy_escapes()` right after pip installs the requirements. It doubles
+only backslashes that begin an *invalid* escape, inside string literals that
+are not raw or f-strings. Python already keeps `\S` as two characters and `\\S`
+evaluates to the same two, so no string value, code, comment or line ending
+changes; an AST comparison before and after enforces that, and every patched
+file is recompiled to prove no warning remains. The owning wheel's `RECORD`
+hashes and sizes are updated so the installed metadata stays accurate (the
+slim build's header pruning reads those records). `SOURCE-OFFER.txt` in the
+bundle discloses the modification and points at the unmodified sdist. If an
+upstream release ever fixes the docstrings, the function becomes a no-op.
+
+An already-extracted bundle from a build without the fix needs no rebuild; the
+warning is cosmetic. To silence it locally, change that one docstring and let
+CPython recompile it:
+
+```powershell
+$helpers = '<bundle>\python\Lib\site-packages\filterpy\common\helpers.py'
+$text = [IO.File]::ReadAllText($helpers)
+[IO.File]::WriteAllText($helpers, $text.Replace('P = \Sum', 'P = \\Sum'))
+Get-ChildItem (Split-Path $helpers) -Filter '__pycache__' -Directory -Recurse |
+    Remove-Item -Recurse -Force
+```
+
+CPython recompiles the changed file on the next start because its size no
+longer matches the cached bytecode; the `__pycache__` cleanup just makes that
+explicit. Setting `PYTHONWARNINGS=ignore::SyntaxWarning` also hides the message,
+but hides Gannet's own warnings with it, so prefer the source edit.
+
 ## 2. Web UI (`web/`)
 
 React 19 single-page app built with Vite 8 and TypeScript 6, styled with

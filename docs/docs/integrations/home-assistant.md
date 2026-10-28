@@ -5,7 +5,7 @@ title: Home Assistant Integration
 
 # Home Assistant integration
 
-Use the [official Frigate integration](https://github.com/blakeblackshear/frigate-hass-integration) from HACS.
+Use the [official Gannet integration](https://github.com/blakeblackshear/frigate-hass-integration) from HACS.
 
 ## Prerequisites
 
@@ -15,8 +15,8 @@ Gannet must already be running on its Windows host. Install and configure Home A
 mqtt:
   enabled: true
   host: 192.168.1.10
-  user: "{FRIGATE_MQTT_USER}"
-  password: "{FRIGATE_MQTT_PASSWORD}"
+  user: "{GANNET_MQTT_USER}"
+  password: "{GANNET_MQTT_PASSWORD}"
 ```
 
 Store the substituted values in Gannet's `secrets.yaml` or Windows service environment. MQTT supplies many entities and state updates even though API and media requests use HTTPS.
@@ -25,7 +25,7 @@ The Home Assistant `media_source` integration must be enabled for Gannet's Media
 
 ## Install
 
-1. In HACS, search for and install **Frigate**.
+1. In HACS, search for and install **Gannet**.
 2. Restart Home Assistant.
 3. Open **Settings > Devices & services > Add integration > Gannet**.
 4. Enter the native Windows URL, normally `https://<windows-host>:8971`.
@@ -51,7 +51,7 @@ The Windows browser client, not Home Assistant, handles normal Gannet WebRTC can
 
 ## Optional dashboard card
 
-The Frigate integration and the third-party Frigate dashboard card are separate. Follow the card's own installation instructions if you choose to use it.
+The Gannet integration and the third-party Gannet dashboard card are separate. Follow the card's own installation instructions if you choose to use it.
 
 ## Options
 
@@ -212,7 +212,7 @@ rtsp://<frigate_host>:2000/{{ name|lower }}
 
 ## Multiple Instance Support
 
-The Frigate integration seamlessly supports the use of multiple Gannet servers.
+The Gannet integration seamlessly supports the use of multiple Gannet servers.
 
 ### Requirements for Multiple Instances
 

@@ -12,7 +12,7 @@ export type LogLine = {
   content: string;
 };
 
-export const logTypes = ["frigate", "go2rtc", "websocket"] as const;
+export const logTypes = ["gannet", "go2rtc", "websocket"] as const;
 export type LogType = (typeof logTypes)[number];
 
 export type LogSettingsType = {

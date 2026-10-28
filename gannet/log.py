@@ -58,7 +58,7 @@ log_queue: Queue | None = None
 
 def service_log_handler() -> logging.Handler | None:
     """Handler writing the bounded log file consumed by the web UI."""
-    path = get_service_log_path("frigate")
+    path = get_service_log_path("gannet")
 
     try:
         os.makedirs(os.path.dirname(path), exist_ok=True)

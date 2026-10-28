@@ -138,7 +138,7 @@ class OvDetector(DetectionApi):
             self.calculate_grids_strides()
 
     ## Takes in class ID, confidence score, and array of [x, y, w, h] that describes detection position,
-    ## returns an array that's easily passable back to Frigate.
+    ## returns an array that's easily passable back to Gannet.
     def process_yolo(self, class_id, conf, pos):
         return [
             class_id,  # class ID

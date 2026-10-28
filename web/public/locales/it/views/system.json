@@ -1,13 +1,13 @@
 {
   "documentTitle": {
-    "cameras": "Statistiche telecamere - Frigate",
-    "enrichments": "Statistiche di miglioramento - Frigate",
-    "storage": "Statistiche archiviazione - Frigate",
-    "general": "Statistiche generali - Frigate",
+    "cameras": "Statistiche telecamere - Gannet",
+    "enrichments": "Statistiche di miglioramento - Gannet",
+    "storage": "Statistiche archiviazione - Gannet",
+    "general": "Statistiche generali - Gannet",
     "logs": {
-      "frigate": "Registri Frigate - Frigate",
-      "go2rtc": "Registri Go2RTC - Frigate",
-      "websocket": "Registri dei messaggi - Frigate"
+      "gannet": "Registri Gannet - Gannet",
+      "go2rtc": "Registri Go2RTC - Gannet",
+      "websocket": "Registri dei messaggi - Gannet"
     }
   },
   "logs": {
@@ -235,7 +235,7 @@
     "overview": "Sommario",
     "recordings": {
       "title": "Registrazioni",
-      "tips": "Questo valore rappresenta lo spazio di archiviazione totale utilizzato dalle registrazioni nel database di Frigate. Frigate non tiene traccia dell'utilizzo dello spazio di archiviazione per tutti i file presenti sul disco.",
+      "tips": "Questo valore rappresenta lo spazio di archiviazione totale utilizzato dalle registrazioni nel database di Gannet. Gannet non tiene traccia dell'utilizzo dello spazio di archiviazione per tutti i file presenti sul disco.",
       "earliestRecording": "Prima registrazione disponibile:"
     },
     "cameraStorage": {
@@ -247,7 +247,7 @@
       "bandwidth": "Larghezza di banda",
       "unused": {
         "title": "Liberi",
-        "tips": "Questo valore potrebbe non rappresentare accuratamente lo spazio libero disponibile per Frigate se nel disco sono archiviati altri file oltre alle registrazioni di Frigate. Frigate non tiene traccia dell'utilizzo dello spazio di archiviazione al di fuori delle sue registrazioni."
+        "tips": "Questo valore potrebbe non rappresentare accuratamente lo spazio libero disponibile per Gannet se nel disco sono archiviati altri file oltre alle registrazioni di Gannet. Gannet non tiene traccia dell'utilizzo dello spazio di archiviazione al di fuori delle sue registrazioni."
       }
     },
     "shm": {

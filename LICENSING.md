@@ -161,20 +161,22 @@ has to ask, not that they cannot.
 
 Not licensing questions, but they sit next to them and are easy to forget:
 
-- **Names inside the code.** Branding is done where users meet it: Frigate's logo,
-  wordmark, and docs favicon are deleted from the tree, the READMEs and the docs
-  site carry Gannet's own art and name, and the winget manifest is
-  `unsubstantiation.GannetNVR` instead of Frigate's identifier. What remains is
-  internal and load-bearing: the package directory is `gannet/`,
-  `pyproject.toml` still builds a `frigate-nvr` distribution (which
-  `gannet/util/version.py` looks up to resolve the running version), config keys
-  and environment variables still use the `FRIGATE_` prefix, the default data
-  directory is still `%LOCALAPPDATA%\Frigate`. Compatibility-facing runtime names,
-  configuration and environment variables, MQTT/API identifiers, and parts of the
-  inherited UI and startup output still refer to Frigate. Changing those interfaces
-  needs an explicit migration plan to protect existing installs. Repository prose and
-  visible product branding now use Gannet where appropriate; remaining references
-  identify upstream, preserve compatibility, or remain in inherited UI/runtime text.
+- **Names inside the code.** Branding is done where users meet it: upstream
+  Frigate's logo, wordmark, and docs favicon are deleted from the tree, the
+  READMEs and the docs site carry Gannet's own art and name, and the winget
+  manifest is `unsubstantiation.GannetNVR` instead of upstream's identifier.
+  Startup output, API messages, repository prose, and the UI catalogs now say
+  Gannet. `GANNET_*` is the preferred environment prefix with `FRIGATE_*`
+  retained as a working alias; new installs write to `%LOCALAPPDATA%\Gannet`
+  and `tmp\logs\gannet\current`, with an explicit cutover warning for the old
+  `%LOCALAPPDATA%\Frigate` tree (see the installation guide). What still
+  carries the inherited name is internal and load-bearing: the
+  `frigate-nvr` distribution name, the `frigate` MQTT topic prefix, the
+  `frigate_token` cookie, `frigate_` Prometheus metrics, the SCM service key,
+  internal Python/TypeScript identifiers, and the `docs/docs/frigate/`
+  documentation path. Changing those interfaces needs an explicit migration
+  plan to protect existing installs. Remaining prose references identify
+  upstream Frigate or upstream Frigate+ and are qualified as such.
 - **The docs host.** `docs/docusaurus.config.ts` still sets `url` to
   `docs.frigate.video` (flagged with `FIXME(owner)` in the file), so the generated
   canonical links and the sitemap advertise upstream's domain, and `netlify.toml`

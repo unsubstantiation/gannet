@@ -9,7 +9,7 @@
     "second_one": "{{time}} sekund",
     "second_other": "{{time}} sekunder",
     "untilForTime": "Inntil {{time}}",
-    "untilForRestart": "Inntil Frigate starter på nytt.",
+    "untilForRestart": "Inntil Gannet starter på nytt.",
     "untilRestart": "Inntil omstart",
     "ago": "{{timeAgo}} siden",
     "justNow": "Akkurat nå",
@@ -132,9 +132,9 @@
     "help": "Hjelp",
     "documentation": {
       "title": "Dokumentasjon",
-      "label": "Frigate-dokumentasjon"
+      "label": "Gannet-dokumentasjon"
     },
-    "restart": "Start Frigate på nytt",
+    "restart": "Start Gannet på nytt",
     "live": {
       "title": "Direkte",
       "allCameras": "Alle kameraer",
@@ -291,15 +291,15 @@
     "title": "Rolle",
     "admin": "Administrator",
     "viewer": "Visningsbruker",
-    "desc": "Administratorer har full tilgang til alle funksjoner i Frigate brukergrensesnittet. Visningsbrukere er begrenset til å se kameraer, inspisere elementer og se historiske opptak."
+    "desc": "Administratorer har full tilgang til alle funksjoner i Gannet brukergrensesnittet. Visningsbrukere er begrenset til å se kameraer, inspisere elementer og se historiske opptak."
   },
   "accessDenied": {
-    "documentTitle": "Ingen tilgang – Frigate",
+    "documentTitle": "Ingen tilgang – Gannet",
     "title": "Ingen tilgang",
     "desc": "Du har ikke tillatelse til å vise denne siden."
   },
   "notFound": {
-    "documentTitle": "Ikke funnet – Frigate",
+    "documentTitle": "Ikke funnet – Gannet",
     "title": "404",
     "desc": "Siden ble ikke funnet"
   },
@@ -309,7 +309,7 @@
     "pixels": "{{area}}piklser"
   },
   "field": {
-    "internalID": "Den interne ID-en som Frigate bruker i konfigurasjonen og databasen",
+    "internalID": "Den interne ID-en som Gannet bruker i konfigurasjonen og databasen",
     "optional": "Valgfritt"
   },
   "list": {

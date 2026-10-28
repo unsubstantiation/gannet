@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: LicenseRef-GNCL-1.0
 """Run go2rtc as a managed Windows child process.
 
-Frigate starts the installed executable, writes its output to the native log
+Gannet starts the installed executable, writes its output to the native log
 directory, and terminates it during shutdown. Live view needs go2rtc for MSE,
 WebRTC, and camera restreaming; a missing executable is reported as a warning so
-the rest of Frigate can still start.
+the rest of Gannet can still start.
 """
 
 import logging
@@ -50,7 +50,7 @@ def find_go2rtc(config_dir: str | None = None) -> str | None:
 
 
 class Go2rtcProcess:
-    """The go2rtc process, when Frigate has to run it itself."""
+    """The go2rtc process, when Gannet has to run it itself."""
 
     def __init__(self, config_path: str) -> None:
         self.config_path = config_path
@@ -104,7 +104,7 @@ class Go2rtcProcess:
             "stdin": sp.DEVNULL,
         }
 
-        # Keep go2rtc out of the console's Ctrl+C group so Frigate can stop it
+        # Keep go2rtc out of the console's Ctrl+C group so Gannet can stop it
         # after its own shutdown work is done.
         kwargs["creationflags"] = sp.CREATE_NEW_PROCESS_GROUP
 

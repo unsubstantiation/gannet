@@ -1,16 +1,16 @@
 {
   "documentTitle": {
-    "masksAndZones": "Editor de máscara e zona - Frigate",
-    "motionTuner": "Ajuste de movimento - Frigate",
-    "object": "Depuração - Frigate",
-    "authentication": "Configurações de autenticação - Frigate",
-    "general": "Configurações gerais - Frigate",
-    "frigatePlus": "Configurações do Frigate+ - Frigate",
-    "default": "Configurações - Frigate",
-    "notifications": "Configuração de Notificações - Frigate",
-    "enrichments": "Configurações Avançadas - Frigate",
-    "cameraManagement": "Gerir Câmaras - Frigate",
-    "cameraReview": "Configurações de Revisão de Câmara - Frigate"
+    "masksAndZones": "Editor de máscara e zona - Gannet",
+    "motionTuner": "Ajuste de movimento - Gannet",
+    "object": "Depuração - Gannet",
+    "authentication": "Configurações de autenticação - Gannet",
+    "general": "Configurações gerais - Gannet",
+    "frigatePlus": "Configurações do Frigate+ - Gannet",
+    "default": "Configurações - Gannet",
+    "notifications": "Configuração de Notificações - Gannet",
+    "enrichments": "Configurações Avançadas - Gannet",
+    "cameraManagement": "Gerir Câmaras - Gannet",
+    "cameraReview": "Configurações de Revisão de Câmara - Gannet"
   },
   "menu": {
     "ui": "UI",
@@ -95,10 +95,10 @@
     },
     "notificationSettings": {
       "title": "Configurações de notificação",
-      "desc": "O Frigate pode enviar notificações push para o seu dispositivo quando está a ser executado no browser ou instalado como um PWA."
+      "desc": "O Gannet pode enviar notificações push para o seu dispositivo quando está a ser executado no browser ou instalado como um PWA."
     },
     "notificationUnavailable": {
-      "desc": "As notificações push da Web exigem um contexto seguro (<code>https://…</code>). Esta é uma limitação do navegador. Acesse o Frigate com segurança para usar as notificações."
+      "desc": "As notificações push da Web exigem um contexto seguro (<code>https://…</code>). Esta é uma limitação do navegador. Acesse o Gannet com segurança para usar as notificações."
     },
     "cameras": {
       "title": "Câmaras",
@@ -127,7 +127,7 @@
     "cancelSuspension": "Cancelar Suspensão",
     "toast": {
       "success": {
-        "registered": "Registo para notificações concluído com sucesso. É necessário reiniciar o Frigate antes que qualquer notificação (incluindo uma notificação de teste) possa ser enviada.",
+        "registered": "Registo para notificações concluído com sucesso. É necessário reiniciar o Gannet antes que qualquer notificação (incluindo uma notificação de teste) possa ser enviada.",
         "settingSaved": "As configurações de notificação foram salvas."
       },
       "error": {
@@ -151,7 +151,7 @@
       "cleanCopyWarning": "Algumas câmaras têm snapshots habilitados, mas a cópia limpa está desabilitada. É necessário habilitar <code>clean_copy</code> na sua configuração de snapshot para poder enviar imagens dessas câmaras para o Frigate+."
     },
     "toast": {
-      "success": "As definições do Frigate+ foram guardadas. Reinicie o Frigate para aplicar as alterações.",
+      "success": "As definições do Frigate+ foram guardadas. Reinicie o Gannet para aplicar as alterações.",
       "error": "Falha ao guardar alterações de configuração: {{errorMessage}}"
     },
     "modelInfo": {
@@ -202,17 +202,17 @@
       "clickDrawPolygon": "Clique para desenhar um polígono na imagem.",
       "toast": {
         "success": {
-          "noName": "O filtro de movimento foi guardado. Reinicie o Frigate para aplicar as alterações.",
-          "title": "{{polygonName}} foi salvo. Reinicie o Frigate para aplicar as alterações."
+          "noName": "O filtro de movimento foi guardado. Reinicie o Gannet para aplicar as alterações.",
+          "title": "{{polygonName}} foi salvo. Reinicie o Gannet para aplicar as alterações."
         }
       },
       "edit": "Editar Máscara de Movimento",
-      "documentTitle": "Editar Máscara de Movimento - Frigate",
+      "documentTitle": "Editar Máscara de Movimento - Gannet",
       "add": "Nova Máscara de Movimento"
     },
     "zones": {
       "label": "Zonas",
-      "documentTitle": "Editar Zona - Frigate",
+      "documentTitle": "Editar Zona - Gannet",
       "desc": {
         "documentation": "Documentação",
         "title": "As zonas permitem definir uma área específica do quadro para que você possa determinar se um objeto está ou não dentro de uma área particular."
@@ -260,7 +260,7 @@
         }
       },
       "toast": {
-        "success": "A zona ({{zoneName}}) foi salva. Reinicie o Frigate para aplicar as alterações."
+        "success": "A zona ({{zoneName}}) foi salva. Reinicie o Gannet para aplicar as alterações."
       }
     },
     "filter": {
@@ -341,11 +341,11 @@
       },
       "add": "Adicionar filtro para objecto",
       "edit": "Editar filtro de objecto",
-      "documentTitle": "Editar filtro de movimento - Frigate",
+      "documentTitle": "Editar filtro de movimento - Gannet",
       "toast": {
         "success": {
-          "noName": "A máscara de objeto foi salva. Reinicie o Frigate para aplicar as alterações.",
-          "title": "{{polygonName}} foi salvo. Reinicie o Frigate para aplicar as alterações."
+          "noName": "A máscara de objeto foi salva. Reinicie o Gannet para aplicar as alterações.",
+          "title": "{{polygonName}} foi salvo. Reinicie o Gannet para aplicar as alterações."
         }
       },
       "context": "As máscaras de filtro de objetos são usadas para filtrar falsos positivos para um determinado tipo de objeto com base na localização."
@@ -364,7 +364,7 @@
       "desc": "Sobrepor um carimbo de data/hora na imagem"
     },
     "title": "Depurar",
-    "detectorDesc": "O Frigate utiliza os seus detectores ({{detectors}}) para detectar objetos no fluxo de vídeo da sua câmara.",
+    "detectorDesc": "O Gannet utiliza os seus detectores ({{detectors}}) para detectar objetos no fluxo de vídeo da sua câmara.",
     "desc": "A vista de depuração apresenta uma vista em tempo real dos objetos localizados e das respectivas estatísticas. A lista de objetos apresenta um resumo dos objetos detectados em tempo real.",
     "debugging": "A depurar",
     "objectList": "Lista de Objetos",
@@ -427,7 +427,7 @@
       "desc": "O valor do limiar determina quanto de alteração na luminância de um pixel é necessário para ser considerado movimento. <em>Valor padrão: 30</em>"
     },
     "desc": {
-      "title": "O Frigate utiliza a detecção de movimento como uma primeira verificação para ver se há algo acontecendo no quadro que valha a pena ser verificado com a detecção de objetos.",
+      "title": "O Gannet utiliza a detecção de movimento como uma primeira verificação para ver se há algo acontecendo no quadro que valha a pena ser verificado com a detecção de objetos.",
       "documentation": "Leia o Guia de Ajuste de Movimento"
     },
     "title": "Ajustador de Detecção de Movimento",
@@ -438,7 +438,7 @@
   },
   "enrichments": {
     "faceRecognition": {
-      "desc": "O reconhecimento facial permite que as pessoas recebam nomes e, quando o rosto delas for reconhecido, o Frigate atribuirá o nome da pessoa como um subrótulo. Essas informações estão incluídas na interface do utilizador, nos filtros e nas notificações.",
+      "desc": "O reconhecimento facial permite que as pessoas recebam nomes e, quando o rosto delas for reconhecido, o Gannet atribuirá o nome da pessoa como um subrótulo. Essas informações estão incluídas na interface do utilizador, nos filtros e nas notificações.",
       "modelSize": {
         "small": {
           "desc": "O uso de <em>pequeno</em> emprega um modelo de incorporação facial do FaceNet que funciona eficientemente na maioria dos CPUs.",
@@ -476,11 +476,11 @@
         "alreadyInProgress": "A reindexação já está em andamento.",
         "error": "Falha ao iniciar a reindexação: {{errorMessage}}"
       },
-      "desc": "A Pesquisa Semântica no Frigate permite que você encontre objetos rastreados dentro dos seus itens de análise usando a própria imagem, uma descrição de texto definida pelo utilizador ou uma gerada automaticamente.",
+      "desc": "A Pesquisa Semântica no Gannet permite que você encontre objetos rastreados dentro dos seus itens de análise usando a própria imagem, uma descrição de texto definida pelo utilizador ou uma gerada automaticamente.",
       "title": "Busca semântica"
     },
     "licensePlateRecognition": {
-      "desc": "O Frigate pode reconhecer placas de veículos e adicionar automaticamente os caracteres detectados ao campo recognized_license_plate ou um nome conhecido como subrótulo para objetos do tipo carro. Um caso de uso comum pode ser a leitura de placas de carros entrando numa garagem ou de carros passando por uma rua.",
+      "desc": "O Gannet pode reconhecer placas de veículos e adicionar automaticamente os caracteres detectados ao campo recognized_license_plate ou um nome conhecido como subrótulo para objetos do tipo carro. Um caso de uso comum pode ser a leitura de placas de carros entrando numa garagem ou de carros passando por uma rua.",
       "title": "Reconhecimento de placas"
     },
     "birdClassification": {
@@ -491,7 +491,7 @@
     "title": "Configurações de enriquecimentos",
     "restart_required": "Reinicialização necessária (configurações de enriquecimento alteradas)",
     "toast": {
-      "success": "As configurações de enriquecimento foram salvas. Reinicie o Frigate para aplicar as alterações.",
+      "success": "As configurações de enriquecimento foram salvas. Reinicie o Gannet para aplicar as alterações.",
       "error": "Falha ao salvar alterações de configuração: {{errorMessage}}"
     }
   },
@@ -550,7 +550,7 @@
       },
       "createUser": {
         "title": "Criar novo utilizador",
-        "desc": "Adicione uma nova conta de utilizador e especifique uma função para acesso a áreas da interface do utilizador do Frigate.",
+        "desc": "Adicione uma nova conta de utilizador e especifique uma função para acesso a áreas da interface do utilizador do Gannet.",
         "usernameOnlyInclude": "O nome de utilizador pode incluir apenas letras, números, . ou _",
         "confirmPassword": "Por favor confirme sua senha"
       },
@@ -563,7 +563,7 @@
       }
     },
     "management": {
-      "desc": "Gestão de utilizadores desta instância do Frigate.",
+      "desc": "Gestão de utilizadores desta instância do Gannet.",
       "title": "Gestão de Utilizadores"
     },
     "table": {
@@ -667,7 +667,7 @@
         },
         "actions": {
           "title": "Ações",
-          "desc": "Por padrão, o Frigate envia uma mensagem MQTT para todos os triggers. Escolha uma ação adicional a ser executada quando este trigger for disparado.",
+          "desc": "Por padrão, o Gannet envia uma mensagem MQTT para todos os triggers. Escolha uma ação adicional a ser executada quando este trigger for disparado.",
           "error": {
             "min": "Pelo menos uma ação deve ser selecionada."
           }
@@ -693,7 +693,7 @@
   "roles": {
     "management": {
       "title": "Gestão do Papel de Visualizador",
-      "desc": "Gerir papéis de visualizador customizados e as suas permissões de acesso para esta instância do Frigate."
+      "desc": "Gerir papéis de visualizador customizados e as suas permissões de acesso para esta instância do Gannet."
     },
     "addRole": "Adicionar Papel",
     "table": {
@@ -754,7 +754,7 @@
   },
   "cameraWizard": {
     "title": "Adicionar Câmara",
-    "description": "Siga os passos abaixo para adicionar uma câmara nova no seu Frigate.",
+    "description": "Siga os passos abaixo para adicionar uma câmara nova no seu Gannet.",
     "steps": {
       "nameAndConnection": "Nome e Conexão",
       "streamConfiguration": "Configuração de Stream",

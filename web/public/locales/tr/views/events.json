@@ -17,7 +17,7 @@
     "label": "Olaylar"
   },
   "recordings": {
-    "documentTitle": "Kayıtlar - Frigate",
+    "documentTitle": "Kayıtlar - Gannet",
     "invalidSharedLink": "Ayrıştırma hatası nedeniyle zaman damgalı kayıt bağlantısı açılamıyor.",
     "invalidSharedCamera": "Bilinmeyen veya yetkisiz bir kamera nedeniyle zaman damgalı kayıt bağlantısı açılamıyor."
   },
@@ -29,7 +29,7 @@
     "button": "İncelenecek Yeni Öğeler Var",
     "label": "Yeni öğeleri incele"
   },
-  "documentTitle": "İncele - Frigate",
+  "documentTitle": "İncele - Gannet",
   "motion": {
     "label": "Hareket",
     "only": "Yalnızca hareketler"

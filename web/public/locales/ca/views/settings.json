@@ -1,21 +1,21 @@
 {
   "documentTitle": {
-    "enrichments": "Parmàmetres complementaris - Frigate",
-    "motionTuner": "Ajust de moviment - Frigate",
-    "object": "Depurar - Frigate",
-    "default": "Paràmetres - Frigate",
-    "authentication": "Configuració d'autenticació - Frigate",
-    "masksAndZones": "Editor de màscares i zones - Frigate",
-    "general": "Configuració del perfil - Frigate",
-    "frigatePlus": "Paràmetres de Frigate+ - Frigate",
-    "notifications": "Paràmetres de notificació - Frigate",
-    "cameraManagement": "Gestionar càmeres - Frigate",
-    "cameraReview": "Configuració Revisió de Càmeres - Frigate",
-    "globalConfig": "Configuració global - Frigate",
-    "cameraConfig": "Configuració de la càmera - Frigate",
-    "maintenance": "Manteniment - Frigate",
-    "profiles": "Perfils - Frigate",
-    "detectorsAndModel": "Detectors i model - Frigate"
+    "enrichments": "Parmàmetres complementaris - Gannet",
+    "motionTuner": "Ajust de moviment - Gannet",
+    "object": "Depurar - Gannet",
+    "default": "Paràmetres - Gannet",
+    "authentication": "Configuració d'autenticació - Gannet",
+    "masksAndZones": "Editor de màscares i zones - Gannet",
+    "general": "Configuració del perfil - Gannet",
+    "frigatePlus": "Paràmetres de Frigate+ - Gannet",
+    "notifications": "Paràmetres de notificació - Gannet",
+    "cameraManagement": "Gestionar càmeres - Gannet",
+    "cameraReview": "Configuració Revisió de Càmeres - Gannet",
+    "globalConfig": "Configuració global - Gannet",
+    "cameraConfig": "Configuració de la càmera - Gannet",
+    "maintenance": "Manteniment - Gannet",
+    "profiles": "Perfils - Gannet",
+    "detectorsAndModel": "Detectors i model - Gannet"
   },
   "menu": {
     "ui": "Interfície d'usuari",
@@ -167,8 +167,8 @@
         "exportUiSettingsFailed": "No s'han pogut exportar els paràmetres",
         "importNothingToApply": "No s'ha pogut importar la configuració: el fitxer no conté cap configuració",
         "importInvalidJson": "No s'ha pogut importar la configuració: el fitxer no és un JSON vàlid",
-        "importWrongType": "Ha fallat la importació de la configuració: el fitxer no és una exportació de la configuració de Frigate",
-        "importUnsupportedVersion": "No s'ha pogut importar la configuració: el fitxer requereix una versió més nova de Frigate",
+        "importWrongType": "Ha fallat la importació de la configuració: el fitxer no és una exportació de la configuració de Gannet",
+        "importUnsupportedVersion": "No s'ha pogut importar la configuració: el fitxer requereix una versió més nova de Gannet",
         "importInvalidSchema": "No s'ha pogut importar la configuració: el fitxer està mal format",
         "importUiSettingsFailed": "No s'han pogut importar els paràmetres"
       }
@@ -183,8 +183,8 @@
       },
       "importDialog": {
         "title": "Importa els paràmetres",
-        "desc": "Trieu què aplicar d'aquest fitxer. Frigate es tornarà a carregar quan acabi la importació.",
-        "exportedFrom": "S'ha exportat {{date}} de la versió de configuració de Frigate {{version}}",
+        "desc": "Trieu què aplicar d'aquest fitxer. Gannet es tornarà a carregar quan acabi la importació.",
+        "exportedFrom": "S'ha exportat {{date}} de la versió de configuració de Gannet {{version}}",
         "layouts_one": "Distribucions de grup de càmeres (grup{{count}})",
         "layouts_many": "Distribucions de grup de càmera ({{count}} grups)",
         "layouts_other": "Distribucions de grup de càmera ({{count}} grups)",
@@ -316,7 +316,7 @@
         "desc": "Estableix el temps mínim, en segons, que l'objecte ha d'estar dins la zona perquè s'activi. <em>Per defecte: 0</em>"
       },
       "allObjects": "Tots els objectes",
-      "documentTitle": "Edita zona - Frigate",
+      "documentTitle": "Edita zona - Gannet",
       "speedThreshold": {
         "title": "Llindar de velocitat ({{unit}})",
         "toast": {
@@ -357,7 +357,7 @@
       "label": "Màscara de moviment",
       "add": "Nova màscara de moviment",
       "edit": "Edita la màscara de moviment",
-      "documentTitle": "Editar la màscara de moviment - Frigate",
+      "documentTitle": "Editar la màscara de moviment - Gannet",
       "clickDrawPolygon": "Fes click per a dibuixar un polígon a la imatge.",
       "toast": {
         "success": {
@@ -373,7 +373,7 @@
       }
     },
     "objectMasks": {
-      "documentTitle": "Editar la màscara d'objecte - Frigate",
+      "documentTitle": "Editar la màscara d'objecte - Gannet",
       "label": "Màscares d'objecte",
       "edit": "Editar la màscara d'objecte",
       "point_one": "{{count}} punt",
@@ -433,7 +433,7 @@
     },
     "notificationSettings": {
       "title": "Paràmetres de notificació",
-      "desc": "Frigate pot enviar notificacions push directament al teu dispositiu quan s’executa des del navegador o està instal·lat com a PWA (aplicació web progressiva)."
+      "desc": "Gannet pot enviar notificacions push directament al teu dispositiu quan s’executa des del navegador o està instal·lat com a PWA (aplicació web progressiva)."
     },
     "deviceSpecific": "Paràmetres específics del dispositiu",
     "registerDevice": "Registrar aquest dispositiu",
@@ -452,7 +452,7 @@
     "toast": {
       "success": {
         "settingSaved": "Els paràmetres de notificacions s'han desat.",
-        "registered": "Registre de notificacions realitzat amb èxit. Cal reiniciar Frigate perquè es puguin enviar notificacions (inclosa una notificació de prova)."
+        "registered": "Registre de notificacions realitzat amb èxit. Cal reiniciar Gannet perquè es puguin enviar notificacions (inclosa una notificació de prova)."
       },
       "error": {
         "registerFailed": "No s'ha pogut desar el registre de notificacions."
@@ -465,8 +465,8 @@
     },
     "title": "Notificacions",
     "notificationUnavailable": {
-      "desc": "Les notificacions push web requereixen un context segur (https://…). Aquesta és una limitació del navegador. Accedeix a Frigate de manera segura per utilitzar les notificacions.",
-      "descPwa": "A iOS, les notificacions push web només estàn disponibles quan Frigate està instalat a la pantalla principal. Obre el menú Compartir, selecciona Afegir a la pantalla, i obre Frigate des del nou icona per registrar les notificacions en aquest dispositiu."
+      "desc": "Les notificacions push web requereixen un context segur (https://…). Aquesta és una limitació del navegador. Accedeix a Gannet de manera segura per utilitzar les notificacions.",
+      "descPwa": "A iOS, les notificacions push web només estàn disponibles quan Gannet està instalat a la pantalla principal. Obre el menú Compartir, selecciona Afegir a la pantalla, i obre Gannet des del nou icona per registrar les notificacions en aquest dispositiu."
     },
     "unsavedChanges": "Canvis de notificació no desats",
     "globalSettings": {
@@ -489,7 +489,7 @@
     },
     "desc": {
       "documentation": "Llegeix la guia d'ajust de detecció de moviment",
-      "title": "Frigate utilitza la detecció de moviment com a primer filtre per comprovar si hi ha alguna activitat a la imatge que valgui la pena analitzar amb la detecció d’objectes."
+      "title": "Gannet utilitza la detecció de moviment com a primer filtre per comprovar si hi ha alguna activitat a la imatge que valgui la pena analitzar amb la detecció d’objectes."
     },
     "improveContrast": {
       "title": "Millorar contrast",
@@ -544,7 +544,7 @@
       "desc": "Mostra requadres al voltant de les àrees on s'ha detectat moviment",
       "tips": "<p><strong>Caixes de moviment</strong></p><br><p>Es sobreposaran requadres vermells a les àrees del fotograma on actualment s’estigui detectant moviment.</p>"
     },
-    "detectorDesc": "Frigate fa servir els teus detectors ({{detectors}}) per a detectar objectes a les imatges de la teva càmera.",
+    "detectorDesc": "Gannet fa servir els teus detectors ({{detectors}}) per a detectar objectes a les imatges de la teva càmera.",
     "desc": "La vista de depuració mostra en temps real els objectes rastrejats i les seves estadístiques. La llista d’objectes mostra un resum amb retard temporal dels objectes detectats.",
     "openCameraWebUI": "Obrir la interficie d'usuari de {{camera}}",
     "audio": {
@@ -662,14 +662,14 @@
         "title": "Crear un nou usuari",
         "confirmPassword": "Siusplau, confirma la contrasenya",
         "usernameOnlyInclude": "El nom d'usuari només pot contenir lletres, números, . o _",
-        "desc": "Afegeix un compte d'usuari nou i especifica un rol per a l'accés a les àrees de la interfície d'usuari de Frigate."
+        "desc": "Afegeix un compte d'usuari nou i especifica un rol per a l'accés a les àrees de la interfície d'usuari de Gannet."
       }
     },
     "title": "Usuaris",
     "addUser": "Afegir usuari",
     "management": {
       "title": "Gestió d'usuaris",
-      "desc": "Gestioneu els comptes d'usuari d'aquesta instància de Frigate."
+      "desc": "Gestioneu els comptes d'usuari d'aquesta instància de Gannet."
     },
     "updatePassword": "Restableix la contrasenya"
   },
@@ -719,10 +719,10 @@
     "title": "Paràmetres de Frigate+",
     "toast": {
       "error": "No s'han pogut guardar els canvis de configuració: {{errorMessage}}",
-      "success": "Els paràmetres de Frigate+ han estat desats. Reincia Frigate per aplicar els canvis."
+      "success": "Els paràmetres de Frigate+ han estat desats. Reincia Gannet per aplicar els canvis."
     },
     "restart_required": "Es necessari un reinici (El model de Frigate+ ha cambiat)",
-    "description": "Frigate+ és un servei de subscripció que proporciona accés a funcions i capacitats addicionals per a la vostra instància de Frigate, inclosa la capacitat d'utilitzar models de detecció d'objectes personalitzats entrenats en les vostres pròpies dades. Podeu gestionar la configuració del model Frigate+ aquí.",
+    "description": "Frigate+ és un servei de subscripció que proporciona accés a funcions i capacitats addicionals per a la vostra instància de Gannet, inclosa la capacitat d'utilitzar models de detecció d'objectes personalitzats entrenats en les vostres pròpies dades. Podeu gestionar la configuració del model Frigate+ aquí.",
     "cardTitles": {
       "api": "API",
       "currentModel": "Model actual",
@@ -756,7 +756,7 @@
         "error": "Error en iniciar la reindexació: {{errorMessage}}"
       },
       "title": "Cerca semàntica",
-      "desc": "La cerca semàntica a Frigate permet trobar objectes rastrejats dins dels elements de revisió utilitzant la pròpia imatge, una descripció de text definida per l'usuari o una de generada automàticament."
+      "desc": "La cerca semàntica a Gannet permet trobar objectes rastrejats dins dels elements de revisió utilitzant la pròpia imatge, una descripció de text definida per l'usuari o una de generada automàticament."
     },
     "faceRecognition": {
       "modelSize": {
@@ -772,12 +772,12 @@
         "desc": "La mida del model utilitzat per al reconeixement facial."
       },
       "title": "Reconeixement de rostres",
-      "desc": "El reconeixement facial permet a les persones assignar noms i quan es reconeix la seva cara Frigate assignarà el nom de la persona com a subetiqueta. Aquesta informació s'inclou en la interfície d'usuari, filtres, així com en les notificacions."
+      "desc": "El reconeixement facial permet a les persones assignar noms i quan es reconeix la seva cara Gannet assignarà el nom de la persona com a subetiqueta. Aquesta informació s'inclou en la interfície d'usuari, filtres, així com en les notificacions."
     },
     "unsavedChanges": "Canvis dels paràmetres complementaris sense desar",
     "licensePlateRecognition": {
       "title": "Reconeixement de matrícules",
-      "desc": "Frigate pot reconèixer les plaques de matrícula en vehicles i afegir automàticament els caràcters detectats al camp de la placa reconeguda o un nom conegut com a sub_etiqueta en objectes que són de tipus cotxe. Un cas d'ús comú pot ser llegir les plaques de matrícula dels cotxes que entren en un lloc o els cotxes que passen per un carrer."
+      "desc": "Gannet pot reconèixer les plaques de matrícula en vehicles i afegir automàticament els caràcters detectats al camp de la placa reconeguda o un nom conegut com a sub_etiqueta en objectes que són de tipus cotxe. Un cas d'ús comú pot ser llegir les plaques de matrícula dels cotxes que entren en un lloc o els cotxes que passen per un carrer."
     },
     "birdClassification": {
       "title": "Classificació d'ocells",
@@ -786,7 +786,7 @@
     "title": "Configuració de l'anàlisi avançada",
     "toast": {
       "error": "No s'han pogut guardar els canvis de configuració: {{errorMessage}}",
-      "success": "Els paràmetres complementaris s'han desat. Reinicia Frigate per aplicar els canvis."
+      "success": "Els paràmetres complementaris s'han desat. Reinicia Gannet per aplicar els canvis."
     },
     "restart_required": "És necessari reiniciar (Han cambiat paràmetres complementaris)"
   },
@@ -864,7 +864,7 @@
         },
         "actions": {
           "title": "Accions",
-          "desc": "Per defecte, Frigate dispara un missatge MQTT per a tots els activadors. Subetiquetes afegeix el nom de l'activador a l'etiqueta de l'objecte. Els atributs són metadades cercables emmagatzemades per separat a les metadades de l'objecte rastrejat.",
+          "desc": "Per defecte, Gannet dispara un missatge MQTT per a tots els activadors. Subetiquetes afegeix el nom de l'activador a l'etiqueta de l'objecte. Els atributs són metadades cercables emmagatzemades per separat a les metadades de l'objecte rastrejat.",
           "error": {
             "min": "S'ha de seleccionar una acció com a mínim."
           }
@@ -944,7 +944,7 @@
     },
     "management": {
       "title": "Gestió del Rols de Visors",
-      "desc": "Gestiona els rols visors personalitzats y els seus permisos d'accés per aquesta instancia de Frigate."
+      "desc": "Gestiona els rols visors personalitzats y els seus permisos d'accés per aquesta instancia de Gannet."
     },
     "addRole": "Afegir Rol",
     "table": {
@@ -1149,7 +1149,7 @@
       "estimatedBandwidth": "Amplada de banda estimada",
       "roles": "Roles",
       "ffmpegModule": "Usa el mode de compatibilitat del flux",
-      "ffmpegModuleDescription": "Si el flux no es carrega després de diversos intents, proveu d'activar-ho. Quan està activat, Frigate utilitzarà el mòdul ffmpeg amb go2rtc. Això pot proporcionar una millor compatibilitat amb alguns fluxos de càmera.",
+      "ffmpegModuleDescription": "Si el flux no es carrega després de diversos intents, proveu d'activar-ho. Quan està activat, Gannet utilitzarà el mòdul ffmpeg amb go2rtc. Això pot proporcionar una millor compatibilitat amb alguns fluxos de càmera.",
       "none": "Cap",
       "error": "Error",
       "streamValidated": "El flux {{number}} s'ha validat correctament",
@@ -1188,16 +1188,16 @@
     "backToSettings": "Torna a la configuració de la càmera",
     "streams": {
       "title": "Estat i detalls de la càmera",
-      "enableSuccess": "{{cameraName}} activat. Reinicia Frigate a aplicar.",
+      "enableSuccess": "{{cameraName}} activat. Reinicia Gannet a aplicar.",
       "reorderHandle": "Arrossega per reordenar",
       "saving": "S'està desant…",
       "saved": "Desat",
       "details": {
         "edit": "Edita els detalls de la càmera",
         "title": "Edita els detalls de la càmera",
-        "description": "Actualitza el nom de visualització, l'URL extern i la visibilitat utilitzada per a aquesta càmera a tota la interfície d'usuari de Frigate.",
+        "description": "Actualitza el nom de visualització, l'URL extern i la visibilitat utilitzada per a aquesta càmera a tota la interfície d'usuari de Gannet.",
         "friendlyNameLabel": "Nom a mostrar",
-        "friendlyNameHelp": "Nom amistós que es mostra per a aquesta càmera a tota la interfície d'usuari de Frigate. Deixeu-ho en blanc per utilitzar l'ID de la càmera.",
+        "friendlyNameHelp": "Nom amistós que es mostra per a aquesta càmera a tota la interfície d'usuari de Gannet. Deixeu-ho en blanc per utilitzar l'ID de la càmera.",
         "webuiUrlLabel": "URL de la interfície web de la càmera",
         "webuiUrlHelp": "URL per a visitar la interfície d'usuari web de la càmera directament des de la vista de depuració. Deixeu-ho en blanc per desactivar l'enllaç.",
         "webuiUrlInvalid": "Ha de ser un URL vàlid (p. ex., https://example.com).",
@@ -1207,7 +1207,7 @@
         "reviewHelp": "Mostra aquesta càmera a Revisió, incloent el filtre de càmera, la revisió de moviment i la vista de l'historial."
       },
       "label": "Estat de la càmera",
-      "description": "Estableix l'estat operatiu de cada càmera.<br /><br /><strong>A</strong>: els fluxos es processen normalment.<br /><strong>Off</strong>: pausa temporalment el processament. No persisteix a través de reinicis de Frigate.<br /><strong>Inhabilitat</strong>: deixa de processar i desa el canvi a la configuració. Es requereix un reinici per a tornar a habilitar una càmera inhabilitada.<br /><br /><em>Nota: La inhabilitació no afecta els restreams de go2rtc.</em><br /><br />Arrossegueu l'ansa per a reordenar les càmeres actives a mesura que apareguin a tota la interfície d'usuari, inclosos els desplegables de selecció de quadres en viu i de càmera.",
+      "description": "Estableix l'estat operatiu de cada càmera.<br /><br /><strong>A</strong>: els fluxos es processen normalment.<br /><strong>Off</strong>: pausa temporalment el processament. No persisteix a través de reinicis de Gannet.<br /><strong>Inhabilitat</strong>: deixa de processar i desa el canvi a la configuració. Es requereix un reinici per a tornar a habilitar una càmera inhabilitada.<br /><br /><em>Nota: La inhabilitació no afecta els restreams de go2rtc.</em><br /><br />Arrossegueu l'ansa per a reordenar les càmeres actives a mesura que apareguin a tota la interfície d'usuari, inclosos els desplegables de selecció de quadres en viu i de càmera.",
       "disabledSubheading": "Desactivat en la configuració",
       "status": {
         "on": "Engegat",
@@ -1270,7 +1270,7 @@
       "label": "Tipus de càmera",
       "description": "Estableix el tipus per a cada càmera. Les càmeres LPR dedicades són càmeres d'un sol ús amb un potent zoom òptic per capturar matrícules en vehicles distants. La majoria de les càmeres haurien d'utilitzar el tipus de càmera normal llevat que la càmera sigui específicament per a LPR i tingui una vista molt centrada en les matrícules.",
       "dedicatedLpr": "LPR dedicat",
-      "saveSuccess": "Tipus de càmera actualitzat per {{cameraName}}. Reinicia Frigate per aplicar els canvis.",
+      "saveSuccess": "Tipus de càmera actualitzat per {{cameraName}}. Reinicia Gannet per aplicar els canvis.",
       "normal": "Normal"
     },
     "description": "Afegiu, editeu i suprimiu les càmeres, controleu l'estat de cada càmera, i configureu les superposicions per perfil i tipus de càmera. Per a configurar fluxos, detecció, moviment i altres paràmetres específics de la càmera, trieu la secció específica a Configuració de la càmera.",
@@ -1348,13 +1348,13 @@
       },
       "toast": {
         "success": "Configuració copiada a {{cameraName}}",
-        "successWithRestart": "Configuració copiada a {{cameraName}}. Reinicia Frigate per aplicar tots els canvis.",
+        "successWithRestart": "Configuració copiada a {{cameraName}}. Reinicia Gannet per aplicar tots els canvis.",
         "successMulti_one": "Configuració copiada a la càmera {{count}}",
         "successMulti_many": "Configuració copiada a {{count}} càmeres",
         "successMulti_other": "Configuració copiada a {{count}} càmeres",
-        "successMultiWithRestart_one": "Configuració copiada a la càmera {{count}}. Reinicia Frigate per aplicar tots els canvis.",
-        "successMultiWithRestart_many": "Configuració copiada a {{count}} càmeres. Reinicia Frigate per aplicar tots els canvis.",
-        "successMultiWithRestart_other": "Configuració copiada a {{count}} càmeres. Reinicia Frigate per aplicar tots els canvis.",
+        "successMultiWithRestart_one": "Configuració copiada a la càmera {{count}}. Reinicia Gannet per aplicar tots els canvis.",
+        "successMultiWithRestart_many": "Configuració copiada a {{count}} càmeres. Reinicia Gannet per aplicar tots els canvis.",
+        "successMultiWithRestart_other": "Configuració copiada a {{count}} càmeres. Reinicia Gannet per aplicar tots els canvis.",
         "partialFailure": "{{successCount}} seccions aplicades; «{{failedSection}}» ha fallat: {{errorMessage}}",
         "partialFailureMulti": "S'ha copiat a {{successCount}} càmera(es); ha fallat {{failed}}: {{errorMessage}}",
         "newCameraPartialFailure": "S'ha creat la càmera {{cameraName}} però no s'han pogut copiar alguns paràmetres: {{errorMessage}}",
@@ -1366,27 +1366,27 @@
   "cameraReview": {
     "object_descriptions": {
       "title": "Descripcions d'objectes generadors d'IA",
-      "desc": "Activa/desactiva temporalment les descripcions d'objectes generatius d'IA per a aquesta càmera fins que es reiniciï Frigate. Quan està desactivat, les descripcions generades per IA no se sol·licitaran per als objectes rastrejats en aquesta càmera."
+      "desc": "Activa/desactiva temporalment les descripcions d'objectes generatius d'IA per a aquesta càmera fins que es reiniciï Gannet. Quan està desactivat, les descripcions generades per IA no se sol·licitaran per als objectes rastrejats en aquesta càmera."
     },
     "review_descriptions": {
       "title": "Descripcions de la IA generativa",
-      "desc": "Activa/desactiva temporalment les descripcions de la IA Generativa per a aquesta càmera fins que es reiniciï Frigate. Quan està desactivat, les descripcions generades per IA no se sol·licitaran per als elements de revisió d'aquesta càmera."
+      "desc": "Activa/desactiva temporalment les descripcions de la IA Generativa per a aquesta càmera fins que es reiniciï Gannet. Quan està desactivat, les descripcions generades per IA no se sol·licitaran per als elements de revisió d'aquesta càmera."
     },
     "review": {
       "title": "Revisió",
-      "desc": "Activa/desactiva temporalment les alertes i deteccions d'aquesta càmera fins que es reiniciï Frigate. Si està desactivat, no es generaran nous elements de revisió. ",
+      "desc": "Activa/desactiva temporalment les alertes i deteccions d'aquesta càmera fins que es reiniciï Gannet. Si està desactivat, no es generaran nous elements de revisió. ",
       "alerts": "Alertes. ",
       "detections": "Deteccions. "
     },
     "reviewClassification": {
       "title": "Revisió de la classificació",
-      "desc": "Frigate categoritza els elements de revisió com Alertes i Deteccions. Per defecte, tots els objectes <em>persona</em> i <em>cotxe</em> es consideren Alertes. Podeu refinar la categorització dels elements de revisió configurant-los les zones requerides.",
+      "desc": "Gannet categoritza els elements de revisió com Alertes i Deteccions. Per defecte, tots els objectes <em>persona</em> i <em>cotxe</em> es consideren Alertes. Podeu refinar la categorització dels elements de revisió configurant-los les zones requerides.",
       "noDefinedZones": "No hi ha zones definides per a aquesta càmera.",
       "selectAlertsZones": "Selecciona zones per a les alertes",
       "selectDetectionsZones": "Selecció de zones per a les deteccions",
       "limitDetections": "Limita les deteccions a zones específiques",
       "toast": {
-        "success": "S'ha desat la configuració de la classificació de la revisió. Reinicia Frigate per aplicar canvis."
+        "success": "S'ha desat la configuració de la classificació de la revisió. Reinicia Gannet per aplicar canvis."
       },
       "unsavedChanges": "Paràmetres de classificació de revisions sense desar per {{camera}}",
       "objectAlertsTips": "Totes els objectes {{alertsLabels}} de {{cameraName}} es mostraran com avisos.",
@@ -1424,7 +1424,7 @@
     "title": "Manteniment",
     "sync": {
       "title": "Sincronització multimèdia",
-      "desc": "Frigate netejarà periòdicament els mitjans en un horari regular segons la configuració de la seva retenció. És normal veure alguns arxius orfes mentre corre Frigate. Utilitzeu aquesta característica per eliminar fitxers multimèdia orfes del disc que ja no estan referenciats a la base de dades.",
+      "desc": "Gannet netejarà periòdicament els mitjans en un horari regular segons la configuració de la seva retenció. És normal veure alguns arxius orfes mentre corre Gannet. Utilitzeu aquesta característica per eliminar fitxers multimèdia orfes del disc que ja no estan referenciats a la base de dades.",
       "started": "S'ha iniciat la sincronització del mitjà.",
       "alreadyRunning": "Ja s'està executant una tasca de sincronització",
       "error": "No s'ha pogut iniciar la sincronització",
@@ -1473,10 +1473,10 @@
     },
     "regionGrid": {
       "title": "Quadrícula de la regió",
-      "desc": "La quadrícula de regions és una optimització que aprèn on solen aparèixer objectes de diferents mides en el camp de visió de cada càmera. Frigate utilitza aquestes dades per detectar regions de mida eficient. La quadrícula es construeix automàticament amb el temps a partir de dades d'objectes rastrejats.",
+      "desc": "La quadrícula de regions és una optimització que aprèn on solen aparèixer objectes de diferents mides en el camp de visió de cada càmera. Gannet utilitza aquestes dades per detectar regions de mida eficient. La quadrícula es construeix automàticament amb el temps a partir de dades d'objectes rastrejats.",
       "clear": "Neteja la quadrícula de la regió",
       "clearConfirmTitle": "Neteja la quadrícula de la regió",
-      "clearConfirmDesc": "No es recomana netejar la quadrícula de la regió tret que hagi canviat recentment la mida del model del detector o hagi canviat la posició física de la càmera i tingui problemes de seguiment d'objectes. La quadrícula es reconstruirà automàticament amb el temps a mesura que els objectes siguin rastrejats. Es requereix un reinici de Frigate perquè els canvis tinguin efecte.",
+      "clearConfirmDesc": "No es recomana netejar la quadrícula de la regió tret que hagi canviat recentment la mida del model del detector o hagi canviat la posició física de la càmera i tingui problemes de seguiment d'objectes. La quadrícula es reconstruirà automàticament amb el temps a mesura que els objectes siguin rastrejats. Es requereix un reinici de Gannet perquè els canvis tinguin efecte.",
       "clearSuccess": "La quadrícula de la regió s'ha netejat correctament",
       "clearError": "Ha fallat en netejar la graella de la regió",
       "restartRequired": "Cal reiniciar per a que els canvis de la quadrícula de la regió tinguin efecte"
@@ -1774,7 +1774,7 @@
   },
   "toast": {
     "success": "La configuració s'ha desat correctament",
-    "successRestartRequired": "La configuració s'ha desat correctament. Reinicia Frigate per aplicar els canvis.",
+    "successRestartRequired": "La configuració s'ha desat correctament. Reinicia Gannet per aplicar els canvis.",
     "error": "No s'ha pogut desar la configuració",
     "validationError": "Ha fallat la validació: {{message}}",
     "resetSuccess": "Restableix als valors predeterminats globals",
@@ -1787,9 +1787,9 @@
     "saveAllPartial_other": "{{successCount}} de {{totalCount}} seccions desades. {{failCount}} ha fallat.",
     "saveAllFailure": "Ha fallat en desar totes les seccions.",
     "applied": "La configuració s'ha aplicat correctament",
-    "saveAllSuccessRestartRequired_one": "S'ha desat la secció {{count}} correctament. Reinicia Frigate per aplicar els canvis.",
-    "saveAllSuccessRestartRequired_many": "Totes les {{count}} seccions s'han desat correctament. Reinicia Frigate per aplicar els canvis.",
-    "saveAllSuccessRestartRequired_other": "Totes les {{count}} seccions s'han desat correctament. Reinicia Frigate per aplicar els canvis.",
+    "saveAllSuccessRestartRequired_one": "S'ha desat la secció {{count}} correctament. Reinicia Gannet per aplicar els canvis.",
+    "saveAllSuccessRestartRequired_many": "Totes les {{count}} seccions s'han desat correctament. Reinicia Gannet per aplicar els canvis.",
+    "saveAllSuccessRestartRequired_other": "Totes les {{count}} seccions s'han desat correctament. Reinicia Gannet per aplicar els canvis.",
     "go2rtcSyncFailed": "S'ha desat, però no s'ha pogut actualitzar go2rtc. Reinicia la fragata a aplicar."
   },
   "unsavedChanges": "Teniu canvis sense desar",
@@ -1825,7 +1825,7 @@
     "overriddenBaseConfigHeading_other": "El perfil {{profile}} substitueix {{count}} camps de la configuració base:",
     "overriddenBaseConfigNoDeltas": "El perfil {{profile}} substitueix aquesta secció, però no hi ha valors de camp diferents de la configuració base.",
     "overriddenLive": "Sobreescrit (Viure)",
-    "overriddenLiveTooltip": "Aquesta càmera s'està executant amb un valor diferent del desat a la configuració, que es mostra aquí. La vista en viu, MQTT, o un perfil actiu pot canviar-la mentre s'està executant Frigate.",
+    "overriddenLiveTooltip": "Aquesta càmera s'està executant amb un valor diferent del desat a la configuració, que es mostra aquí. La vista en viu, MQTT, o un perfil actiu pot canviar-la mentre s'està executant Gannet.",
     "overriddenLiveValue": "Valor en execució: {{value}}"
   },
   "profiles": {
@@ -1941,10 +1941,10 @@
       "recordDisabled": "L'enregistrament està desactivat, els elements de revisió no es generaran.",
       "detectDisabled": "La detecció d'objectes està desactivada. Els elements de revisió requereixen objectes detectats per categoritzar alertes i deteccions.",
       "allNonAlertDetections": "Totes les activitats que no siguin alertes s'inclouran com a deteccions.",
-      "genaiImageSourceRecordingsRecordDisabled": "La font d'imatges està configurada com a 'enregistraments', però l'enregistrament està desactivat. Frigate tornarà a la vista prèvia de les imatges.",
+      "genaiImageSourceRecordingsRecordDisabled": "La font d'imatges està configurada com a 'enregistraments', però l'enregistrament està desactivat. Gannet tornarà a la vista prèvia de les imatges.",
       "recordRuntimeDisabled": "L'enregistrament està activat a la configuració, però actualment està desactivat per a aquesta càmera, de manera que els elements de revisió no es generaran. Torneu-lo a activar des de la vista en viu de la càmera, o comproveu si un perfil actiu l'està desactivant.",
       "detectRuntimeDisabled": "La detecció d'objectes està activada a la configuració, però actualment està desactivada per a aquesta càmera. Els elements de revisió requereixen objectes detectats per categoritzar alertes i deteccions. Torneu-lo a activar des de la vista en viu de la càmera, o comproveu si un perfil actiu l'està desactivant.",
-      "genaiImageSourceRecordingsRecordRuntimeDisabled": "La font d'imatges està configurada com a 'enregistraments', però l'enregistrament està desactivat per a aquesta càmera tot i que la configuració l'habilita. Frigate tornarà a la vista prèvia de les imatges."
+      "genaiImageSourceRecordingsRecordRuntimeDisabled": "La font d'imatges està configurada com a 'enregistraments', però l'enregistrament està desactivat per a aquesta càmera tot i que la configuració l'habilita. Gannet tornarà a la vista prèvia de les imatges."
     },
     "audio": {
       "noAudioRole": "Cap flux té definit el rol d'àudio. Heu d'habilitar el rol d'àudio per a la detecció d'àudio perquè funcioni."
@@ -1999,7 +1999,7 @@
       "inputsMissingGo2rtcStream": "Una entrada a sota apunta a un restream go2rtc que ja no existeix. Seleccioneu un restream existent o introduïu manualment l'URL de la càmera, en cas contrari aquesta càmera no es connectarà."
     },
     "model": {
-      "optimizedFor320": "Frigate està optimitzada per a un model 320x320, que és la millor opció per a la majoria de configuracions. Un model 640x640 és més lent i només ajuda en escenaris específics.",
+      "optimizedFor320": "Gannet està optimitzada per a un model 320x320, que és la millor opció per a la majoria de configuracions. Un model 640x640 és més lent i només ajuda en escenaris específics.",
       "inputDimensionsNotDetectResolution": "L'amplada i l'alçada del model d'entrada són les dimensions d'entrada del model de detecció d'objectes, no la resolució de detecció de la càmera. Haurien de coincidir amb les dimensions del model que esteu utilitzant - típicament una mida quadrada com 320x320 o 640x640."
     },
     "birdseye": {

@@ -5,7 +5,7 @@
     },
     "safe_mode": {
         "label": "안전 모드",
-        "description": "활성화하면 문제 해결을 위해 기능을 축소한 안전 모드로 Frigate를 시작합니다."
+        "description": "활성화하면 문제 해결을 위해 기능을 축소한 안전 모드로 Gannet를 시작합니다."
     },
     "environment_vars": {
         "label": "환경 변수"
@@ -67,7 +67,7 @@
         "description": "쿠키 및 속도 제한 옵션을 포함한 인증 및 세션 관련 설정입니다.",
         "enabled": {
             "label": "인증 활성화",
-            "description": "Frigate UI에 대한 기본 인증을 활성화합니다."
+            "description": "Gannet UI에 대한 기본 인증을 활성화합니다."
         },
         "reset_admin_password": {
             "label": "관리자 비밀번호 초기화",
@@ -112,10 +112,10 @@
     },
     "database": {
         "label": "데이터베이스",
-        "description": "추적 객체 및 녹화 메타데이터를 저장하는 Frigate의 SQLite 데이터베이스 설정입니다.",
+        "description": "추적 객체 및 녹화 메타데이터를 저장하는 Gannet의 SQLite 데이터베이스 설정입니다.",
         "path": {
             "label": "데이터베이스 경로",
-            "description": "Frigate SQLite 데이터베이스 파일이 저장될 파일 시스템 경로입니다."
+            "description": "Gannet SQLite 데이터베이스 파일이 저장될 파일 시스템 경로입니다."
         }
     },
     "go2rtc": {
@@ -139,7 +139,7 @@
         },
         "topic_prefix": {
             "label": "토픽 접두사",
-            "description": "Frigate의 모든 토픽에 사용할 기본 접두사입니다. 다중 인스턴스 실행 시 고유해야 합니다."
+            "description": "Gannet의 모든 토픽에 사용할 기본 접두사입니다. 다중 인스턴스 실행 시 고유해야 합니다."
         },
         "client_id": {
             "label": "클라이언트 ID",
@@ -200,24 +200,24 @@
     },
     "networking": {
         "label": "네트워킹",
-        "description": "Frigate 엔드포인트의 IPv6 활성화 등 네트워크 관련 설정입니다.",
+        "description": "Gannet 엔드포인트의 IPv6 활성화 등 네트워크 관련 설정입니다.",
         "ipv6": {
             "label": "IPv6 구성",
-            "description": "Frigate 네트워크 서비스의 IPv6 관련 설정입니다.",
+            "description": "Gannet 네트워크 서비스의 IPv6 관련 설정입니다.",
             "enabled": {
                 "label": "IPv6 활성화",
-                "description": "지원 가능한 Frigate 서비스(API 및 UI)에 IPv6 지원을 활성화합니다."
+                "description": "지원 가능한 Gannet 서비스(API 및 UI)에 IPv6 지원을 활성화합니다."
             }
         },
         "listen": {
             "label": "리스닝 포트 구성",
             "internal": {
                 "label": "내부 포트",
-                "description": "Frigate의 내부 리스닝 포트입니다 (기본값: 5000)."
+                "description": "Gannet의 내부 리스닝 포트입니다 (기본값: 5000)."
             },
             "external": {
                 "label": "외부 포트",
-                "description": "Frigate의 외부 리스닝 포트입니다 (기본값: 8971)."
+                "description": "Gannet의 외부 리스닝 포트입니다 (기본값: 8971)."
             }
         }
     },
@@ -246,7 +246,7 @@
         },
         "model": {
             "label": "오디오 텍스트 변환 모델 또는 GenAI 공급자 이름",
-            "description": "텍스트 변환 백엔드: Frigate 내장 로컬 모델의 경우 'whisper', 또는 오디오 변환(transcribe) 역할이 지정된 GenAI 공급자 이름입니다."
+            "description": "텍스트 변환 백엔드: Gannet 내장 로컬 모델의 경우 'whisper', 또는 오디오 변환(transcribe) 역할이 지정된 GenAI 공급자 이름입니다."
         }
     },
     "birdseye": {
@@ -1194,7 +1194,7 @@
             },
             "calibrate_on_startup": {
                 "label": "시작 시 모터 캘리브레이션",
-                "description": "추적 정확도를 향상하기 위해 부팅 시 PTZ 모터 속도를 측정합니다. 보정 완료 후 Frigate가 movement_weights 값을 자동으로 업데이트합니다."
+                "description": "추적 정확도를 향상하기 위해 부팅 시 PTZ 모터 속도를 측정합니다. 보정 완료 후 Gannet가 movement_weights 값을 자동으로 업데이트합니다."
             },
             "zooming": {
                 "label": "줌 모드",
@@ -1231,7 +1231,7 @@
         },
         "ignore_time_mismatch": {
             "label": "시간 불일치 무시",
-            "description": "ONVIF 통신 시 카메라와 Frigate 서버 간의 시간 동기화 차이를 무시합니다."
+            "description": "ONVIF 통신 시 카메라와 Gannet 서버 간의 시간 동기화 차이를 무시합니다."
         }
     },
     "profiles": {
@@ -1244,10 +1244,10 @@
     },
     "proxy": {
         "label": "프록시",
-        "description": "인증된 사용자 헤더를 전달하는 역방향 프록시(Reverse Proxy) 뒤에 Frigate를 연동하기 위한 설정입니다.",
+        "description": "인증된 사용자 헤더를 전달하는 역방향 프록시(Reverse Proxy) 뒤에 Gannet를 연동하기 위한 설정입니다.",
         "header_map": {
             "label": "헤더 매핑",
-            "description": "프록시 기반 인증을 위해 수신된 프록시 헤더를 Frigate의 사용자 및 역할 필드에 매핑합니다.",
+            "description": "프록시 기반 인증을 위해 수신된 프록시 헤더를 Gannet의 사용자 및 역할 필드에 매핑합니다.",
             "user": {
                 "label": "사용자 헤더",
                 "description": "업스트림 프록시가 제공하는 인증된 사용자 이름이 포함된 헤더입니다."
@@ -1258,7 +1258,7 @@
             },
             "role_map": {
                 "label": "역할 매핑",
-                "description": "업스트림 그룹 값을 Frigate 역할에 매핑합니다 (예: 관리자 그룹을 admin 역할에 매핑)."
+                "description": "업스트림 그룹 값을 Gannet 역할에 매핑합니다 (예: 관리자 그룹을 admin 역할에 매핑)."
             }
         },
         "logout_url": {
@@ -1306,15 +1306,15 @@
         },
         "version_check": {
             "label": "버전 확인",
-            "description": "최신 Frigate 버전이 출시되었는지 확인하는 아웃바운드 검사를 활성화합니다."
+            "description": "최신 Gannet 버전이 출시되었는지 확인하는 아웃바운드 검사를 활성화합니다."
         }
     },
     "tls": {
         "label": "TLS",
-        "description": "Frigate 웹 엔드포인트(포트 8971)에 대한 TLS 보안 설정입니다.",
+        "description": "Gannet 웹 엔드포인트(포트 8971)에 대한 TLS 보안 설정입니다.",
         "enabled": {
             "label": "TLS 활성화",
-            "description": "설정된 TLS 포트에서 Frigate 웹 UI 및 API에 대한 TLS 연결을 활성화합니다."
+            "description": "설정된 TLS 포트에서 Gannet 웹 UI 및 API에 대한 TLS 연결을 활성화합니다."
         }
     },
     "ui": {

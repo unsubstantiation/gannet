@@ -46,7 +46,7 @@
   },
   "field": {
     "optional": "Opsionale",
-    "internalID": "ID-ja e brendshme që Frigate përdor në konfigurim dhe në databazë"
+    "internalID": "ID-ja e brendshme që Gannet përdor në konfigurim dhe në databazë"
   },
   "button": {
     "add": "Shto",

@@ -81,7 +81,7 @@
     }
   },
   "nofaces": "Nincs elérhető arc",
-  "documentTitle": "Arc könyvtár - Frigate",
+  "documentTitle": "Arc könyvtár - Gannet",
   "train": {
     "title": "Friss felismerések",
     "empty": "Nincs friss arcfelismerés",

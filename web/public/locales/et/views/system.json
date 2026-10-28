@@ -1,14 +1,14 @@
 {
   "documentTitle": {
-    "general": "Üldine statistika - Frigate",
-    "cameras": "Kaamerate statistika - Frigate",
-    "storage": "Andmeruumi statistika - Frigate",
+    "general": "Üldine statistika - Gannet",
+    "cameras": "Kaamerate statistika - Gannet",
+    "storage": "Andmeruumi statistika - Gannet",
     "logs": {
-      "frigate": "Frigate logid - Frigate",
-      "go2rtc": "Go2RTC logid - Frigate",
-      "websocket": "Sõnumite logid - Frigate"
+      "gannet": "Gannet logid - Gannet",
+      "go2rtc": "Go2RTC logid - Gannet",
+      "websocket": "Sõnumite logid - Gannet"
     },
-    "enrichments": "Rikastus statistika - Frigate"
+    "enrichments": "Rikastus statistika - Gannet"
   },
   "logs": {
     "download": {
@@ -143,7 +143,7 @@
       "camera": "Kaamera",
       "unused": {
         "title": "Kasutamata",
-        "tips": "See väärtus ei pruugi Frigate'i jaoks saadaolevat vaba ruumi täpselt kajastada, kui teie draivil on lisaks Frigate'i salvestistele ka muid faile. Frigate ei jälgi salvestusruumi kasutamist väljaspool oma salvestisi."
+        "tips": "See väärtus ei pruugi Gannet'i jaoks saadaolevat vaba ruumi täpselt kajastada, kui teie draivil on lisaks Gannet'i salvestistele ka muid faile. Gannet ei jälgi salvestusruumi kasutamist väljaspool oma salvestisi."
       },
       "bandwidth": "Ribalaius",
       "storageUsed": "Salvestusmaht",

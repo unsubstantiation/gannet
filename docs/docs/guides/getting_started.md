@@ -24,10 +24,10 @@ The bootstrap creates `.venv`, installs pinned Python packages, downloads verifi
 Start Gannet interactively for the first setup:
 
 ```powershell
-.\run_frigate.ps1
+.\run_gannet.ps1
 ```
 
-Open `https://localhost:8971`. The generated certificate is self-signed, so the first browser visit displays a certificate warning. Retrieve the generated administrator password from `%LOCALAPPDATA%\Gannet\tmp\logs\frigate\current` and change it during setup.
+Open `https://localhost:8971`. The generated certificate is self-signed, so the first browser visit displays a certificate warning. Retrieve the generated administrator password from `%LOCALAPPDATA%\Gannet\tmp\logs\gannet\current` and change it during setup.
 
 ## 2. Add a camera
 
@@ -41,15 +41,15 @@ cameras:
   front:
     ffmpeg:
       inputs:
-        - path: rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@camera/stream
+        - path: rtsp://{GANNET_RTSP_USER}:{GANNET_RTSP_PASSWORD}@camera/stream
           roles: [detect]
 ```
 
 Put the substituted values in `config\secrets.yaml`:
 
 ```yaml
-FRIGATE_RTSP_USER: camera-user
-FRIGATE_RTSP_PASSWORD: a-long-unique-password
+GANNET_RTSP_USER: camera-user
+GANNET_RTSP_PASSWORD: a-long-unique-password
 ```
 
 Test the exact URL in VLC or the installed `ffplay.exe` from the Gannet machine. Prefer a camera substream near the model's useful detection resolution and around 5 frames per second. Detection on a 4K stream wastes resources without improving most models.
@@ -65,7 +65,7 @@ The setup wizard probes native Windows runtimes and offers supported devices:
 - **ONNX Runtime DirectML** — GPU inference through `onnxruntime-directml`;
 - **ONNX Runtime CUDA** — NVIDIA inference when the CUDA provider is installed.
 
-ONNX requires a compatible model path. Frigate+ models can be selected from the UI when the account is linked. Do not select a provider that is not shown by <NavPath path="System > Hardware" />.
+ONNX requires a compatible model path. Upstream Frigate+ models can be selected from the UI when the account is linked. Do not select a provider that is not shown by <NavPath path="System > Hardware" />.
 
 ## 4. Enable Windows video acceleration
 
@@ -93,13 +93,13 @@ cameras:
   front:
     ffmpeg:
       inputs:
-        - path: rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@camera/substream
+        - path: rtsp://{GANNET_RTSP_USER}:{GANNET_RTSP_PASSWORD}@camera/substream
           roles: [detect]
-        - path: rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@camera/mainstream
+        - path: rtsp://{GANNET_RTSP_USER}:{GANNET_RTSP_PASSWORD}@camera/mainstream
           roles: [record]
 ```
 
-Media defaults to `%LOCALAPPDATA%\Gannet\media`. Set `FRIGATE_MEDIA_DIR` before installation to place it on another local NTFS volume. The Windows service account needs Modify access.
+Media defaults to `%LOCALAPPDATA%\Gannet\media`. Set `GANNET_MEDIA_DIR` before installation to place it on another local NTFS volume. The Windows service account needs Modify access.
 
 ## 6. Tune motion and objects
 
@@ -120,7 +120,7 @@ Add the source to go2rtc, preferably with a stream name matching the camera:
 go2rtc:
   streams:
     front:
-      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@camera/mainstream
+      - rtsp://{GANNET_RTSP_USER}:{GANNET_RTSP_PASSWORD}@camera/mainstream
 ```
 
 MSE usually works with no extra network rule. WebRTC needs a candidate address that the browser can reach and Windows Firewall access to its configured TCP/UDP port.
@@ -130,14 +130,14 @@ MSE usually works with no extra network rule. WebRTC needs a candidate address t
 After the interactive configuration works, open an elevated PowerShell session:
 
 ```powershell
-.\scripts\install_frigate_service.ps1
+.\scripts\install_gannet_service.ps1
 ```
 
 The installer records paths and environment for the service account. Verify:
 
 ```powershell
 Get-Service Gannet
-Get-Content "$env:ProgramData\Gannet\tmp\logs\frigate\current" -Tail 100
+Get-Content "$env:ProgramData\Gannet\tmp\logs\gannet\current" -Tail 100
 ```
 
 If the installer was given another data root, read the log from that configured root instead.

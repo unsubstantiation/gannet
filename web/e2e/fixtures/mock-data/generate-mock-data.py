@@ -8,7 +8,7 @@ The repository root is added to ``sys.path`` below, so the script does not
 depend on a PYTHONPATH set to a fixed checkout (upstream's instructions
 hard-coded its Linux container's /workspace/frigate).
 
-Regenerate on Windows. Frigate is a native Windows application and the config
+Regenerate on Windows. Gannet is a native Windows application and the config
 snapshot embeds paths from the host's data layout, so running this anywhere
 else bakes that host's directories into a fixture that is meant to describe a
 Windows install. Rewriting the JSON also refreshes the wall-clock timestamps in
@@ -32,7 +32,7 @@ from pathlib import Path
 
 warnings.filterwarnings("ignore")
 
-# The Frigate package lives at the repository root, not beside this script.
+# The Gannet package lives at the repository root, not beside this script.
 # .../web/e2e/fixtures/mock-data/generate-mock-data.py -> parents[4] is the root.
 REPO_ROOT = Path(__file__).resolve().parents[4]
 if str(REPO_ROOT) not in sys.path:
@@ -63,7 +63,7 @@ def check_pydantic_fields(pydantic_class, mock_keys, model_name):
             file=sys.stderr,
         )
         print(
-            f"  Add these fields to the mock data in this script.",
+            "  Add these fields to the mock data in this script.",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -88,7 +88,7 @@ def generate_config():
                         "ffmpeg": {
                             "inputs": [
                                 {
-                                    "path": f"rtsp://10.0.0.{i+1}:554/video",
+                                    "path": f"rtsp://10.0.0.{i + 1}:554/video",
                                     "roles": ["detect"],
                                 }
                             ]
@@ -226,9 +226,7 @@ def generate_reviews():
     result = [r.model_dump(mode="json") for r in reviews]
 
     # Verify mock data covers all Pydantic response model fields
-    check_pydantic_fields(
-        ReviewSegmentResponse, set(result[0].keys()), "ReviewSegment"
-    )
+    check_pydantic_fields(ReviewSegmentResponse, set(result[0].keys()), "ReviewSegment")
 
     return result
 

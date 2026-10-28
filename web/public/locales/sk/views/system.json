@@ -1,12 +1,12 @@
 {
   "documentTitle": {
-    "cameras": "Štatistiky kamier - Frigate",
-    "storage": "Štatistiky úložiska - Frigate",
-    "general": "Všeobecné štatistiky - Frigate",
-    "enrichments": "Štatistiky AI funkcií - Frigate",
+    "cameras": "Štatistiky kamier - Gannet",
+    "storage": "Štatistiky úložiska - Gannet",
+    "general": "Všeobecné štatistiky - Gannet",
+    "enrichments": "Štatistiky AI funkcií - Gannet",
     "logs": {
-      "frigate": "Protokoly Frigate - Frigate",
-      "go2rtc": "Protokoly Go2RTC - Frigate"
+      "gannet": "Protokoly Gannet - Gannet",
+      "go2rtc": "Protokoly Go2RTC - Gannet"
     }
   },
   "title": "System",
@@ -94,7 +94,7 @@
     "overview": "Prehľad",
     "recordings": {
       "title": "Nahrávky",
-      "tips": "Táto hodnota predstavuje celkové úložisko, ktoré používajú nahrávky v databáze Frigate. Frigate nesleduje využitie úložiska pre všetky súbory na vašom disku.",
+      "tips": "Táto hodnota predstavuje celkové úložisko, ktoré používajú nahrávky v databáze Gannet. Gannet nesleduje využitie úložiska pre všetky súbory na vašom disku.",
       "earliestRecording": "Najstaršia dostupná nahrávka:"
     },
     "shm": {
@@ -110,7 +110,7 @@
       "bandwidth": "Šírka pásma",
       "unused": {
         "title": "Nepoužité",
-        "tips": "Táto hodnota nemusí presne zodpovedať voľnému miestu dostupnému pre Frigate, ak máte na disku uložené aj iné súbory okrem nahrávok Frigate. Frigate nesleduje využitie úložiska mimo svojich nahrávok."
+        "tips": "Táto hodnota nemusí presne zodpovedať voľnému miestu dostupnému pre Gannet, ak máte na disku uložené aj iné súbory okrem nahrávok Gannet. Gannet nesleduje využitie úložiska mimo svojich nahrávok."
       }
     }
   },

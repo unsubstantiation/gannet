@@ -1,13 +1,13 @@
 {
   "restart": {
-    "title": "Er du sikker på, at du vil genstarte Frigate?",
+    "title": "Er du sikker på, at du vil genstarte Gannet?",
     "button": "Genstart",
     "restarting": {
-      "title": "Frigate genstarter",
+      "title": "Gannet genstarter",
       "button": "Gennemtving genindlæsning nu",
       "content": "Denne side genindlæses om {{countdown}} sekunder."
     },
-    "description": "Dette vil kortvarigt stoppe Frigate under genstart."
+    "description": "Dette vil kortvarigt stoppe Gannet under genstart."
   },
   "explore": {
     "plus": {

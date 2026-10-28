@@ -498,7 +498,7 @@ def main():
     created_tmpdir = False
     if outdir is not None:
         if str(outdir) == "auto":
-            outdir = Path(tempfile.mkdtemp(prefix="frigate-ui-tabs-"))
+            outdir = Path(tempfile.mkdtemp(prefix="gannet-ui-tabs-"))
             created_tmpdir = True
         outdir.mkdir(parents=True, exist_ok=True)
 

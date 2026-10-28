@@ -53,7 +53,7 @@
     "invalidName": "Nome inválido. Nomes podem conter letras, números, espacos, apóstrofos, sublinhado e hífens.",
     "nameCannotContainHash": "O nome não pode conter #."
   },
-  "documentTitle": "Biblioteca de rostos - Frigate",
+  "documentTitle": "Biblioteca de rostos - Gannet",
   "uploadFaceImage": {
     "title": "Carregar imagem facial",
     "desc": "Envie uma imagem para escanear por faces e incluir em {{pageToggle}}"

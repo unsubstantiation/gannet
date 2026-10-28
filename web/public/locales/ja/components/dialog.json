@@ -1,13 +1,13 @@
 {
   "restart": {
-    "title": "Frigate を再起動してもよろしいですか？",
+    "title": "Gannet を再起動してもよろしいですか？",
     "restarting": {
-      "title": "Frigate を再起動中",
+      "title": "Gannet を再起動中",
       "content": "このページは {{countdown}} 秒後に再読み込みされます。",
       "button": "今すぐ強制再読み込み"
     },
     "button": "再起動",
-    "description": "再起動の間、Frigateが一時的に停止します。"
+    "description": "再起動の間、Gannetが一時的に停止します。"
   },
   "explore": {
     "plus": {
@@ -171,10 +171,10 @@
     "shareTimestamp": {
       "label": "タイムスタンプを共有",
       "title": "タイムスタンプを共有",
-      "description": "現在のプレーヤー位置をタイムスタンプ付き URL で共有するか、任意のタイムスタンプを指定できます。これは公開リンクではなく、Frigate とこのカメラへのアクセス権を持つユーザーのみアクセスできます。",
+      "description": "現在のプレーヤー位置をタイムスタンプ付き URL で共有するか、任意のタイムスタンプを指定できます。これは公開リンクではなく、Gannet とこのカメラへのアクセス権を持つユーザーのみアクセスできます。",
       "custom": "カスタムタイムスタンプ",
       "button": "タイムスタンプ URL を共有",
-      "shareTitle": "Frigate レビュータイムスタンプ: {{camera}}"
+      "shareTitle": "Gannet レビュータイムスタンプ: {{camera}}"
     }
   },
   "imagePicker": {

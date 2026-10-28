@@ -5,7 +5,7 @@ cameras:
   test:
     ffmpeg:
       inputs:
-        - path: 'C:\FrigateSamples\car-stopping.mp4'
+        - path: 'C:\GannetSamples\car-stopping.mp4'
           input_args: -re -stream_loop -1 -fflags +genpts
           roles:
             - detect

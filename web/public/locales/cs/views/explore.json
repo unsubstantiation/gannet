@@ -1,6 +1,6 @@
 {
   "generativeAI": "Generativní AI",
-  "documentTitle": "Prozkoumat – Frigate",
+  "documentTitle": "Prozkoumat – Gannet",
   "details": {
     "timestamp": "Časová značka",
     "snapshotScore": {
@@ -14,7 +14,7 @@
         "viewInExplore": "Zobrazit na stránce Prozkoumat"
       },
       "tips": {
-        "hasMissingObjects": "Upravte svou konfiguraci, pokud chcete, aby Frigate ukládal sledované objekty pro následující štítky: <em>{{objects}}</em>",
+        "hasMissingObjects": "Upravte svou konfiguraci, pokud chcete, aby Gannet ukládal sledované objekty pro následující štítky: <em>{{objects}}</em>",
         "mismatch_one": "{{count}} nedostupný objekt byl detekován a zahrnut do této položky revize. Tento objekt buď nesplnil podmínky pro výstrahu či detekci, nebo již byl odstraněn.",
         "mismatch_few": "{{count}} nedostupné objekty byly detekovány a zahrnuty do této položky revize. Tyto objekty buď nesplnily podmínky pro výstrahu či detekci, nebo již byly odstraněny.",
         "mismatch_other": "{{count}} nedostupných objektů bylo detekováno a zahrnuto do této položky revize. Tyto objekty buď nesplnily podmínky pro výstrahu či detekci, nebo již byly odstraněny."
@@ -24,7 +24,7 @@
           "regenerate": "Od {{provider}} byl vyžádán nový popis. V závislosti na rychlosti vašeho poskytovatele může obnovení nového popisu nějakou dobu trvat.",
           "updatedSublabel": "Úspěšně aktualizovaný podštítek.",
           "updatedLPR": "Registrační značka byla úspěšně aktualizována.",
-          "audioTranscription": "Požádání o přepis zvuku bylo úspěšné. V závislosti na rychlosti Vašeho Frigate serveru může přepis trvat nějaký čas než bude dokončen.",
+          "audioTranscription": "Požádání o přepis zvuku bylo úspěšné. V závislosti na rychlosti Vašeho Gannet serveru může přepis trvat nějaký čas než bude dokončen.",
           "updatedAttributes": "Atributy byly úspěšně aktualizovány."
         },
         "error": {
@@ -60,7 +60,7 @@
     "description": {
       "label": "Popis",
       "placeholder": "Popis sledovaného objektu",
-      "aiTips": "Frigate nebude vyžadovat popis od vašeho poskytovatele generativní AI, dokud neskončí životní cyklus sledovaného objektu."
+      "aiTips": "Gannet nebude vyžadovat popis od vašeho poskytovatele generativní AI, dokud neskončí životní cyklus sledovaného objektu."
     },
     "expandRegenerationMenu": "Rozbalte nabídku regenerace",
     "regenerateFromSnapshot": "Regenerovat ze snímku",
@@ -102,7 +102,7 @@
       }
     },
     "downloadingModels": {
-      "context": "Frigate stahuje modely vektorových reprezentací potřebné pro sémantické vyhledávání. Podle rychlosti připojení to může trvat několik minut.",
+      "context": "Gannet stahuje modely vektorových reprezentací potřebné pro sémantické vyhledávání. Podle rychlosti připojení to může trvat několik minut.",
       "setup": {
         "visionModelFeatureExtractor": "Extraktor příznaků obrazového modelu",
         "visionModel": "Obrazový model",
@@ -112,7 +112,7 @@
       "tips": {
         "context": "Po stažení modelů můžete znovu indexovat vektorové reprezentace sledovaných objektů."
       },
-      "error": "Nastala chyba. Zkontrolujte protokoly Frigate."
+      "error": "Nastala chyba. Zkontrolujte protokoly Gannet."
     }
   },
   "trackedObjectsCount_one": "{{count}} sledovaný objekt ",

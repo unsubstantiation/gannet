@@ -721,7 +721,7 @@ path = [
     "scripts/build_portable.ps1",
     "scripts/build_portable.py",
     "scripts/generate_reuse_toml.py",
-    "scripts/install_frigate_service.ps1",
+    "scripts/install_gannet_service.ps1",
     "scripts/license_audit.py",
     "scripts/manage_windows_ml.py",
     "scripts/python_embed_pin.json",

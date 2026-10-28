@@ -1,9 +1,9 @@
 {
   "documentTitle": {
-    "default": "Direkte - Frigate"
+    "default": "Direkte - Gannet"
   },
   "lowBandwidthMode": "Lav båndbreddemodus",
-  "documentTitle.withCamera": "{{camera}} - Direkte - Frigate",
+  "documentTitle.withCamera": "{{camera}} - Direkte - Gannet",
   "ptz": {
     "move": {
       "clickMove": {
@@ -180,7 +180,7 @@
   },
   "noCameras": {
     "title": "Ingen kameraer konfigurert",
-    "description": "Kom i gang ved å koble et kamera til Frigate.",
+    "description": "Kom i gang ved å koble et kamera til Gannet.",
     "buttonText": "Legg til kamera",
     "restricted": {
       "title": "Ingen kameraer tilgjengelig",
@@ -188,7 +188,7 @@
     },
     "default": {
       "title": "Ingen kameraer konfigurert",
-      "description": "Kom i gang ved å koble et kamera til Frigate.",
+      "description": "Kom i gang ved å koble et kamera til Gannet.",
       "buttonText": "Legg til kamera"
     },
     "group": {

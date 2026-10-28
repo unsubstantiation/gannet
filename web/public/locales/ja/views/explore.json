@@ -1,6 +1,6 @@
 {
   "generativeAI": "生成AI",
-  "documentTitle": "探索 - Frigate",
+  "documentTitle": "探索 - Gannet",
   "details": {
     "timestamp": "タイムスタンプ",
     "item": {
@@ -19,7 +19,7 @@
           "regenerate": "{{provider}} に新しい説明をリクエストしました。プロバイダの速度により再生成に時間がかかる場合があります。",
           "updatedSublabel": "サブラベルを更新しました。",
           "updatedLPR": "ナンバープレートを更新しました。",
-          "audioTranscription": "音声文字起こしのリクエストは正常に送信されました。Frigate サーバーの処理速度によっては、文字起こしの完了までにしばらく時間がかかる場合があります。",
+          "audioTranscription": "音声文字起こしのリクエストは正常に送信されました。Gannet サーバーの処理速度によっては、文字起こしの完了までにしばらく時間がかかる場合があります。",
           "updatedAttributes": "属性が正常に更新されました。"
         },
         "error": {
@@ -101,7 +101,7 @@
       }
     },
     "downloadingModels": {
-      "context": "Frigate はセマンティック検索(意味理解型画像検索)をサポートするために必要な埋め込みモデルをダウンロードしています。ネットワーク速度により数分かかる場合があります。",
+      "context": "Gannet はセマンティック検索(意味理解型画像検索)をサポートするために必要な埋め込みモデルをダウンロードしています。ネットワーク速度により数分かかる場合があります。",
       "setup": {
         "visionModel": "ビジョンモデル",
         "visionModelFeatureExtractor": "ビジョンモデル特徴抽出器",
@@ -111,7 +111,7 @@
       "tips": {
         "context": "モデルのダウンロード後、追跡オブジェクトの埋め込みを再インデックスすることを検討してください。"
       },
-      "error": "エラーが発生しました。Frigate のログを確認してください。"
+      "error": "エラーが発生しました。Gannet のログを確認してください。"
     }
   },
   "trackedObjectDetails": "追跡オブジェクトの詳細",

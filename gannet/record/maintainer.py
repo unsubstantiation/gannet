@@ -160,7 +160,7 @@ def segment_path_time(cache_path: str) -> datetime.datetime | None:
 async def discard_cache_file(cache_path: str) -> None:
     """Delete a cache segment, tolerating one another process still holds.
 
-    A discarded segment is one Frigate no longer tracks, so a scanner holding
+    A discarded segment is one Gannet no longer tracks, so a scanner holding
     it open is the only thing that can stop the delete on Windows.
     """
     try:
@@ -613,7 +613,7 @@ class RecordingMaintainer(threading.Thread):
             start_resolved.set()
 
     def drop_segment(self, cache_path: str) -> None:
-        """Discard a segment Frigate will not keep or index.
+        """Discard a segment Gannet will not keep or index.
 
         A scanner holding the file open is the only thing that can stop the
         delete on Windows, so it is retried in place.

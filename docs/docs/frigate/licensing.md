@@ -12,13 +12,13 @@ this fork's own work, not to the Frigate code it is built on.
 | Part of the software | License | Commercial use |
 | --- | --- | --- |
 | The Windows port: `bootstrap_windows.py`, the native platform, service, and job-object layers, the PowerShell tooling, the Windows test suite, the Gannet theme | [Gannet Noncommercial License 1.0](https://github.com/unsubstantiation/gannet/blob/dev/LICENSE) | Not permitted |
-| Everything inherited from [Frigate](https://github.com/blakeblackshear/frigate) | [MIT](https://github.com/blakeblackshear/frigate/blob/dev/LICENSE) | Permitted, as upstream granted it |
+| Everything inherited from [Gannet](https://github.com/blakeblackshear/frigate) | [MIT](https://github.com/blakeblackshear/frigate/blob/dev/LICENSE) | Permitted, as upstream granted it |
 | Dependencies, FFmpeg, go2rtc, and model weights | each project's own license | per that license |
 
 Per-file detail lives in
 [`REUSE.toml`](https://github.com/unsubstantiation/gannet/blob/dev/REUSE.toml),
 which is what the license itself points to when it defines "Gannet Material".
-The plain-language explanation, including why a fork cannot make Frigate's code
+The plain-language explanation, including why a fork cannot make upstream Frigate's code
 noncommercial, is in
 [`LICENSING.md`](https://github.com/unsubstantiation/gannet/blob/dev/LICENSING.md).
 
@@ -49,7 +49,7 @@ bill at face value is not "commercial".
 ## Trademarks are separate from licenses
 
 Neither license here grants any right to a name or a logo. "Gannet" and the
-Gannet logo belong to unsubstantiation; "Frigate" and the Frigate logo belong to
+Gannet logo belong to unsubstantiation; "Gannet" and the Gannet logo belong to
 Frigate, Inc. A fork must drop both sets of branding and pick its own — see the
 [trademark policy](https://github.com/unsubstantiation/gannet/blob/dev/TRADEMARK.md).
 
@@ -68,4 +68,4 @@ publishes that reservation in machine-readable form: `robots.txt`,
 `/.well-known/tdmrep.json`, `TDM-Reservation` response headers, and
 `tdm-reservation` meta tags on these pages. The reservation is about this
 project's own documentation and code, is a reservation of a statutory exception
-rather than a new license term, and claims nothing about upstream Frigate content.
+rather than a new license term, and claims nothing about upstream Gannet content.

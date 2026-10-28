@@ -1,6 +1,6 @@
 {
   "time": {
-    "untilForRestart": "Sampai Frigate dimulai ulang.",
+    "untilForRestart": "Sampai Gannet dimulai ulang.",
     "untilRestart": "Sampai dimulai ulang",
     "ago": "{{timeAgo}} yang lalu",
     "justNow": "Baru saja",
@@ -152,9 +152,9 @@
     "help": "Bantuan",
     "documentation": {
       "title": "Dokumentasi",
-      "label": "Dokumentasi Frigate"
+      "label": "Dokumentasi Gannet"
     },
-    "restart": "Mulai Ulang Frigate",
+    "restart": "Mulai Ulang Gannet",
     "live": {
       "title": "Live",
       "allCameras": "Semua Kamera",
@@ -215,7 +215,7 @@
   },
   "field": {
     "optional": "Opsional",
-    "internalID": "ID Internal yang digunakan Frigate dalam konfigurasi dan basis data"
+    "internalID": "ID Internal yang digunakan Gannet dalam konfigurasi dan basis data"
   },
   "button": {
     "add": "Tambah",
@@ -286,7 +286,7 @@
     "title": "Peran",
     "admin": "Admin",
     "viewer": "Penampil",
-    "desc": "Admin memiliki akses penuh ke semua fitur di UI Frigate. Penampil terbatas hanya untuk melihat kamera, item tinjauan, dan rekaman historis di UI."
+    "desc": "Admin memiliki akses penuh ke semua fitur di UI Gannet. Penampil terbatas hanya untuk melihat kamera, item tinjauan, dan rekaman historis di UI."
   },
   "pagination": {
     "label": "paginasi",
@@ -301,12 +301,12 @@
     "more": "Halaman lainnya"
   },
   "accessDenied": {
-    "documentTitle": "Akses Ditolak - Frigate",
+    "documentTitle": "Akses Ditolak - Gannet",
     "title": "Akses Ditolak",
     "desc": "Anda tidak memiliki izin untuk melihat halaman ini."
   },
   "notFound": {
-    "documentTitle": "Tidak Ditemukan - Frigate",
+    "documentTitle": "Tidak Ditemukan - Gannet",
     "title": "404",
     "desc": "Halaman tidak ditemukan"
   },
@@ -323,7 +323,7 @@
     "title": "Halaman ini berhenti bekerja",
     "desc": "Halaman mengalami kesalahan yang tidak terduga. Memuat ulang biasanya akan mengatasinya. Jika masih terus terjadi, salin detailnya dan lampirkan ke diskusi di GitHub.",
     "staleTitle": "Muat ulang diperlukan",
-    "staleDesc": "Sebagian antarmuka tidak dapat dimuat, yang biasanya berarti Frigate telah diperbarui saat tab ini terbuka. Muat ulang untuk mengambil versi baru.",
+    "staleDesc": "Sebagian antarmuka tidak dapat dimuat, yang biasanya berarti Gannet telah diperbarui saat tab ini terbuka. Muat ulang untuk mengambil versi baru.",
     "partial": "Sebagian antarmuka berhenti bekerja.",
     "copyDetails": "Salin detail",
     "copyFailed": "Gagal menyalin detail ke papan klip"

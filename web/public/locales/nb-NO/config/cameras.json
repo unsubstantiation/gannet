@@ -790,7 +790,7 @@
             },
             "calibrate_on_startup": {
                 "label": "Kalibrer ved start",
-                "description": "Mål PTZ-motorhastigheter ved oppstart for å forbedre sporingsnøyaktighet. Frigate vil oppdatere konfigurasjonen etter kalibrering."
+                "description": "Mål PTZ-motorhastigheter ved oppstart for å forbedre sporingsnøyaktighet. Gannet vil oppdatere konfigurasjonen etter kalibrering."
             },
             "zooming": {
                 "label": "Zoom-modus",
@@ -843,7 +843,7 @@
         "label": "Opprinnelig kamerastatus"
     },
     "friendly_name": {
-        "description": "Kameraets visningsnavn i Frigate-grensesnittet",
+        "description": "Kameraets visningsnavn i Gannet-grensesnittet",
         "label": "Visningsnavn"
     },
     "label": "Kamerakonfigurasjon",

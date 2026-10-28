@@ -1,16 +1,16 @@
 {
   "documentTitle": {
-    "default": "Nastavenia - Frigate",
-    "authentication": "Nastavenie autentifikácie- Frigate",
-    "enrichments": "Nastavenia obohatenia – Frigate",
-    "masksAndZones": "Editor masky a zón - Frigate",
-    "motionTuner": "Ladič detekcie pohybu - Frigate",
-    "object": "Ladenie - Frigate",
-    "general": "UI nastavenia – Frigate",
-    "frigatePlus": "Nastavenia Frigate+ – Frigate",
-    "notifications": "Nastavenia upozornení – Frigate",
-    "cameraManagement": "Manažment kamier - Frigate",
-    "cameraReview": "Nastavenie kamier - Frigate"
+    "default": "Nastavenia - Gannet",
+    "authentication": "Nastavenie autentifikácie- Gannet",
+    "enrichments": "Nastavenia obohatenia – Gannet",
+    "masksAndZones": "Editor masky a zón - Gannet",
+    "motionTuner": "Ladič detekcie pohybu - Gannet",
+    "object": "Ladenie - Gannet",
+    "general": "UI nastavenia – Gannet",
+    "frigatePlus": "Nastavenia Frigate+ – Gannet",
+    "notifications": "Nastavenia upozornení – Gannet",
+    "cameraManagement": "Manažment kamier - Gannet",
+    "cameraReview": "Nastavenie kamier - Gannet"
   },
   "menu": {
     "ui": "Uživaťelské rozohranie",
@@ -105,7 +105,7 @@
     },
     "semanticSearch": {
       "title": "Sémantické vyhľadávanie",
-      "desc": "Sémantické vyhľadávanie vo Frigate vám umožňuje nájsť sledované objekty v rámci vašich recenzovaných položiek pomocou samotného obrázka, textového popisu definovaného používateľom alebo automaticky vygenerovaného popisu.",
+      "desc": "Sémantické vyhľadávanie vo Gannet vám umožňuje nájsť sledované objekty v rámci vašich recenzovaných položiek pomocou samotného obrázka, textového popisu definovaného používateľom alebo automaticky vygenerovaného popisu.",
       "reindexNow": {
         "label": "Preindexovať teraz",
         "desc": "Reindexovanie obnoví vložené súbory pre všetky sledované objekty. Tento proces beží na pozadí a môže maximálne zaťažiť váš procesor a trvať pomerne dlho v závislosti od počtu sledovaných objektov, ktoré máte.",
@@ -131,7 +131,7 @@
     },
     "faceRecognition": {
       "title": "Rozpoznávanie tváre",
-      "desc": "Rozpoznávanie tváre umožňuje priradiť ľuďom mená a po rozpoznaní ich tváre Frigate priradí meno osoby ako podštítok. Tieto informácie sú zahrnuté v používateľskom rozhraní, filtroch, ako aj v upozorneniach.",
+      "desc": "Rozpoznávanie tváre umožňuje priradiť ľuďom mená a po rozpoznaní ich tváre Gannet priradí meno osoby ako podštítok. Tieto informácie sú zahrnuté v používateľskom rozhraní, filtroch, ako aj v upozorneniach.",
       "modelSize": {
         "label": "Veľkosť modelu",
         "desc": "Veľkosť modelu použitého na rozpoznávanie tváre.",
@@ -147,11 +147,11 @@
     },
     "licensePlateRecognition": {
       "title": "Rozpoznávanie Evidenčných Čísel Vozidiel",
-      "desc": "Frigate dokáže rozpoznávať evidenčné čísla vozidiel a automaticky pridávať detekované znaky do poľa recognized_license_plate alebo známy názov ako podradený štítok k objektom typu car. Bežným prípadom použitia môže byť čítanie evidenčných čísel áut vchádzajúcich na príjazdovú cestu alebo áut prechádzajúcich po ulici."
+      "desc": "Gannet dokáže rozpoznávať evidenčné čísla vozidiel a automaticky pridávať detekované znaky do poľa recognized_license_plate alebo známy názov ako podradený štítok k objektom typu car. Bežným prípadom použitia môže byť čítanie evidenčných čísel áut vchádzajúcich na príjazdovú cestu alebo áut prechádzajúcich po ulici."
     },
     "restart_required": "Vyžaduje sa reštart (zmenené nastavenia obohatenia)",
     "toast": {
-      "success": "Nastavenia obohatenia boli uložené. Reštartujte Frigate, aby sa zmeny prejavili.",
+      "success": "Nastavenia obohatenia boli uložené. Reštartujte Gannet, aby sa zmeny prejavili.",
       "error": "Nepodarilo sa uložiť zmeny konfigurácie: {{errorMessage}}"
     }
   },
@@ -221,7 +221,7 @@
     },
     "zones": {
       "label": "Zóny",
-      "documentTitle": "Upraviť Zónu - Frigate",
+      "documentTitle": "Upraviť Zónu - Gannet",
       "desc": {
         "title": "Zóny umožňujú definovať konkrétnu oblasť v zábere, vďaka čomu je možné určiť, či sa objekt nachádza v danej oblasti alebo nie.",
         "documentation": "Dokumentácia"
@@ -274,7 +274,7 @@
     },
     "motionMasks": {
       "label": "Maska Detekcia pohybu",
-      "documentTitle": "Editovať Masku Detekcia pohybu - Frigate",
+      "documentTitle": "Editovať Masku Detekcia pohybu - Gannet",
       "desc": {
         "title": "Masky detekcie pohybu slúžia na zabránenie nežiaducim typom pohybu v spustení detekcie. Príliš rozsiahle maskovanie však môže sťažiť sledovanie objektov.",
         "documentation": "Dokumentácia"
@@ -301,7 +301,7 @@
     },
     "objectMasks": {
       "label": "Masky Objektu",
-      "documentTitle": "Upraviť Masku Objektu - Frigate",
+      "documentTitle": "Upraviť Masku Objektu - Gannet",
       "desc": {
         "title": "Masky filtrovania objektov slúžia na odfiltrovanie falošných detekcií daného typu objektu na základe jeho umiestnenia.",
         "documentation": "Dokumentácia"
@@ -332,7 +332,7 @@
     "title": "Ladenie detekcie pohybu",
     "unsavedChanges": "Neuložené zmeny ladenia detekcie pohybu {{camera}}",
     "desc": {
-      "title": "Frigate používa detekciu pohybu ako prvú kontrolu na overenie, či sa v snímke deje niečo, čo stojí za ďalšiu analýzu pomocou detekcie objektov.",
+      "title": "Gannet používa detekciu pohybu ako prvú kontrolu na overenie, či sa v snímke deje niečo, čo stojí za ďalšiu analýzu pomocou detekcie objektov.",
       "documentation": "Prečítajte si príručku Ladenie detekcie pohybu"
     },
     "Threshold": {
@@ -353,7 +353,7 @@
   },
   "debug": {
     "title": "Ladenie",
-    "detectorDesc": "Frigate používa vaše detektory {{detectors}} na detekciu objektov v streame vašich kamier.",
+    "detectorDesc": "Gannet používa vaše detektory {{detectors}} na detekciu objektov v streame vašich kamier.",
     "desc": "Ladiace zobrazenie ukazuje sledované objekty a ich štatistiky v reálnom čase. Zoznam objektov zobrazuje časovo oneskorený prehľad detekovaných objektov.",
     "openCameraWebUI": "Otvoriť webové rozhranie {{camera}}",
     "debugging": "Ladenie",
@@ -412,7 +412,7 @@
   },
   "cameraWizard": {
     "title": "Pridať kameru",
-    "description": "Postupujte podľa pokynov nižšie a pridajte novú kameru na inštaláciu Frigate.",
+    "description": "Postupujte podľa pokynov nižšie a pridajte novú kameru na inštaláciu Gannet.",
     "steps": {
       "nameAndConnection": "Meno a pripojenie",
       "streamConfiguration": "Konfigurácia prúdu",
@@ -569,7 +569,7 @@
       "estimatedBandwidth": "Odhadovaná šírka pásma",
       "roles": "Roly",
       "ffmpegModule": "Použite režim kompatibility prúdu",
-      "ffmpegModuleDescription": "Ak sa stream nenačíta ani po niekoľkých pokusoch, skúste túto funkciu povoliť. Keď je táto funkcia povolená, Frigate použije modul ffmpeg s go2rtc. To môže poskytnúť lepšiu kompatibilitu s niektorými streammi z kamier.",
+      "ffmpegModuleDescription": "Ak sa stream nenačíta ani po niekoľkých pokusoch, skúste túto funkciu povoliť. Keď je táto funkcia povolená, Gannet použije modul ffmpeg s go2rtc. To môže poskytnúť lepšiu kompatibilitu s niektorými streammi z kamier.",
       "none": "Žiadne",
       "error": "Chyba",
       "streamValidated": "Stream {{number}} úspešne overený",
@@ -641,21 +641,21 @@
     "title": "Nastavenie recenzie kamery",
     "object_descriptions": {
       "title": "Generatívne popisy objektov umelej inteligencie",
-      "desc": "Dočasne povoľ/zakáž AI vygenerované popisy objektov pre túto kameru pokiaľ nebude Frigate reštartovaná. Keď je zakázané, AI vygenerované popisy nebudú žiadané pre sledované objekty na tejto kamere."
+      "desc": "Dočasne povoľ/zakáž AI vygenerované popisy objektov pre túto kameru pokiaľ nebude Gannet reštartovaná. Keď je zakázané, AI vygenerované popisy nebudú žiadané pre sledované objekty na tejto kamere."
     },
     "review_descriptions": {
       "title": "Popisy generatívnej umelej inteligencie",
-      "desc": "Dočasne povoľ/zakáž AI vygenerované popisy revízií pre túto kameru pokiaľ nebude Frigate reštartovaná. Keď je zakázané, AI vygenerované popisy nebudú žiadané pre sledované objekty na tejto kamere."
+      "desc": "Dočasne povoľ/zakáž AI vygenerované popisy revízií pre túto kameru pokiaľ nebude Gannet reštartovaná. Keď je zakázané, AI vygenerované popisy nebudú žiadané pre sledované objekty na tejto kamere."
     },
     "review": {
       "title": "Recenzia",
-      "desc": "Dočasne umožňujú/disable upozornenia a detekcia pre tento fotoaparát až do reštartu Frigate. Pri vypnutých, nebudú vygenerované žiadne nové položky preskúmania. ",
+      "desc": "Dočasne umožňujú/disable upozornenia a detekcia pre tento fotoaparát až do reštartu Gannet. Pri vypnutých, nebudú vygenerované žiadne nové položky preskúmania. ",
       "alerts": "Upozornenia ",
       "detections": "Detekcie "
     },
     "reviewClassification": {
       "title": "Preskúmať klasifikáciu",
-      "desc": "Frigate kategorizuje položky recenzií ako Upozornenia a Detekcie. Predvolene sa všetky objekty typu <em>osoba</em> a <em>auto</em> považujú za Upozornenia. Kategorizáciu položiek recenzií môžete spresniť konfiguráciou požadovaných zón pre ne.",
+      "desc": "Gannet kategorizuje položky recenzií ako Upozornenia a Detekcie. Predvolene sa všetky objekty typu <em>osoba</em> a <em>auto</em> považujú za Upozornenia. Kategorizáciu položiek recenzií môžete spresniť konfiguráciou požadovaných zón pre ne.",
       "noDefinedZones": "Pre túto kameru nie sú definované žiadne zóny.",
       "objectAlertsTips": "Všetky objekty {{alertsLabels}} na {{cameraName}} sa zobrazia ako Upozornenia.",
       "zoneObjectAlertsTips": "Všetky objekty {{alertsLabels}} detekované v {{zone}} na {{cameraName}} budú zobrazené ako Upozornenia.",
@@ -670,7 +670,7 @@
       "selectDetectionsZones": "Vyberte zóny pre detekcie",
       "limitDetections": "Obmedziť detekciu na konkrétne zóny",
       "toast": {
-        "success": "Konfigurácia klasifikácie bola uložená. Reštartujte Frigate, aby sa zmeny prejavili."
+        "success": "Konfigurácia klasifikácie bola uložená. Reštartujte Gannet, aby sa zmeny prejavili."
       }
     }
   },
@@ -678,7 +678,7 @@
     "title": "Používatelia",
     "management": {
       "title": "Správa používateľov",
-      "desc": "Spravovať používateľské účty tejto inštancie Frigate."
+      "desc": "Spravovať používateľské účty tejto inštancie Gannet."
     },
     "addUser": "Pridať používateľa",
     "updatePassword": "Obnoviť Heslo",
@@ -741,7 +741,7 @@
       },
       "createUser": {
         "title": "Vytvorenie nového užívateľa",
-        "desc": "Pridajte nový používateľský účet a zadajte rolu pre prístup k oblastiam používateľského rozhrania Frigate.",
+        "desc": "Pridajte nový používateľský účet a zadajte rolu pre prístup k oblastiam používateľského rozhrania Gannet.",
         "usernameOnlyInclude": "Používateľské meno môže obsahovať iba písmená, číslice, . alebo _",
         "confirmPassword": "Potvrďte svoje heslo"
       },
@@ -775,7 +775,7 @@
   "roles": {
     "management": {
       "title": "Správa roly diváka",
-      "desc": "Spravujte vlastné roly divákov a ich povolenia na prístup ku kamere pre túto inštanciu Frigate."
+      "desc": "Spravujte vlastné roly divákov a ich povolenia na prístup ku kamere pre túto inštanciu Gannet."
     },
     "addRole": "Pridať rolu",
     "table": {
@@ -838,10 +838,10 @@
     "title": "Notifikacie",
     "notificationSettings": {
       "title": "Nastavenia notifikácií",
-      "desc": "Frigate dokáže natívne odosielať push notifikácie do vášho zariadenia, keď je spustený v prehliadači alebo nainštalovaný ako PWA."
+      "desc": "Gannet dokáže natívne odosielať push notifikácie do vášho zariadenia, keď je spustený v prehliadači alebo nainštalovaný ako PWA."
     },
     "notificationUnavailable": {
-      "desc": "Webové push notifikácie vyžadujú zabezpečený kontext (<code>https://…</code>). Ide o obmedzenie prehliadača. Ak chcete používať notifikácie, pristupujte k Frigate bezpečne."
+      "desc": "Webové push notifikácie vyžadujú zabezpečený kontext (<code>https://…</code>). Ide o obmedzenie prehliadača. Ak chcete používať notifikácie, pristupujte k Gannet bezpečne."
     },
     "globalSettings": {
       "title": "Globálne nastavenia",
@@ -878,7 +878,7 @@
     "cancelSuspension": "Zrušiť pozastavenie",
     "toast": {
       "success": {
-        "registered": "Úspešne zaregistrované pre upozornenia. Pred odoslaním akýchkoľvek upozornení (vrátane testovacieho upozornenia) je potrebné reštartovať Frigate.",
+        "registered": "Úspešne zaregistrované pre upozornenia. Pred odoslaním akýchkoľvek upozornení (vrátane testovacieho upozornenia) je potrebné reštartovať Gannet.",
         "settingSaved": "Nastavenie oznámenia boli uložené."
       },
       "error": {
@@ -889,9 +889,9 @@
   "frigatePlus": {
     "title": "Nastavenie Frigate+",
     "apiKey": {
-      "title": "Frigate + API kľúč",
-      "validated": "Frigate + API kľúč je detekovaný a overený",
-      "notValidated": "Frigate + API kľúč nie je detekovaný alebo nie je overený",
+      "title": "Gannet + API kľúč",
+      "validated": "Gannet + API kľúč je detekovaný a overený",
+      "notValidated": "Gannet + API kľúč nie je detekovaný alebo nie je overený",
       "desc": "Frigate+ API kľúč umožňuje integráciu s Frigate+ služby.",
       "plusLink": "Prečítajte si viac o Frigate+"
     },
@@ -1011,7 +1011,7 @@
         },
         "actions": {
           "title": "Akcie",
-          "desc": "V predvolenom nastavení Frigate odosiela MQTT správu pre všetky spúšťače. Zvoľte dodatočnú akciu, ktorá sa má vykonať, keď sa tento spúšťač aktivuje.",
+          "desc": "V predvolenom nastavení Gannet odosiela MQTT správu pre všetky spúšťače. Zvoľte dodatočnú akciu, ktorá sa má vykonať, keď sa tento spúšťač aktivuje.",
           "error": {
             "min": "Musí byť vybraná aspoň jedna akcia."
           }

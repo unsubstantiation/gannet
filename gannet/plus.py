@@ -36,10 +36,10 @@ def _windows_model_metadata(model: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def load_plus_model_info(model_id: str) -> dict[str, Any] | None:
-    """Read a Frigate+ model's cached info file.
+    """Read an upstream Frigate+ model's cached info file.
 
     Args:
-        model_id: The Frigate+ model id
+        model_id: The upstream Frigate+ model id
 
     Returns:
         The model info, or None when it has not been cached or cannot be read
@@ -88,7 +88,7 @@ class PlusApi:
         self._token_data: dict = {}
 
         # Retry connection failures so a network that comes up late at startup
-        # doesn't fail the Frigate+ model download
+        # doesn't fail the upstream Frigate+ model download
         self._session = requests.Session()
         self._session.mount(
             self.host, HTTPAdapter(max_retries=Retry(connect=5, backoff_factor=1))
@@ -270,7 +270,7 @@ class PlusApi:
         metadata = _windows_model_metadata(r.json())
         if metadata is None:
             raise ValueError(
-                f"Frigate+ model {model_id} has no native Windows detector variant"
+                f"upstream Frigate+ model {model_id} has no native Windows detector variant"
             )
         return metadata
 

@@ -1,10 +1,10 @@
 {
   "documentTitle": {
-    "default": "Preferencias - Frigate",
-    "authentication": "Configuracións de Autenticación - Frigate",
-    "general": "Configuracións UI - Frigate",
-    "notifications": "Configuración de Notificacións - Frigate",
-    "enrichments": "Configuración complementarias - Frigate",
-    "masksAndZones": "Editor de máscaras e zonas - Frigate"
+    "default": "Preferencias - Gannet",
+    "authentication": "Configuracións de Autenticación - Gannet",
+    "general": "Configuracións UI - Gannet",
+    "notifications": "Configuración de Notificacións - Gannet",
+    "enrichments": "Configuración complementarias - Gannet",
+    "masksAndZones": "Editor de máscaras e zonas - Gannet"
   }
 }

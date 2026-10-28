@@ -27,7 +27,7 @@ from gannet.util.platform import (
 
 def _create_process_manager() -> SyncManager:
     """Install Windows process containment before spawning the manager."""
-    # The manager is the first child Frigate creates. Put the main process in
+    # The manager is the first child Gannet creates. Put the main process in
     # its job object first so the manager and every later child inherit it.
     install_job_object()
 
@@ -39,14 +39,14 @@ def main() -> None:
     # before creating child processes, directories, loggers, or services.
     require_windows()
 
-    logger = logging.getLogger("frigate")
+    logger = logging.getLogger("gannet")
     manager = _create_process_manager()
     faulthandler.enable()
 
     # Setup the logging thread
     setup_logging(manager)
 
-    threading.current_thread().name = "frigate"
+    threading.current_thread().name = "gannet"
     stop_event = mp.Event()
 
     # Ctrl+C and, where the console provides it, Ctrl+Break stop the app. The
@@ -59,11 +59,11 @@ def main() -> None:
 
     # Create the config, media, cache and log directories a native install needs
     ensure_runtime_dirs()
-    logger.info("Starting Frigate on %s", describe())
+    logger.info("Starting Gannet on %s", describe())
 
     # Parse the cli arguments.
     parser = argparse.ArgumentParser(
-        prog="Frigate",
+        prog="Gannet",
         description="An NVR with realtime local object detection for IP cameras.",
     )
     parser.add_argument("--validate-config", action="store_true")
@@ -76,7 +76,7 @@ def main() -> None:
         print("*************************************************************")
         print("*************************************************************")
         print("***    Your config file is not valid!                     ***")
-        print("***    Please check the docs at                           ***")
+        print("***    Upstream Frigate docs (config reference):          ***")
         print("***    https://docs.frigate.video/configuration/          ***")
         print("*************************************************************")
         print("*************************************************************")
@@ -134,12 +134,12 @@ def main() -> None:
         if args.validate_config:
             sys.exit(1)
 
-        # attempt to start Frigate in recovery mode
+        # attempt to start Gannet in recovery mode
         try:
             config = FrigateConfig.load(install=True, safe_load=True)
-            print("Starting Frigate in safe mode.")
+            print("Starting Gannet in safe mode.")
         except ValidationError:
-            print("Unable to start Frigate in safe mode.")
+            print("Unable to start Gannet in safe mode.")
             sys.exit(1)
     # A path that approaches MAX_PATH fails when a segment is written, long
     # after startup succeeded, so say so now while it can still be changed.

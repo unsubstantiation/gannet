@@ -41,7 +41,7 @@
         },
         "actions": {
           "title": "동작",
-          "desc": "기본적으로 Frigate은 모든 트리거에 대해 MQTT 메시지를 발행합니다. 하위 레이블은 객체 레이블에 트리거 이름을 추가합니다. 속성은 추적 객체 메타데이터에 별도로 저장되는 검색 가능한 메타데이터입니다.",
+          "desc": "기본적으로 Gannet은 모든 트리거에 대해 MQTT 메시지를 발행합니다. 하위 레이블은 객체 레이블에 트리거 이름을 추가합니다. 속성은 추적 객체 메타데이터에 별도로 저장되는 검색 가능한 메타데이터입니다.",
           "error": {
             "min": "최소 하나 이상의 동작을 선택해야 합니다."
           }
@@ -120,22 +120,22 @@
     }
   },
   "documentTitle": {
-    "default": "설정 - Frigate",
-    "authentication": "인증 설정 - Frigate",
-    "enrichments": "확장 기능 설정 - Frigate",
-    "masksAndZones": "마스크 및 구역 편집기 - Frigate",
-    "motionTuner": "움직임 튜너 - Frigate",
-    "object": "디버그 - Frigate",
-    "general": "UI 설정 - Frigate",
-    "frigatePlus": "Frigate+ 설정 - Frigate",
-    "notifications": "알림 설정 - Frigate",
-    "cameraManagement": "카메라 관리 - Frigate",
-    "cameraReview": "카메라 다시보기 설정 - Frigate",
-    "globalConfig": "전역 설정 - Frigate",
-    "cameraConfig": "카메라 설정 - Frigate",
-    "maintenance": "유지 관리 - Frigate",
-    "profiles": "프로필 - Frigate",
-    "detectorsAndModel": "감지기 및 모델 - Frigate"
+    "default": "설정 - Gannet",
+    "authentication": "인증 설정 - Gannet",
+    "enrichments": "확장 기능 설정 - Gannet",
+    "masksAndZones": "마스크 및 구역 편집기 - Gannet",
+    "motionTuner": "움직임 튜너 - Gannet",
+    "object": "디버그 - Gannet",
+    "general": "UI 설정 - Gannet",
+    "frigatePlus": "Frigate+ 설정 - Gannet",
+    "notifications": "알림 설정 - Gannet",
+    "cameraManagement": "카메라 관리 - Gannet",
+    "cameraReview": "카메라 다시보기 설정 - Gannet",
+    "globalConfig": "전역 설정 - Gannet",
+    "cameraConfig": "카메라 설정 - Gannet",
+    "maintenance": "유지 관리 - Gannet",
+    "profiles": "프로필 - Gannet",
+    "detectorsAndModel": "감지기 및 모델 - Gannet"
   },
   "users": {
     "table": {
@@ -150,7 +150,7 @@
     "title": "사용자",
     "management": {
       "title": "사용자 관리",
-      "desc": "이 Frigate 인스턴스의 사용자 계정을 관리합니다."
+      "desc": "이 Gannet 인스턴스의 사용자 계정을 관리합니다."
     },
     "addUser": "사용자 추가",
     "updatePassword": "비밀번호 재설정",
@@ -214,7 +214,7 @@
       },
       "createUser": {
         "title": "새 사용자 생성",
-        "desc": "새 사용자 계정을 추가하고 Frigate UI 접근 권한을 위한 역할을 지정합니다.",
+        "desc": "새 사용자 계정을 추가하고 Gannet UI 접근 권한을 위한 역할을 지정합니다.",
         "usernameOnlyInclude": "사용자 이름은 영문자, 숫자, 마침표(.), 밑줄(_)만 포함할 수 있습니다",
         "confirmPassword": "비밀번호를 확인해 주세요"
       },
@@ -400,8 +400,8 @@
         "exportUiSettingsFailed": "설정 내보내기 실패",
         "importNothingToApply": "설정 가져오기 실패: 파일에 설정 데이터가 없습니다",
         "importInvalidJson": "설정 가져오기 실패: 올바른 JSON 파일이 아닙니다",
-        "importWrongType": "설정 가져오기 실패: Frigate 설정 내보내기 파일이 아닙니다",
-        "importUnsupportedVersion": "설정 가져오기 실패: 최신 버전의 Frigate가 필요한 파일입니다",
+        "importWrongType": "설정 가져오기 실패: Gannet 설정 내보내기 파일이 아닙니다",
+        "importUnsupportedVersion": "설정 가져오기 실패: 최신 버전의 Gannet가 필요한 파일입니다",
         "importInvalidSchema": "설정 가져오기 실패: 파일 형식이 잘못되었습니다",
         "importUiSettingsFailed": "설정 가져오기 실패"
       }
@@ -416,8 +416,8 @@
       },
       "importDialog": {
         "title": "설정 가져오기",
-        "desc": "이 파일에서 적용할 항목을 선택하세요. 가져오기가 완료되면 Frigate이 새로고침됩니다.",
-        "exportedFrom": "내보낸 날짜: {{date}} (Frigate 설정 버전 {{version}})",
+        "desc": "이 파일에서 적용할 항목을 선택하세요. 가져오기가 완료되면 Gannet이 새로고침됩니다.",
+        "exportedFrom": "내보낸 날짜: {{date}} (Gannet 설정 버전 {{version}})",
         "layouts_other": "카메라 그룹 레이아웃 ({{count}}개 그룹)",
         "streaming_other": "스트리밍 설정 ({{count}}개 카메라)",
         "preferences_other": "UI 환경설정 ({{count}}개 설정)",
@@ -449,7 +449,7 @@
         "error": "재색인 시작 실패: {{errorMessage}}"
       },
       "title": "시맨틱 검색",
-      "desc": "Frigate의 시맨틱 검색을 사용하면 이미지 자체, 사용자 지정 텍스트 설명 또는 자동 생성된 설명을 활용하여 다시보기 항목 내의 추적 객체를 찾을 수 있습니다.",
+      "desc": "Gannet의 시맨틱 검색을 사용하면 이미지 자체, 사용자 지정 텍스트 설명 또는 자동 생성된 설명을 활용하여 다시보기 항목 내의 추적 객체를 찾을 수 있습니다.",
       "modelSize": {
         "label": "모델 크기",
         "desc": "시맨틱 검색 임베딩에 사용할 모델 크기입니다.",
@@ -465,7 +465,7 @@
     },
     "faceRecognition": {
       "title": "얼굴 인식",
-      "desc": "얼굴 인식을 통해 사람에게 이름을 지정할 수 있으며, 얼굴이 인식되면 Frigate가 해당 인물의 이름을 하위 레이블로 부여합니다. 이 정보는 UI, 필터 및 알림에 반영됩니다.",
+      "desc": "얼굴 인식을 통해 사람에게 이름을 지정할 수 있으며, 얼굴이 인식되면 Gannet가 해당 인물의 이름을 하위 레이블로 부여합니다. 이 정보는 UI, 필터 및 알림에 반영됩니다.",
       "modelSize": {
         "label": "모델 크기",
         "desc": "얼굴 인식에 사용할 모델 크기입니다.",
@@ -481,11 +481,11 @@
     },
     "licensePlateRecognition": {
       "title": "차량 번호판 인식",
-      "desc": "Frigate은 차량 번호판을 인식하여 감지된 문자를 recognized_license_plate 필드에 자동 기록하거나, 'car' 유형의 객체에 등록된 이름을 하위 레이블로 추가할 수 있습니다. 진입로에 들어오거나 도로를 지나가는 차량의 번호판을 판독하는 데 유용합니다."
+      "desc": "Gannet은 차량 번호판을 인식하여 감지된 문자를 recognized_license_plate 필드에 자동 기록하거나, 'car' 유형의 객체에 등록된 이름을 하위 레이블로 추가할 수 있습니다. 진입로에 들어오거나 도로를 지나가는 차량의 번호판을 판독하는 데 유용합니다."
     },
     "restart_required": "재시작 필요 (확장 기능 설정 변경됨)",
     "toast": {
-      "success": "확장 기능 설정이 저장되었습니다. 변경 사항을 적용하려면 Frigate를 재시작하세요.",
+      "success": "확장 기능 설정이 저장되었습니다. 변경 사항을 적용하려면 Gannet를 재시작하세요.",
       "error": "설정 변경 사항 저장 실패: {{errorMessage}}"
     }
   },
@@ -526,7 +526,7 @@
       "profilePrefix": "{{profile}} 프로필: {{fields}}"
     },
     "overriddenLive": "재지정됨 (라이브)",
-    "overriddenLiveTooltip": "이 카메라는 설정에 저장된 값과 다른 값으로 실행 중입니다 (설정값은 여기에 표시됨). 라이브 뷰, MQTT 또는 활성 프로필에 의해 Frigate 실행 중에 변경될 수 있습니다.",
+    "overriddenLiveTooltip": "이 카메라는 설정에 저장된 값과 다른 값으로 실행 중입니다 (설정값은 여기에 표시됨). 라이브 뷰, MQTT 또는 활성 프로필에 의해 Gannet 실행 중에 변경될 수 있습니다.",
     "overriddenLiveValue": "현재 적용된 값: {{value}}"
   },
   "menuDot": {
@@ -536,7 +536,7 @@
   },
   "cameraWizard": {
     "title": "카메라 추가",
-    "description": "아래 단계에 따라 Frigate에 새 카메라를 추가하세요.",
+    "description": "아래 단계에 따라 Gannet에 새 카메라를 추가하세요.",
     "steps": {
       "nameAndConnection": "이름 및 연결",
       "probeOrSnapshot": "탐색 또는 스냅샷",
@@ -708,7 +708,7 @@
       "estimatedBandwidth": "예상 대역폭",
       "roles": "역할",
       "ffmpegModule": "스트림 호환성 모드 사용",
-      "ffmpegModuleDescription": "여러 번 시도해도 스트림이 로드되지 않는 경우 이 기능을 켜보세요. 활성화하면 Frigate가 go2rtc와 함께 FFmpeg 모듈을 사용하므로 일부 카메라 스트림과의 호환성이 향상될 수 있습니다.",
+      "ffmpegModuleDescription": "여러 번 시도해도 스트림이 로드되지 않는 경우 이 기능을 켜보세요. 활성화하면 Gannet가 go2rtc와 함께 FFmpeg 모듈을 사용하므로 일부 카메라 스트림과의 호환성이 향상될 수 있습니다.",
       "none": "없음",
       "error": "오류",
       "streamValidated": "스트림 {{number}} 검증 성공",
@@ -761,14 +761,14 @@
     "streams": {
       "title": "카메라 상태 및 세부 정보",
       "label": "카메라 상태",
-      "description": "각 카메라의 동작 상태를 설정합니다.<br /><br /><strong>켜짐 (On)</strong>: 스트림이 정상적으로 처리됩니다.<br /><strong>꺼짐 (Off)</strong>: 처리를 일시 중단합니다. Frigate 재시작 시 유지되지 않습니다.<br /><strong>비활성화 (Disabled)</strong>: 처리를 중지하고 설정 파일에 저장합니다. 다시 활성화하려면 재시작이 필요합니다.<br /><br /><em>참고: 비활성화해도 go2rtc 재스트림에는 영향을 주지 않습니다.</em><br /><br />핸들을 드래그하여 실시간 대시보드 및 카메라 드롭다운 목록에 표시되는 순서를 변경할 수 있습니다.",
+      "description": "각 카메라의 동작 상태를 설정합니다.<br /><br /><strong>켜짐 (On)</strong>: 스트림이 정상적으로 처리됩니다.<br /><strong>꺼짐 (Off)</strong>: 처리를 일시 중단합니다. Gannet 재시작 시 유지되지 않습니다.<br /><strong>비활성화 (Disabled)</strong>: 처리를 중지하고 설정 파일에 저장합니다. 다시 활성화하려면 재시작이 필요합니다.<br /><br /><em>참고: 비활성화해도 go2rtc 재스트림에는 영향을 주지 않습니다.</em><br /><br />핸들을 드래그하여 실시간 대시보드 및 카메라 드롭다운 목록에 표시되는 순서를 변경할 수 있습니다.",
       "disabledSubheading": "설정에서 비활성화됨",
       "status": {
         "on": "켜짐",
         "off": "꺼짐",
         "disabled": "비활성화됨"
       },
-      "enableSuccess": "{{cameraName}} 활성화됨. 적용하려면 Frigate를 재시작하세요.",
+      "enableSuccess": "{{cameraName}} 활성화됨. 적용하려면 Gannet를 재시작하세요.",
       "disableSuccess": "{{cameraName}}이(가) 비활성화되어 설정에 저장되었습니다.",
       "reorderHandle": "드래그하여 순서 변경",
       "saving": "저장 중…",
@@ -776,9 +776,9 @@
       "details": {
         "edit": "카메라 세부 정보 수정",
         "title": "카메라 세부 정보 수정",
-        "description": "Frigate UI 전반에 표시되는 표시 이름, 외부 URL 및 가시성을 업데이트합니다.",
+        "description": "Gannet UI 전반에 표시되는 표시 이름, 외부 URL 및 가시성을 업데이트합니다.",
         "friendlyNameLabel": "표시 이름 (별칭)",
-        "friendlyNameHelp": "Frigate UI 전반에 표시될 카메라의 별칭입니다. 비워 두면 카메라 ID가 사용됩니다.",
+        "friendlyNameHelp": "Gannet UI 전반에 표시될 카메라의 별칭입니다. 비워 두면 카메라 ID가 사용됩니다.",
         "webuiUrlLabel": "카메라 웹 UI URL",
         "webuiUrlHelp": "디버그 뷰에서 카메라 자체 웹 관리 페이지로 바로 연결되는 URL입니다. 링크를 비활성화하려면 비워 두세요.",
         "webuiUrlInvalid": "유효한 URL이어야 합니다 (예: https://example.com).",
@@ -831,7 +831,7 @@
       "description": "각 카메라의 유형을 설정합니다. 전용 번호판 인식 카메라는 먼 거리의 차량 번호판을 포착하기 위해 강력한 광학 줌을 갖춘 단일 목적 카메라입니다. 번호판에 초점이 맞춰진 전용 카메라가 아니라면 일반 카메라 유형을 사용해야 합니다.",
       "normal": "일반",
       "dedicatedLpr": "전용 LPR",
-      "saveSuccess": "{{cameraName}}의 카메라 유형을 업데이트했습니다. 변경 사항을 적용하려면 Frigate를 재시작하세요."
+      "saveSuccess": "{{cameraName}}의 카메라 유형을 업데이트했습니다. 변경 사항을 적용하려면 Gannet를 재시작하세요."
     },
     "clone": {
       "sectionTitle": "설정 복제",
@@ -905,9 +905,9 @@
       },
       "toast": {
         "success": "{{cameraName}}에 설정이 복사되었습니다",
-        "successWithRestart": "{{cameraName}}에 설정이 복사되었습니다. 모든 변경 사항을 적용하려면 Frigate를 재시작하세요.",
+        "successWithRestart": "{{cameraName}}에 설정이 복사되었습니다. 모든 변경 사항을 적용하려면 Gannet를 재시작하세요.",
         "successMulti_other": "카메라 {{count}}대에 설정이 복사되었습니다",
-        "successMultiWithRestart_other": "카메라 {{count}}대에 설정이 복사되었습니다. 모든 변경 사항을 적용하려면 Frigate를 재시작하세요.",
+        "successMultiWithRestart_other": "카메라 {{count}}대에 설정이 복사되었습니다. 모든 변경 사항을 적용하려면 Gannet를 재시작하세요.",
         "partialFailure": "{{successCount}}개 섹션 적용됨; '{{failedSection}}' 실패: {{errorMessage}}",
         "partialFailureMulti": "카메라 {{successCount}}대에 복사됨; 실패 항목({{failed}}): {{errorMessage}}",
         "newCameraPartialFailure": "{{cameraName}} 카메라가 생성되었으나 일부 설정을 복사하지 못했습니다: {{errorMessage}}",
@@ -920,21 +920,21 @@
     "title": "카메라 다시보기 설정",
     "object_descriptions": {
       "title": "생성형 AI 객체 설명",
-      "desc": "Frigate가 재시작될 때까지 이 카메라의 생성형 AI 객체 설명 생성을 일시적으로 켜거나 끕니다. 비활성화하면 이 카메라의 추적 객체에 대해 AI 설명을 요청하지 않습니다."
+      "desc": "Gannet가 재시작될 때까지 이 카메라의 생성형 AI 객체 설명 생성을 일시적으로 켜거나 끕니다. 비활성화하면 이 카메라의 추적 객체에 대해 AI 설명을 요청하지 않습니다."
     },
     "review_descriptions": {
       "title": "생성형 AI 다시보기 설명",
-      "desc": "Frigate가 재시작될 때까지 이 카메라의 생성형 AI 다시보기 설명 생성을 일시적으로 켜거나 끕니다. 비활성화하면 이 카메라의 다시보기 항목에 대해 AI 설명을 요청하지 않습니다."
+      "desc": "Gannet가 재시작될 때까지 이 카메라의 생성형 AI 다시보기 설명 생성을 일시적으로 켜거나 끕니다. 비활성화하면 이 카메라의 다시보기 항목에 대해 AI 설명을 요청하지 않습니다."
     },
     "review": {
       "title": "다시보기",
-      "desc": "Frigate가 재시작될 때까지 이 카메라의 알림 및 감지 이벤트 생성을 일시적으로 켜거나 끕니다. 비활성화하면 새 다시보기 항목이 생성되지 않습니다. ",
+      "desc": "Gannet가 재시작될 때까지 이 카메라의 알림 및 감지 이벤트 생성을 일시적으로 켜거나 끕니다. 비활성화하면 새 다시보기 항목이 생성되지 않습니다. ",
       "alerts": "알림 ",
       "detections": "감지 "
     },
     "reviewClassification": {
       "title": "다시보기 분류",
-      "desc": "Frigate은 다시보기 항목을 '알림'과 '감지'로 분류합니다. 기본적으로 모든 <em>사람(person)</em> 및 <em>차량(car)</em> 객체는 알림으로 간주됩니다. 필수 구역을 설정하여 다시보기 항목의 분류를 세분화할 수 있습니다.",
+      "desc": "Gannet은 다시보기 항목을 '알림'과 '감지'로 분류합니다. 기본적으로 모든 <em>사람(person)</em> 및 <em>차량(car)</em> 객체는 알림으로 간주됩니다. 필수 구역을 설정하여 다시보기 항목의 분류를 세분화할 수 있습니다.",
       "noDefinedZones": "이 카메라에 정의된 구역이 없습니다.",
       "objectAlertsTips": "{{cameraName}}의 모든 {{alertsLabels}} 객체가 알림으로 표시됩니다.",
       "zoneObjectAlertsTips": "{{cameraName}}의 {{zone}}에서 감지된 모든 {{alertsLabels}} 객체가 알림으로 표시됩니다.",
@@ -949,7 +949,7 @@
       "selectDetectionsZones": "감지 대상 구역 선택",
       "limitDetections": "특정 구역으로 감지 제한",
       "toast": {
-        "success": "다시보기 분류 설정이 저장되었습니다. 변경 사항을 적용하려면 Frigate를 재시작하세요."
+        "success": "다시보기 분류 설정이 저장되었습니다. 변경 사항을 적용하려면 Gannet를 재시작하세요."
       }
     }
   },
@@ -1045,7 +1045,7 @@
     },
     "zones": {
       "label": "구역",
-      "documentTitle": "구역 수정 - Frigate",
+      "documentTitle": "구역 수정 - Gannet",
       "desc": {
         "title": "구역을 지정하면 프레임의 특정 영역을 정의하여 객체가 해당 구역 내에 있는지 여부를 판정할 수 있습니다.",
         "documentation": "공식 문서"
@@ -1100,7 +1100,7 @@
     },
     "motionMasks": {
       "label": "움직임 마스크",
-      "documentTitle": "움직임 마스크 수정 - Frigate",
+      "documentTitle": "움직임 마스크 수정 - Gannet",
       "desc": {
         "title": "움직임 마스크는 불필요한 유형의 움직임으로 인한 감지 트리거를 방지하는 데 사용됩니다. 마스크를 과도하게 설정하면 객체 추적이 어려워질 수 있습니다.",
         "documentation": "공식 문서"
@@ -1131,7 +1131,7 @@
     },
     "objectMasks": {
       "label": "객체 마스크",
-      "documentTitle": "객체 마스크 수정 - Frigate",
+      "documentTitle": "객체 마스크 수정 - Gannet",
       "desc": {
         "title": "객체 필터 마스크는 특정 위치에서 발생하는 특정 객체 유형의 오탐지를 걸러내는 데 사용됩니다.",
         "documentation": "공식 문서"
@@ -1169,7 +1169,7 @@
     "title": "움직임 감지 튜너",
     "unsavedChanges": "저장되지 않은 움직임 튜너 변경 사항 ({{camera}})",
     "desc": {
-      "title": "Frigate은 객체 감지를 실행할 가치가 있는 변화가 화면에 있는지 확인하기 위한 1차 검사로 움직임 감지를 사용합니다.",
+      "title": "Gannet은 객체 감지를 실행할 가치가 있는 변화가 화면에 있는지 확인하기 위한 1차 검사로 움직임 감지를 사용합니다.",
       "documentation": "움직임 튜닝 가이드 읽기"
     },
     "Threshold": {
@@ -1190,7 +1190,7 @@
   },
   "debug": {
     "title": "디버그",
-    "detectorDesc": "Frigate은 감지기({{detectors}})를 사용하여 카메라 비디오 스트림에서 객체를 감지합니다.",
+    "detectorDesc": "Gannet은 감지기({{detectors}})를 사용하여 카메라 비디오 스트림에서 객체를 감지합니다.",
     "desc": "디버그 뷰는 추적 중인 객체와 관련 통계를 실시간으로 보여줍니다. 객체 목록에는 감지된 객체의 시차 요약 정보가 표시됩니다.",
     "openCameraWebUI": "{{camera}} 웹 UI 열기",
     "debugging": "디버깅 중",
@@ -1256,7 +1256,7 @@
   "roles": {
     "management": {
       "title": "조회자(Viewer) 역할 관리",
-      "desc": "이 Frigate 인스턴스에 대한 사용자 정의 뷰어 역할과 카메라 접근 권한을 관리합니다."
+      "desc": "이 Gannet 인스턴스에 대한 사용자 정의 뷰어 역할과 카메라 접근 권한을 관리합니다."
     },
     "addRole": "역할 추가",
     "table": {
@@ -1318,11 +1318,11 @@
     "title": "알림",
     "notificationSettings": {
       "title": "알림 설정",
-      "desc": "Frigate이 브라우저에서 실행 중이거나 PWA로 설치된 경우 기기로 푸시 알림을 기본 전송할 수 있습니다."
+      "desc": "Gannet이 브라우저에서 실행 중이거나 PWA로 설치된 경우 기기로 푸시 알림을 기본 전송할 수 있습니다."
     },
     "notificationUnavailable": {
-      "desc": "웹 푸시 알림을 사용하려면 보안 연결(https://…)이 필요합니다. 이는 브라우저 제한 사항입니다. 알림을 사용하려면 보안 연결을 통해 Frigate에 접속하세요.",
-      "descPwa": "iOS에서는 Frigate를 홈 화면에 추가한 경우에만 웹 푸시 알림을 사용할 수 있습니다. 공유 메뉴를 열고 '홈 화면에 추가'를 선택한 뒤, 생성된 새 아이콘으로 Frigate를 열어 이 기기를 알림에 등록하세요."
+      "desc": "웹 푸시 알림을 사용하려면 보안 연결(https://…)이 필요합니다. 이는 브라우저 제한 사항입니다. 알림을 사용하려면 보안 연결을 통해 Gannet에 접속하세요.",
+      "descPwa": "iOS에서는 Gannet를 홈 화면에 추가한 경우에만 웹 푸시 알림을 사용할 수 있습니다. 공유 메뉴를 열고 '홈 화면에 추가'를 선택한 뒤, 생성된 새 아이콘으로 Gannet를 열어 이 기기를 알림에 등록하세요."
     },
     "globalSettings": {
       "title": "전역 설정",
@@ -1359,7 +1359,7 @@
     "cancelSuspension": "일시 중지 해제",
     "toast": {
       "success": {
-        "registered": "알림 등록에 성공했습니다. 테스트 알림을 포함한 알림을 수신하려면 먼저 Frigate를 재시작해야 합니다.",
+        "registered": "알림 등록에 성공했습니다. 테스트 알림을 포함한 알림을 수신하려면 먼저 Gannet를 재시작해야 합니다.",
         "settingSaved": "알림 설정이 저장되었습니다."
       },
       "error": {
@@ -1369,7 +1369,7 @@
   },
   "frigatePlus": {
     "title": "Frigate+ 설정",
-    "description": "Frigate+는 사용자의 데이터를 기반으로 학습된 맞춤형 객체 감지 모델을 비롯하여 Frigate 인스턴스를 위한 추가 기능과 역량을 제공하는 구독 서비스입니다. 여기에서 Frigate+ 모델 설정을 관리할 수 있습니다.",
+    "description": "Frigate+는 사용자의 데이터를 기반으로 학습된 맞춤형 객체 감지 모델을 비롯하여 Gannet 인스턴스를 위한 추가 기능과 역량을 제공하는 구독 서비스입니다. 여기에서 Frigate+ 모델 설정을 관리할 수 있습니다.",
     "cardTitles": {
       "api": "API",
       "currentModel": "현재 모델",
@@ -1421,7 +1421,7 @@
     "unsavedChanges": "저장되지 않은 Frigate+ 설정 변경 사항",
     "restart_required": "재시작 필요 (Frigate+ 모델 변경됨)",
     "toast": {
-      "success": "Frigate+ 설정이 저장되었습니다. 변경 사항을 적용하려면 Frigate를 재시작하세요.",
+      "success": "Frigate+ 설정이 저장되었습니다. 변경 사항을 적용하려면 Gannet를 재시작하세요.",
       "error": "설정 변경 사항 저장 실패: {{errorMessage}}"
     }
   },
@@ -1429,7 +1429,7 @@
     "title": "유지 관리",
     "sync": {
       "title": "미디어 동기화",
-      "desc": "Frigate은 보관 구성 설정에 따라 정기적으로 미디어를 정리합니다. 시스템 동작 중 참조가 끊긴 고아 파일이 일부 발생하는 것은 정상입니다. 데이터베이스에서 더 이상 참조하지 않는 디스크 상의 고아 미디어 파일을 정리하려면 이 기능을 사용하세요.",
+      "desc": "Gannet은 보관 구성 설정에 따라 정기적으로 미디어를 정리합니다. 시스템 동작 중 참조가 끊긴 고아 파일이 일부 발생하는 것은 정상입니다. 데이터베이스에서 더 이상 참조하지 않는 디스크 상의 고아 미디어 파일을 정리하려면 이 기능을 사용하세요.",
       "started": "미디어 동기화가 시작되었습니다.",
       "alreadyRunning": "동기화 작업이 이미 실행 중입니다",
       "error": "동기화 시작 실패",
@@ -1478,10 +1478,10 @@
     },
     "regionGrid": {
       "title": "영역 그리드",
-      "desc": "영역 그리드는 각 카메라의 화각에서 다양한 크기의 객체가 주로 나타나는 위치를 학습하는 최적화 기능입니다. Frigate은 이 데이터를 사용하여 감지 영역을 효율적으로 산출합니다. 그리드는 추적 객체 데이터를 기반으로 시간이 지남에 따라 자동 구축됩니다.",
+      "desc": "영역 그리드는 각 카메라의 화각에서 다양한 크기의 객체가 주로 나타나는 위치를 학습하는 최적화 기능입니다. Gannet은 이 데이터를 사용하여 감지 영역을 효율적으로 산출합니다. 그리드는 추적 객체 데이터를 기반으로 시간이 지남에 따라 자동 구축됩니다.",
       "clear": "영역 그리드 초기화",
       "clearConfirmTitle": "영역 그리드 초기화",
-      "clearConfirmDesc": "감지기 모델 크기를 변경했거나 카메라의 물리적 위치를 변경하여 객체 추적 문제가 발생하는 경우가 아니라면 영역 그리드 초기화는 권장되지 않습니다. 그리드는 객체가 추적되면서 점진적으로 자동 재구축됩니다. 변경 사항을 적용하려면 Frigate를 재시작해야 합니다.",
+      "clearConfirmDesc": "감지기 모델 크기를 변경했거나 카메라의 물리적 위치를 변경하여 객체 추적 문제가 발생하는 경우가 아니라면 영역 그리드 초기화는 권장되지 않습니다. 그리드는 객체가 추적되면서 점진적으로 자동 재구축됩니다. 변경 사항을 적용하려면 Gannet를 재시작해야 합니다.",
       "clearSuccess": "영역 그리드가 성공적으로 초기화되었습니다",
       "clearError": "영역 그리드 초기화 실패",
       "restartRequired": "영역 그리드 변경 사항을 적용하려면 재시작이 필요합니다"
@@ -1780,16 +1780,16 @@
   "toast": {
     "success": "설정을 성공적으로 저장했습니다",
     "applied": "설정이 성공적으로 적용되었습니다",
-    "successRestartRequired": "설정을 성공적으로 저장했습니다. 변경 사항을 적용하려면 Frigate를 재시작하세요.",
+    "successRestartRequired": "설정을 성공적으로 저장했습니다. 변경 사항을 적용하려면 Gannet를 재시작하세요.",
     "error": "설정 저장 실패",
     "validationError": "유효성 검사 실패: {{message}}",
     "resetSuccess": "전역 기본값으로 초기화되었습니다",
     "resetError": "설정 초기화 실패",
     "saveAllSuccess_other": "모든 {{count}}개 섹션을 성공적으로 저장했습니다.",
-    "saveAllSuccessRestartRequired_other": "모든 {{count}}개 섹션을 성공적으로 저장했습니다. 변경 사항을 적용하려면 Frigate를 재시작하세요.",
+    "saveAllSuccessRestartRequired_other": "모든 {{count}}개 섹션을 성공적으로 저장했습니다. 변경 사항을 적용하려면 Gannet를 재시작하세요.",
     "saveAllPartial_other": "총 {{totalCount}}개 중 {{successCount}}개 섹션 저장 완료. {{failCount}}개 실패.",
     "saveAllFailure": "모든 섹션 저장 실패.",
-    "go2rtcSyncFailed": "저장되었지만 go2rtc 설정을 업데이트하지 못했습니다. 적용하려면 Frigate를 재시작하세요."
+    "go2rtcSyncFailed": "저장되었지만 go2rtc 설정을 업데이트하지 못했습니다. 적용하려면 Gannet를 재시작하세요."
   },
   "profiles": {
     "title": "프로필",
@@ -1955,7 +1955,7 @@
       "recordDisabled": "녹화가 비활성화되어 있어 다시보기 항목이 생성되지 않습니다.",
       "detectDisabled": "객체 감지가 비활성화되어 있습니다. 다시보기 항목은 알림 및 감지를 분류하기 위해 감지된 객체가 필요합니다.",
       "allNonAlertDetections": "알림이 아닌 모든 활동은 일반 감지 이벤트로 포함됩니다.",
-      "genaiImageSourceRecordingsRecordDisabled": "이미지 소스가 '녹화 영상(recordings)'으로 설정되어 있지만 녹화가 비활성화되어 있습니다. Frigate이 미리보기 이미지로 대체합니다.",
+      "genaiImageSourceRecordingsRecordDisabled": "이미지 소스가 '녹화 영상(recordings)'으로 설정되어 있지만 녹화가 비활성화되어 있습니다. Gannet이 미리보기 이미지로 대체합니다.",
       "recordRuntimeDisabled": "설정 파일에서는 녹화가 활성화되어 있으나 현재 이 카메라의 녹화 기능이 꺼져 있어 검토 항목이 생성되지 않습니다. 카메라 라이브 뷰에서 다시 켜거나, 활성 프로필에서 비활성화하고 있는지 확인하세요.",
       "detectRuntimeDisabled": "설정 파일에서는 객체 감지가 활성화되어 있으나 현재 이 카메라의 객체 감지 기능이 꺼져 있습니다. 검토 항목에서 알림과 감지를 분류하려면 감지된 객체가 필요합니다. 카메라 라이브 뷰에서 다시 켜거나, 활성 프로필에서 비활성화하고 있는지 확인하세요.",
       "genaiImageSourceRecordingsRecordRuntimeDisabled": "이미지 소스가 'recordings'로 설정되어 있으나, 설정 파일의 활성화 여부와 관계없이 현재 이 카메라의 녹화 기능이 꺼져 있습니다. 미리보기 이미지를 대체 사용합니다."
@@ -1981,7 +1981,7 @@
       "runtimeDisabled": "설정 파일에서는 객체 감지가 활성화되어 있으나 현재 이 카메라의 객체 감지 기능이 꺼져 있습니다. 카메라 라이브 뷰에서 다시 켜거나 활성 프로필의 비활성화 상태가 해제될 때까지 스냅샷, 검토 항목 및 얼굴 인식, 번호판 인식, 생성형 AI 등의 확장 기능이 작동하지 않습니다."
     },
     "model": {
-      "optimizedFor320": "Frigate은 대부분의 환경에 가장 적합한 320x320 모델에 최적화되어 있습니다. 640x640 모델은 처리 속도가 느리며 특수한 시나리오에서만 유용합니다.",
+      "optimizedFor320": "Gannet은 대부분의 환경에 가장 적합한 320x320 모델에 최적화되어 있습니다. 640x640 모델은 처리 속도가 느리며 특수한 시나리오에서만 유용합니다.",
       "inputDimensionsNotDetectResolution": "모델 입력 너비와 높이는 카메라의 감지 해상도가 아니라 객체 감지 모델 자체의 입력 크기입니다. 사용 중인 모델의 크기(일반적으로 320x320 또는 640x640과 같은 정사각형 형태)와 일치해야 합니다."
     },
     "ffmpeg": {

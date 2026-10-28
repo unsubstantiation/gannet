@@ -130,7 +130,7 @@ class EmbeddingMaintainer(threading.Thread):
         )
         self.enrichment_config_subscriber = ConfigSubscriber("config/")
 
-        # Configure Frigate DB
+        # Configure Gannet DB
         db = SqliteVecQueueDatabase(
             config.database.path,
             pragmas={

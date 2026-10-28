@@ -62,8 +62,9 @@ You may **NOT** use the Marks in the following ways:
 
 ## 2a. State of the branding in this repository
 
-The repository and documentation branding is updated, although some inherited UI
-and runtime strings still use the upstream name. As of October 2026 the tree ships no
+The repository, runtime wording, and documentation branding are updated; the
+remaining upstream references are compatibility identifiers or explicitly
+qualified mentions of the upstream project. As of October 2026 the tree ships no
 Frigate logo, wordmark, or icon: `docs/static/img/branding/frigate.png`,
 `logo.svg`, and `logo-dark.svg` are deleted, `docs/static/img/branding/favicon.ico`
 is Gannet's own, `README.md` and `README_CN.md` display Gannet's logo, the
@@ -72,24 +73,45 @@ Gannet and point at this fork, and the winget manifest is published under
 `unsubstantiation.GannetNVR` rather than Frigate's identifier. A test guards the
 deleted-asset half of that so it cannot silently rot.
 
-The remaining references are a mix of compatibility identifiers and inherited
-wording:
+The remaining references are compatibility identifiers, not branding. The
+October 2026 rename pass moved the user-facing surface to Gannet:
 
-- the Python package is the `gannet/` directory, while `pyproject.toml` still
-  builds a `frigate-nvr` distribution and `gannet/util/version.py` reads that
-  name to work out which version is running;
-- environment variables and configuration keys still use the `FRIGATE_` prefix, and
-  the default data directory on Windows is still `%LOCALAPPDATA%\Frigate`;
-- startup log lines, the argparse program name, and parts of the inherited web UI's
-  translation catalogs still use the upstream name. These strings do not imply that
-  this fork is the upstream project.
+- **Environment variables.** `GANNET_*` is now preferred and fully supported;
+  every `FRIGATE_*` spelling is still accepted as a legacy alias. When both are
+  set, the preferred name wins. This applies to path overrides
+  (`GANNET_BASE_DIR`, `GANNET_*_DIR`), runtime switches, `secrets.yaml`, and
+  `{GANNET_NAME}` / `{FRIGATE_NAME}` placeholders in the config.
+- **Data and logs.** New installs default to `%LOCALAPPDATA%\Gannet` (services:
+  `%ProgramData%\Gannet`) and write the main log to
+  `tmp\logs\gannet\current`. This was a **clean cutover**, not an automatic
+  migration: an existing install must set `GANNET_BASE_DIR` (or
+  `FRIGATE_BASE_DIR`) to its old `%LOCALAPPDATA%\Frigate` path. Startup, the
+  bootstrap, and both portable launchers warn when a legacy directory is found
+  instead of silently reading it. See the installation guide for the steps.
+- **Visible wording.** Startup logs, the argparse program name, the service
+  display name, Python/API messages, repository prose, the English UI catalog,
+  and translated UI strings now say Gannet. Mentions of the upstream project —
+  including upstream Frigate+ and its documentation links — are explicitly
+  qualified as upstream rather than renamed. Non-English catalogs keep the
+  upstream service's own name, `Frigate+`, because it is a proper noun that
+  cannot be translated by a mechanical replacement.
+- **Launchers.** `run_gannet.ps1`, `install_gannet_service.ps1`, and the
+  `Gannet NVR` Start Menu shortcut replace their inherited names.
 
-Changing compatibility-facing identifiers requires a migration plan to protect
-existing installs. Updating inherited UI or runtime wording is a separate cleanup;
-references that identify upstream, Frigate+, or official integrations remain
-intentional. None of these accurate references is a trademark problem in the
-direction that matters: the MIT permission notice that must stay in
-`LICENSES/MIT.txt` is attribution, not branding.
+Identifiers deliberately left alone because they are load-bearing interfaces:
+`pyproject.toml` still builds a `frigate-nvr` distribution (and
+`gannet/util/version.py` reads that name), the MQTT topic prefix remains
+`frigate`, the auth cookie remains `frigate_token`, Prometheus metrics retain
+`frigate_`, the API's `/logs/frigate` alias still resolves (now to the Gannet
+log file), the SCM service key stays `Frigate` so installed services are not
+orphaned, and TypeScript/Python type and function names such as
+`FrigateConfig` and `restart_frigate` are internal. The `docs/docs/frigate/`
+documentation path is likewise kept so existing links keep resolving.
+
+Changing those last identifiers still requires a migration plan to protect
+existing installs. None of the accurate upstream references is a trademark
+problem in the direction that matters: the MIT permission notice that must stay
+in `LICENSES/MIT.txt` is attribution, not branding.
 
 ## 5. The Logo
 

@@ -34,9 +34,9 @@ Set a separate writable data root before bootstrapping so dependencies and
 models are installed in the same tree the development process will use:
 
 ```powershell
-$env:FRIGATE_BASE_DIR = "$PWD\.devdata"
+$env:GANNET_BASE_DIR = "$PWD\.devdata"
 py -3.12 bootstrap_windows.py
-.\run_frigate.ps1
+.\run_gannet.ps1
 ```
 
 Create `.devdata\config\config.yml` through the first-run UI or start with the minimal example in [Configuration](/configuration/config). Keep credentials in `.devdata\config\secrets.yaml`; never commit them.
@@ -48,7 +48,7 @@ cameras:
   test:
     ffmpeg:
       inputs:
-        - path: 'C:\FrigateSamples\camera.mp4'
+        - path: 'C:\GannetSamples\camera.mp4'
           input_args: -re -stream_loop -1 -fflags +genpts
           roles: [detect]
 ```

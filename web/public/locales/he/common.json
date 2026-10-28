@@ -1,7 +1,7 @@
 {
   "time": {
     "justNow": "כעת",
-    "untilForRestart": "עד לאתחול של Frigate.",
+    "untilForRestart": "עד לאתחול של Gannet.",
     "untilRestart": "עד לאתחול",
     "ago": "לפני {{timeAgo}}",
     "today": "היום",
@@ -241,7 +241,7 @@
     "help": "עזרה",
     "documentation": {
       "title": "תיעוד",
-      "label": "תיעודי Frigate"
+      "label": "תיעודי Gannet"
     },
     "restart": "הפעל מחדש",
     "live": {
@@ -286,7 +286,7 @@
     "title": "תפקיד",
     "admin": "מנהל מערכת",
     "viewer": "צופה",
-    "desc": "למנהלי מערכת יש גישה מלאה לכל התכונות בממשק המשתמש של Frigate. צופים מוגבלים לצפייה במצלמות, סקירת פריטים וצילומים היסטוריים בממשק המשתמש."
+    "desc": "למנהלי מערכת יש גישה מלאה לכל התכונות בממשק המשתמש של Gannet. צופים מוגבלים לצפייה במצלמות, סקירת פריטים וצילומים היסטוריים בממשק המשתמש."
   },
   "pagination": {
     "next": {
@@ -303,10 +303,10 @@
   "accessDenied": {
     "title": "הגישה נדחתה",
     "desc": "אין לך הרשאה לצפות בדף הזה.",
-    "documentTitle": "גישה נדחתה - Frigate"
+    "documentTitle": "גישה נדחתה - Gannet"
   },
   "notFound": {
-    "documentTitle": "לא נמצא - Frigate",
+    "documentTitle": "לא נמצא - Gannet",
     "title": "404",
     "desc": "עמוד לא נמצא"
   },
@@ -319,7 +319,7 @@
   },
   "field": {
     "optional": "אופציונלי",
-    "internalID": "המזהה הפנימי ש־Frigate משתמש בו בהגדרות ובמסד הנתונים"
+    "internalID": "המזהה הפנימי ש־Gannet משתמש בו בהגדרות ובמסד הנתונים"
   },
   "information": {
     "pixels": "{{area}}px"

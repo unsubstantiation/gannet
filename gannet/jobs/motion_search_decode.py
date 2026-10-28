@@ -181,7 +181,7 @@ def _run_vod_decode(
     frame_size = out_width * out_height * channels
     stderr_file = tempfile.SpooledTemporaryFile(max_size=65536)
     # group leader, so terminate_ffmpeg_stream can stop this process
-    # without addressing a console event at Frigate's own process group
+    # without addressing a console event at Gannet's own process group
     proc = sp.Popen(cmd, stdout=sp.PIPE, stderr=stderr_file, **ffmpeg_popen_kwargs())
     assert proc.stdout is not None
 

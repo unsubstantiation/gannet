@@ -5,7 +5,7 @@
     }
   },
   "documentTitle": {
-    "default": "ถ่ายทอดสด - Frigate"
+    "default": "ถ่ายทอดสด - Gannet"
   },
   "lowBandwidthMode": "โหมดแบนด์วิดท์ต่ำ",
   "twoWayTalk": {
@@ -29,7 +29,7 @@
       "all": "ทั้งหมด"
     }
   },
-  "documentTitle.withCamera": "{{camera}} - สด - Frigate",
+  "documentTitle.withCamera": "{{camera}} - สด - Gannet",
   "streamingSettings": "การตั้งค่าการสตรีม",
   "detect": {
     "disable": "ปิดการตรวจจับ"

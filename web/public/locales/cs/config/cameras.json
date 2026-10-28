@@ -6,7 +6,7 @@
     },
     "friendly_name": {
         "label": "Zobrazovaný název",
-        "description": "Zobrazovaný název kamery v rozhraní Frigate"
+        "description": "Zobrazovaný název kamery v rozhraní Gannet"
     },
     "enabled": {
         "label": "Povoleno",
@@ -899,7 +899,7 @@
             },
             "calibrate_on_startup": {
                 "label": "Kalibrovat při spuštění",
-                "description": "Při spuštění změřit rychlosti motorů PTZ pro zlepšení přesnosti sledování. Frigate po kalibraci aktualizuje movement_weights v konfiguraci."
+                "description": "Při spuštění změřit rychlosti motorů PTZ pro zlepšení přesnosti sledování. Gannet po kalibraci aktualizuje movement_weights v konfiguraci."
             },
             "zooming": {
                 "label": "Režim zoomu",
@@ -936,7 +936,7 @@
         },
         "ignore_time_mismatch": {
             "label": "Ignorovat rozdíl času",
-            "description": "Ignorovat rozdíly v synchronizaci času mezi kamerou a serverem Frigate při komunikaci ONVIF."
+            "description": "Ignorovat rozdíly v synchronizaci času mezi kamerou a serverem Gannet při komunikaci ONVIF."
         }
     },
     "type": {
@@ -972,7 +972,7 @@
         "description": "Zóny umožňují vymezit konkrétní oblast obrazu a určit, zda se v ní nachází objekt.",
         "friendly_name": {
             "label": "Název zóny",
-            "description": "Srozumitelný název zóny zobrazovaný v rozhraní Frigate. Pokud není nastaven, použije se formátovaná verze názvu zóny."
+            "description": "Srozumitelný název zóny zobrazovaný v rozhraní Gannet. Pokud není nastaven, použije se formátovaná verze názvu zóny."
         },
         "enabled": {
             "label": "Povoleno",

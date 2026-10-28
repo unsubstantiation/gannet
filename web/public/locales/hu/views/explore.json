@@ -1,5 +1,5 @@
 {
-  "documentTitle": "Tallózás - Frigate",
+  "documentTitle": "Tallózás - Gannet",
   "itemMenu": {
     "downloadVideo": {
       "label": "Video letöltése",
@@ -54,7 +54,7 @@
     "description": {
       "placeholder": "Követett tárgy leírása",
       "label": "Leírás",
-      "aiTips": "A Frigate nem fog igényelni leírást a Generatív MI szolgáltatójától, amíg a követett tárgy életciklusa be nem fejeződött."
+      "aiTips": "A Gannet nem fog igényelni leírást a Generatív MI szolgáltatójától, amíg a követett tárgy életciklusa be nem fejeződött."
     },
     "timestamp": "Időbélyeg",
     "estimatedSpeed": "Becsült Sebesség",
@@ -92,7 +92,7 @@
       "tips": {
         "mismatch_one": "{{count}} nem elérhető objektum lett észlelve és belefogalve ebbe az ellenőrzési elembe. Ez az objektum vagy nem felelt meg a riasztás vagy észlelés feltételeinek, vagy már törlésre/eltávolításra került.",
         "mismatch_other": "{{count}} nem elérhető objektumok lettek észlelve és belefogalve ebbe az ellenőrzési elembe. Ezek az objektumok vagy nem feleltek meg a riasztás vagy észlelés feltételeinek, vagy már törlésre/eltávolításra kerültek.",
-        "hasMissingObjects": "Állítsa be a konfigurációját, ha azt szeretné, hogy a Frigate mentse a követett objektumokat a következő címkékhez: <em>{{objects}}</em>"
+        "hasMissingObjects": "Állítsa be a konfigurációját, ha azt szeretné, hogy a Gannet mentse a követett objektumokat a következő címkékhez: <em>{{objects}}</em>"
       }
     },
     "snapshotScore": {
@@ -147,8 +147,8 @@
         "visionModel": "Látvány modell",
         "visionModelFeatureExtractor": "Látvány modell képesség kinyerő"
       },
-      "error": "Hiba történt. Ellenőrizze a Frigate naplókat.",
-      "context": "A Frigate letölti a szemantikus keresés funkcióhoz szükséges beágyazási modelleket. Ez a hálózati kapcsolat sebességétől függően néhány percet is igénybe vehet."
+      "error": "Hiba történt. Ellenőrizze a Gannet naplókat.",
+      "context": "A Gannet letölti a szemantikus keresés funkcióhoz szükséges beágyazási modelleket. Ez a hálózati kapcsolat sebességétől függően néhány percet is igénybe vehet."
     }
   },
   "noTrackedObjects": "Nincs követett tárgy",

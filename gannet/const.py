@@ -205,7 +205,9 @@ AUTOTRACKING_ZOOM_EDGE_THRESHOLD = 0.05
 
 # Auth
 
-JWT_SECRET_ENV_VAR = "FRIGATE_JWT_SECRET"
+#: Preferred name, then the pre-rename alias. Whichever is set first is used.
+JWT_SECRET_ENV_VARS = ("GANNET_JWT_SECRET", "FRIGATE_JWT_SECRET")
+JWT_SECRET_ENV_VAR = JWT_SECRET_ENV_VARS[0]
 PASSWORD_HASH_ALGORITHM = "pbkdf2_sha256"
 
 # Queues

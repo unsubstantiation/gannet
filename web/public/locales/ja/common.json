@@ -1,6 +1,6 @@
 {
   "time": {
-    "untilForRestart": "Frigate が再起動するまで。",
+    "untilForRestart": "Gannet が再起動するまで。",
     "untilRestart": "再起動まで",
     "untilForTime": "{{time}} まで",
     "ago": "{{timeAgo}} 前",
@@ -180,9 +180,9 @@
     "help": "ヘルプ",
     "documentation": {
       "title": "ドキュメント",
-      "label": "Frigate ドキュメント"
+      "label": "Gannet ドキュメント"
     },
-    "restart": "Frigate を再起動",
+    "restart": "Gannet を再起動",
     "live": {
       "title": "ライブ",
       "allCameras": "全カメラ",
@@ -272,7 +272,7 @@
     "title": "役割",
     "admin": "管理者",
     "viewer": "閲覧者",
-    "desc": "管理者はFrigate UIのすべての機能に完全にアクセスできます。閲覧者はカメラ、レビュー項目、履歴映像の閲覧に制限されます。"
+    "desc": "管理者はGannet UIのすべての機能に完全にアクセスできます。閲覧者はカメラ、レビュー項目、履歴映像の閲覧に制限されます。"
   },
   "pagination": {
     "label": "ページ移動",
@@ -287,12 +287,12 @@
     "more": "さらにページ"
   },
   "accessDenied": {
-    "documentTitle": "アクセス拒否 - Frigate",
+    "documentTitle": "アクセス拒否 - Gannet",
     "title": "アクセス拒否",
     "desc": "このページを表示する権限がありません。"
   },
   "notFound": {
-    "documentTitle": "ページが見つかりません - Frigate",
+    "documentTitle": "ページが見つかりません - Gannet",
     "title": "404",
     "desc": "ページが見つかりません"
   },
@@ -307,7 +307,7 @@
   },
   "field": {
     "optional": "任意",
-    "internalID": "Frigate が設定で使用する内部 ID です"
+    "internalID": "Gannet が設定で使用する内部 ID です"
   },
   "no_items": "項目がありません",
   "validation_errors": "入力エラー",

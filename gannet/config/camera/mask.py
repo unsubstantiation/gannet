@@ -15,7 +15,7 @@ class MotionMaskConfig(FrigateBaseModel):
     friendly_name: str | None = Field(
         default=None,
         title="Friendly name",
-        description="A friendly name for this motion mask used in the Frigate UI",
+        description="A friendly name for this motion mask used in the Gannet UI",
     )
     enabled: bool = Field(
         default=True,
@@ -53,7 +53,7 @@ class ObjectMaskConfig(FrigateBaseModel):
     friendly_name: str | None = Field(
         default=None,
         title="Friendly name",
-        description="A friendly name for this object mask used in the Frigate UI",
+        description="A friendly name for this object mask used in the Gannet UI",
     )
     enabled: bool = Field(
         default=True,

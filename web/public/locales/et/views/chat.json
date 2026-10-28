@@ -1,6 +1,6 @@
 {
-    "documentTitle": "Frigate - vestlus tehisaruga",
-    "title": "Vestlus tehisaruga Frigate'is",
+    "documentTitle": "Gannet - vestlus tehisaruga",
+    "title": "Vestlus tehisaruga Gannet'is",
     "subtitle": "Tehisaru abil töötav abiline kaamerate haldamiseks ja analüüside koostamiseks",
     "placeholder": "Küsi mida iganes…",
     "error": "Midagi läks valesti. Palun proovi uuesti.",
@@ -77,7 +77,7 @@
     },
     "approval": {
         "title": "Kas lubad „{{tool}}“ tarviku kasutamist?",
-        "desc": "Selle tegevusega muudad Frigate'is midagi. Enne kinnitamist vaata üksikasjad üle.",
+        "desc": "Selle tegevusega muudad Gannet'is midagi. Enne kinnitamist vaata üksikasjad üle.",
         "approve": "Kiida heaks",
         "always_allow": "Luba alati",
         "reject": "Lükka tagasi",

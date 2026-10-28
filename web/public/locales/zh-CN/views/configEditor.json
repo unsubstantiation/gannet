@@ -1,5 +1,5 @@
 {
-  "documentTitle": "配置编辑器 - Frigate",
+  "documentTitle": "配置编辑器 - Gannet",
   "configEditor": "配置编辑器",
   "copyConfig": "复制配置",
   "saveAndRestart": "保存并重启",
@@ -14,5 +14,5 @@
   },
   "confirm": "是否退出并不保存？",
   "safeConfigEditor": "配置编辑器（安全模式）",
-  "safeModeDescription": "由于验证配置出现错误，Frigate目前为安全模式。"
+  "safeModeDescription": "由于验证配置出现错误，Gannet目前为安全模式。"
 }

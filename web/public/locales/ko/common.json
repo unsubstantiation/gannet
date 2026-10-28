@@ -2,7 +2,7 @@
   "readTheDocumentation": "문서 읽기",
   "time": {
     "untilForTime": "{{time}}까지",
-    "untilForRestart": "Frigate가 재시작될 때까지.",
+    "untilForRestart": "Gannet가 재시작될 때까지.",
     "10minutes": "10분",
     "12hours": "12시간",
     "1hour": "1시간",
@@ -75,12 +75,12 @@
   },
   "notFound": {
     "title": "404",
-    "documentTitle": "찾을 수 없음 - Frigate",
+    "documentTitle": "찾을 수 없음 - Gannet",
     "desc": "페이지를 찾을 수 없습니다"
   },
   "accessDenied": {
     "title": "접근 거부",
-    "documentTitle": "접근 거부 - Frigate",
+    "documentTitle": "접근 거부 - Gannet",
     "desc": "이 페이지를 볼 수 있는 권한이 없습니다."
   },
   "menu": {
@@ -169,9 +169,9 @@
     "help": "도움말",
     "documentation": {
       "title": "문서",
-      "label": "Frigate 문서"
+      "label": "Gannet 문서"
     },
-    "restart": "Frigate 재시작",
+    "restart": "Gannet 재시작",
     "live": {
       "title": "실시간",
       "allCameras": "모든 카메라",
@@ -287,7 +287,7 @@
     "title": "역할",
     "admin": "관리자",
     "viewer": "조회자",
-    "desc": "관리자는 Frigate UI의 모든 기능에 대한 전체 접근 권한을 가집니다. 조회자는 카메라 실시간 화면, 다시보기 항목, 이전 녹화 영상 조회만 가능합니다."
+    "desc": "관리자는 Gannet UI의 모든 기능에 대한 전체 접근 권한을 가집니다. 조회자는 카메라 실시간 화면, 다시보기 항목, 이전 녹화 영상 조회만 가능합니다."
   },
   "pagination": {
     "label": "페이지 매김",
@@ -312,7 +312,7 @@
   },
   "field": {
     "optional": "선택 사항",
-    "internalID": "Frigate 설정 및 데이터베이스에서 사용되는 내부 ID"
+    "internalID": "Gannet 설정 및 데이터베이스에서 사용되는 내부 ID"
   },
   "no_items": "항목 없음",
   "validation_errors": "유효성 검사 오류",
@@ -323,7 +323,7 @@
     "title": "이 페이지가 작동을 멈췄습니다",
     "desc": "페이지에 예기치 않은 오류가 발생했습니다. 일반적으로 새로고침하면 해결됩니다. 문제가 계속되면 세부 정보를 복사하여 GitHub Discussion에 첨부해 주세요.",
     "staleTitle": "새로고침 필요",
-    "staleDesc": "인터페이스의 일부를 불러오지 못했습니다. 이 탭이 열려 있는 동안 Frigate이 업데이트되었을 수 있습니다. 최신 버전을 반영하려면 새로고침하세요.",
+    "staleDesc": "인터페이스의 일부를 불러오지 못했습니다. 이 탭이 열려 있는 동안 Gannet이 업데이트되었을 수 있습니다. 최신 버전을 반영하려면 새로고침하세요.",
     "partial": "인터페이스의 일부가 작동을 멈췄습니다.",
     "copyDetails": "세부 정보 복사",
     "copyFailed": "세부 정보를 클립보드에 복사하지 못했습니다"

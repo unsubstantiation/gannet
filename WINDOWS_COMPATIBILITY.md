@@ -9,9 +9,9 @@ WSL, POSIX, or Unix-service runtime.
 - `gannet.__main__` rejects every platform other than Windows before runtime
   initialization.
 - Multiprocessing always uses `spawn`.
-- Writable data defaults to `%LOCALAPPDATA%\Frigate`. `FRIGATE_BASE_DIR`,
-  `FRIGATE_CONFIG_DIR`, `FRIGATE_MEDIA_DIR`, `FRIGATE_CACHE_DIR`, and
-  `FRIGATE_TMP_DIR` can relocate it, including to another drive.
+- Writable data defaults to `%LOCALAPPDATA%\Gannet`. `GANNET_BASE_DIR`,
+  `GANNET_CONFIG_DIR`, `GANNET_MEDIA_DIR`, `GANNET_CACHE_DIR`, and
+  `GANNET_TMP_DIR` can relocate it, including to another drive.
 - Executables are native `.exe` files. The bootstrap installs pinned FFmpeg
   8.1.2 and go2rtc 1.9.14 builds and verifies their SHA-256 digests.
 - Named shared-memory mappings, loopback TCP IPC, Windows process groups,
@@ -89,7 +89,7 @@ Run from 64-bit CPython 3.12 on Windows:
 
 ```powershell
 py -3.12 bootstrap_windows.py
-.\run_frigate.ps1
+.\run_gannet.ps1
 ```
 
 Add `--install-service` from an elevated PowerShell session to register the SCM
@@ -125,9 +125,9 @@ changed, how the result is verified, and what is deliberately still open.
 
 | Area | Before | Now |
 | --- | --- | --- |
-| Process model | An image with nginx, supervisord and a Frigate container | One process; `gannet/api/web.py` serves the UI, the API, media and live streams |
+| Process model | An image with nginx, supervisord and a Gannet container | One process; `gannet/api/web.py` serves the UI, the API, media and live streams |
 | Multiprocessing | `fork` | `spawn` (`gannet.util.platform.get_mp_start_method`) |
-| Writable paths | `/config`, `/media`, `/cache` | `%LOCALAPPDATA%\Frigate`, relocatable with `FRIGATE_*_DIR` |
+| Writable paths | `/config`, `/media`, `/cache` | `%LOCALAPPDATA%\Gannet`, relocatable with `GANNET_*_DIR` (legacy `FRIGATE_*_DIR` aliases still work) |
 | Executables | `ffmpeg` and `go2rtc` on `PATH` | `ffmpeg.exe` and `go2rtc.exe` installed by `bootstrap_windows.py` with verified SHA-256 digests |
 | Local IPC | Unix domain sockets and FIFOs | Loopback TCP (`gannet.util.platform.ipc_endpoint`) and named shared memory |
 | Child lifetime | The supervisor reaped orphans | A kill-on-close Job Object (`gannet/util/job_object.py`) |
@@ -191,7 +191,7 @@ reason in the tool itself.
 
 ### Upstream feature-parity audit (2026-10-22)
 
-Compared this checkout (`830b1bc`, Frigate 0.19.0) with upstream `dev`
+Compared this checkout (`830b1bc`, Gannet 0.19.0) with upstream `dev`
 (`91e91c68`, 2026-10-20; `Add Axelera Metis NPU detector plugin v.0.19`). The
 comparison is by behavior and feature surface, not a blind tree merge: this
 checkout is the native Windows runtime, and large source diffs include

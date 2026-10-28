@@ -1,6 +1,6 @@
 {
-    "documentTitle": "Sohbet - Frigate",
-    "title": "Frigate Sohbet",
+    "documentTitle": "Sohbet - Gannet",
+    "title": "Gannet Sohbet",
     "subtitle": "Kamera yönetimi ve içgörüler için yapay zeka yardımcınız",
     "placeholder": "İstediğinizi sorun...",
     "error": "Bir hata oluştu. Lütfen yeniden deneyin.",
@@ -77,7 +77,7 @@
     },
     "approval": {
         "title": "{{tool}} onaylansın mı?",
-        "desc": "Bu eylem Frigate'te bir şeyi değiştiriyor. Onaylamadan önce ayrıntıları inceleyin.",
+        "desc": "Bu eylem Gannet'te bir şeyi değiştiriyor. Onaylamadan önce ayrıntıları inceleyin.",
         "approve": "Onayla",
         "always_allow": "Her zaman izin ver",
         "reject": "Reddet",

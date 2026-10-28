@@ -1,5 +1,5 @@
 {
-  "documentTitle.withCamera": "{{camera}}-Živě-Frigate",
+  "documentTitle.withCamera": "{{camera}}-Živě-Gannet",
   "lowBandwidthMode": "Režim nízké přenosové rychlosti",
   "twoWayTalk": {
     "enable": "Povolit obousměrný hovor",
@@ -131,7 +131,7 @@
       "tips": "Živý náhled je v režimu nízké přenosové rychlosti kvůli načítání do vyrovnávací paměti nebo chybám streamu.",
       "force": {
         "label": "Vynutit režim nízké přenosové rychlosti",
-        "desc": "Vždy přehrávat vestavěný stream Frigate s nízkou přenosovou rychlostí místo vybraného streamu. Funguje na jakémkoli připojení, ale má nižší kvalitu a nemá zvuk."
+        "desc": "Vždy přehrávat vestavěný stream Gannet s nízkou přenosovou rychlostí místo vybraného streamu. Funguje na jakémkoli připojení, ale má nižší kvalitu a nemá zvuk."
       }
     },
     "playInBackground": {
@@ -157,7 +157,7 @@
     },
     "mode": "Technologie streamování",
     "technology": {
-      "description": "Vyberte preferovanou technologii streamování. Při chybě přehrávání nebo sítě může Frigate přesto přejít do režimu nízké přenosové rychlosti.",
+      "description": "Vyberte preferovanou technologii streamování. Při chybě přehrávání nebo sítě může Gannet přesto přejít do režimu nízké přenosové rychlosti.",
       "name": {
         "mse": "MSE",
         "webrtc": "WebRTC",
@@ -216,7 +216,7 @@
     "downloadStarted": "Stažení snímku spuštěno."
   },
   "documentTitle": {
-    "default": "Živě – Frigate"
+    "default": "Živě – Gannet"
   },
   "camera": {
     "turnOn": "Zapnout kameru",
@@ -224,7 +224,7 @@
   },
   "noCameras": {
     "title": "Nejsou nastaveny žádné kamery",
-    "description": "Začněte připojením kamery k Frigate.",
+    "description": "Začněte připojením kamery k Gannet.",
     "buttonText": "Přidat kameru",
     "restricted": {
       "title": "Nejsou dostupné žádné kamery",
@@ -232,7 +232,7 @@
     },
     "default": {
       "title": "Nejsou nastaveny žádné kamery",
-      "description": "Začněte připojením kamery k Frigate.",
+      "description": "Začněte připojením kamery k Gannet.",
       "buttonText": "Přidat kameru"
     },
     "group": {

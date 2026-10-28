@@ -65,7 +65,7 @@
     },
     "safe_mode": {
         "label": "Tryb bezpieczny",
-        "description": "Po włączeniu Frigate uruchomi się w trybie awaryjnym z ograniczonymi funkcjami, co ułatwi rozwiązywanie problemów."
+        "description": "Po włączeniu Gannet uruchomi się w trybie awaryjnym z ograniczonymi funkcjami, co ułatwi rozwiązywanie problemów."
     },
     "environment_vars": {
         "label": "Zmienne środowiskowe"
@@ -87,7 +87,7 @@
         "description": "Ustawienia uwierzytelniania natywnego i sesji użytkowników.",
         "enabled": {
             "label": "Włącz uwierzytelnianie",
-            "description": "Włącz lub wyłącz natywne uwierzytelnianie we Frigate."
+            "description": "Włącz lub wyłącz natywne uwierzytelnianie we Gannet."
         },
         "reset_admin_password": {
             "label": "Zresetuj hasło administratora",
@@ -964,7 +964,7 @@
         },
         "topic_prefix": {
             "label": "Prefiks tematów",
-            "description": "Prefiks dla wszystkich tematów MQTT publikowanych przez Frigate (domyślnie frigate)."
+            "description": "Prefiks dla wszystkich tematów MQTT publikowanych przez Gannet (domyślnie frigate)."
         },
         "client_id": {
             "label": "Identyfikator klienta",
@@ -1059,7 +1059,7 @@
             },
             "calibrate_on_startup": {
                 "label": "Kalibruj przy uruchomieniu",
-                "description": "Zmierz prędkości silników PTZ przy uruchomieniu, aby poprawić dokładność śledzenia. Frigate zaktualizuje konfigurację o movement_weights po kalibracji."
+                "description": "Zmierz prędkości silników PTZ przy uruchomieniu, aby poprawić dokładność śledzenia. Gannet zaktualizuje konfigurację o movement_weights po kalibracji."
             },
             "zooming": {
                 "label": "Przybliżanie (Zoom)",
@@ -1096,7 +1096,7 @@
         },
         "ignore_time_mismatch": {
             "label": "Ignoruj rozbieżność czasu",
-            "description": "Ignoruj różnice w synchronizacji czasu między kamerą a serwerem Frigate w komunikacji ONVIF."
+            "description": "Ignoruj różnice w synchronizacji czasu między kamerą a serwerem Gannet w komunikacji ONVIF."
         }
     },
     "profiles": {
@@ -1109,7 +1109,7 @@
     },
     "database": {
         "label": "Baza danych",
-        "description": "Ustawienia bazy danych SQLite używanej przez Frigate do przechowywania metadanych.",
+        "description": "Ustawienia bazy danych SQLite używanej przez Gannet do przechowywania metadanych.",
         "path": {
             "label": "Ścieżka do bazy danych",
             "description": "Ścieżka w systemie plików, gdzie przechowywany jest plik bazy SQLite."
@@ -1124,30 +1124,30 @@
         "description": "Ustawienia sieciowe, w tym obsługa IPv6 i porty nasłuchiwania.",
         "ipv6": {
             "label": "Konfiguracja IPv6",
-            "description": "Ustawienia specyficzne dla protokołu IPv6 w usługach sieciowych Frigate.",
+            "description": "Ustawienia specyficzne dla protokołu IPv6 w usługach sieciowych Gannet.",
             "enabled": {
                 "label": "Włącz IPv6",
-                "description": "Włącz obsługę protokołu IPv6 dla usług Frigate."
+                "description": "Włącz obsługę protokołu IPv6 dla usług Gannet."
             }
         },
         "listen": {
             "label": "Konfiguracja portów nasłuchiwania",
             "internal": {
                 "label": "Port wewnętrzny",
-                "description": "Wewnętrzny port nasłuchiwania dla Frigate (domyślnie 5000)."
+                "description": "Wewnętrzny port nasłuchiwania dla Gannet (domyślnie 5000)."
             },
             "external": {
                 "label": "Port zewnętrzny",
-                "description": "Zewnętrzny port nasłuchiwania dla Frigate (domyślnie 8971)."
+                "description": "Zewnętrzny port nasłuchiwania dla Gannet (domyślnie 8971)."
             }
         }
     },
     "proxy": {
         "label": "Serwer proxy (Reverse Proxy)",
-        "description": "Ustawienia integracji Frigate za serwerem reverse proxy przekazującym nagłówki uwierzytelnionych użytkowników.",
+        "description": "Ustawienia integracji Gannet za serwerem reverse proxy przekazującym nagłówki uwierzytelnionych użytkowników.",
         "header_map": {
             "label": "Mapowanie nagłówków",
-            "description": "Mapuj przychodzące nagłówki proxy na pola użytkowników i ról we Frigate.",
+            "description": "Mapuj przychodzące nagłówki proxy na pola użytkowników i ról we Gannet.",
             "user": {
                 "label": "Nagłówek użytkownika",
                 "description": "Nagłówek zawierający nazwę uwierzytelnionego użytkownika z proxy."
@@ -1158,7 +1158,7 @@
             },
             "role_map": {
                 "label": "Mapowanie ról",
-                "description": "Mapuj grupy z serwera proxy na role Frigate (np. mapuj grupę admin na rolę administratora)."
+                "description": "Mapuj grupy z serwera proxy na role Gannet (np. mapuj grupę admin na rolę administratora)."
             }
         },
         "logout_url": {
@@ -1206,15 +1206,15 @@
         },
         "version_check": {
             "label": "Sprawdzanie wersji",
-            "description": "Włącz sprawdzanie dostępności nowszej wersji Frigate."
+            "description": "Włącz sprawdzanie dostępności nowszej wersji Gannet."
         }
     },
     "tls": {
         "label": "TLS",
-        "description": "Ustawienia protokołu TLS dla punktów końcowych sieci WWW Frigate (port 8971).",
+        "description": "Ustawienia protokołu TLS dla punktów końcowych sieci WWW Gannet (port 8971).",
         "enabled": {
             "label": "Włącz TLS",
-            "description": "Włącz bezpieczne połączenie TLS dla panelu WWW i API Frigate."
+            "description": "Włącz bezpieczne połączenie TLS dla panelu WWW i API Gannet."
         }
     },
     "ui": {
@@ -1347,7 +1347,7 @@
     },
     "active_profile": {
         "label": "Aktywny profil",
-        "description": "Profil domyślnie aktywowany przy uruchomieniu Frigate."
+        "description": "Profil domyślnie aktywowany przy uruchomieniu Gannet."
     },
     "camera_mqtt": {
         "label": "MQTT kamery",

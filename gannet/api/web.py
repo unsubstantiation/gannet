@@ -3,8 +3,8 @@
 
 The public listener serves the React application, authenticates protected
 requests in process, exposes static media, creates recorded-video HLS, and
-forwards websocket/live traffic to Frigate and go2rtc. A second listener on
-``127.0.0.1`` serves trusted media requests from Frigate's own FFmpeg jobs.
+forwards websocket/live traffic to Gannet and go2rtc. A second listener on
+``127.0.0.1`` serves trusted media requests from Gannet's own FFmpeg jobs.
 
 Authentication runs directly against :func:`gannet.api.auth.auth`, avoiding a
 loopback request and preserving the API app's configuration and database state.
@@ -72,7 +72,7 @@ AUTH_EXEMPT = (
 
 PLAYERS = ("mse", "webrtc", "jsmpeg")
 
-# headers a client may not set, because Frigate uses them to carry its own
+# headers a client may not set, because Gannet uses them to carry its own
 # authentication decision
 FORWARDED_REQUEST_HEADERS = (
     b"authorization",
@@ -455,7 +455,7 @@ class SpaFiles:
 
         if not os.path.isfile(index):
             await PlainTextResponse(
-                "The Frigate web app is not built. Run 'npm install' and "
+                "The Gannet web app is not built. Run 'npm install' and "
                 "'npm run build' in the web directory to create it.",
                 status_code=503,
             )(scope, receive, send)
@@ -694,7 +694,7 @@ def upstream_for(path: str) -> tuple[str, str] | None:
         return MQTT_WS_URL, "/"
 
     if path.startswith("/live/jsmpeg/"):
-        # Frigate's own jsmpeg websocket server, started by the output process
+        # Gannet's own jsmpeg websocket server, started by the output process
         # (see gannet/output/output.py). go2rtc does not serve jsmpeg, so a
         # camera that is not restreamed has no live view through go2rtc.
         return JSMEPEG_URL, path[len("/live/jsmpeg") :]
@@ -932,7 +932,7 @@ def create_native_web_app(api_app: Any, port: int) -> Starlette:
         )
 
     routes = [
-        # go2rtc handles WebRTC signalling; Frigate handles every other API path
+        # go2rtc handles WebRTC signalling; Gannet handles every other API path
         Route("/api/go2rtc/webrtc", proxy_http, methods=["POST", "OPTIONS"]),
         Mount("/api", app=api_app),
         # Recorded video is packaged into HLS by the native VOD implementation.
@@ -962,7 +962,7 @@ def create_native_web_app(api_app: Any, port: int) -> Starlette:
 
 
 async def _watch_stop_event(servers: list, stop_event: Any) -> None:
-    """Ask every listener to stop when Frigate's process event is set."""
+    """Ask every listener to stop when Gannet's process event is set."""
     while not stop_event.is_set():
         await asyncio.sleep(0.1)
 
@@ -1035,12 +1035,12 @@ def run_native_web_server(
       ``FRIGATE_WEB_HOST`` does not name one, a ``host:port`` value in
       ``networking.listen.external`` ``public_host`` names one when the
       environment does not, and TLS is applied to this listener when enabled
-    - the internal port itself, on loopback, because Frigate's own consumers
+    - the internal port itself, on loopback, because Gannet's own consumers
       (export, motion search, debug replay) fetch VOD playlists from it with
       FFmpeg and cannot authenticate
 
     The internal listener is loopback-only, plain HTTP, and bypasses
-    authentication for Frigate's own media jobs. The public listener is
+    authentication for Gannet's own media jobs. The public listener is
     authenticated by default.
     """
     import uvicorn
@@ -1099,7 +1099,7 @@ def log_startup_banner(
     host: str, port: int, internal_port: int, scheme: str = "http"
 ) -> None:
     """Explain how the web interface is exposed."""
-    logger.info("Serving the Frigate web interface on %s://%s:%s", scheme, host, port)
+    logger.info("Serving the Gannet web interface on %s://%s:%s", scheme, host, port)
 
     # the internal listener is unauthenticated, so an operator who cannot find
     # out which port it took cannot check that it stayed on loopback
@@ -1112,12 +1112,12 @@ def log_startup_banner(
     if host in ("::", "::0"):
         logger.info(
             "Binding to %s accepts IPv6 and IPv4 connections. Set "
-            "FRIGATE_WEB_HOST=127.0.0.1 to restrict Frigate to this computer.",
+            "FRIGATE_WEB_HOST=127.0.0.1 to restrict Gannet to this computer.",
             host,
         )
     elif host not in ("127.0.0.1", "::1", "localhost"):
         logger.info(
-            "Binding to %s makes Frigate reachable from other devices on your "
+            "Binding to %s makes Gannet reachable from other devices on your "
             "network. Set FRIGATE_WEB_HOST=127.0.0.1 to restrict it to this "
             "computer.",
             host,

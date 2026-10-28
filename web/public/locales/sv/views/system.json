@@ -1,13 +1,13 @@
 {
   "documentTitle": {
-    "storage": "Lagringsstatistik - Frigate",
-    "general": "Allmän statistik - Frigate",
-    "cameras": "Kamerastatistik - Frigate",
+    "storage": "Lagringsstatistik - Gannet",
+    "general": "Allmän statistik - Gannet",
+    "cameras": "Kamerastatistik - Gannet",
     "logs": {
-      "frigate": "Frigate-loggar - Frigate",
-      "go2rtc": "go2rtc-loggar - Frigate"
+      "gannet": "Gannet-loggar - Gannet",
+      "go2rtc": "go2rtc-loggar - Gannet"
     },
-    "enrichments": "Berikningsstatistik - Frigate"
+    "enrichments": "Berikningsstatistik - Gannet"
   },
   "logs": {
     "copy": {
@@ -97,7 +97,7 @@
       "bandwidth": "Bandbredd",
       "unused": {
         "title": "Oanvänt",
-        "tips": "Det här värdet kanske inte korrekt motsvarar det lediga utrymme som är tillgängligt för Frigate om hårddisken även innehåller andra filer än Frigates inspelningar. Frigate spårar inte lagringsanvändning utanför sina egna inspelningar."
+        "tips": "Det här värdet kanske inte korrekt motsvarar det lediga utrymme som är tillgängligt för Gannet om hårddisken även innehåller andra filer än Frigates inspelningar. Gannet spårar inte lagringsanvändning utanför sina egna inspelningar."
       },
       "title": "Kameralagring",
       "camera": "Kamera",
@@ -107,7 +107,7 @@
     "overview": "Översikt",
     "recordings": {
       "title": "Inspelningar",
-      "tips": "Detta värde representerar den totala lagringsmängden som används av inspelningarna i Frigates databas. Frigate spårar inte lagringsanvändningen för alla filer på din disk.",
+      "tips": "Detta värde representerar den totala lagringsmängden som används av inspelningarna i Frigates databas. Gannet spårar inte lagringsanvändningen för alla filer på din disk.",
       "earliestRecording": "Tidigast tillgängliga inspelning:"
     },
     "shm": {

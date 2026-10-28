@@ -79,13 +79,13 @@ class TestNativeTls(unittest.TestCase):
 
         Once it lapsed the gateway kept serving it and every browser refused
         the connection; the only way out was deleting the files by hand.
-        Frigate's own certificate is Frigate's to renew.
+        Gannet's own certificate is Gannet's to renew.
         """
         with tempfile.TemporaryDirectory() as directory:
             cert = Path(directory) / "fullchain.pem"
             key = Path(directory) / "privkey.pem"
             _write_pair(
-                cert, key, "Frigate Native Windows", expires_in=timedelta(days=-1)
+                cert, key, "Gannet Native Windows", expires_in=timedelta(days=-1)
             )
             stale_cert = cert.read_bytes()
             stale_key = key.read_bytes()
@@ -103,12 +103,39 @@ class TestNativeTls(unittest.TestCase):
                 renewed.not_valid_after_utc, datetime.now(UTC) + timedelta(days=300)
             )
 
+    def test_a_pair_from_before_the_rename_is_still_renewed(self) -> None:
+        """An install upgraded from a renamed build keeps its old pair.
+
+        The old certificate was written under the earlier organization name;
+        if that name no longer counts as Gannet's own, the pair is treated as
+        administrator-managed and served until it expires for good.
+        """
+        with tempfile.TemporaryDirectory() as directory:
+            cert = Path(directory) / "fullchain.pem"
+            key = Path(directory) / "privkey.pem"
+            _write_pair(
+                cert, key, "Frigate Native Windows", expires_in=timedelta(days=-1)
+            )
+            stale_cert = cert.read_bytes()
+
+            with self.assertLogs("gannet.util.tls", level="INFO"):
+                ensure_tls_certificate(str(cert), str(key))
+
+            self.assertNotEqual(cert.read_bytes(), stale_cert)
+            renewed = x509.load_pem_x509_certificate(cert.read_bytes())
+            self.assertEqual(
+                renewed.subject.get_attributes_for_oid(NameOID.ORGANIZATION_NAME)[
+                    0
+                ].value,
+                "Gannet Native Windows",
+            )
+
     def test_a_generated_pair_about_to_expire_is_replaced_early(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             cert = Path(directory) / "fullchain.pem"
             key = Path(directory) / "privkey.pem"
             _write_pair(
-                cert, key, "Frigate Native Windows", expires_in=timedelta(days=10)
+                cert, key, "Gannet Native Windows", expires_in=timedelta(days=10)
             )
             stale_cert = cert.read_bytes()
 
