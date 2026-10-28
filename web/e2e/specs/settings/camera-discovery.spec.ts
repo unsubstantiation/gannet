@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-GNCL-1.0
 import { test, expect } from "../../fixtures/frigate-test";
+import { FFPROBE_OK, PLACEHOLDER_PNG } from "../../helpers/api-mocker";
 import type { Page } from "@playwright/test";
 
 const baseScan = {
@@ -53,6 +54,40 @@ async function openDiscovery(page: Page) {
     .getByRole("button", { name: /Find cameras on the network/i })
     .click();
   return dialog;
+}
+
+async function selectRtspService(page: Page) {
+  await page.route("**/api/camera_discovery", (route) =>
+    route.fulfill({ status: 202, json: baseScan }),
+  );
+  await page.route("**/api/camera_discovery/*", (route) =>
+    route.fulfill({
+      json: { ...baseScan, status: "completed", devices: [rtspDevice] },
+    }),
+  );
+  const dialog = await openDiscovery(page);
+  await dialog.getByRole("button", { name: /Discover ONVIF devices/i }).click();
+  await dialog
+    .getByRole("button", { name: /Use RTSP at 192\.168\.1\.41 port 24567/i })
+    .click();
+  return dialog;
+}
+
+async function mockSuccessfulManualProbe(
+  page: Page,
+  probed: string[],
+  snapshots: string[],
+) {
+  await page.route("**/api/ffprobe**", (route) => {
+    const path = new URL(route.request().url()).searchParams.get("paths");
+    if (path) probed.push(path);
+    return route.fulfill({ json: FFPROBE_OK });
+  });
+  await page.route("**/api/ffprobe/snapshot**", (route) => {
+    const url = new URL(route.request().url()).searchParams.get("url");
+    if (url) snapshots.push(url);
+    return route.fulfill({ contentType: "image/png", body: PLACEHOLDER_PNG });
+  });
 }
 
 test.describe("Network camera discovery @medium @mobile", () => {
@@ -186,11 +221,175 @@ test.describe("Network camera discovery @medium @mobile", () => {
       "24567",
     );
     await dialog.getByPlaceholder(/front_door/i).fill("rtsp_camera");
-    await dialog.getByPlaceholder("Optional").first().fill("admin");
-    await dialog.getByPlaceholder("Optional").last().fill("pw");
+    await dialog.getByPlaceholder("Optional").first().fill("viewer@lan");
+    await dialog.getByPlaceholder("Optional").last().fill("p@ss +%");
     await dialog.getByRole("button", { name: /^Continue$/i }).click();
     await expect.poll(() => probed.length).toBe(1);
-    expect(probed[0]).toContain("@192.168.1.41:24567/cam/realmonitor");
+    expect(probed[0]).toBe(
+      "rtsp://viewer%40lan:p%40ss%20%2B%25@192.168.1.41:24567/cam/realmonitor?channel=1&subtype=0",
+    );
+  });
+
+  test("uses separate credentials for a discovered RTSP path through probe and save", async ({
+    frigateApp,
+  }) => {
+    const page = frigateApp.page;
+    const probed: string[] = [];
+    const snapshots: string[] = [];
+    const go2rtcSources: string[] = [];
+    const saved: {
+      config_data: {
+        cameras?: Record<string, { ffmpeg: { inputs: { path: string }[] } }>;
+        go2rtc?: { streams: Record<string, string[]> };
+      };
+    }[] = [];
+    await mockSuccessfulManualProbe(page, probed, snapshots);
+    await page.route("**/api/go2rtc/streams/**", (route) => {
+      const src = new URL(route.request().url()).searchParams.get("src");
+      if (src) go2rtcSources.push(src);
+      return route.fulfill({ json: { producers: [] } });
+    });
+    await page.route("**/api/config/set", (route) => {
+      saved.push(route.request().postDataJSON());
+      return route.fulfill({ json: { success: true } });
+    });
+
+    const dialog = await selectRtspService(page);
+    await dialog.getByPlaceholder(/front_door/i).fill("rtsp_test");
+    await dialog.getByLabel("Username").fill("viewer@lan");
+    await dialog.getByLabel("Password", { exact: true }).fill("pa@ss /%40+");
+    await dialog
+      .getByLabel("Custom Stream URL")
+      .fill("rtsp://192.168.1.41:24567/profile0?label=a@b");
+    await dialog.getByRole("button", { name: /^Continue$/i }).click();
+
+    const expected =
+      "rtsp://viewer%40lan:pa%40ss%20%2F%2540%2B@192.168.1.41:24567/profile0?label=a@b";
+    await expect(dialog.getByText("Connection test successful!")).toBeVisible();
+    expect(probed).toEqual([expected]);
+    expect(snapshots).toEqual([expected]);
+
+    await dialog.getByRole("button", { name: /^Continue$/i }).click();
+    await expect(
+      dialog.getByPlaceholder("rtsp://username:password@host:port/path"),
+    ).toHaveValue(expected);
+    await dialog.getByRole("button", { name: /^Next$/i }).click();
+    await expect(
+      dialog.getByRole("button", { name: /Save New Camera/i }),
+    ).toBeEnabled();
+    await expect.poll(() => go2rtcSources).toContain(expected);
+    await dialog.getByRole("button", { name: /Save New Camera/i }).click();
+    await expect.poll(() => saved.length).toBe(2);
+    expect(saved[0].config_data.cameras?.rtsp_test.ffmpeg.inputs[0].path).toBe(
+      expected,
+    );
+    expect(saved[1].config_data.go2rtc?.streams.rtsp_test).toEqual([expected]);
+  });
+
+  test("a complete custom URL keeps its own credentials", async ({
+    frigateApp,
+  }) => {
+    const probed: string[] = [];
+    await mockSuccessfulManualProbe(frigateApp.page, probed, []);
+    const dialog = await selectRtspService(frigateApp.page);
+    await dialog.getByPlaceholder(/front_door/i).fill("embedded_credentials");
+    await dialog.getByLabel("Username").fill("different-user");
+    await dialog.getByLabel("Password", { exact: true }).fill("different-pass");
+    const url =
+      "rtsps://viewer:pa%40ss@192.168.1.41:24567/profile0?password=anotherSecret";
+    await dialog.getByLabel("Custom Stream URL").fill(url);
+    await dialog.getByRole("button", { name: /^Continue$/i }).click();
+    await expect(dialog.getByText("Connection test successful!")).toBeVisible();
+    expect(probed).toEqual([url]);
+
+    await dialog.getByRole("button", { name: /^Continue$/i }).click();
+    await dialog.getByRole("button", { name: /^Next$/i }).click();
+    await expect(
+      dialog.getByText(
+        "rtsps://viewer:****@192.168.1.41:24567/profile0?password=****",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    await expect(dialog.getByText(/pa%40ss|anotherSecret/)).toHaveCount(0);
+  });
+
+  test("omits empty credentials from an anonymous brand template", async ({
+    frigateApp,
+  }) => {
+    const probed: string[] = [];
+    await mockSuccessfulManualProbe(frigateApp.page, probed, []);
+    const dialog = await selectRtspService(frigateApp.page);
+    await dialog.getByPlaceholder(/front_door/i).fill("anonymous_brand");
+    await dialog.getByRole("combobox").click();
+    await frigateApp.page
+      .getByRole("option", { name: "Dahua / Amcrest / EmpireTech" })
+      .click();
+    await dialog.getByRole("button", { name: /^Continue$/i }).click();
+    await expect(dialog.getByText("Connection test successful!")).toBeVisible();
+    expect(probed).toEqual([
+      "rtsp://192.168.1.41:24567/cam/realmonitor?channel=1&subtype=0",
+    ]);
+  });
+
+  test("keeps an anonymous custom RTSP URL anonymous", async ({
+    frigateApp,
+  }) => {
+    const probed: string[] = [];
+    await mockSuccessfulManualProbe(frigateApp.page, probed, []);
+    const dialog = await selectRtspService(frigateApp.page);
+    await dialog.getByPlaceholder(/front_door/i).fill("anonymous_camera");
+    const url = "rtsp://192.168.1.41:24567/profile0";
+    await dialog.getByLabel("Custom Stream URL").fill(url);
+    await dialog.getByRole("button", { name: /^Continue$/i }).click();
+    await expect(dialog.getByText("Connection test successful!")).toBeVisible();
+    expect(probed).toEqual([url]);
+  });
+
+  test("explains a 401 and retries using the corrected separate credentials", async ({
+    frigateApp,
+  }) => {
+    const probed: string[] = [];
+    await frigateApp.page.route("**/api/ffprobe**", (route) => {
+      const path =
+        new URL(route.request().url()).searchParams.get("paths") || "";
+      probed.push(path);
+      return route.fulfill({
+        json: path.includes(":wrong@")
+          ? [
+              {
+                return_code: 1,
+                stderr: [
+                  "rtsp://*:*@192.168.1.41:24567/profile0: Server returned 401 Unauthorized",
+                ],
+                stdout: "",
+              },
+            ]
+          : FFPROBE_OK,
+      });
+    });
+    await frigateApp.page.route("**/api/ffprobe/snapshot**", (route) =>
+      route.fulfill({ contentType: "image/png", body: PLACEHOLDER_PNG }),
+    );
+
+    const dialog = await selectRtspService(frigateApp.page);
+    await dialog.getByPlaceholder(/front_door/i).fill("retry_camera");
+    await dialog.getByLabel("Username").fill("viewer");
+    await dialog.getByLabel("Password", { exact: true }).fill("wrong");
+    await dialog
+      .getByLabel("Custom Stream URL")
+      .fill("rtsp://192.168.1.41:24567/profile0");
+    await dialog.getByRole("button", { name: /^Continue$/i }).click();
+    await expect(
+      dialog.getByText(/asterisks in the error hide/i),
+    ).toBeVisible();
+    await dialog.getByRole("button", { name: /^Back$/i }).click();
+    await dialog.getByLabel("Password", { exact: true }).fill("correct");
+    await dialog.getByRole("button", { name: /^Continue$/i }).click();
+    await expect(dialog.getByText("Connection test successful!")).toBeVisible();
+    expect(probed).toEqual([
+      "rtsp://viewer:wrong@192.168.1.41:24567/profile0",
+      "rtsp://viewer:correct@192.168.1.41:24567/profile0",
+    ]);
   });
 
   test("switching discovered cameras clears a stale invalid RTSP port", async ({

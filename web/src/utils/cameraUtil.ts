@@ -76,28 +76,72 @@ export async function detectReolinkCamera(
   }
 }
 
-/**
- * Mask credentials in RTSP URIs for display
- */
-export function maskUri(uri: string): string {
-  try {
-    // Handle RTSP URLs with user:pass@host format
-    // Use greedy match for password to handle passwords with @
-    const rtspMatch = uri.match(/rtsp:\/\/([^:]+):(.+)@(.+)/);
-    if (rtspMatch) {
-      return `rtsp://${rtspMatch[1]}:${"*".repeat(4)}@${rtspMatch[3]}`;
-    }
+/** Encode a credential as one URL component, not as a whole URL. */
+export function encodeCameraCredential(value: string): string {
+  return encodeURIComponent(value).replace(
+    /[!'()*]/g,
+    (character) => `%${character.charCodeAt(0).toString(16).toUpperCase()}`,
+  );
+}
 
-    // Handle HTTP/HTTPS URLs with password query parameter
-    const urlObj = new URL(uri);
-    if (urlObj.searchParams.has("password")) {
-      urlObj.searchParams.set("password", "*".repeat(4));
-      return urlObj.toString();
-    }
-  } catch {
-    // ignore
+/**
+ * Apply the connection fields to a custom RTSP URL only when it does not
+ * already contain userinfo. A complete URL is authoritative, even if the
+ * connection fields contain different credentials.
+ */
+export function withRtspCredentials(
+  url: string,
+  username?: string,
+  password?: string,
+): string {
+  if (!username && !password) return url;
+
+  const match = url.match(/^(rtsps?:\/\/)([^/?#]+)([\s\S]*)$/i);
+  if (!match || match[2].includes("@")) return url;
+
+  const userinfo = `${encodeCameraCredential(username || "")}:${encodeCameraCredential(password || "")}@`;
+  return `${match[1]}${userinfo}${match[2]}${match[3]}`;
+}
+
+/** Fill a brand template with escaped userinfo or query credentials. */
+export function formatCameraStreamTemplate(
+  template: string,
+  host: string,
+  port: number,
+  username?: string,
+  password?: string,
+): string {
+  // Do not add an empty userinfo to cameras that allow anonymous access.
+  if (!username && !password) {
+    template = template.replace("{username}:{password}@", "");
   }
-  return uri;
+  return template
+    .replace("{username}", encodeCameraCredential(username || ""))
+    .replace("{password}", encodeCameraCredential(password || ""))
+    .replace("{host}", host)
+    .replace("{port}", String(port));
+}
+
+/** Mask URL credentials for display without changing the stream URL. */
+export function maskUri(uri: string): string {
+  // Greedy for RTSP so even legacy unescaped /, ? or @ in a password cannot
+  // expose part of it. This can hide extra path text in an ambiguous URL.
+  const rtsp = uri.match(/^(rtsps?:\/\/)([^:]+):([\s\S]+)@([\s\S]+)$/i);
+  if (rtsp) {
+    uri = `${rtsp[1]}${rtsp[2]}:****@${rtsp[4]}`;
+  } else {
+    const match = uri.match(/^([a-z][a-z0-9+.-]*:\/\/)([^/?#]+)([\s\S]*)$/i);
+    if (match) {
+      const at = match[2].lastIndexOf("@");
+      if (at >= 0) {
+        const userinfo = match[2].slice(0, at);
+        const colon = userinfo.indexOf(":");
+        const masked = colon >= 0 ? `${userinfo.slice(0, colon)}:****` : "****";
+        uri = `${match[1]}${masked}@${match[2].slice(at + 1)}${match[3]}`;
+      }
+    }
+  }
+  return uri.replace(/([?&](?:pass|password|passwd|pwd)=)[^&#]*/gi, "$1****");
 }
 
 /**

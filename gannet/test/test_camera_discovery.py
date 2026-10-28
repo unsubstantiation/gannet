@@ -223,6 +223,30 @@ class TestProtocolFingerprints(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(len(requests), 1)
 
+    async def test_finds_rtsp_that_only_responds_to_describe(self):
+        requests = []
+
+        async def camera(reader, writer):
+            request = await reader.readuntil(b"\r\n\r\n")
+            requests.append(request)
+            if request.startswith(b"DESCRIBE "):
+                writer.write(b"RTSP/1.0 401 Unauthorized\r\nCSeq: 1\r\n\r\n")
+                await writer.drain()
+            writer.close()
+            await writer.wait_closed()
+
+        port = await self._serve(camera)
+        service = await discovery.probe_port("127.0.0.1", port)
+        self.assertIsNotNone(service)
+        self.assertEqual((service.protocol, service.port), ("rtsp", port))
+        self.assertTrue(service.requires_auth)
+        self.assertEqual(len(requests), 2)
+        self.assertTrue(requests[0].startswith(b"OPTIONS "))
+        self.assertTrue(requests[1].startswith(b"DESCRIBE "))
+        self.assertIn(b"Accept: application/sdp", requests[1])
+        for request in requests:
+            self.assertNotIn(b"Authorization:", request)
+
     async def test_finds_http_onvif_even_when_headers_and_body_are_split(self):
         requests = []
 

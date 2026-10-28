@@ -1,13 +1,17 @@
 """Test camera user and password cleanup."""
 
+import subprocess
 import time
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from gannet.util.builtin import (
     clean_camera_user_pass,
     escape_special_characters,
     is_masked_camera_path,
 )
+from gannet.util.services import ffprobe_stream
 
 
 class TestUserPassCleanup(unittest.TestCase):
@@ -39,6 +43,45 @@ class TestUserPassCleanup(unittest.TestCase):
         """Test that no change is made to path with no special characters."""
         escaped = escape_special_characters(self.rtsp_with_pass)
         assert escaped == self.rtsp_with_pass
+
+    def test_escapes_only_userinfo_and_preserves_encoded_credentials(self):
+        cases = {
+            # A complete ordinary RTSP URL must reach ffprobe unchanged.
+            "rtsp://admin:example123@192.168.1.4:8554/profile0": (
+                "rtsp://admin:example123@192.168.1.4:8554/profile0"
+            ),
+            # Percent-encoded credentials must not be encoded a second time.
+            "rtsp://user%40example.com:p%40ss%20%2F%2520@cam:8554/profile0": (
+                "rtsp://user%40example.com:p%40ss%20%2F%2520@cam:8554/profile0"
+            ),
+            "rtsps://user:pass%zz@camera/stream": (
+                "rtsps://user:pass%25zz@camera/stream"
+            ),
+            # Encode raw userinfo but do not replace matching text in the path.
+            "rtsp://a+b:a+b@camera/a+b?value=a+b": (
+                "rtsp://a%2Bb:a%2Bb@camera/a+b?value=a+b"
+            ),
+            "rtsp://name@example.com:pa ss@camera/profile": (
+                "rtsp://name%40example.com:pa%20ss@camera/profile"
+            ),
+            "rtsp://u:p@ss@camera/profile@home?email=a@b": (
+                "rtsp://u:p%40ss@camera/profile@home?email=a@b"
+            ),
+            # An @ in the path or query does not introduce credentials.
+            "rtsp://camera:8554/profile@home?email=a@b": (
+                "rtsp://camera:8554/profile@home?email=a@b"
+            ),
+            "rtsp://camera:8554/profile?email=a@b": (
+                "rtsp://camera:8554/profile?email=a@b"
+            ),
+            "rtsp://camera/profile?next=http://user:p+ss@other": (
+                "rtsp://camera/profile?next=http://user:p+ss@other"
+            ),
+        }
+        for url, expected in cases.items():
+            with self.subTest(url=url):
+                self.assertEqual(escape_special_characters(url), expected)
+                self.assertEqual(escape_special_characters(expected), expected)
 
 
 class TestUserPassMasking(unittest.TestCase):
@@ -137,3 +180,48 @@ class TestUserPassMasking(unittest.TestCase):
         clean_camera_user_pass("rtsp://u:p" * 20000)
         clean_camera_user_pass("rtsp://" + "a." * 40000)
         self.assertLess(time.perf_counter() - start, 1)
+
+
+class TestFfprobeAuthentication(unittest.TestCase):
+    def setUp(self):
+        self.ffmpeg = SimpleNamespace(ffprobe_path="ffprobe.exe")
+        self.url = "rtsp://viewer:pa%40ss%20word@192.168.1.4:8554/profile0"
+
+    def test_authentication_failure_does_not_retry_credentials(self):
+        for error in (
+            b"method DESCRIBE failed: 401 (Unauthorized)",
+            b"Server returned 403 Forbidden",
+            b"authorization failed",
+            b"authentication failed",
+        ):
+            with self.subTest(error=error):
+                failed = subprocess.CompletedProcess([], 1, b"", error)
+                with patch("gannet.util.services.sp.run", return_value=failed) as run:
+                    result = ffprobe_stream(self.ffmpeg, self.url, detailed=True)
+                self.assertIs(result, failed)
+                run.assert_called_once()
+                self.assertEqual(run.call_args.args[0][-1], self.url)
+
+    def test_transport_failure_retries_with_tcp(self):
+        failed = subprocess.CompletedProcess([], 1, b"", b"Connection timed out")
+        succeeded = subprocess.CompletedProcess([], 0, b"{}", b"")
+        with patch(
+            "gannet.util.services.sp.run", side_effect=[failed, succeeded]
+        ) as run:
+            result = ffprobe_stream(self.ffmpeg, self.url)
+        self.assertIs(result, succeeded)
+        self.assertEqual(run.call_count, 2)
+        first, second = [call.args[0] for call in run.call_args_list]
+        self.assertNotIn("-rtsp_transport", first)
+        self.assertIn("-rtsp_transport", second)
+        self.assertEqual(second[second.index("-rtsp_transport") + 1], "tcp")
+        self.assertEqual(first[-1], self.url)
+        self.assertEqual(second[-1], self.url)
+
+    def test_anonymous_rtsp_and_rtsps_still_retry_transport_errors(self):
+        for url in ("rtsp://camera/profile0", "rtsps://camera/profile0"):
+            with self.subTest(url=url):
+                failed = subprocess.CompletedProcess([], 1, b"", b"Connection refused")
+                with patch("gannet.util.services.sp.run", return_value=failed) as run:
+                    ffprobe_stream(self.ffmpeg, url)
+                self.assertEqual(run.call_count, 2)

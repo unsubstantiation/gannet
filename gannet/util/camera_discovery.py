@@ -375,6 +375,43 @@ async def _open_connection(host: str, port: int):
         return None
 
 
+async def _rtsp_status_line(
+    reader: asyncio.StreamReader,
+    writer: asyncio.StreamWriter,
+    host: str,
+    port: int,
+    method: str,
+) -> bytes:
+    """Send one unauthenticated RTSP request and read only its status line."""
+    try:
+        request = (
+            f"{method} rtsp://{host}:{port}/ RTSP/1.0\r\n"
+            "CSeq: 1\r\nUser-Agent: Gannet-Camera-Discovery\r\n"
+            + ("Accept: application/sdp\r\n" if method == "DESCRIBE" else "")
+            + "\r\n"
+        ).encode("ascii")
+        writer.write(request)
+        await asyncio.wait_for(writer.drain(), PROTOCOL_TIMEOUT)
+        return await asyncio.wait_for(reader.readline(), PROTOCOL_TIMEOUT)
+    except (TimeoutError, OSError, ValueError):
+        return b""
+    finally:
+        await _close_writer(writer)
+
+
+def _rtsp_service(line: bytes, port: int) -> Service | None:
+    match = re.match(rb"^RTSP/\d+(?:\.\d+)?\s+(\d{3})\b", line, re.IGNORECASE)
+    if not match:
+        return None
+    return Service(
+        "rtsp",
+        port,
+        "rtsp",
+        sources=["tcp"],
+        requires_auth=int(match.group(1)) in (401, 403),
+    )
+
+
 async def probe_port(host: str, port: int) -> Service | None:
     """Identify RTSP or standard-path ONVIF on an open TCP port.
 
@@ -385,28 +422,21 @@ async def probe_port(host: str, port: int) -> Service | None:
     connection = await _open_connection(host, port)
     if connection is None:
         return None
-    reader, writer = connection
-    try:
-        request = (
-            f"OPTIONS rtsp://{host}:{port}/ RTSP/1.0\r\n"
-            "CSeq: 1\r\nUser-Agent: Gannet-Camera-Discovery\r\n\r\n"
-        ).encode("ascii")
-        writer.write(request)
-        await asyncio.wait_for(writer.drain(), PROTOCOL_TIMEOUT)
-        line = await asyncio.wait_for(reader.readline(), PROTOCOL_TIMEOUT)
-        match = re.match(rb"^RTSP/\d+(?:\.\d+)?\s+(\d{3})\b", line, re.IGNORECASE)
-        if match:
-            return Service(
-                "rtsp",
-                port,
-                "rtsp",
-                sources=["tcp"],
-                requires_auth=int(match.group(1)) in (401, 403),
-            )
-    except (TimeoutError, OSError, ValueError):
-        pass
-    finally:
-        await _close_writer(writer)
+    line = await _rtsp_status_line(*connection, host, port, "OPTIONS")
+    service = _rtsp_service(line, port)
+    if service:
+        return service
+
+    # Some RTSP services silently close or ignore OPTIONS but respond to
+    # DESCRIBE. Do not try stream paths or credentials, and avoid an extra
+    # RTSP request when the first response already identified an HTTP server.
+    if not line.upper().startswith(b"HTTP/"):
+        connection = await _open_connection(host, port)
+        if connection:
+            line = await _rtsp_status_line(*connection, host, port, "DESCRIBE")
+            service = _rtsp_service(line, port)
+            if service:
+                return service
 
     # Retry on a fresh connection: an HTTP server may close after the RTSP
     # request. No credentials are sent and redirects are never followed.

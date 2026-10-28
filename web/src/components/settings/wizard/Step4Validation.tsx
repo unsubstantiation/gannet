@@ -72,7 +72,7 @@ export default function Step4Validation({
       try {
         const response = await axios.get("ffprobe", {
           params: { paths: stream.url, detailed: true },
-          timeout: 10000,
+          timeout: 15000,
         });
 
         return ffprobeToTestResult(response.data?.[0]);
