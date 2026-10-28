@@ -9,6 +9,7 @@ frames into.
 """
 
 import unittest
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from gannet.camera.maintainer import CameraMaintainer
@@ -73,6 +74,37 @@ class TestMaintainerUnlinkFrameSlotsOnRemove(unittest.TestCase):
             maintainer._CameraMaintainer__unlink_camera_frame_slots("front")
 
         self.assertEqual(maintainer.frame_manager.delete.call_count, 2)
+
+
+class TestMaintainerFrameRingSize(unittest.TestCase):
+    def test_runtime_camera_uses_configured_frame_ring(self) -> None:
+        maintainer = CameraMaintainer.__new__(CameraMaintainer)
+        maintainer.shm_count = 24
+        maintainer.frame_manager = MagicMock()
+        maintainer.camera_stop_events = {}
+        maintainer.capture_processes = {}
+        maintainer.camera_metrics = {
+            "front": SimpleNamespace(capture_process_pid=SimpleNamespace(value=0))
+        }
+        maintainer.config = SimpleNamespace(logger=None)
+        camera = SimpleNamespace(
+            name="front", enabled_in_config=True, frame_shape_yuv=(360, 320)
+        )
+
+        with patch("gannet.camera.maintainer.CameraCapture") as capture:
+            maintainer._CameraMaintainer__start_camera_capture(
+                "front", camera, runtime=True
+            )
+
+        slots = [
+            call.args[0] for call in maintainer.frame_manager.create.call_args_list
+        ]
+        self.assertEqual(slots[:-1], [f"front_frame{i}" for i in range(24)])
+        self.assertEqual(
+            maintainer.frame_manager.create.call_args.args,
+            ("front_frame_times", 24 * 8),
+        )
+        self.assertEqual(capture.call_args.args[1], 24)
 
 
 if __name__ == "__main__":

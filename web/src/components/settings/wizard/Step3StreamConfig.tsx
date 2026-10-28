@@ -967,6 +967,12 @@ export default function Step3StreamConfig({
         </div>
       )}
 
+      {streams.some((s) => !s.url.trim() || s.roles.length === 0) && (
+        <div className="rounded-lg border border-danger/50 p-3 text-sm text-danger">
+          {t("cameraWizard.step3.streamDetailsRequired")}
+        </div>
+      )}
+
       {onvifInvalid && (
         <div className="rounded-lg border border-danger/50 p-3 text-sm text-danger">
           {t("cameraWizard.step3.ptz.hostRequiredWarning")}

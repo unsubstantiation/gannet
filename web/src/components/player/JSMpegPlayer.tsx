@@ -2,6 +2,7 @@ import { baseUrl } from "@/api/baseUrl";
 import { useResizeObserver } from "@/hooks/resize-observer";
 import { cn } from "@/lib/utils";
 import { PlayerStatsType } from "@/types/live";
+import { measuredFrameRate } from "@/utils/playerStats";
 // @ts-expect-error we know this doesn't have types
 import JSMpeg from "@cycjimmy/jsmpeg-player";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -128,6 +129,9 @@ export default function JSMpegPlayer({
     if (videoWrapper && playbackEnabled) {
       // Delayed init to avoid issues with react strict mode
       const initPlayer = setTimeout(() => {
+        bytesReceivedRef.current = 0;
+        lastTimestampRef.current = Date.now();
+        let lastFrameCount: number | undefined;
         videoElement = new JSMpeg.VideoElement(
           videoWrapper,
           url,
@@ -168,28 +172,30 @@ export default function JSMpegPlayer({
         statsIntervalRef.current = setInterval(() => {
           const currentTimestamp = Date.now();
           const timeDiff = (currentTimestamp - lastTimestampRef.current) / 1000; // in seconds
-          const bitrate = bytesReceivedRef.current / timeDiff / 1000; // in kBps
+          const bitrate =
+            timeDiff > 0 ? bytesReceivedRef.current / timeDiff / 1000 : 0; // in kBps
+          const fps = measuredFrameRate(frameCount, lastFrameCount, timeDiff);
 
           setStats?.({
             streamType: "jsmpeg",
             bandwidth: Math.round(bitrate),
             totalFrames: frameCount,
             droppedFrames: undefined,
-            decodedFrames: undefined,
+            decodedFrames: frameCount,
             droppedFrameRate: undefined,
+            // The canvas is resized to the decoded stream, not the displayed CSS size.
+            resolution:
+              frameCount > 0 && canvas?.width && canvas.height
+                ? { width: canvas.width, height: canvas.height }
+                : undefined,
+            fps,
+            fpsKind: "decoded",
           });
 
+          lastFrameCount = frameCount;
           bytesReceivedRef.current = 0;
           lastTimestampRef.current = currentTimestamp;
         }, 1000);
-
-        return () => {
-          if (statsIntervalRef.current) {
-            clearInterval(statsIntervalRef.current);
-            frameCount = 0;
-            statsIntervalRef.current = null;
-          }
-        };
       }, 0);
 
       return () => {
@@ -198,6 +204,14 @@ export default function JSMpegPlayer({
           clearInterval(statsIntervalRef.current);
           statsIntervalRef.current = null;
         }
+        setStats?.({
+          streamType: "-",
+          bandwidth: 0,
+          totalFrames: 0,
+          droppedFrames: undefined,
+          decodedFrames: undefined,
+          droppedFrameRate: undefined,
+        });
         if (videoElement) {
           try {
             videoElement.player?.destroy();

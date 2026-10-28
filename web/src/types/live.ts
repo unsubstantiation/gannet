@@ -67,4 +67,9 @@ export type PlayerStatsType = {
   droppedFrames: number | undefined;
   decodedFrames: number | undefined;
   droppedFrameRate: number | undefined;
+  /** Actual video dimensions reported by the playing decoder, not config. */
+  resolution?: VideoResolutionType;
+  /** Measured over the last sample interval. */
+  fps?: number;
+  fpsKind?: "playback" | "decoded";
 };

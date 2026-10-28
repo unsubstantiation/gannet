@@ -26,6 +26,10 @@ The UI chooses among supported delivery methods based on browser and network cap
 
 Prefer H.264 video and AAC or Opus audio for the widest browser compatibility. H.265 support depends on browser, Windows codec availability, and hardware.
 
+## Stream statistics
+
+Open a camera's live view, select its settings gear, and turn on **Show stream stats**. The overlay shows the playing resolution and measured playback FPS for MSE, or decoded FPS for WebRTC and JSMPEG. These are browser/player measurements, which can differ from the camera's original stream or Gannet's detect settings. The full overlay also lists the configured detect resolution and FPS separately. A dash means the measurement is not yet available or the browser does not report it.
+
 ## Restreaming
 
 Other applications can consume a configured go2rtc stream from the Gannet host. Keep management endpoints loopback-only and expose only the media routes actually needed. When Gannet is behind a reverse proxy, forward WebSocket upgrades and use Gannet's authenticated public port rather than exposing the internal gateway.

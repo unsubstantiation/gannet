@@ -535,6 +535,67 @@ def config_raw_paths(request: Request):
     return JSONResponse(content=raw_paths)
 
 
+@router.get(
+    "/config/cameras/{camera_name}/credentials",
+    dependencies=[Depends(require_role(["admin"]))],
+    summary="View a camera's configured connection credentials",
+)
+def camera_credentials(request: Request, camera_name: str):
+    """Return only this camera's inputs, associated restreams and ONVIF login."""
+    config_obj: FrigateConfig = request.app.frigate_config
+    camera = config_obj.cameras.get(camera_name)
+    if camera is None:
+        return JSONResponse(status_code=404, content={"message": "Camera not found"})
+
+    inputs = [
+        {"path": input.path, "roles": input.roles} for input in camera.ffmpeg.inputs
+    ]
+    stream_names = set(camera.live.streams.values())
+    if camera.live.transcode.enabled and camera.live.transcode.source:
+        stream_names.add(camera.live.transcode.source)
+    # Some cameras use a go2rtc restream for FFmpeg without listing it under
+    # live.streams. Follow only explicit loopback RTSP references, not arbitrary
+    # other camera names or URLs.
+    for input in camera.ffmpeg.inputs:
+        try:
+            parsed = urllib.parse.urlsplit(input.path)
+            if (
+                parsed.scheme in {"rtsp", "rtsps"}
+                and parsed.hostname in {"127.0.0.1", "localhost", "::1"}
+                and parsed.port == 8554
+            ):
+                stream_names.add(urllib.parse.unquote(parsed.path.lstrip("/")))
+        except ValueError:
+            continue
+
+    go2rtc = config_obj.go2rtc.model_dump(mode="json", exclude_none=True)
+    all_streams = go2rtc.get("streams")
+    if not isinstance(all_streams, dict):
+        all_streams = {}
+    streams = {}
+    for name in sorted(stream_names):
+        source = all_streams.get(name)
+        # go2rtc accepts a URL, a list of URLs, or a mapping with a `url` key.
+        # Return only source strings, never unrelated fields from the mapping.
+        if isinstance(source, dict):
+            source = source.get("url")
+        if isinstance(source, str):
+            streams[name] = _resolve_frigate_vars(source)
+        elif isinstance(source, list):
+            streams[name] = [
+                _resolve_frigate_vars(item) for item in source if isinstance(item, str)
+            ]
+    onvif = camera.onvif
+    return JSONResponse(
+        content={
+            "inputs": inputs,
+            "go2rtc": streams,
+            "onvif": {"user": onvif.user, "password": onvif.password},
+        },
+        headers={"Cache-Control": "no-store"},
+    )
+
+
 @router.get("/config/raw", dependencies=[Depends(require_role(["admin"]))])
 def config_raw():
     config_file = find_config_file()

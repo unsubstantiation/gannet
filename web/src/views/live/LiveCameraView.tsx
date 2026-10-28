@@ -2001,35 +2001,33 @@ function FrigateCameraFeatures({
                 </p>
               </div>
               {isRestreamed && (
-                <>
-                  <div className="flex flex-col gap-2">
-                    <FilterSwitch
-                      label={t("manualRecording.playInBackground.label")}
-                      isChecked={playInBackground}
-                      onCheckedChange={(checked) => {
-                        setPlayInBackground(checked);
-                      }}
-                      disabled={debug}
-                    />
-                    <p className="mx-2 -mt-2 text-sm text-muted-foreground">
-                      {t("manualRecording.playInBackground.desc")}
-                    </p>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <FilterSwitch
-                      label={t("manualRecording.showStats.label")}
-                      isChecked={showStats}
-                      onCheckedChange={(checked) => {
-                        setShowStats(checked);
-                      }}
-                      disabled={debug}
-                    />
-                    <p className="mx-2 -mt-2 text-sm text-muted-foreground">
-                      {t("manualRecording.showStats.desc")}
-                    </p>
-                  </div>
-                </>
+                <div className="flex flex-col gap-2">
+                  <FilterSwitch
+                    label={t("manualRecording.playInBackground.label")}
+                    isChecked={playInBackground}
+                    onCheckedChange={(checked) => {
+                      setPlayInBackground(checked);
+                    }}
+                    disabled={debug}
+                  />
+                  <p className="mx-2 -mt-2 text-sm text-muted-foreground">
+                    {t("manualRecording.playInBackground.desc")}
+                  </p>
+                </div>
               )}
+              <div className="flex flex-col gap-2">
+                <FilterSwitch
+                  label={t("manualRecording.showStats.label")}
+                  isChecked={showStats}
+                  onCheckedChange={(checked) => {
+                    setShowStats(checked);
+                  }}
+                  disabled={debug}
+                />
+                <p className="mx-2 -mt-2 text-sm text-muted-foreground">
+                  {t("manualRecording.showStats.desc")}
+                </p>
+              </div>
               <div className="mb-3 flex flex-col">
                 <FilterSwitch
                   label={t("streaming.debugView", { ns: "components/dialog" })}

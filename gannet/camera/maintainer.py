@@ -172,8 +172,10 @@ class CameraMaintainer(threading.Thread):
 
         camera_stop_event = self.__ensure_camera_stop_event(name)
 
-        # pre-create shms
-        count = 10 if runtime else self.shm_count
+        # Runtime additions need the same ring capacity as startup cameras.
+        # A hard-coded smaller ring can wrap while detections are still being
+        # processed, causing output to reject otherwise valid, but stale, frames.
+        count = self.shm_count
         for i in range(count):
             frame_size = config.frame_shape_yuv[0] * config.frame_shape_yuv[1]
             self.frame_manager.create(f"{config.name}_frame{i}", frame_size)

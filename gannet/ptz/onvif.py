@@ -106,11 +106,11 @@ class OnvifController:
                         for cam_name in cameras:
                             await self._reinit_camera(cam_name)
                     elif update_type == CameraConfigUpdateEnum.add.name:
-                        # a camera added at runtime only needs ONVIF set up if
-                        # it actually has an onvif host configured
+                        # Match startup: a camera saved disabled should not
+                        # open an ONVIF connection until it is enabled and restarted.
                         for cam_name in cameras:
                             cam = self.config.cameras.get(cam_name)
-                            if cam and cam.onvif.host:
+                            if cam and cam.enabled and cam.onvif.host:
                                 await self._reinit_camera(cam_name)
                     elif update_type == CameraConfigUpdateEnum.remove.name:
                         for cam_name in cameras:

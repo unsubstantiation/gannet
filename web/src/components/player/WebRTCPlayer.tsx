@@ -8,6 +8,7 @@ import {
 } from "@/types/live";
 import { FrigateConfig } from "@/types/frigateConfig";
 import { webRTCIceServers } from "@/utils/webrtcUtil";
+import { measuredFrameRate } from "@/utils/playerStats";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useSWR from "swr";
 
@@ -370,23 +371,50 @@ export default function WebRtcPlayer({
 
     let lastBytesReceived = 0;
     let lastTimestamp = 0;
+    let lastDecodedFrames: number | undefined;
     let lastFreezeSeconds: number | undefined;
+    let active = true;
+    let sampling = false;
 
     const interval = setInterval(async () => {
-      if (pcRef.current && videoRef.current && !videoRef.current.paused) {
-        const report = await pcRef.current.getStats();
+      if (
+        pcRef.current &&
+        videoRef.current &&
+        !videoRef.current.paused &&
+        !sampling
+      ) {
+        const peer = pcRef.current;
+        const video = videoRef.current;
+        let report: RTCStatsReport;
+        sampling = true;
+        try {
+          report = await peer.getStats();
+        } catch {
+          // A peer may close while getStats is pending during a reconnect.
+          return;
+        } finally {
+          sampling = false;
+        }
+        if (!active || pcRef.current !== peer || videoRef.current !== video)
+          return;
         let bytesReceived = 0;
         let timestamp = 0;
         let framesReceived = 0;
-        let framesDecoded = 0;
+        let framesDecoded: number | undefined;
+        let framesDropped: number | undefined;
+        let frameWidth: number | undefined;
+        let frameHeight: number | undefined;
         let freezeSeconds: number | undefined;
 
         report.forEach((stat) => {
           if (stat.type === "inbound-rtp" && stat.kind === "video") {
             bytesReceived = stat.bytesReceived;
             timestamp = stat.timestamp;
-            framesReceived = stat.framesReceived;
+            framesReceived = stat.framesReceived ?? 0;
             framesDecoded = stat.framesDecoded;
+            framesDropped = stat.framesDropped;
+            frameWidth = stat.frameWidth;
+            frameHeight = stat.frameHeight;
             freezeSeconds = stat.totalFreezesDuration;
           }
         });
@@ -399,13 +427,23 @@ export default function WebRtcPlayer({
               ? (bytesReceived - lastBytesReceived) / timeDiff / 1000
               : 0; // in kBps
 
+          const width = video.videoWidth || frameWidth;
+          const height = video.videoHeight || frameHeight;
+          const fps =
+            lastTimestamp > 0
+              ? measuredFrameRate(framesDecoded, lastDecodedFrames, timeDiff)
+              : undefined;
+
           setStats?.({
             streamType: "WebRTC",
             bandwidth: Math.round(bitrate),
             totalFrames: framesReceived,
-            droppedFrames: undefined,
+            droppedFrames: framesDropped,
             decodedFrames: framesDecoded,
             droppedFrameRate: undefined,
+            resolution: width && height ? { width, height } : undefined,
+            fps,
+            fpsKind: "decoded",
           });
         }
 
@@ -433,11 +471,13 @@ export default function WebRtcPlayer({
 
         lastBytesReceived = bytesReceived;
         lastTimestamp = timestamp;
+        lastDecodedFrames = framesDecoded;
         lastFreezeSeconds = freezeSeconds;
       }
     }, 1000);
 
     return () => {
+      active = false;
       clearInterval(interval);
       if (getStats) {
         setStats?.({

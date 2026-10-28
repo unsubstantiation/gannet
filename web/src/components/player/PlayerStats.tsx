@@ -7,6 +7,7 @@ type PlayerStatsProps = {
   minimal: boolean;
   streamLabel?: string;
   streamAuto?: boolean;
+  detectConfig?: { width: number; height: number; fps: number };
 };
 
 export function PlayerStats({
@@ -14,12 +15,26 @@ export function PlayerStats({
   minimal,
   streamLabel,
   streamAuto = false,
+  detectConfig,
 }: PlayerStatsProps) {
   const { t } = useTranslation(["components/player", "views/live"]);
   const streamTypeLabel = t(
     `stream.technology.name.${stats.streamType.toLowerCase()}`,
     { ns: "views/live", defaultValue: stats.streamType },
   );
+  const resolution = stats.resolution
+    ? `${stats.resolution.width} × ${stats.resolution.height}`
+    : "—";
+  const fps =
+    stats.fps !== undefined && Number.isFinite(stats.fps)
+      ? stats.fps.toFixed(1)
+      : "—";
+  const fpsLabel =
+    stats.fpsKind === "decoded"
+      ? t("stats.fpsDecoded")
+      : stats.fpsKind === "playback"
+        ? t("stats.fpsPlayback")
+        : t("stats.fps");
   const fullStatsContent = (
     <>
       {streamLabel != undefined && (
@@ -36,6 +51,23 @@ export function PlayerStats({
         <span className="text-white/70">{t("stats.streamType.title")}</span>{" "}
         <span className="text-white">{streamTypeLabel}</span>
       </p>
+      <p>
+        <span className="text-white/70">{t("stats.resolution")}</span>{" "}
+        <span className="text-white">{resolution}</span>
+      </p>
+      <p>
+        <span className="text-white/70">{fpsLabel}</span>{" "}
+        <span className="text-white">{fps}</span>
+      </p>
+      {detectConfig && (
+        <p>
+          <span className="text-white/70">{t("stats.detectConfigured")}</span>{" "}
+          <span className="text-white">
+            {detectConfig.width} × {detectConfig.height} @ {detectConfig.fps}{" "}
+            FPS
+          </span>
+        </p>
+      )}
       <p>
         <span className="text-white/70">{t("stats.bandwidth.title")}</span>{" "}
         <span className="text-white">{stats.bandwidth.toFixed(2)} kBps</span>
@@ -70,10 +102,18 @@ export function PlayerStats({
   );
 
   const minimalStatsContent = (
-    <div className="flex flex-row items-center justify-center gap-4">
+    <div className="flex flex-row flex-wrap items-center justify-center gap-4">
       <div className="flex flex-col items-center justify-start gap-1">
         <span className="text-white/70">{t("stats.streamType.short")}</span>
         <span className="text-white">{streamTypeLabel}</span>
+      </div>
+      <div className="flex flex-col items-center gap-1">
+        <span className="text-white/70">{t("stats.resolutionShort")}</span>
+        <span className="text-white">{resolution}</span>
+      </div>
+      <div className="flex flex-col items-center gap-1">
+        <span className="text-white/70">{fpsLabel}</span>
+        <span className="text-white">{fps}</span>
       </div>
       <div className="flex flex-col items-center gap-1">
         <span className="text-white/70">{t("stats.bandwidth.short")}</span>{" "}

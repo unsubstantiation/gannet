@@ -1,5 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
   Popover,
@@ -15,7 +18,10 @@ import { toast } from "sonner";
 import MSEPlayer from "@/components/player/MsePlayer";
 import { WizardFormData, StreamConfig, TestResult } from "@/types/cameraWizard";
 import { PlayerStatsType, LiveStreamMetadata } from "@/types/live";
-import { detectCameraAudioFeatures } from "@/utils/cameraUtil";
+import {
+  detectCameraAudioFeatures,
+  wizardDetectDimensions,
+} from "@/utils/cameraUtil";
 import { FaCircleCheck, FaTriangleExclamation } from "react-icons/fa6";
 import { LuX } from "react-icons/lu";
 import { Card, CardContent } from "../../ui/card";
@@ -39,6 +45,8 @@ export default function Step4Validation({
 }: Step4ValidationProps) {
   const { t } = useTranslation(["views/settings"]);
   const [isValidating, setIsValidating] = useState(false);
+  const [allowUnverified, setAllowUnverified] = useState(false);
+  const [saveDisabled, setSaveDisabled] = useState(false);
   const [testingStreams, setTestingStreams] = useState<Set<string>>(new Set());
   const [measuredBandwidth, setMeasuredBandwidth] = useState<
     Map<string, number>
@@ -48,6 +56,13 @@ export default function Step4Validation({
   >(new Map());
 
   const streams = useMemo(() => wizardData.streams || [], [wizardData.streams]);
+  const hasUnverifiedStreams = streams.some((s) => !s.testResult?.success);
+  const probedDimensions = wizardDetectDimensions(streams);
+  const detectDimensions = wizardDetectDimensions(
+    streams,
+    wizardData.manualDetectWidth,
+    wizardData.manualDetectHeight,
+  );
 
   const handleBandwidthUpdate = useCallback(
     (streamId: string, bandwidth: number) => {
@@ -231,22 +246,33 @@ export default function Step4Validation({
       brandTemplate: wizardData.brandTemplate,
       customUrl: wizardData.customUrl,
       streams: wizardData.streams,
-      hasBackchannel: wizardData.hasBackchannel,
+      hasBackchannel: hasBackchannelResult,
+      manualDetectWidth: wizardData.manualDetectWidth,
+      manualDetectHeight: wizardData.manualDetectHeight,
+      saveDisabled: hasUnverifiedStreams && saveDisabled,
       appleCompatibility: wizardData.appleCompatibility,
       onvif: wizardData.onvif,
     };
 
     onSave(configData);
-  }, [wizardData, onSave, t, onUpdate, checkBackchannel, registeredStreamIds]);
+  }, [
+    wizardData,
+    onSave,
+    t,
+    onUpdate,
+    checkBackchannel,
+    registeredStreamIds,
+    hasUnverifiedStreams,
+    saveDisabled,
+  ]);
 
-  const canSave = useMemo(() => {
-    return (
-      wizardData.cameraName &&
-      wizardData.streams?.length &&
-      wizardData.streams.some((s) => s.roles.includes("detect")) &&
-      wizardData.streams.every((s) => s.testResult) // All streams must be tested
-    );
-  }, [wizardData]);
+  const canSave =
+    !!wizardData.cameraName &&
+    streams.length > 0 &&
+    streams.some((s) => s.roles.includes("detect")) &&
+    streams.every((s) => !!s.url.trim() && s.roles.length > 0) &&
+    !!detectDimensions &&
+    (!hasUnverifiedStreams || allowUnverified);
 
   return (
     <div className="space-y-6">
@@ -456,6 +482,87 @@ export default function Step4Validation({
         </div>
       </div>
 
+      {!probedDimensions && (
+        <div className="space-y-3 rounded-lg border border-yellow-500/50 p-4">
+          <h3 className="font-medium">
+            {t("cameraWizard.step4.manualResolution.title")}
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            {t("cameraWizard.step4.manualResolution.description")}
+          </p>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <Label htmlFor="wizard-detect-width">
+                {t("cameraWizard.step4.manualResolution.width")}
+              </Label>
+              <Input
+                id="wizard-detect-width"
+                type="number"
+                inputMode="numeric"
+                min={2}
+                max={16384}
+                step={2}
+                value={wizardData.manualDetectWidth ?? ""}
+                onChange={(event) =>
+                  onUpdate({ manualDetectWidth: event.target.value })
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="wizard-detect-height">
+                {t("cameraWizard.step4.manualResolution.height")}
+              </Label>
+              <Input
+                id="wizard-detect-height"
+                type="number"
+                inputMode="numeric"
+                min={2}
+                max={16384}
+                step={2}
+                value={wizardData.manualDetectHeight ?? ""}
+                onChange={(event) =>
+                  onUpdate({ manualDetectHeight: event.target.value })
+                }
+              />
+            </div>
+          </div>
+          {!detectDimensions &&
+            (wizardData.manualDetectWidth || wizardData.manualDetectHeight) && (
+              <p className="text-sm text-danger">
+                {t("cameraWizard.step4.manualResolution.invalid")}
+              </p>
+            )}
+        </div>
+      )}
+
+      {hasUnverifiedStreams && (
+        <div className="space-y-3 rounded-lg border border-yellow-500/50 p-4 text-sm">
+          <p>{t("cameraWizard.step4.unverified.description")}</p>
+          <div className="flex items-start gap-2">
+            <Checkbox
+              id="wizard-allow-unverified"
+              checked={allowUnverified}
+              onCheckedChange={(checked) =>
+                setAllowUnverified(checked === true)
+              }
+            />
+            <Label htmlFor="wizard-allow-unverified">
+              {t("cameraWizard.step4.unverified.acknowledge")}
+            </Label>
+          </div>
+          <div className="flex items-start gap-2">
+            <Checkbox
+              id="wizard-save-disabled"
+              checked={saveDisabled}
+              onCheckedChange={(checked) => setSaveDisabled(checked === true)}
+            />
+            <Label htmlFor="wizard-save-disabled">
+              {t("cameraWizard.step4.unverified.saveDisabled")}
+            </Label>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col-reverse gap-2 pt-6 sm:flex-row sm:justify-end">
         {onBack && (
           <Button type="button" onClick={onBack} className="sm:flex-1">
@@ -465,7 +572,9 @@ export default function Step4Validation({
         <Button
           type="button"
           onClick={handleSave}
-          disabled={!canSave || isLoading}
+          disabled={
+            !canSave || isLoading || isValidating || testingStreams.size > 0
+          }
           className="sm:flex-1"
           variant="select"
         >
@@ -492,22 +601,27 @@ function StreamIssues({
 }: StreamIssuesProps) {
   const { t } = useTranslation(["views/settings"]);
 
-  const issues = useMemo(
-    () =>
-      getStreamIssues(
-        {
-          url: stream.url,
-          roles: stream.roles,
-          brand: wizardData.brandTemplate,
-          reolinkProtocol: wizardData.reolinkProtocol,
-          useFfmpeg: stream.useFfmpeg,
-          restream: stream.restream,
-          testResult: stream.testResult,
-        },
-        t,
-      ),
-    [stream, wizardData, t],
-  );
+  const issues = useMemo(() => {
+    const dimensions = wizardDetectDimensions(
+      wizardData.streams || [],
+      wizardData.manualDetectWidth,
+      wizardData.manualDetectHeight,
+    );
+    return getStreamIssues(
+      {
+        url: stream.url,
+        roles: stream.roles,
+        brand: wizardData.brandTemplate,
+        reolinkProtocol: wizardData.reolinkProtocol,
+        useFfmpeg: stream.useFfmpeg,
+        restream: stream.restream,
+        testResult: stream.testResult,
+        manualDetectDimensions:
+          dimensions?.source === "manual" ? dimensions : undefined,
+      },
+      t,
+    );
+  }, [stream, wizardData, t]);
 
   if (issues.length === 0) {
     return null;

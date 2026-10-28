@@ -44,7 +44,9 @@ Do not disable the page file for a machine running GPU runtimes and multiple spa
 
 ## Shared-memory errors
 
-A named shared-memory failure can result from address-space pressure, page-file exhaustion, stale processes, or security software. Stop the Gannet service and confirm all child Python and FFmpeg processes exit before restarting. A reboot clears orphaned Windows kernel objects if a force-terminated process left them behind.
+A warning about frames that could not be read from shared memory does not necessarily mean memory is exhausted. Frames may have been overwritten because processing fell behind, or a mapping may be unavailable. Check the warning's frame age, CPU and detector load, detect FPS, and earlier capture errors. Reducing detect FPS or resolution can help processing keep up. `SHM_MAX_FRAMES` controls the frame ring capacity (default 50); increasing it may give processing more time, but uses more page-file-backed memory per camera and is not a fix for every cause.
+
+A named shared-memory allocation failure can result from address-space pressure, page-file exhaustion, stale processes, or security software. Stop the Gannet service and confirm all child Python and FFmpeg processes exit before restarting. A reboot clears orphaned Windows kernel objects if a force-terminated process left them behind.
 
 ## Collecting evidence
 

@@ -428,6 +428,8 @@
     "step2": {
       "description": "Probe the camera for available streams or configure manual settings based on your selected detection method.",
       "testSuccess": "Connection test successful!",
+      "manualSetup": "Enter a stream manually",
+      "continueOffline": "Continue without connecting",
       "testFailed": "Connection test failed. Please check your input and try again.",
       "unauthorizedHelp": "The camera rejected RTSP authentication. Check the RTSP account and stream path. Credentials in the URL take precedence over the separate fields. Asterisks in the error hide credentials for safety; they are not the actual username or password.",
       "testFailedTitle": "Test Failed",
@@ -501,6 +503,7 @@
         "description": "Turn this on if you watch recordings in Safari or on an iPhone, iPad, or Mac."
       },
       "detectRoleWarning": "At least one stream must have the \"detect\" role to proceed.",
+      "streamDetailsRequired": "Enter a URL and assign at least one role for every stream.",
       "rolesPopover": {
         "title": "Stream Roles",
         "detect": "Main feed for object detection.",
@@ -524,7 +527,19 @@
       }
     },
     "step4": {
-      "description": "Final validation and analysis before saving your new camera. Connect each stream before saving.",
+      "description": "Test your streams before saving, or explicitly save them unverified if the camera is unavailable.",
+      "manualResolution": {
+        "title": "Detect resolution required",
+        "description": "The detect stream's resolution is unknown. Enter an output size for detection; choose a size with the camera stream's aspect ratio. You can change it later in camera detection settings.",
+        "width": "Detect width (pixels)",
+        "height": "Detect height (pixels)",
+        "invalid": "Enter both width and height as even whole numbers from 2 to 16384."
+      },
+      "unverified": {
+        "description": "At least one stream has not connected successfully. Check the URL and credentials; there will be no video or recordings until it connects. If enabled, Gannet will keep retrying.",
+        "acknowledge": "I understand and want to save the unverified streams",
+        "saveDisabled": "Save the camera disabled (enabling it later requires a restart)"
+      },
       "validationTitle": "Stream Validation",
       "connectAllStreams": "Connect All Streams",
       "reconnectionSuccess": "Reconnection successful.",
@@ -555,7 +570,7 @@
         "audioCodecGood": "Audio codec is {{codec}}.",
         "resolutionHigh": "A resolution of {{resolution}} may cause increased resource usage.",
         "resolutionLow": "A resolution of {{resolution}} may be too low for reliable detection of small objects.",
-        "resolutionUnknown": "The resolution of this stream could not be probed. You should manually set the detect resolution in Settings or your config.",
+        "resolutionUnknown": "The stream resolution could not be probed. Set a detect width and height for this camera.",
         "noAudioWarning": "No audio detected for this stream, recordings will not have audio.",
         "audioCodecRecordError": "The AAC audio codec is required to support audio in recordings.",
         "audioCodecRequired": "An audio stream is required to support audio detection.",
@@ -574,6 +589,20 @@
     }
   },
   "cameraManagement": {
+    "credentials": {
+      "open": "View credentials for {{camera}}",
+      "title": "Connection credentials: {{camera}}",
+      "description": "These are the configured connection details, not necessarily the camera's current login. Keep them private.",
+      "loadError": "Could not load camera credentials. Administrator access is required.",
+      "ffmpegInput": "FFmpeg input {{number}} ({{roles}})",
+      "go2rtcSource": "go2rtc {{name}}, source {{number}}",
+      "onvif": "ONVIF",
+      "username": "Username",
+      "password": "Password",
+      "noLogin": "No username or password was found in this source.",
+      "reveal": "Show passwords and URLs",
+      "hide": "Hide passwords and URLs"
+    },
     "title": "Manage Cameras",
     "description": "Add, edit, and delete cameras, control the state of each camera, and configure per-profile and camera type overrides. To configure streams, detection, motion, and other camera-specific settings, choose the specific section under Camera Configuration.",
     "addCamera": "Add New Camera",
