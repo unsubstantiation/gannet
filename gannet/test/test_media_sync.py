@@ -65,5 +65,55 @@ class TestLimitedRecordingScan(unittest.TestCase):
         self.assertCountEqual(result.orphan_paths, [self.old_file, self.new_file])
 
 
+class TestRecordingDbScanPaging(unittest.TestCase):
+    """The DB half of the recordings sync has to visit every row.
+
+    ``peewee`` numbers pages from 1, so a scan that walks ``range(num_pages)``
+    reads the first page twice and never reads the last one.
+    """
+
+    PAGE_SIZE = 1000
+
+    def setUp(self):
+        self.db = SqliteDatabase(":memory:")
+        self.db.bind([Recordings])
+        self.db.connect()
+        self.db.create_tables([Recordings])
+        self.addCleanup(self.db.close)
+
+    def test_db_scan_checks_every_recording_row(self):
+        # one row past the first page is what the off-by-one lost
+        total = self.PAGE_SIZE + 500
+        rows = [
+            {
+                "id": f"{index:030d}",
+                "camera": "cam",
+                "path": os.path.join("recordings", f"{index:030d}.mp4"),
+                "start_time": datetime.datetime.now()
+                .astimezone(datetime.UTC)
+                .timestamp(),
+                "end_time": datetime.datetime.now()
+                .astimezone(datetime.UTC)
+                .timestamp(),
+                "duration": 10.0,
+            }
+            for index in range(total)
+        ]
+
+        with self.db.atomic():
+            for batch_start in range(0, total, 500):
+                Recordings.insert_many(rows[batch_start : batch_start + 500]).execute()
+
+        self.assertEqual(Recordings.select().count(), total)
+
+        with tempfile.TemporaryDirectory() as empty_dir:
+            with patch.object(media, "RECORD_DIR", empty_dir):
+                result = media.sync_recordings(dry_run=True, force=True)
+
+        # none of the paths exist on disk, so every row is an orphan
+        self.assertEqual(result.orphans_found, total)
+        self.assertEqual(len(set(result.orphan_db_paths)), total)
+
+
 if __name__ == "__main__":
     unittest.main()

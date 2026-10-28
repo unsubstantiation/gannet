@@ -10,6 +10,7 @@ from gannet.models import Event, Recordings, ReviewSegment
 from gannet.stats.emitter import StatsEmitter
 from gannet.test.http_api.base_http_test import AuthTestClient, BaseTestHttp
 from gannet.util.env import FRIGATE_ENV_VARS
+from gannet.util.platform import storage_stat_key
 
 
 class TestHttpApp(BaseTestHttp):
@@ -49,6 +50,33 @@ class TestHttpApp(BaseTestHttp):
             response = client.get("/recordings/storage")
             assert response.status_code == 200
             assert response.json()["front_door"]["usage_percent"] == 25.0
+
+    def test_recordings_storage_tolerates_missing_storage_entry(self):
+        """A storage block without a recordings entry answers {}, not a 500.
+
+        disk_usage() failing (an unmounted volume, a drive that went away)
+        leaves the emitter's entry empty, which is the case the endpoint's
+        `if not recording_stats` guard exists for. Reaching it must not
+        depend on the key happening to be present.
+        """
+        stats = Mock(spec=StatsEmitter)
+        stats.get_latest_stats.return_value = {
+            "service": {"storage": {storage_stat_key("recordings"): {}}}
+        }
+        app = super().create_app(stats)
+        app.storage_maintainer = Mock()
+
+        with AuthTestClient(app) as client:
+            response = client.get("/recordings/storage")
+            assert response.status_code == 200
+            assert response.json() == {}
+
+        stats.get_latest_stats.return_value = {"service": {"storage": {}}}
+
+        with AuthTestClient(app) as client:
+            response = client.get("/recordings/storage")
+            assert response.status_code == 200
+            assert response.json() == {}
 
     def test_camera_name_collision_keeps_admin_default(self):
         self.minimal_config["cameras"]["faces"] = self.minimal_config["cameras"].pop(

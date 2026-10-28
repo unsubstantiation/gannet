@@ -32,6 +32,7 @@ from gannet.const import (
 )
 from gannet.models import Event, Recordings
 from gannet.util.file import robust_remove
+from gannet.util.platform import storage_stat_key
 from gannet.util.recording_coverage import (
     coverage_spans,
     known_video_codecs,
@@ -49,9 +50,15 @@ router = APIRouter(tags=[Tags.recordings])
 
 @router.get("/recordings/storage", dependencies=[Depends(require_role(["admin"]))])
 def get_recordings_storage_usage(request: Request):
-    recording_stats = request.app.stats_emitter.get_latest_stats()["service"][
-        "storage"
-    ][RECORD_DIR]
+    # The storage block is keyed by the short names in platform.STORAGE_KEYS
+    # (the web UI reads "recordings", "cache" and "memory"), not by path, so
+    # it has to be looked up the same way it is written.
+    storage_stats = (
+        request.app.stats_emitter.get_latest_stats()
+        .get("service", {})
+        .get("storage", {})
+    )
+    recording_stats = storage_stats.get(storage_stat_key("recordings", RECORD_DIR))
 
     if not recording_stats:
         return JSONResponse({})

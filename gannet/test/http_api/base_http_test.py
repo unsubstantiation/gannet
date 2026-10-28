@@ -1,6 +1,5 @@
 import datetime
 import logging
-import os
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -14,12 +13,12 @@ from pydantic import Json
 
 from gannet.api.fastapi_app import create_fastapi_app
 from gannet.config import FrigateConfig
-from gannet.const import BASE_DIR, CACHE_DIR
 from gannet.debug_replay import DebugReplayManager
 from gannet.jobs.export import JobStatePublisher
 from gannet.models import Event, Recordings, ReviewSegment
 from gannet.review.types import SeverityEnum
 from gannet.test.const import cleanup_test_db, test_db_path
+from gannet.util.platform import storage_stat_key
 
 
 class AuthTestClient(TestClient):
@@ -106,26 +105,29 @@ class BaseTestHttp(unittest.TestCase):
                 "skipped_fps": 0.0,
             },
             "service": {
+                # keyed by platform.storage_stat_key(), exactly as the stats
+                # emitter writes it: the web UI reads these short names, not
+                # the paths upstream Frigate used
                 "storage": {
-                    "/dev/shm": {
+                    storage_stat_key("shm"): {
                         "free": 50.5,
                         "mount_type": "tmpfs",
                         "total": 67.1,
                         "used": 16.6,
                     },
-                    os.path.join(BASE_DIR, "clips"): {
+                    storage_stat_key("clips"): {
                         "free": 42429.9,
                         "mount_type": "ext4",
                         "total": 244529.7,
                         "used": 189607.0,
                     },
-                    os.path.join(BASE_DIR, "recordings"): {
+                    storage_stat_key("recordings"): {
                         "free": 0.2,
                         "mount_type": "ext4",
                         "total": 8.0,
                         "used": 7.8,
                     },
-                    CACHE_DIR: {
+                    storage_stat_key("cache"): {
                         "free": 976.8,
                         "mount_type": "tmpfs",
                         "total": 1000.0,
