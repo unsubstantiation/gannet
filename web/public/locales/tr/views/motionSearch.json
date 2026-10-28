@@ -11,7 +11,7 @@
         "title": "Arama Aralığı",
         "start": "Başlangıç zamanı"
     },
-    "documentTitle": "Hareket Ara - Frigate",
+    "documentTitle": "Hareket Ara - Gannet",
     "title": "Hareket Ara",
     "description": "İlgi bölgesi tanımlamak için bir çokgen çizin ve o bölgedeki hareket değişimlerini aramak için bir zaman aralığı belirtin.",
     "selectCamera": "Hareket Araması yükleniyor",

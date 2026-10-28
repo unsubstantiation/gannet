@@ -1,8 +1,8 @@
 {
   "documentTitle": {
-    "default": "Uživo - Frigate"
+    "default": "Uživo - Gannet"
   },
-  "documentTitle.withCamera": "{{camera}} - Uživo - Frigate",
+  "documentTitle.withCamera": "{{camera}} - Uživo - Gannet",
   "twoWayTalk": {
     "enable": "Omogući dvosmjerni razgovor",
     "disable": "Onemogući dvosmjerni razgovor"
@@ -173,7 +173,7 @@
   },
   "noCameras": {
     "title": "Nema konfiguriranih kamera",
-    "description": "Započnite povezivanjem kamere na Frigate.",
+    "description": "Započnite povezivanjem kamere na Gannet.",
     "buttonText": "Dodaj kameru",
     "restricted": {
       "title": "Nema dostupnih kamera",
@@ -181,7 +181,7 @@
     },
     "default": {
       "title": "Nema konfiguriranih kamera",
-      "description": "Započnite povezivanjem kamere na Frigate.",
+      "description": "Započnite povezivanjem kamere na Gannet.",
       "buttonText": "Dodaj kameru"
     },
     "group": {

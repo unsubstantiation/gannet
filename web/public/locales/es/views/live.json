@@ -1,8 +1,8 @@
 {
   "documentTitle": {
-    "default": "En vivo - Frigate"
+    "default": "En vivo - Gannet"
   },
-  "documentTitle.withCamera": "{{camera}} - Directo - Frigate",
+  "documentTitle.withCamera": "{{camera}} - Directo - Gannet",
   "twoWayTalk": {
     "enable": "Habilitar conversación bidireccional",
     "disable": "Deshabilitar conversación bidireccional"
@@ -174,7 +174,7 @@
   },
   "noCameras": {
     "title": "No hay cámaras configuradas",
-    "description": "Comienza conectando una cámara a Frigate.",
+    "description": "Comienza conectando una cámara a Gannet.",
     "buttonText": "Añade Cámara",
     "restricted": {
       "title": "No hay cámaras disponibles",
@@ -182,7 +182,7 @@
     },
     "default": {
       "title": "No hay Cámaras Configuradas",
-      "description": "Comienza conectando una cámara a Frigate.",
+      "description": "Comienza conectando una cámara a Gannet.",
       "buttonText": "Añadir Cámara"
     },
     "group": {

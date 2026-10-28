@@ -25,7 +25,7 @@
     "noFoundForTimePeriod": "Nenhum evento encontrado neste período."
   },
   "recordings": {
-    "documentTitle": "Gravações - Frigate",
+    "documentTitle": "Gravações - Gannet",
     "invalidSharedLink": "Não foi possível abrir o link da gravação com carimbo de data/hora devido a um erro de análise.",
     "invalidSharedCamera": "Não foi possível abrir o link da gravação com carimbo de data/hora devido a uma câmera desconhecida ou não autorizada."
   },
@@ -38,7 +38,7 @@
     "label": "Ver novos itens para revisão"
   },
   "selected_one": "{{count}} selecionados",
-  "documentTitle": "Revisar - Frigate",
+  "documentTitle": "Revisar - Gannet",
   "markAsReviewed": "Marcar como Revisado",
   "selected_other": "{{count}} selecionados",
   "camera": "Câmera",

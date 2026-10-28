@@ -6,7 +6,7 @@
     },
     "friendly_name": {
         "label": "별칭",
-        "description": "Frigate UI에서 사용되는 카메라 별칭"
+        "description": "Gannet UI에서 사용되는 카메라 별칭"
     },
     "enabled": {
         "label": "활성화됨",
@@ -109,7 +109,7 @@
         "description": "프레임의 특정 영역을 정의하여 객체가 해당 영역 내에 있는지 여부를 판정할 수 있도록 합니다.",
         "friendly_name": {
             "label": "구역 별칭",
-            "description": "Frigate UI에 표시될 구역 이름입니다. 지정하지 않으면 구역 고유 식별자 이름이 사용됩니다."
+            "description": "Gannet UI에 표시될 구역 이름입니다. 지정하지 않으면 구역 고유 식별자 이름이 사용됩니다."
         },
         "enabled": {
             "label": "활성화됨",
@@ -973,7 +973,7 @@
             },
             "calibrate_on_startup": {
                 "label": "시작 시 모터 캘리브레이션",
-                "description": "추적 정확도를 향상하기 위해 부팅 시 PTZ 모터 속도를 측정합니다. 보정 완료 후 Frigate가 movement_weights 값을 자동으로 업데이트합니다."
+                "description": "추적 정확도를 향상하기 위해 부팅 시 PTZ 모터 속도를 측정합니다. 보정 완료 후 Gannet가 movement_weights 값을 자동으로 업데이트합니다."
             },
             "zooming": {
                 "label": "줌 모드",
@@ -1010,7 +1010,7 @@
         },
         "ignore_time_mismatch": {
             "label": "시간 불일치 무시",
-            "description": "ONVIF 통신 시 카메라와 Frigate 서버 간의 시간 동기화 차이를 무시합니다."
+            "description": "ONVIF 통신 시 카메라와 Gannet 서버 간의 시간 동기화 차이를 무시합니다."
         }
     },
     "type": {

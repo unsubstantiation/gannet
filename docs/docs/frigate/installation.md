@@ -32,19 +32,19 @@ The bootstrap performs these steps:
 3. installs the pinned dependencies from `requirements.txt`;
 4. downloads and verifies FFmpeg 8.1.2, go2rtc 1.9.14, and the CPU detection and YAMNet audio models;
 5. builds the React web application when Node.js is available;
-6. writes `run_frigate.ps1`; and
+6. writes `run_gannet.ps1`; and
 7. creates a Start Menu shortcut unless `--skip-shortcut` is used.
 
 Start Gannet with:
 
 ```powershell
-.\run_frigate.ps1
+.\run_gannet.ps1
 ```
 
 Open `https://localhost:8971` and accept the first-run warning for the
 generated self-signed certificate. On first start, the generated administrator
 password is printed to the console and recorded in
-`%LOCALAPPDATA%\Frigate\tmp\logs\frigate\current`.
+`%LOCALAPPDATA%\Gannet\tmp\logs\gannet\current`.
 
 ### Bootstrap options
 
@@ -73,11 +73,11 @@ that the performance trade-off is appropriate for the host.
 
 ## Data locations
 
-The default writable root is `%LOCALAPPDATA%\Frigate` for an interactive user.
-The `Frigate` directory name is retained for compatibility. It contains:
+The default writable root is `%LOCALAPPDATA%\Gannet` for an interactive user.
+Service installs use `%ProgramData%\Gannet` unless `-BaseDir` is given. It contains:
 
 ```text
-Frigate\
+Gannet\
   cache\               model downloads and temporary data
   config\
     config.yml          main configuration
@@ -90,27 +90,45 @@ Frigate\
     exports\            user exports
     recordings\         recording segments
   tmp\
-    logs\frigate\current  main Gannet log
+    logs\gannet\current  main Gannet log
     logs\go2rtc\current   go2rtc log
     restart marker and other runtime temporary files
 ```
 
+### Upgrading from an older build
+
+This release changes the default data directory from `%LOCALAPPDATA%\Gannet`
+to `%LOCALAPPDATA%\Gannet`. **It does not move or adopt the old directory.**
+Startup warns when the legacy folder exists, and the bootstrap and portable
+launchers print the same warning. To keep an existing config, database, and
+recordings, set `GANNET_BASE_DIR` (or the still-supported `FRIGATE_BASE_DIR`)
+to the old path before launching, for example:
+
+```powershell
+$env:GANNET_BASE_DIR = "$env:LOCALAPPDATA\Gannet"
+```
+
+Set it persistently in the account or service environment — a variable in one
+PowerShell window does not reach a later launch. Alternatively copy `config\`,
+`media\`, `cache\` and `tmp\` from the old tree into the new one while the
+application is stopped.
+
 Relocate the whole tree before running the bootstrap:
 
 ```powershell
-$env:FRIGATE_BASE_DIR = 'D:\Gannet'
+$env:GANNET_BASE_DIR = 'D:\Gannet'
 py -3.12 bootstrap_windows.py
 ```
 
-Or override individual directories with `FRIGATE_CONFIG_DIR`,
-`FRIGATE_MEDIA_DIR`, `FRIGATE_CACHE_DIR`, and `FRIGATE_TMP_DIR`. Persist these
+Or override individual directories with `GANNET_CONFIG_DIR`,
+`GANNET_MEDIA_DIR`, `GANNET_CACHE_DIR`, and `GANNET_TMP_DIR`. Persist these
 variables in the account or service environment; setting them in one temporary
 PowerShell window does not affect later launches.
 
 ## Configuration
 
 If the bootstrap did not create a configuration, create
-`%LOCALAPPDATA%\Frigate\config\config.yml`. A minimal configuration is:
+`%LOCALAPPDATA%\Gannet\config\config.yml`. A minimal configuration is:
 
 ```yaml
 mqtt:
@@ -147,10 +165,10 @@ Camera names may not use Windows reserved device names such as `CON`, `NUL`, or
 | `8555/tcp` and UDP | go2rtc configuration | Optional WebRTC media |
 
 The public and internal ports must be different. Change the public binding with
-`FRIGATE_WEB_HOST` and `FRIGATE_WEB_PORT`. For a local-only install:
+`GANNET_WEB_HOST` and `GANNET_WEB_PORT`. For a local-only install:
 
 ```powershell
-$env:FRIGATE_WEB_HOST = '127.0.0.1'
+$env:GANNET_WEB_HOST = '127.0.0.1'
 ```
 
 Allow port 8971 through Windows Defender Firewall only when other computers need
@@ -167,9 +185,9 @@ networking:
     enabled: true
 ```
 
-With it enabled and no `FRIGATE_WEB_HOST` override, Gannet binds the dual-stack
+With it enabled and no `GANNET_WEB_HOST` override, Gannet binds the dual-stack
 wildcard `::`, which on Windows accepts both IPv6 and IPv4 connections. An
-explicit `FRIGATE_WEB_HOST` always wins; an IPv6 address there while
+explicit `GANNET_WEB_HOST` always wins; an IPv6 address there while
 `networking.ipv6.enabled` is `false` is still bound, but a warning is logged
 because the installer's firewall rule and these docs assume the config reflects
 what is in effect. The internal listener is loopback-only (`127.0.0.1`)
@@ -203,19 +221,19 @@ py -3.12 bootstrap_windows.py --install-service
 ```
 
 The service wrapper uses pywin32 and starts Gannet from the repository/install
-root. The installer pins `FRIGATE_BASE_DIR` in the service environment, using
-the current override or `%ProgramData%\Frigate` by default. This is separate
+root. The installer pins `GANNET_BASE_DIR` in the service environment, using
+the current override or `%ProgramData%\Gannet` by default. This is separate
 from an interactive user's data. To choose another service data directory, use
-`.\scripts\install_frigate_service.ps1 -Action Configure -BaseDir D:\Gannet`
-from an elevated PowerShell session. The SCM service name is `Frigate`.
+`.\scripts\install_gannet_service.ps1 -Action Configure -BaseDir D:\Gannet`
+from an elevated PowerShell session. The SCM service name is `Gannet`.
 
 Useful commands:
 
 ```powershell
-Get-Service Frigate
-Start-Service Frigate
-Stop-Service Frigate
-Restart-Service Frigate
+Get-Service Gannet
+Start-Service Gannet
+Stop-Service Gannet
+Restart-Service Gannet
 ```
 
 The API restart action creates a restart marker and exits cleanly; the launcher
@@ -255,6 +273,6 @@ or a Defender exclusion that you created. Remove those separately if desired.
   can hold media handles. Gannet retries sharing violations; persistent cases
   should be handled with narrowly scoped exclusions.
 - **Long-path warning:** enable Win32 long paths through Windows policy or move
-  `FRIGATE_BASE_DIR` closer to a drive root.
+  `GANNET_BASE_DIR` closer to a drive root.
 - **No GPU acceleration:** update the Windows display driver and verify the
   selected FFmpeg preset or ONNX provider in the System page.

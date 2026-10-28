@@ -1,7 +1,7 @@
 {
   "documentTitle": {
-    "default": "Live - Frigate",
-    "withCamera": "{{camera}} - Live - Frigate"
+    "default": "Live - Gannet",
+    "withCamera": "{{camera}} - Live - Gannet"
   },
   "lowBandwidthMode": "Low-bandwidth Mode",
   "twoWayTalk": {
@@ -166,7 +166,7 @@
       "resetStream": "Reset stream",
       "force": {
         "label": "Force low-bandwidth mode",
-        "desc": "Always play Frigate's built-in low-bandwidth feed instead of the selected stream. Works on any connection, but has lower quality and no audio."
+        "desc": "Always play Gannet's built-in low-bandwidth feed instead of the selected stream. Works on any connection, but has lower quality and no audio."
       }
     },
     "playInBackground": {
@@ -175,7 +175,7 @@
     },
     "mode": "Streaming Technology",
     "technology": {
-      "description": "Choose your preferred streaming technology. Frigate may still fall back to low bandwidth mode on playback or network errors.",
+      "description": "Choose your preferred streaming technology. Gannet may still fall back to low bandwidth mode on playback or network errors.",
       "name": {
         "mse": "MSE",
         "webrtc": "WebRTC",
@@ -226,7 +226,7 @@
   },
   "noCameras": {
     "title": "No Cameras Configured",
-    "description": "Get started by connecting a camera to Frigate.",
+    "description": "Get started by connecting a camera to Gannet.",
     "buttonText": "Add Camera",
     "restricted": {
       "title": "No Cameras Available",
@@ -234,7 +234,7 @@
     },
     "default": {
       "title": "No Cameras Configured",
-      "description": "Get started by connecting a camera to Frigate.",
+      "description": "Get started by connecting a camera to Gannet.",
       "buttonText": "Add Camera"
     },
     "group": {

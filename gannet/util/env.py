@@ -1,4 +1,4 @@
-"""Environment variable and secrets handling for the Frigate config."""
+"""Environment variable and secrets handling for the Gannet config."""
 
 import logging
 import os
@@ -15,16 +15,66 @@ logger = logging.getLogger(__name__)
 
 
 class UnknownVariableError(ValueError):
-    """Undefined {FRIGATE_*} placeholder. ValueError so pydantic names the field."""
+    """Undefined {GANNET_*}/{FRIGATE_*} placeholder: a ValueError for pydantic."""
+
+
+# Either prefix is accepted. GANNET_* is preferred; the FRIGATE_* spelling is
+# kept so an existing config, secrets file, or process environment still works.
+PREFERRED_PREFIX = "GANNET_"
+LEGACY_PREFIX = "FRIGATE_"
+_ENV_PREFIXES = (PREFERRED_PREFIX, LEGACY_PREFIX)
+
+
+def _alias_env_key(key: str) -> str | None:
+    """The other spelling of a prefixed variable, if there is one."""
+    if key.startswith(PREFERRED_PREFIX):
+        return LEGACY_PREFIX + key[len(PREFERRED_PREFIX) :]
+    if key.startswith(LEGACY_PREFIX):
+        return PREFERRED_PREFIX + key[len(LEGACY_PREFIX) :]
+    return None
+
+
+def _normalize_env_keys(values: Mapping[str, str]) -> dict[str, str]:
+    """Expose every prefixed variable under both spellings.
+
+    A value set under the preferred name wins over its legacy alias, so
+    ``{GANNET_RTSP_PASSWORD}`` and ``{FRIGATE_RTSP_PASSWORD}`` both resolve to
+    the same secret without ever using the older spelling's value by accident.
+    """
+    result: dict[str, str] = {}
+    # Legacy keys first, so a preferred key is always the last writer.
+    ordered = sorted(
+        values.items(), key=lambda item: item[0].startswith(PREFERRED_PREFIX)
+    )
+    for key, value in ordered:
+        alias = _alias_env_key(key)
+        if alias is None:
+            continue
+        if (
+            key.startswith(PREFERRED_PREFIX)
+            and alias in result
+            and result[alias] != value
+        ):
+            logger.warning(
+                "%s and %s disagree; using the value from %s", alias, key, key
+            )
+        result[alias] = value
+        result[key] = value
+    return result
+
+
+def _replace_env_source(target: dict[str, str], values: Mapping[str, str]) -> None:
+    target.clear()
+    target.update(_normalize_env_keys(values))
 
 
 # Substitution sources, lowest precedence first.
 _CONFIG_ENV_VARS: dict[str, str] = {}
 _SECRETS_FILE: dict[str, str] = {}
 # Snapshot: apply_config_env_vars() writes os.environ after import.
-_PROCESS_ENV: dict[str, str] = {
-    k: v for k, v in os.environ.items() if k.startswith("FRIGATE_")
-}
+_PROCESS_ENV: dict[str, str] = _normalize_env_keys(
+    {k: v for k, v in os.environ.items() if k.startswith(_ENV_PREFIXES)}
+)
 
 _SOURCES: tuple[tuple[str, dict[str, str]], ...] = (
     ("environment_vars config block", _CONFIG_ENV_VARS),
@@ -33,12 +83,14 @@ _SOURCES: tuple[tuple[str, dict[str, str]], ...] = (
 )
 
 FRIGATE_ENV_VARS: dict[str, str] = {}
+#: Preferred name for the same dict; both names stay valid for existing code.
+GANNET_ENV_VARS = FRIGATE_ENV_VARS
 
 _WARNED_COLLISIONS: set[str] = set()
 
 
 def _rebuild(warn: bool = True) -> None:
-    """Merge the sources into FRIGATE_ENV_VARS.
+    """Merge the sources into GANNET_ENV_VARS.
 
     warn=False is for the import-time call, before logging is configured.
     """
@@ -83,7 +135,7 @@ def _secrets_file_path() -> str | None:
 
 
 def _load_secrets_file() -> dict[str, str]:
-    """Read the flat FRIGATE_* map from secrets.yaml, if it exists."""
+    """Read the flat GANNET_*/FRIGATE_* map from secrets.yaml, if present."""
     path = _secrets_file_path()
 
     if path is None:
@@ -114,9 +166,11 @@ def _load_secrets_file() -> dict[str, str]:
         if isinstance(value, (dict, list)):
             raise ValueError(f"{path} value for {name} must be a single value")
 
-        if not name.startswith("FRIGATE_"):
+        if not name.startswith(_ENV_PREFIXES):
             logger.warning(
-                "Ignoring %s in %s, names must start with FRIGATE_", name, path
+                "Ignoring %s in %s, names must start with GANNET_ or FRIGATE_",
+                name,
+                path,
             )
             continue
 
@@ -133,8 +187,7 @@ def reload_sources(warn: bool = True) -> None:
         # Keep the last good values; this runs at import and on every parse.
         logger.error("Ignoring secrets file, %s", err)
     else:
-        _SECRETS_FILE.clear()
-        _SECRETS_FILE.update(secrets)
+        _replace_env_source(_SECRETS_FILE, secrets)
 
     _rebuild(warn)
 
@@ -150,6 +203,7 @@ def apply_config_env_vars(values: Mapping[str, object]) -> None:
     Unprefixed keys only set os.environ. Protected security overrides are
     skipped.
     """
+    config_values: dict[str, str] = {}
     for key, value in values.items():
         if key.upper() in _PROTECTED_ENV_VARS:
             logger.warning(
@@ -160,39 +214,42 @@ def apply_config_env_vars(values: Mapping[str, object]) -> None:
 
         resolved = str(value)
 
-        if key.startswith("FRIGATE_"):
-            _CONFIG_ENV_VARS[key] = resolved
+        if key.startswith(_ENV_PREFIXES):
+            config_values[key] = resolved
         else:
             os.environ[key] = resolved
 
+    _replace_env_source(_CONFIG_ENV_VARS, config_values)
     _rebuild()
 
-    # Export the winning value; auth reads FRIGATE_JWT_SECRET from os.environ.
-    for key in values:
-        if key.startswith("FRIGATE_"):
-            os.environ[key] = FRIGATE_ENV_VARS[key]
+    # Export the winning value under both spellings. Auth reads
+    # FRIGATE_JWT_SECRET from os.environ, while new code uses GANNET_*.
+    for key in GANNET_ENV_VARS:
+        os.environ[key] = GANNET_ENV_VARS[key]
 
 
 reload_sources(warn=False)
 
 
-# Matches a FRIGATE_* identifier following an opening brace.
-_FRIGATE_IDENT_RE = re.compile(r"FRIGATE_[A-Za-z0-9_]+")
+# Matches a GANNET_* or FRIGATE_* identifier following an opening brace.
+_FRIGATE_IDENT_RE = re.compile(r"(?:GANNET|FRIGATE)_[A-Za-z0-9_]+")
 
 
 def substitute_frigate_vars(value: str) -> str:
-    """Substitute `{FRIGATE_*}` placeholders in *value*.
+    """Substitute `{GANNET_*}` / `{FRIGATE_*}` placeholders in *value*.
 
-    Reproduces the subset of `str.format()` brace semantics that Frigate's
+    Reproduces the subset of `str.format()` brace semantics that upstream
+    Frigate's
     config has historically supported, while leaving unrelated brace content
     (e.g. ffmpeg `%{localtime\\:...}` expressions) untouched:
 
     * `{{` and `}}` collapse to literal `{` / `}` (the documented escape).
-    * `{FRIGATE_NAME}` is replaced from `FRIGATE_ENV_VARS`; an unknown name
+    * `{GANNET_NAME}` (or its legacy `{FRIGATE_NAME}` spelling) is replaced
+      from `GANNET_ENV_VARS`; an unknown name
       raises `UnknownVariableError` to preserve the existing "Invalid
       substitution" error path.
-    * A `{` that begins `{FRIGATE_` but is not a well-formed
-      `{FRIGATE_NAME}` placeholder raises `ValueError` (malformed
+    * A `{` that begins a placeholder prefix but is not a well-formed
+      `{GANNET_NAME}` placeholder raises `ValueError` (malformed
       placeholder). Callers that catch `UnknownVariableError` to allow
       unknown-var passthrough will still surface malformed syntax as an
       error.
@@ -209,8 +266,8 @@ def substitute_frigate_vars(value: str) -> str:
                 out.append("{")
                 i += 2
                 continue
-            # Possible `{FRIGATE_*}` placeholder.
-            if value.startswith("{FRIGATE_", i):
+            # Possible `{GANNET_*}` / `{FRIGATE_*}` placeholder.
+            if value.startswith(("{GANNET_", "{FRIGATE_"), i):
                 ident_match = _FRIGATE_IDENT_RE.match(value, i + 1)
                 if (
                     ident_match is not None
@@ -218,18 +275,18 @@ def substitute_frigate_vars(value: str) -> str:
                     and value[ident_match.end()] == "}"
                 ):
                     key = ident_match.group(0)
-                    if key not in FRIGATE_ENV_VARS:
+                    if key not in GANNET_ENV_VARS:
                         raise UnknownVariableError(
                             f"{key} is not defined in the environment, "
                             "secrets.yaml, or the environment_vars config"
                         )
-                    out.append(FRIGATE_ENV_VARS[key])
+                    out.append(GANNET_ENV_VARS[key])
                     i = ident_match.end() + 1
                     continue
-                # Looks like a FRIGATE placeholder but is malformed
+                # Looks like a GANNET/FRIGATE placeholder but is malformed
                 # (no closing brace, illegal char, format spec, etc.).
                 raise ValueError(
-                    f"Malformed FRIGATE_ placeholder near {value[i : i + 32]!r}"
+                    f"Malformed environment placeholder near {value[i : i + 32]!r}"
                 )
             # Plain `{` — pass through (e.g. `%{localtime\:...}`).
             out.append("{")

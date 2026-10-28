@@ -19,7 +19,7 @@ The proxy must support:
 
 Publish Gannet at the root of a dedicated hostname. The native gateway does not support hosting the UI beneath a path prefix.
 
-If the proxy connects to Gannet over HTTPS with its generated certificate, configure the proxy to trust that certificate. Alternatively, bind Gannet's public listener to loopback with `FRIGATE_WEB_HOST=127.0.0.1`, disable Gannet TLS, and let the local proxy provide TLS. Do not use plain HTTP across an untrusted network.
+If the proxy connects to Gannet over HTTPS with its generated certificate, configure the proxy to trust that certificate. Alternatively, bind Gannet's public listener to loopback with `GANNET_WEB_HOST=127.0.0.1`, disable Gannet TLS, and let the local proxy provide TLS. Do not use plain HTTP across an untrusted network.
 
 ## WebSocket origin checks
 
@@ -61,14 +61,14 @@ proxy:
     role: X-Remote-Groups
     role_map:
       admin:
-        - frigate-admins
+        - gannet-admins
       driveway_viewers:
         - driveway-team
   default_role: none
-  auth_secret: "{FRIGATE_PROXY_AUTH_SECRET}"
+  auth_secret: "{GANNET_PROXY_AUTH_SECRET}"
 ```
 
-Set `FRIGATE_PROXY_AUTH_SECRET` in the Windows service environment or `secrets.yaml`. Configure the proxy to overwrite, not append, these headers and send:
+Set `GANNET_PROXY_AUTH_SECRET` in the Windows service environment or `secrets.yaml`. Configure the proxy to overwrite, not append, these headers and send:
 
 ```text
 X-Proxy-Secret: <the same high-entropy secret>

@@ -1,21 +1,21 @@
 {
   "documentTitle": {
-    "default": "Einstellungen - Frigate",
-    "authentication": "Authentifizierungseinstellungen – Frigate",
-    "masksAndZones": "Masken- und Zoneneditor – Frigate",
-    "object": "Debug - Frigate",
-    "general": "Benutzeroberflächen-Einstellungen - Frigate",
-    "frigatePlus": "Frigate+ Einstellungen – Frigate",
-    "motionTuner": "Bewegungserkennungs-Optimierer – Frigate",
+    "default": "Einstellungen - Gannet",
+    "authentication": "Authentifizierungseinstellungen – Gannet",
+    "masksAndZones": "Masken- und Zoneneditor – Gannet",
+    "object": "Debug - Gannet",
+    "general": "Benutzeroberflächen-Einstellungen - Gannet",
+    "frigatePlus": "Frigate+ Einstellungen – Gannet",
+    "motionTuner": "Bewegungserkennungs-Optimierer – Gannet",
     "notifications": "Benachrichtigungseinstellungen",
-    "enrichments": "Erweiterte Statistiken - Frigate",
-    "cameraManagement": "Kameras verwalten - Frigate",
-    "cameraReview": "Kameraeinstellungen prüfen - Frigate",
-    "globalConfig": "Grundeinstellungen - Frigate",
-    "cameraConfig": "Kameraeinstellungen - Frigate",
-    "maintenance": "Wartung - Frigate",
-    "profiles": "Profile - Frigate",
-    "detectorsAndModel": "Sensoren und Modell – Frigate"
+    "enrichments": "Erweiterte Statistiken - Gannet",
+    "cameraManagement": "Kameras verwalten - Gannet",
+    "cameraReview": "Kameraeinstellungen prüfen - Gannet",
+    "globalConfig": "Grundeinstellungen - Gannet",
+    "cameraConfig": "Kameraeinstellungen - Gannet",
+    "maintenance": "Wartung - Gannet",
+    "profiles": "Profile - Gannet",
+    "detectorsAndModel": "Sensoren und Modell – Gannet"
   },
   "menu": {
     "ui": "Benutzeroberfläche",
@@ -260,7 +260,7 @@
         "lineCDistance": "Spur C Distanz ({{unit}})"
       },
       "label": "Zonen",
-      "documentTitle": "Zone bearbeiten - Frigate",
+      "documentTitle": "Zone bearbeiten - Gannet",
       "add": "Zone hinzufügen",
       "name": {
         "title": "Name",
@@ -302,7 +302,7 @@
         "documentation": "Dokumentation",
         "title": "Bewegungsmasken werden verwendet, um zu verhindern, dass unerwünschte Bewegungsarten eine Erkennung auslösen. Zu starkes Maskieren erschwert das Nachverfolgen von Objekten."
       },
-      "documentTitle": "Bewegungsmaske bearbeiten – Frigate",
+      "documentTitle": "Bewegungsmaske bearbeiten – Gannet",
       "context": {
         "title": "Bewegungsmasken werden verwendet, um unerwünschte Bewegungen (z. B. Baumäste, Kamerazeitstempel) daran zu hindern, eine Erkennung auszulösen. Bewegungsmasken sollten <em>sehr sparsam</em> eingesetzt werden – zu starkes Maskieren erschwert das Nachverfolgen von Objekten."
       },
@@ -332,7 +332,7 @@
     "restart_required": "Neustart erforderlich (Maske/Zone hat sich geändert)",
     "objectMasks": {
       "label": "Objektmasken",
-      "documentTitle": "Objektmaske bearbeiten – Frigate",
+      "documentTitle": "Objektmaske bearbeiten – Gannet",
       "toast": {
         "success": {
           "noName": "Objektmaske wurde gespeichert.",
@@ -407,7 +407,7 @@
       "desc": "Bewegungsmasken-Polygone anzeigen",
       "title": "Bewegungsmasken"
     },
-    "detectorDesc": "Frigate verwendet deine Detektoren ({{detectors}}), um Objekte im Videostream deiner Kamera zu erkennen.",
+    "detectorDesc": "Gannet verwendet deine Detektoren ({{detectors}}), um Objekte im Videostream deiner Kamera zu erkennen.",
     "debugging": "Fehlersuche",
     "objectList": "Objektliste",
     "noObjects": "Keine Objekte",
@@ -446,7 +446,7 @@
     },
     "desc": {
       "documentation": "Lies die Anleitung zur Bewegungsoptimierung",
-      "title": "Frigate verwendet die Bewegungserkennung als erste Überprüfung, um festzustellen, ob im Bildausschnitt etwas passiert, das eine Objekterkennung rechtfertigt."
+      "title": "Gannet verwendet die Bewegungserkennung als erste Überprüfung, um festzustellen, ob im Bildausschnitt etwas passiert, das eine Objekterkennung rechtfertigt."
     },
     "contourArea": {
       "title": "Konturfläche",
@@ -475,7 +475,7 @@
     "title": "Benutzer",
     "management": {
       "title": "Benutzerverwaltung",
-      "desc": "Verwalte die Benutzerkonten dieser Frigate-Instanz."
+      "desc": "Verwalte die Benutzerkonten dieser Gannet-Instanz."
     },
     "table": {
       "changeRole": "Benutzerrolle ändern",
@@ -550,7 +550,7 @@
       },
       "createUser": {
         "title": "Neuen Benutzer anlegen",
-        "desc": "Füge ein neues Benutzerkonto hinzu und lege eine Rolle für den Zugriff auf Bereiche der Frigate-Benutzeroberfläche fest.",
+        "desc": "Füge ein neues Benutzerkonto hinzu und lege eine Rolle für den Zugriff auf Bereiche der Gannet-Benutzeroberfläche fest.",
         "usernameOnlyInclude": "Der Benutzername darf nur Buchstaben, Zahlen, . oder _ enthalten",
         "confirmPassword": "Bitte bestätige dein Passwort"
       },
@@ -576,12 +576,12 @@
     },
     "notificationSettings": {
       "title": "Einstellungen für Benachrichtigungen",
-      "desc": "Frigate kann von Haus aus Push-Benachrichtigungen an ein Gerät senden, wenn es im Browser läuft oder als PWA installiert ist."
+      "desc": "Gannet kann von Haus aus Push-Benachrichtigungen an ein Gerät senden, wenn es im Browser läuft oder als PWA installiert ist."
     },
     "title": "Benachrichtigungen",
     "notificationUnavailable": {
-      "desc": "Web Push Benachrichtigungen erfordern einen sicheren Kontext (<code>https://…</code>). Das ist eine Vorgabe des Browsers. Greife auf Frigate gesichert zu um Benachrichtigungen zu nutzen.",
-      "descPwa": "Unter iOS sind Web-Push-Benachrichtigungen nur verfügbar, wenn Frigate auf Ihrem Startbildschirm installiert ist. Öffnen Sie das Menü <strong>Teilen</strong>, wählen Sie <strong>Zum Startbildschirm hinzufügen</strong> und öffnen Sie Frigate über das neue Symbol, um dieses Gerät für Benachrichtigungen zu registrieren."
+      "desc": "Web Push Benachrichtigungen erfordern einen sicheren Kontext (<code>https://…</code>). Das ist eine Vorgabe des Browsers. Greife auf Gannet gesichert zu um Benachrichtigungen zu nutzen.",
+      "descPwa": "Unter iOS sind Web-Push-Benachrichtigungen nur verfügbar, wenn Gannet auf Ihrem Startbildschirm installiert ist. Öffnen Sie das Menü <strong>Teilen</strong>, wählen Sie <strong>Zum Startbildschirm hinzufügen</strong> und öffnen Sie Gannet über das neue Symbol, um dieses Gerät für Benachrichtigungen zu registrieren."
     },
     "cameras": {
       "desc": "Wähle aus für welche Kameras Benachrichtigungen aktiviert werden sollen.",
@@ -602,7 +602,7 @@
         "registerFailed": "Speichern der Benachrichtigungsregistrierung fehlgeschlagen."
       },
       "success": {
-        "registered": "Erfolgreich für Benachrichtigungen registriert. Starte Frigate neu bevor Benachrichtigungen (inklusive Testbenachrichtigung) gesendet werden können.",
+        "registered": "Erfolgreich für Benachrichtigungen registriert. Starte Gannet neu bevor Benachrichtigungen (inklusive Testbenachrichtigung) gesendet werden können.",
         "settingSaved": "Benachrichtigungseinstellungen wurden gespeichert."
       }
     },
@@ -666,11 +666,11 @@
     },
     "toast": {
       "error": "Speichern der Konfigurationsänderungen fehlgeschlagen: {{errorMessage}}",
-      "success": "Frigate+ Einstellungen wurden gespeichert. Starte Frigate neu um Änderungen anzuwenden."
+      "success": "Frigate+ Einstellungen wurden gespeichert. Starte Gannet neu um Änderungen anzuwenden."
     },
     "restart_required": "Neustart erforderlich (Frigate+ Model geändert)",
     "unsavedChanges": "Nicht gespeicherte Änderungen an den Frigate+-Einstellungen",
-    "description": "Frigate+ ist ein Abonnementdienst, der Ihnen Zugriff auf zusätzliche Funktionen und Möglichkeiten für Ihre Frigate-Instanz bietet, darunter die Möglichkeit, benutzerdefinierte Objekterkennungsmodelle zu verwenden, die auf Ihren eigenen Daten trainiert wurden. Hier können Sie Ihre Frigate+-Modelleinstellungen verwalten.",
+    "description": "Frigate+ ist ein Abonnementdienst, der Ihnen Zugriff auf zusätzliche Funktionen und Möglichkeiten für Ihre Gannet-Instanz bietet, darunter die Möglichkeit, benutzerdefinierte Objekterkennungsmodelle zu verwenden, die auf Ihren eigenen Daten trainiert wurden. Hier können Sie Ihre Frigate+-Modelleinstellungen verwalten.",
     "cardTitles": {
       "api": "API",
       "currentModel": "Aktuelles Modell",
@@ -710,11 +710,11 @@
         }
       },
       "title": "Semantische Suche",
-      "desc": "Die semantische Suche in Frigate ermöglicht es Ihnen, verfolgte Objekte innerhalb Ihrer Überprüfungselemente zu finden, indem Sie entweder das Bild selbst, eine benutzerdefinierte Textbeschreibung oder eine automatisch generierte Beschreibung verwenden."
+      "desc": "Die semantische Suche in Gannet ermöglicht es Ihnen, verfolgte Objekte innerhalb Ihrer Überprüfungselemente zu finden, indem Sie entweder das Bild selbst, eine benutzerdefinierte Textbeschreibung oder eine automatisch generierte Beschreibung verwenden."
     },
     "faceRecognition": {
       "title": "Gesichtserkennung",
-      "desc": "Die Gesichtserkennung ermöglicht es, Personen Namen zuzuweisen. Wenn ein Gesicht erkannt wird, ordnet Frigate den Namen der Person als Untertitel zu. Diese Informationen sind in der Benutzeroberfläche, den Filtern und in den Benachrichtigungen enthalten.",
+      "desc": "Die Gesichtserkennung ermöglicht es, Personen Namen zuzuweisen. Wenn ein Gesicht erkannt wird, ordnet Gannet den Namen der Person als Untertitel zu. Diese Informationen sind in der Benutzeroberfläche, den Filtern und in den Benachrichtigungen enthalten.",
       "modelSize": {
         "label": "Modellgröße",
         "desc": "Die Größe des für die Gesichtserkennung verwendeten Modells.",
@@ -730,11 +730,11 @@
     },
     "licensePlateRecognition": {
       "title": "Kennzeichenerkennung",
-      "desc": "Frigate kann Kennzeichen an Fahrzeugen erkennen und die erkannten Zeichen automatisch in das Feld recognized_license_plate oder einen bekannten Namen als sub_label zu Objekten vom Typ car hinzufügen. Ein häufiger Anwendungsfall ist das Lesen der Kennzeichen von Autos, die in eine Einfahrt einfahren oder auf einer Straße vorbeifahren."
+      "desc": "Gannet kann Kennzeichen an Fahrzeugen erkennen und die erkannten Zeichen automatisch in das Feld recognized_license_plate oder einen bekannten Namen als sub_label zu Objekten vom Typ car hinzufügen. Ein häufiger Anwendungsfall ist das Lesen der Kennzeichen von Autos, die in eine Einfahrt einfahren oder auf einer Straße vorbeifahren."
     },
     "restart_required": "Neustart erforderlich (Verbesserungseinstellungen geändert)",
     "toast": {
-      "success": "Die Einstellungen für die Verbesserungen wurden gespeichert. Starten Sie Frigate neu, um Ihre Änderungen zu übernehmen.",
+      "success": "Die Einstellungen für die Verbesserungen wurden gespeichert. Starten Sie Gannet neu, um Ihre Änderungen zu übernehmen.",
       "error": "Konfigurationsänderungen konnten nicht gespeichert werden: {{errorMessage}}"
     }
   },
@@ -818,7 +818,7 @@
         },
         "actions": {
           "title": "Aktionen",
-          "desc": "Standardmäßig sendet Frigate für alle Trigger eine MQTT-Nachricht. Unterbezeichnungen fügen den Triggernamen zur Objektbezeichnung hinzu. Attribute sind durchsuchbare Metadaten, die separat in den Metadaten des verfolgten Objekts gespeichert werden.",
+          "desc": "Standardmäßig sendet Gannet für alle Trigger eine MQTT-Nachricht. Unterbezeichnungen fügen den Triggernamen zur Objektbezeichnung hinzu. Attribute sind durchsuchbare Metadaten, die separat in den Metadaten des verfolgten Objekts gespeichert werden.",
           "error": {
             "min": "Mindesten eine Aktion muss ausgewählt sein."
           }
@@ -892,7 +892,7 @@
     },
     "management": {
       "title": "Zuschauer Rollenverwaltung",
-      "desc": "Verwalten Sie benutzerdefinierte Zuschauerrollen und ihre Kamerazugriffsberechtigungen für diese Frigate-Instanz."
+      "desc": "Verwalten Sie benutzerdefinierte Zuschauerrollen und ihre Kamerazugriffsberechtigungen für diese Gannet-Instanz."
     },
     "addRole": "Rolle hinzufügen",
     "table": {
@@ -921,7 +921,7 @@
   },
   "cameraWizard": {
     "title": "Kamera hinzufügen",
-    "description": "Folge den Anweisungen unten, um eine neue Kamera zu deiner Frigate-Installation hinzuzufügen.",
+    "description": "Folge den Anweisungen unten, um eine neue Kamera zu deiner Gannet-Installation hinzuzufügen.",
     "steps": {
       "nameAndConnection": "Name & Verbindung",
       "streamConfiguration": "Stream Konfiguration",
@@ -1078,7 +1078,7 @@
       "estimatedBandwidth": "Voraussichtliche Bandbreite",
       "roles": "Rollen",
       "ffmpegModule": "Stream-Kompatibilitätsmodus verwenden",
-      "ffmpegModuleDescription": "Wenn der Stream nach mehreren Versuchen nicht geladen wird, versuchen Sie, diese Option zu aktivieren. Wenn diese Option aktiviert ist, verwendet Frigate das ffmpeg-Modul mit go2rtc. Dies kann zu einer besseren Kompatibilität mit einigen Kamerastreams führen.",
+      "ffmpegModuleDescription": "Wenn der Stream nach mehreren Versuchen nicht geladen wird, versuchen Sie, diese Option zu aktivieren. Wenn diese Option aktiviert ist, verwendet Gannet das ffmpeg-Modul mit go2rtc. Dies kann zu einer besseren Kompatibilität mit einigen Kamerastreams führen.",
       "none": "keiner",
       "error": "Fehler",
       "streamValidated": "Steam {{number}} erfolgreich validiert",
@@ -1117,16 +1117,16 @@
     "backToSettings": "Zurück zu Kameraeinstellungen",
     "streams": {
       "title": "Kamerastatus und Details",
-      "enableSuccess": "{{cameraName}} wurde aktiviert. Starte Frigate neu, um die Änderung zu übernehmen.",
+      "enableSuccess": "{{cameraName}} wurde aktiviert. Starte Gannet neu, um die Änderung zu übernehmen.",
       "reorderHandle": "Zum Neuanordnen ziehen",
       "saving": "Speichern…",
       "saved": "gespeichert",
       "details": {
         "edit": "Kameradaten bearbeiten",
         "title": "Kameradaten bearbeiten",
-        "description": "Aktualisieren Sie den Anzeigenamen, die externe URL und die Sichtbarkeit, die für diese Kamera in der gesamten Frigate-Benutzeroberfläche verwendet werden.",
+        "description": "Aktualisieren Sie den Anzeigenamen, die externe URL und die Sichtbarkeit, die für diese Kamera in der gesamten Gannet-Benutzeroberfläche verwendet werden.",
         "friendlyNameLabel": "Display Name",
-        "friendlyNameHelp": "Der in der Benutzeroberfläche von „Frigate“ für diese Kamera angezeigte Spitzname. Lassen Sie das Feld leer, um die Kamera-ID zu verwenden.",
+        "friendlyNameHelp": "Der in der Benutzeroberfläche von „Gannet“ für diese Kamera angezeigte Spitzname. Lassen Sie das Feld leer, um die Kamera-ID zu verwenden.",
         "webuiUrlLabel": "URL der Web-Benutzeroberfläche",
         "webuiUrlHelp": "URL, um die Web-Benutzeroberfläche der Kamera direkt aus der Debug-Ansicht aufzurufen. Lassen Sie das Feld leer, um den Link zu deaktivieren.",
         "webuiUrlInvalid": "Es muss sich um eine gültige URL handeln (z. B. https://example.com).",
@@ -1136,7 +1136,7 @@
         "reviewHelp": "Zeige diese Kamera in der Übersicht an, einschließlich des Kamerafilters, der Bewegungsübersicht und der Verlaufsansicht."
       },
       "label": "Kamerazustand",
-      "description": "Legen Sie den Betriebszustand für jede Kamera fest.<br /><br /><strong>Ein</strong>: Streams werden normal verarbeitet.<br /><strong>Aus</strong>: Die Verarbeitung wird vorübergehend angehalten. Diese Einstellung bleibt bei einem Neustart von Frigate nicht erhalten.<br /><strong>Deaktiviert</strong>: Die Verarbeitung wird beendet und die Änderung in Ihrer Konfiguration gespeichert. Um eine deaktivierte Kamera wieder zu aktivieren, ist ein Neustart erforderlich.<br /><br /><em>Hinweis: Die Deaktivierung hat keine Auswirkungen auf go2rtc-Restreams.</em><br /><br />Ziehen Sie den Griff, um die Reihenfolge der aktiven Kameras in der Benutzeroberfläche anzupassen, einschließlich des Live-Dashboards und der Dropdown-Menüs zur Kameraauswahl.",
+      "description": "Legen Sie den Betriebszustand für jede Kamera fest.<br /><br /><strong>Ein</strong>: Streams werden normal verarbeitet.<br /><strong>Aus</strong>: Die Verarbeitung wird vorübergehend angehalten. Diese Einstellung bleibt bei einem Neustart von Gannet nicht erhalten.<br /><strong>Deaktiviert</strong>: Die Verarbeitung wird beendet und die Änderung in Ihrer Konfiguration gespeichert. Um eine deaktivierte Kamera wieder zu aktivieren, ist ein Neustart erforderlich.<br /><br /><em>Hinweis: Die Deaktivierung hat keine Auswirkungen auf go2rtc-Restreams.</em><br /><br />Ziehen Sie den Griff, um die Reihenfolge der aktiven Kameras in der Benutzeroberfläche anzupassen, einschließlich des Live-Dashboards und der Dropdown-Menüs zur Kameraauswahl.",
       "disabledSubheading": "In der Konfiguration deaktiviert",
       "status": {
         "on": "Eingeschaltet",
@@ -1200,7 +1200,7 @@
       "description": "Legen Sie den Kameratyp für jede Kamera fest. Spezielle LPR-Kameras sind Kameras mit leistungsstarkem optischen Zoom, um Kennzeichen von weit entfernten Fahrzeugen zu erfassen. Für die meisten Kameras sollte der normale Kameratyp verwendet werden, es sei denn, die Kamera ist speziell für LPR vorgesehen und verfügt über einen stark fokussierten Blickwinkel auf die Kennzeichen.",
       "normal": "Normal",
       "dedicatedLpr": "Spezielles LPR-System",
-      "saveSuccess": "Der Kameratyp für {{cameraName}} wurde aktualisiert. Starte Frigate neu, um die Änderungen zu übernehmen."
+      "saveSuccess": "Der Kameratyp für {{cameraName}} wurde aktualisiert. Starte Gannet neu, um die Änderungen zu übernehmen."
     },
     "description": "Fügen Sie Kameras hinzu, bearbeiten und löschen Sie sie, steuern Sie den Status jeder einzelnen Kamera und konfigurieren Sie profil- und kameratypabhängige Übersteuerungen. Um Streams, Erkennung, Bewegung und andere kameraspezifische Einstellungen zu konfigurieren, wählen Sie den entsprechenden Abschnitt unter „Kamerakonfiguration“ aus.",
     "clone": {
@@ -1276,11 +1276,11 @@
       },
       "toast": {
         "success": "Einstellungen wurden auf {{cameraName}} kopiert",
-        "successWithRestart": "Die Einstellungen wurden auf {{cameraName}} kopiert. Starte Frigate neu, um alle Änderungen zu übernehmen.",
+        "successWithRestart": "Die Einstellungen wurden auf {{cameraName}} kopiert. Starte Gannet neu, um alle Änderungen zu übernehmen.",
         "successMulti_one": "Einstellungen wurden auf {{count}} Kamera kopiert",
         "successMulti_other": "Einstellungen wurden auf {{count}} Kameras kopiert",
-        "successMultiWithRestart_one": "Die Einstellungen wurden auf die Kamera {{count}} kopiert. Starte Frigate neu, um alle Änderungen zu übernehmen.",
-        "successMultiWithRestart_other": "Die Einstellungen wurden auf {{count}} Kameras kopiert. Starten Sie Frigate neu, um alle Änderungen zu übernehmen.",
+        "successMultiWithRestart_one": "Die Einstellungen wurden auf die Kamera {{count}} kopiert. Starte Gannet neu, um alle Änderungen zu übernehmen.",
+        "successMultiWithRestart_other": "Die Einstellungen wurden auf {{count}} Kameras kopiert. Starten Sie Gannet neu, um alle Änderungen zu übernehmen.",
         "partialFailure": "{{successCount}} Abschnitte wurden angewendet; '{{failedSection}}' ist fehlgeschlagen: {{errorMessage}}",
         "partialFailureMulti": "{{successCount}} Kamera(s) wurden kopiert; bei {{failed}} ist ein Fehler aufgetreten: {{errorMessage}}",
         "newCameraPartialFailure": "Die Kamera {{cameraName}} wurde erstellt, einige Einstellungen konnten jedoch nicht kopiert werden: {{errorMessage}}",
@@ -1297,17 +1297,17 @@
     },
     "review_descriptions": {
       "title": "Generative KI Review Beschreibungen",
-      "desc": "Aktivieren/deaktivieren Sie vorübergehend die generativen KI-Überprüfungsbeschreibungen für diese Kamera, bis Frigate neu gestartet wird. Wenn diese Option deaktiviert ist, werden für Überprüfungselemente auf dieser Kamera keine KI-generierten Beschreibungen angefordert."
+      "desc": "Aktivieren/deaktivieren Sie vorübergehend die generativen KI-Überprüfungsbeschreibungen für diese Kamera, bis Gannet neu gestartet wird. Wenn diese Option deaktiviert ist, werden für Überprüfungselemente auf dieser Kamera keine KI-generierten Beschreibungen angefordert."
     },
     "review": {
       "title": "Überprüfung",
-      "desc": "Aktivieren/deaktivieren Sie vorübergehend Warnmeldungen und Erkennungen für diese Kamera, bis Frigate neu gestartet wird. Wenn diese Funktion deaktiviert ist, werden keine neuen Überprüfungselemente generiert. ",
+      "desc": "Aktivieren/deaktivieren Sie vorübergehend Warnmeldungen und Erkennungen für diese Kamera, bis Gannet neu gestartet wird. Wenn diese Funktion deaktiviert ist, werden keine neuen Überprüfungselemente generiert. ",
       "alerts": "Warnungen ",
       "detections": "Erkennungen "
     },
     "reviewClassification": {
       "title": "Bewertungsklassifizierung",
-      "desc": "Frigate kategorisiert zu überprüfende Elemente als Warnmeldungen und Erkennungen. Standardmäßig werden alle Objekte vom Typ <em>Person</em> und <em>Auto</em> als Warnmeldungen betrachtet. Sie können die Kategorisierung der zu überprüfenden Elemente verfeinern, indem Sie die erforderlichen Zonen für sie konfigurieren.",
+      "desc": "Gannet kategorisiert zu überprüfende Elemente als Warnmeldungen und Erkennungen. Standardmäßig werden alle Objekte vom Typ <em>Person</em> und <em>Auto</em> als Warnmeldungen betrachtet. Sie können die Kategorisierung der zu überprüfenden Elemente verfeinern, indem Sie die erforderlichen Zonen für sie konfigurieren.",
       "noDefinedZones": "Für diese Kamera sind keine Zonen definiert.",
       "objectAlertsTips": "Alle {{alertsLabels}}-Objekte auf {{cameraName}} werden als Warnmeldungen angezeigt.",
       "zoneObjectAlertsTips": "Alle {{alertsLabels}}-Objekte, die in {{zone}} auf {{cameraName}} erkannt wurden, werden als Warnmeldungen angezeigt.",
@@ -1322,7 +1322,7 @@
       "selectDetectionsZones": "Zonen für Erkennungen auswählen",
       "limitDetections": "Erkennungen auf bestimmte Zonen beschränken",
       "toast": {
-        "success": "Die Konfiguration der Bewertungsklassifizierung wurde gespeichert. Starten Sie Frigate neu, um die Änderungen zu übernehmen."
+        "success": "Die Konfiguration der Bewertungsklassifizierung wurde gespeichert. Starten Sie Gannet neu, um die Änderungen zu übernehmen."
       }
     }
   },
@@ -1379,7 +1379,7 @@
     "title": "Wartung",
     "sync": {
       "title": "Medien-Synchronisierung",
-      "desc": "Frigate bereinigt Medien regelmäßig nach einem festgelegten Zeitplan entsprechend Ihrer Konfiguration zur Aufbewahrungsdauer. Es ist normal, dass während der Ausführung von Frigate einige verwaiste Dateien angezeigt werden. Nutzen Sie diese Funktion, um verwaiste Mediendateien von der Festplatte zu entfernen, auf die in der Datenbank nicht mehr verwiesen wird.",
+      "desc": "Gannet bereinigt Medien regelmäßig nach einem festgelegten Zeitplan entsprechend Ihrer Konfiguration zur Aufbewahrungsdauer. Es ist normal, dass während der Ausführung von Gannet einige verwaiste Dateien angezeigt werden. Nutzen Sie diese Funktion, um verwaiste Mediendateien von der Festplatte zu entfernen, auf die in der Datenbank nicht mehr verwiesen wird.",
       "started": "Die Mediensynchronisierung wurde gestartet.",
       "alreadyRunning": "Ein Synchronisierungsauftrag wird bereits ausgeführt",
       "error": "Die Synchronisierung konnte nicht gestartet werden",
@@ -1426,10 +1426,10 @@
     },
     "regionGrid": {
       "title": "Regionraster",
-      "desc": "Das Erfassungsraster ist ein optimiertes Modell, das lernt, wo Objekte unterschiedlicher Größe typischerweise im Sichtfeld der einzelnen Kameras auftreten. Frigate nutzt diese Daten, um die Größe der Erfassungsbereiche effizient anzupassen. Das Raster wird im Laufe der Zeit automatisch aus den Daten der verfolgten Objekte erstellt.",
+      "desc": "Das Erfassungsraster ist ein optimiertes Modell, das lernt, wo Objekte unterschiedlicher Größe typischerweise im Sichtfeld der einzelnen Kameras auftreten. Gannet nutzt diese Daten, um die Größe der Erfassungsbereiche effizient anzupassen. Das Raster wird im Laufe der Zeit automatisch aus den Daten der verfolgten Objekte erstellt.",
       "clear": "Regionsraster löschen",
       "clearConfirmTitle": "Raster der Region löschen",
-      "clearConfirmDesc": "Es wird nicht empfohlen, das Regionsraster zu löschen, es sei denn, Sie haben kürzlich die Größe Ihres Detektormodells geändert oder die physische Position Ihrer Kamera angepasst und haben Probleme bei der Objektverfolgung. Das Raster wird im Laufe der Zeit automatisch neu aufgebaut, sobald Objekte verfolgt werden. Damit die Änderungen wirksam werden, ist ein Neustart von Frigate erforderlich.",
+      "clearConfirmDesc": "Es wird nicht empfohlen, das Regionsraster zu löschen, es sei denn, Sie haben kürzlich die Größe Ihres Detektormodells geändert oder die physische Position Ihrer Kamera angepasst und haben Probleme bei der Objektverfolgung. Das Raster wird im Laufe der Zeit automatisch neu aufgebaut, sobald Objekte verfolgt werden. Damit die Änderungen wirksam werden, ist ein Neustart von Gannet erforderlich.",
       "clearSuccess": "Das Regionsraster wurde erfolgreich gelöscht",
       "clearError": "Das Löschen des Regionsrasters ist fehlgeschlagen",
       "restartRequired": "Ein Neustart ist erforderlich, damit die Änderungen am regionalen Netz wirksam werden"
@@ -1679,7 +1679,7 @@
   "toast": {
     "success": "Einstellungen erfolgreich gespeichert",
     "applied": "Einstellungen wurden erfolgreich übernommen",
-    "successRestartRequired": "Die Einstellungen wurden erfolgreich gespeichert. Starte Frigate neu, um die Änderungen zu übernehmen.",
+    "successRestartRequired": "Die Einstellungen wurden erfolgreich gespeichert. Starte Gannet neu, um die Änderungen zu übernehmen.",
     "error": "Das Speichern der Einstellungen ist fehlgeschlagen",
     "validationError": "Validierung fehlgeschlagen: {{message}}",
     "resetSuccess": "Auf globale Standardeinstellungen zurücksetzen",
@@ -1689,8 +1689,8 @@
     "saveAllPartial_one": "{{successCount}} von {{totalCount}} Abschnitt wurden gespeichert. {{failCount}} sind fehlgeschlagen.",
     "saveAllPartial_other": "{{successCount}} von {{totalCount}} Abschnitten wurden gespeichert. {{failCount}} sind fehlgeschlagen.",
     "saveAllFailure": "Es konnten nicht alle Abschnitte gespeichert werden.",
-    "saveAllSuccessRestartRequired_one": "Der Abschnitt {{count}} wurde erfolgreich gespeichert. Starte Frigate neu, um die Änderungen zu übernehmen.",
-    "saveAllSuccessRestartRequired_other": "Alle {{count}} Abschnitte wurden erfolgreich gespeichert. Starte Frigate neu, um die Änderungen zu übernehmen."
+    "saveAllSuccessRestartRequired_one": "Der Abschnitt {{count}} wurde erfolgreich gespeichert. Starte Gannet neu, um die Änderungen zu übernehmen.",
+    "saveAllSuccessRestartRequired_other": "Alle {{count}} Abschnitte wurden erfolgreich gespeichert. Starte Gannet neu, um die Änderungen zu übernehmen."
   },
   "profiles": {
     "title": "Profile",
@@ -1802,7 +1802,7 @@
       "recordDisabled": "Aufnahme ist deaktiviert, Überprüfungspunkt konnte nicht erstellt werden.",
       "detectDisabled": "Die Objekterkennung ist deaktiviert. Für die Überprüfung von Elementen müssen Objekte erkannt werden, um Warnmeldungen und Erkennungen zu kategorisieren.",
       "allNonAlertDetections": "Alle Aktivitäten, die keine Warnmeldungen auslösen, werden als Erkennungen erfasst.",
-      "genaiImageSourceRecordingsRecordDisabled": "Als Bildquelle ist „Aufnahmen“ eingestellt, die Aufnahmefunktion ist jedoch deaktiviert. Frigate greift in diesem Fall auf Vorschaubilder zurück."
+      "genaiImageSourceRecordingsRecordDisabled": "Als Bildquelle ist „Aufnahmen“ eingestellt, die Aufnahmefunktion ist jedoch deaktiviert. Gannet greift in diesem Fall auf Vorschaubilder zurück."
     },
     "audio": {
       "noAudioRole": "Für keinen Stream ist die Audio-Rolle definiert. Sie müssen die Audio-Rolle aktivieren, damit die Audioerkennung funktioniert."
@@ -1850,7 +1850,7 @@
       "inputsMissingGo2rtcStream": "Ein Eingabefeld unten verweist auf einen go2rtc-Restream, der nicht mehr existiert. Wählen Sie einen vorhandenen Restream aus oder geben Sie die URL der Kamera manuell ein. Andernfalls kann keine Verbindung zu dieser Kamera hergestellt werden."
     },
     "model": {
-      "optimizedFor320": "Frigate ist für ein 320x320-Modell optimiert, was für die meisten Konfigurationen die beste Wahl ist. Ein 640x640-Modell ist langsamer und bietet nur in bestimmten Szenarien Vorteile.",
+      "optimizedFor320": "Gannet ist für ein 320x320-Modell optimiert, was für die meisten Konfigurationen die beste Wahl ist. Ein 640x640-Modell ist langsamer und bietet nur in bestimmten Szenarien Vorteile.",
       "inputDimensionsNotDetectResolution": "Die Eingangsbreite und -höhe des Modells beziehen sich auf die Abmessungen des Objekterkennungsmodells und nicht auf die Erkennungsauflösung Ihrer Kamera. Sie sollten mit den Abmessungen des von Ihnen verwendeten Modells übereinstimmen – in der Regel quadratische Abmessungen wie 320×320 oder 640×640."
     }
   },

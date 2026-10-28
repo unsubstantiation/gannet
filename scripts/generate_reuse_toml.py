@@ -118,7 +118,8 @@ def significant_lines(path: Path) -> set[str]:
     return {
         line.strip()
         for line in text.splitlines()
-        if len(line.strip()) >= 32 and not line.strip().startswith(("#", "//", "/*", "*"))
+        if len(line.strip()) >= 32
+        and not line.strip().startswith(("#", "//", "/*", "*"))
     }
 
 
@@ -126,7 +127,11 @@ def upstream_line_index(upstream_dir: Path) -> set[str]:
     """Every significant line in the upstream tree's source files."""
     index: set[str] = set()
     for path in upstream_dir.rglob("*"):
-        if path.suffix in DERIVATION_SUFFIXES and path.is_file() and ".git" not in path.parts:
+        if (
+            path.suffix in DERIVATION_SUFFIXES
+            and path.is_file()
+            and ".git" not in path.parts
+        ):
             index |= significant_lines(path)
     return index
 
@@ -171,6 +176,7 @@ def is_not_claimed(rel: str, exists_upstream: bool) -> bool:
         for pattern in NOT_CLAIMED_PATTERNS
     )
 
+
 HEADER = f"""# Which license covers which file, for tools and for people.
 #
 # GENERATED FILE - do not edit by hand. Regenerate with:
@@ -207,7 +213,7 @@ def digest(path: Path) -> str | None:
 def classify(
     upstream_dir: Path,
 ) -> tuple[list[str], list[str], list[str], dict[str, float]]:
-    """Return (dual files, original Gannet files, not-claimed files, ratios)."""
+    """Return (dual files, original Frigate files, not-claimed files, ratios)."""
     index = upstream_line_index(upstream_dir)
     modified: list[str] = []
     only_here: list[str] = []
@@ -233,7 +239,11 @@ def classify(
         if rel in GANNET_ONLY_OVERRIDES:
             only_here.append(rel)
         elif not there.exists():
-            ratio = derivation_ratio(rel, index) if Path(rel).suffix in DERIVATION_SUFFIXES else 0.0
+            ratio = (
+                derivation_ratio(rel, index)
+                if Path(rel).suffix in DERIVATION_SUFFIXES
+                else 0.0
+            )
             ratios[rel] = ratio
             if ratio > DERIVATION_THRESHOLD:
                 modified.append(rel)
@@ -295,10 +305,14 @@ def main() -> int:
         help=f"path to a checkout of {UPSTREAM_PROJECT} at the pinned commit",
     )
     parser.add_argument(
-        "--check", action="store_true", help="fail if REUSE.toml differs from a regeneration"
+        "--check",
+        action="store_true",
+        help="fail if REUSE.toml differs from a regeneration",
     )
     parser.add_argument(
-        "--report", action="store_true", help="print derivation ratios near the threshold"
+        "--report",
+        action="store_true",
+        help="print derivation ratios near the threshold",
     )
     args = parser.parse_args()
 
@@ -307,7 +321,10 @@ def main() -> int:
         return 2
     upstream = args.upstream_dir.resolve()
     if not (upstream / "frigate").is_dir():
-        print(f"error: {upstream} does not look like a {UPSTREAM_PROJECT} checkout", file=sys.stderr)
+        print(
+            f"error: {upstream} does not look like a {UPSTREAM_PROJECT} checkout",
+            file=sys.stderr,
+        )
         return 2
 
     modified, only_here, not_claimed, ratios = classify(upstream)
@@ -324,9 +341,14 @@ def main() -> int:
     text = render(modified, only_here)
     if args.check:
         if not REUSE_TOML.exists() or REUSE_TOML.read_text(encoding="utf-8") != text:
-            print("REUSE_TOML is stale; run scripts/generate_reuse_toml.py", file=sys.stderr)
+            print(
+                "REUSE_TOML is stale; run scripts/generate_reuse_toml.py",
+                file=sys.stderr,
+            )
             return 1
-        print(f"REUSE.toml is current ({len(modified)} dual, {len(only_here)} Gannet-only)")
+        print(
+            f"REUSE.toml is current ({len(modified)} dual, {len(only_here)} Gannet-only)"
+        )
         return 0
     REUSE_TOML.write_text(text, encoding="utf-8")
     total = len(tracked_files())

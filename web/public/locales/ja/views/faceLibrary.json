@@ -10,7 +10,7 @@
     "unknown": "不明",
     "scoreInfo": "サブラベルスコアは、認識された顔の信頼度の加重スコアです。スナップショットに表示されるスコアとは異なる場合があります。"
   },
-  "documentTitle": "顔データベース - Frigate",
+  "documentTitle": "顔データベース - Gannet",
   "uploadFaceImage": {
     "title": "顔画像をアップロード",
     "desc": "顔を検知するために画像をアップロードし、{{pageToggle}} に追加します"

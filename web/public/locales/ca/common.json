@@ -3,7 +3,7 @@
     "title": "Rol",
     "viewer": "Visualitzador",
     "admin": "Administrador",
-    "desc": "Els administradors tenen accés complet a totes les característiques de la interfície d'usuari de Frigate. Els visualitzadors es limiten a visualitzar càmeres, elements de revisió i imatges històriques a la interfície d'usuari."
+    "desc": "Els administradors tenen accés complet a totes les característiques de la interfície d'usuari de Gannet. Els visualitzadors es limiten a visualitzar càmeres, elements de revisió i imatges històriques a la interfície d'usuari."
   },
   "menu": {
     "language": {
@@ -83,9 +83,9 @@
     "help": "Ajuda",
     "documentation": {
       "title": "Documentació",
-      "label": "Documentació de Frigate"
+      "label": "Documentació de Gannet"
     },
-    "restart": "Reinicia Frigate",
+    "restart": "Reinicia Gannet",
     "live": {
       "title": "Directe",
       "allCameras": "Totes les càmeres",
@@ -129,7 +129,7 @@
   },
   "time": {
     "untilForTime": "Fins les {{time}}",
-    "untilForRestart": "Fins que Frigate es reiniciï.",
+    "untilForRestart": "Fins que Gannet es reiniciï.",
     "untilRestart": "Fins que es reiniciï",
     "ago": "Fa {{timeAgo}}",
     "justNow": "Ara mateix",
@@ -306,11 +306,11 @@
   },
   "accessDenied": {
     "desc": "No teniu permís per veure aquesta pàgina.",
-    "documentTitle": "Accés Denegat - Frigate",
+    "documentTitle": "Accés Denegat - Gannet",
     "title": "Accés Denegat"
   },
   "notFound": {
-    "documentTitle": "No s'ha trobat - Frigate",
+    "documentTitle": "No s'ha trobat - Gannet",
     "title": "404",
     "desc": "Pàgina no trobada"
   },
@@ -326,7 +326,7 @@
   },
   "field": {
     "optional": "Opcional",
-    "internalID": "L'ID intern que Frigate s'utilitza a la configuració i a la base de dades"
+    "internalID": "L'ID intern que Gannet s'utilitza a la configuració i a la base de dades"
   },
   "no_items": "Sense elements",
   "validation_errors": "Errors de validació",
@@ -337,7 +337,7 @@
     "title": "Aquesta pàgina ha deixat de funcionar",
     "desc": "La pàgina ha tingut un error inesperat. La recàrrega normalment la neteja. Si continua passant, copieu els detalls i adjunteu-los a una discussió sobre GitHub.",
     "staleTitle": "Recàrrega requerida",
-    "staleDesc": "No s'ha pogut carregar part de la interfície, cosa que normalment significa que Frigate s'ha actualitzat mentre aquesta pestanya estava oberta. Torna a carregar per a recollir la nova versió.",
+    "staleDesc": "No s'ha pogut carregar part de la interfície, cosa que normalment significa que Gannet s'ha actualitzat mentre aquesta pestanya estava oberta. Torna a carregar per a recollir la nova versió.",
     "partial": "Part de la interfície va deixar de funcionar.",
     "copyDetails": "Copia els detalls",
     "copyFailed": "No s'han pogut copiar els detalls al porta-retalls"

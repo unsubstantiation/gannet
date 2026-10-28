@@ -1,16 +1,16 @@
 {
   "documentTitle": {
-    "default": "Cài đặt - Frigate",
-    "authentication": "Cài đặt Xác thực - Frigate",
-    "enrichments": "Cài đặt Làm giàu Dữ liệu - Frigate",
-    "notifications": "Cài đặt Thông báo - Frigate",
-    "masksAndZones": "Trình chỉnh sửa Mặt nạ và Vùng - Frigate",
-    "object": "Gỡ lỗi - Frigate",
-    "general": "Cài đặt giao diện – Frigate",
-    "frigatePlus": "Cài đặt Frigate+ - Frigate",
-    "motionTuner": "Bộ tinh chỉnh Chuyển động - Frigate",
-    "cameraManagement": "Quản Lý Camera - Frigate",
-    "cameraReview": "Cài Đặt Xem Lại Camera - Frigate"
+    "default": "Cài đặt - Gannet",
+    "authentication": "Cài đặt Xác thực - Gannet",
+    "enrichments": "Cài đặt Làm giàu Dữ liệu - Gannet",
+    "notifications": "Cài đặt Thông báo - Gannet",
+    "masksAndZones": "Trình chỉnh sửa Mặt nạ và Vùng - Gannet",
+    "object": "Gỡ lỗi - Gannet",
+    "general": "Cài đặt giao diện – Gannet",
+    "frigatePlus": "Cài đặt Frigate+ - Gannet",
+    "motionTuner": "Bộ tinh chỉnh Chuyển động - Gannet",
+    "cameraManagement": "Quản Lý Camera - Gannet",
+    "cameraReview": "Cài Đặt Xem Lại Camera - Gannet"
   },
   "notification": {
     "toast": {
@@ -19,7 +19,7 @@
       },
       "success": {
         "settingSaved": "Cài đặt thông báo đã được lưu.",
-        "registered": "Đã đăng ký nhận thông báo thành công. Cần khởi động lại Frigate trước khi có thể gửi bất kỳ thông báo nào (kể cả thông báo thử)."
+        "registered": "Đã đăng ký nhận thông báo thành công. Cần khởi động lại Gannet trước khi có thể gửi bất kỳ thông báo nào (kể cả thông báo thử)."
       }
     },
     "unsavedChanges": "Các thay đổi Thông báo chưa được lưu",
@@ -52,11 +52,11 @@
       "10minutes": "Tạm dừng trong 10 phút"
     },
     "notificationSettings": {
-      "desc": "Frigate có thể gửi thông báo đẩy tự nhiên đến thiết bị của bạn khi nó đang chạy trong trình duyệt hoặc được cài đặt dưới dạng PWA.",
+      "desc": "Gannet có thể gửi thông báo đẩy tự nhiên đến thiết bị của bạn khi nó đang chạy trong trình duyệt hoặc được cài đặt dưới dạng PWA.",
       "title": "Cài đặt Thông báo"
     },
     "notificationUnavailable": {
-      "desc": "Thông báo đẩy web yêu cầu một ngữ cảnh an toàn (<code>https://…</code>). Đây là một hạn chế của trình duyệt. Truy cập Frigate một cách an toàn để sử dụng thông báo."
+      "desc": "Thông báo đẩy web yêu cầu một ngữ cảnh an toàn (<code>https://…</code>). Đây là một hạn chế của trình duyệt. Truy cập Gannet một cách an toàn để sử dụng thông báo."
     },
     "globalSettings": {
       "desc": "Tạm thời đình chỉ thông báo cho các camera cụ thể trên tất cả các thiết bị đã đăng ký.",
@@ -101,7 +101,7 @@
     },
     "unsavedChanges": "Các thay đổi cài đặt Frigate+ chưa được lưu",
     "toast": {
-      "success": "Cài đặt Frigate+ đã được lưu. Khởi động lại Frigate để áp dụng các thay đổi.",
+      "success": "Cài đặt Frigate+ đã được lưu. Khởi động lại Gannet để áp dụng các thay đổi.",
       "error": "Không thể lưu các thay đổi cấu hình: {{errorMessage}}"
     },
     "restart_required": "Yêu cầu khởi động lại (mô hình Frigate+ đã thay đổi)"
@@ -166,7 +166,7 @@
         "title": "Đối tượng",
         "desc": "Loại đối tượng áp dụng cho mặt nạ đối tượng này."
       },
-      "documentTitle": "Chỉnh sửa Mặt nạ đối tượng - Frigate",
+      "documentTitle": "Chỉnh sửa Mặt nạ đối tượng - Gannet",
       "desc": {
         "title": "Mặt nạ lọc đối tượng được sử dụng để lọc ra các kết quả dương tính giả cho một loại đối tượng nhất định dựa trên vị trí.",
         "documentation": "Tài liệu"
@@ -226,14 +226,14 @@
       },
       "edit": "Chỉnh sửa Vùng",
       "label": "Vùng",
-      "documentTitle": "Chỉnh sửa Vùng - Frigate",
+      "documentTitle": "Chỉnh sửa Vùng - Gannet",
       "inertia": {
         "title": "Quán tính",
         "desc": "Chỉ định số khung hình mà một đối tượng phải ở trong một vùng trước khi được coi là ở trong vùng. <em>Mặc định: 3</em>"
       }
     },
     "motionMasks": {
-      "documentTitle": "Chỉnh sửa Mặt nạ chuyển động - Frigate",
+      "documentTitle": "Chỉnh sửa Mặt nạ chuyển động - Gannet",
       "desc": {
         "documentation": "Tài liệu",
         "title": "Mặt nạ chuyển động được sử dụng để ngăn các loại chuyển động không mong muốn kích hoạt phát hiện. Việc che quá nhiều sẽ khiến việc theo dõi đối tượng trở nên khó khăn hơn."
@@ -284,7 +284,7 @@
     },
     "title": "Bộ tinh chỉnh Phát hiện Chuyển động",
     "desc": {
-      "title": "Frigate sử dụng phát hiện chuyển động như một bước kiểm tra đầu tiên để xem có điều gì đang xảy ra trong khung hình đáng để kiểm tra bằng phát hiện đối tượng hay không.",
+      "title": "Gannet sử dụng phát hiện chuyển động như một bước kiểm tra đầu tiên để xem có điều gì đang xảy ra trong khung hình đáng để kiểm tra bằng phát hiện đối tượng hay không.",
       "documentation": "Đọc Hướng dẫn Tinh chỉnh Chuyển động"
     },
     "improveContrast": {
@@ -304,7 +304,7 @@
       "ratio": "Tỷ lệ",
       "area": "Diện tích"
     },
-    "detectorDesc": "Frigate sử dụng các bộ phát hiện của bạn ({{detectors}}) để phát hiện các đối tượng trong luồng video của camera.",
+    "detectorDesc": "Gannet sử dụng các bộ phát hiện của bạn ({{detectors}}) để phát hiện các đối tượng trong luồng video của camera.",
     "boundingBoxes": {
       "colors": {
         "label": "Màu sắc Hộp giới hạn Đối tượng",
@@ -358,7 +358,7 @@
     "title": "Người dùng",
     "management": {
       "title": "Quản lý Người dùng",
-      "desc": "Quản lý các tài khoản người dùng của phiên bản Frigate này."
+      "desc": "Quản lý các tài khoản người dùng của phiên bản Gannet này."
     },
     "table": {
       "noUsers": "Không tìm thấy người dùng nào.",
@@ -404,7 +404,7 @@
         "passwordIsRequired": "Mật khẩu là bắt buộc"
       },
       "createUser": {
-        "desc": "Thêm một tài khoản người dùng mới và chỉ định một vai trò để truy cập vào các khu vực của giao diện người dùng Frigate.",
+        "desc": "Thêm một tài khoản người dùng mới và chỉ định một vai trò để truy cập vào các khu vực của giao diện người dùng Gannet.",
         "usernameOnlyInclude": "Tên người dùng chỉ có thể bao gồm chữ cái, số, . hoặc _",
         "title": "Tạo Người dùng Mới",
         "confirmPassword": "Vui lòng xác nhận mật khẩu của bạn"
@@ -524,7 +524,7 @@
     },
     "semanticSearch": {
       "title": "Tìm kiếm theo Ngữ nghĩa",
-      "desc": "Tìm kiếm theo Ngữ nghĩa trong Frigate cho phép bạn tìm các đối tượng được theo dõi trong các mục xem lại của mình bằng cách sử dụng chính hình ảnh, mô tả văn bản do người dùng xác định hoặc mô tả được tạo tự động.",
+      "desc": "Tìm kiếm theo Ngữ nghĩa trong Gannet cho phép bạn tìm các đối tượng được theo dõi trong các mục xem lại của mình bằng cách sử dụng chính hình ảnh, mô tả văn bản do người dùng xác định hoặc mô tả được tạo tự động.",
       "reindexNow": {
         "desc": "Việc tái lập chỉ mục sẽ tạo lại các nhúng (embeddings) cho tất cả các đối tượng được theo dõi. Quá trình này chạy ở chế độ nền và có thể làm CPU của bạn hoạt động tối đa và mất một khoảng thời gian đáng kể tùy thuộc vào số lượng đối tượng bạn đã theo dõi.",
         "confirmTitle": "Xác nhận Tái lập chỉ mục",
@@ -550,7 +550,7 @@
     },
     "faceRecognition": {
       "title": "Nhận dạng Khuôn mặt",
-      "desc": "Nhận dạng khuôn mặt cho phép gán tên cho người và khi khuôn mặt của họ được nhận dạng, Frigate sẽ gán tên của người đó làm nhãn phụ. Thông tin này được bao gồm trong giao diện người dùng, bộ lọc, cũng như trong các thông báo.",
+      "desc": "Nhận dạng khuôn mặt cho phép gán tên cho người và khi khuôn mặt của họ được nhận dạng, Gannet sẽ gán tên của người đó làm nhãn phụ. Thông tin này được bao gồm trong giao diện người dùng, bộ lọc, cũng như trong các thông báo.",
       "modelSize": {
         "label": "Kích thước Mô hình",
         "desc": "Kích thước của mô hình được sử dụng để nhận dạng khuôn mặt.",
@@ -566,11 +566,11 @@
     },
     "licensePlateRecognition": {
       "title": "Nhận dạng Biển số xe",
-      "desc": "Frigate có thể nhận dạng biển số xe trên các phương tiện và tự động thêm các ký tự được phát hiện vào trường recognized_license_plate hoặc một tên đã biết làm nhãn phụ cho các đối tượng thuộc loại ô tô. Một trường hợp sử dụng phổ biến có thể là đọc biển số xe ô tô đi vào đường lái xe hoặc ô tô đi ngang qua trên đường phố."
+      "desc": "Gannet có thể nhận dạng biển số xe trên các phương tiện và tự động thêm các ký tự được phát hiện vào trường recognized_license_plate hoặc một tên đã biết làm nhãn phụ cho các đối tượng thuộc loại ô tô. Một trường hợp sử dụng phổ biến có thể là đọc biển số xe ô tô đi vào đường lái xe hoặc ô tô đi ngang qua trên đường phố."
     },
     "restart_required": "Yêu cầu khởi động lại (cài đặt Làm giàu Dữ liệu đã thay đổi)",
     "toast": {
-      "success": "Cài đặt Làm giàu Dữ liệu đã được lưu. Khởi động lại Frigate để áp dụng các thay đổi của bạn.",
+      "success": "Cài đặt Làm giàu Dữ liệu đã được lưu. Khởi động lại Gannet để áp dụng các thay đổi của bạn.",
       "error": "Không thể lưu các thay đổi cấu hình: {{errorMessage}}"
     }
   },
@@ -622,7 +622,7 @@
         },
         "actions": {
           "title": "Các hành động",
-          "desc": "Theo mặc định, Frigate kích hoạt thông báo MQTT cho tất cả các trình kích hoạt. Nhãn phụ thêm tên kích hoạt vào nhãn đối tượng. Thuộc tính là siêu dữ liệu có thể tìm kiếm được lưu trữ riêng biệt trong siêu dữ liệu đối tượng được theo dõi.",
+          "desc": "Theo mặc định, Gannet kích hoạt thông báo MQTT cho tất cả các trình kích hoạt. Nhãn phụ thêm tên kích hoạt vào nhãn đối tượng. Thuộc tính là siêu dữ liệu có thể tìm kiếm được lưu trữ riêng biệt trong siêu dữ liệu đối tượng được theo dõi.",
           "error": {
             "min": "Phải chọn ít nhất một hành động."
           }

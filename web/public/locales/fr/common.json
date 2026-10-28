@@ -1,6 +1,6 @@
 {
   "time": {
-    "untilForRestart": "Jusqu'à ce que Frigate redémarre.",
+    "untilForRestart": "Jusqu'à ce que Gannet redémarre.",
     "untilRestart": "Jusqu'au redémarrage",
     "untilForTime": "Jusqu'à {{time}}",
     "justNow": "À l'instant",
@@ -211,7 +211,7 @@
     "systemLogs": "Journaux système",
     "documentation": {
       "title": "Documentation",
-      "label": "Documentation de Frigate"
+      "label": "Documentation de Gannet"
     },
     "system": "Système",
     "help": "Aide",
@@ -228,7 +228,7 @@
     "systemMetrics": "Métriques du système",
     "settings": "Paramètres",
     "withSystem": "Système",
-    "restart": "Redémarrer Frigate",
+    "restart": "Redémarrer Gannet",
     "live": {
       "cameras": {
         "count_one": "{{count}} caméra",
@@ -263,7 +263,7 @@
     "title": "Rôle",
     "viewer": "Observateur",
     "admin": "Administrateur",
-    "desc": "Les administrateurs ont un accès complet à toutes les fonctionnalités de l'interface Frigate. Les observateurs sont limités à la consultation des caméras, des activités, et à l'historique des enregistrements dans l'interface."
+    "desc": "Les administrateurs ont un accès complet à toutes les fonctionnalités de l'interface Gannet. Les observateurs sont limités à la consultation des caméras, des activités, et à l'historique des enregistrements dans l'interface."
   },
   "pagination": {
     "next": {
@@ -279,14 +279,14 @@
   },
   "notFound": {
     "title": "404",
-    "documentTitle": "Non trouvé - Frigate",
+    "documentTitle": "Non trouvé - Gannet",
     "desc": "Page non trouvée"
   },
   "selectItem": "Sélectionner {{item}}",
   "readTheDocumentation": "Lire la documentation",
   "accessDenied": {
     "title": "Accès refusé",
-    "documentTitle": "Accès refusé - Frigate",
+    "documentTitle": "Accès refusé - Gannet",
     "desc": "Vous n'avez pas l'autorisation de consulter cette page."
   },
   "label": {
@@ -321,7 +321,7 @@
   },
   "field": {
     "optional": "Facultatif",
-    "internalID": "L'ID interne utilisée par Frigate dans la configuration et la base de donnêes"
+    "internalID": "L'ID interne utilisée par Gannet dans la configuration et la base de donnêes"
   },
   "list": {
     "two": "{{0}} et {{1}}",
@@ -337,7 +337,7 @@
     "title": "Cette page a cesser de fonctionner",
     "desc": "Une erreur inattendue s'est produite sur la page. Un rechargement permet généralement de la résoudre. Si le problème persiste, copiez les détails et joignez-les à une discussion sur GitHub.",
     "staleTitle": "Rechargement requis",
-    "staleDesc": "Une partie de l'interface n'a pas pu être chargée, ce qui signifie généralement que Frigate a été mis à jour alors que cet onglet était ouvert. Actualisez la page pour charger la nouvelle version.",
+    "staleDesc": "Une partie de l'interface n'a pas pu être chargée, ce qui signifie généralement que Gannet a été mis à jour alors que cet onglet était ouvert. Actualisez la page pour charger la nouvelle version.",
     "partial": "Une partie de l'interface a cessé de fonctionner",
     "copyDetails": "Coper les détails",
     "copyFailed": "Impossible de copier les détails dans le presse-papiers"

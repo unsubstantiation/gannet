@@ -1,5 +1,5 @@
 {
-    "documentTitle": "Vyhledávání pohybu – Frigate",
+    "documentTitle": "Vyhledávání pohybu – Gannet",
     "title": "Vyhledávání pohybu",
     "description": "Nakreslete polygon vymezující oblast zájmu a zadejte časový rozsah, ve kterém se mají hledat změny pohybu v této oblasti.",
     "selectCamera": "Vyhledávání pohybu se načítá",

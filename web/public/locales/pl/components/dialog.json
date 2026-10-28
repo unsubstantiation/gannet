@@ -1,13 +1,13 @@
 {
   "restart": {
-    "title": "Czy na pewno chcesz ponownie uruchomić Frigate?",
+    "title": "Czy na pewno chcesz ponownie uruchomić Gannet?",
     "button": "Uruchom ponownie",
     "restarting": {
-      "title": "Frigate uruchamia się ponownie",
+      "title": "Gannet uruchamia się ponownie",
       "content": "Strona odświeży się za {{countdown}} sekund.",
       "button": "Wymuś odświeżenie"
     },
-    "description": "Spowoduje to chwilowe zatrzymanie Frigate i ponowne uruchomienie."
+    "description": "Spowoduje to chwilowe zatrzymanie Gannet i ponowne uruchomienie."
   },
   "explore": {
     "plus": {
@@ -159,10 +159,10 @@
     "shareTimestamp": {
       "label": "Udostępnij znacznik czasu",
       "title": "Udostępnij znacznik czasu",
-      "description": "Udostępnij adres URL z aktualnym znacznikiem czasu pozycji odtwarzacza lub wybierz niestandardowy znacznik czasu. Należy pamiętać, że nie jest to publiczny link udostępniania i jest dostępny wyłącznie dla użytkowników mających dostęp do Frigate i tej kamery.",
+      "description": "Udostępnij adres URL z aktualnym znacznikiem czasu pozycji odtwarzacza lub wybierz niestandardowy znacznik czasu. Należy pamiętać, że nie jest to publiczny link udostępniania i jest dostępny wyłącznie dla użytkowników mających dostęp do Gannet i tej kamery.",
       "custom": "Własny znacznik czasu",
       "button": "Udostępnij adres URL ze znacznikiem czasu",
-      "shareTitle": "Znacznik czasu przeglądu Frigate: {{camera}}"
+      "shareTitle": "Znacznik czasu przeglądu Gannet: {{camera}}"
     }
   },
   "streaming": {

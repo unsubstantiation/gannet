@@ -342,7 +342,7 @@ To start using Gemini, you must first get an API key from [Google AI Studio](htt
 
 1. Navigate to <NavPath path="Settings > Enrichments > Generative AI" />.
    - Set **Provider** to `gemini`
-   - Set **API key** to your Gemini API key (or use an environment variable such as `{FRIGATE_GEMINI_API_KEY}`)
+   - Set **API key** to your Gemini API key (or use an environment variable such as `{GANNET_GEMINI_API_KEY}`)
    - Set **Model** to the desired model (e.g., `gemini-2.5-flash`)
 
 </TabItem>
@@ -352,7 +352,7 @@ To start using Gemini, you must first get an API key from [Google AI Studio](htt
 genai:
   my_provider:
     provider: gemini
-    api_key: "{FRIGATE_GEMINI_API_KEY}"
+    api_key: "{GANNET_GEMINI_API_KEY}"
     model: gemini-2.5-flash
 ```
 
@@ -395,7 +395,7 @@ To start using OpenAI, you must first [create an API key](https://platform.opena
 
 1. Navigate to <NavPath path="Settings > Enrichments > Generative AI" />.
    - Set **Provider** to `openai`
-   - Set **API key** to your OpenAI API key (or use an environment variable such as `{FRIGATE_OPENAI_API_KEY}`)
+   - Set **API key** to your OpenAI API key (or use an environment variable such as `{GANNET_OPENAI_API_KEY}`)
    - Set **Model** to the desired model (e.g., `gpt-4o`)
 
 </TabItem>
@@ -405,7 +405,7 @@ To start using OpenAI, you must first [create an API key](https://platform.opena
 genai:
   my_provider:
     provider: openai
-    api_key: "{FRIGATE_OPENAI_API_KEY}"
+    api_key: "{GANNET_OPENAI_API_KEY}"
     model: gpt-4o
 ```
 
@@ -457,7 +457,7 @@ To start using Azure OpenAI, you must first [create a resource](https://learn.mi
    - Set **Provider** to `azure_openai`
    - Set **Base URL** to your Azure resource URL including the `api-version` parameter (e.g., `https://instance.cognitiveservices.azure.com/openai/responses?api-version=2025-04-01-preview`)
    - Set **Model** to your deployed model name (e.g., `gpt-5-mini`)
-   - Set **API key** to your Azure OpenAI API key (or use an environment variable such as `{FRIGATE_OPENAI_API_KEY}`)
+   - Set **API key** to your Azure OpenAI API key (or use an environment variable such as `{GANNET_OPENAI_API_KEY}`)
 
 </TabItem>
 <TabItem value="yaml">
@@ -468,7 +468,7 @@ genai:
     provider: azure_openai
     base_url: https://instance.cognitiveservices.azure.com/openai/responses?api-version=2025-04-01-preview
     model: gpt-5-mini
-    api_key: "{FRIGATE_OPENAI_API_KEY}"
+    api_key: "{GANNET_OPENAI_API_KEY}"
 ```
 
 </TabItem>

@@ -1028,7 +1028,7 @@ class LicensePlateProcessingMixin:
         self, camera: str, input: np.ndarray
     ) -> tuple[int, int, int, int] | None:
         """
-        Use a lightweight YOLOv9 model to detect license plates for users without Frigate+
+        Use a lightweight YOLOv9 model to detect license plates for users without upstream Frigate+
 
         Return the dimensions of the detected plate as [x1, y1, x2, y2].
         """

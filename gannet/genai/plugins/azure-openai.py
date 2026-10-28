@@ -1,4 +1,4 @@
-"""Azure OpenAI Provider for Frigate AI.
+"""Azure OpenAI Provider for Gannet AI.
 
 Azure OpenAI exposes the same chat completions API as OpenAI once the
 client is constructed, so this provider inherits all transport, streaming,
@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 @register_genai_provider(GenAIProviderEnum.azure_openai)
 class AzureOpenAIClient(OpenAIClient):
-    """Generative AI client for Frigate using Azure OpenAI."""
+    """Generative AI client for Gannet using Azure OpenAI."""
 
     def _init_provider(self) -> AzureOpenAI:
         """Initialize the AzureOpenAI client from the configured base_url."""

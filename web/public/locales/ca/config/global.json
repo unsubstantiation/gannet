@@ -712,7 +712,7 @@
             },
             "calibrate_on_startup": {
                 "label": "Calibra a l'inici",
-                "description": "Mesura les velocitats del motor PTZ a l'inici per millorar la precisió del seguiment. Frigate actualitzarà la configuració amb «movtion.weights» després del calibratge."
+                "description": "Mesura les velocitats del motor PTZ a l'inici per millorar la precisió del seguiment. Gannet actualitzarà la configuració amb «movtion.weights» després del calibratge."
             },
             "zooming": {
                 "label": "Mode de zoom",
@@ -767,7 +767,7 @@
         },
         "ignore_time_mismatch": {
             "label": "Ignora el desajust de temps",
-            "description": "Ignora les diferències de sincronització de temps entre càmera i servidor Frigate per a la comunicació ONVIF."
+            "description": "Ignora les diferències de sincronització de temps entre càmera i servidor Gannet per a la comunicació ONVIF."
         },
         "profile": {
             "label": "Perfil ONVIF",
@@ -799,7 +799,7 @@
         },
         "model": {
             "label": "Model de transcripció d'àudio o nom del proveïdor GenAI",
-            "description": "El dorsal de transcripció: 'whisper' per als models locals integrats de Frigate, o el nom d'un proveïdor de GenAI amb el rol de transcriure."
+            "description": "El dorsal de transcripció: 'whisper' per als models locals integrats de Gannet, o el nom d'un proveïdor de GenAI amb el rol de transcriure."
         }
     },
     "version": {
@@ -808,7 +808,7 @@
     },
     "safe_mode": {
         "label": "Mode segur",
-        "description": "Quan està activat, arrenca la Frigate en mode segur amb funcions reduïdes per a la resolució de problemes."
+        "description": "Quan està activat, arrenca la Gannet en mode segur amb funcions reduïdes per a la resolució de problemes."
     },
     "environment_vars": {
         "label": "Variables d'entorn"
@@ -830,7 +830,7 @@
         "description": "Configuració relacionada amb l'autenticació i la sessió, incloses les opcions de cookies i límit de velocitat.",
         "enabled": {
             "label": "Habilita l'autenticació",
-            "description": "Habilita l'autenticació nativa per a la interfície d'usuari de la Frigate."
+            "description": "Habilita l'autenticació nativa per a la interfície d'usuari de la Gannet."
         },
         "reset_admin_password": {
             "label": "Restableix la contrasenya d'administrador",
@@ -919,10 +919,10 @@
     },
     "database": {
         "label": "Base de dades",
-        "description": "Configuració de la base de dades SQLite utilitzada per Frigate per emmagatzemar objectes rastrejats i enregistrar metadades.",
+        "description": "Configuració de la base de dades SQLite utilitzada per Gannet per emmagatzemar objectes rastrejats i enregistrar metadades.",
         "path": {
             "label": "Ruta a la base de dades",
-            "description": "Ruta del sistema de fitxers on s'emmagatzemarà el fitxer de base de dades SQLite de Frigate."
+            "description": "Ruta del sistema de fitxers on s'emmagatzemarà el fitxer de base de dades SQLite de Gannet."
         }
     },
     "go2rtc": {
@@ -946,7 +946,7 @@
         },
         "topic_prefix": {
             "label": "Prefix del tema",
-            "description": "El prefix del tema MQTT per a tots els temes de Frigate; ha de ser únic si s'executen diverses instàncies."
+            "description": "El prefix del tema MQTT per a tots els temes de Gannet; ha de ser únic si s'executen diverses instàncies."
         },
         "client_id": {
             "label": "ID del client",
@@ -1007,33 +1007,33 @@
     },
     "networking": {
         "label": "Xarxa",
-        "description": "Paràmetres relacionats amb la xarxa com l'habilitació IPv6 per als punts finals de Frigate.",
+        "description": "Paràmetres relacionats amb la xarxa com l'habilitació IPv6 per als punts finals de Gannet.",
         "ipv6": {
             "label": "Configuració IPv6",
             "description": "Configuració específica d'IPv6 per als serveis de xarxa de fragate.",
             "enabled": {
                 "label": "Habilita IPv6",
-                "description": "Activa el suport IPv6 per als serveis de Frigate (API i UI) quan sigui aplicable"
+                "description": "Activa el suport IPv6 per als serveis de Gannet (API i UI) quan sigui aplicable"
             }
         },
         "listen": {
             "label": "S'està escoltant la configuració dels ports",
             "internal": {
                 "label": "Port intern",
-                "description": "Port d'escolta intern per a la Frigate (predeterminat 5000)."
+                "description": "Port d'escolta intern per a la Gannet (predeterminat 5000)."
             },
             "external": {
                 "label": "Port extern",
-                "description": "Port d'escolta extern per a la Frigate (predeterminat 8971)."
+                "description": "Port d'escolta extern per a la Gannet (predeterminat 8971)."
             }
         }
     },
     "proxy": {
         "label": "Proxy",
-        "description": "Paràmetres per a integrar Frigate darrere d'un servidor intermediari invers que passa les capçaleres d'usuari autenticades.",
+        "description": "Paràmetres per a integrar Gannet darrere d'un servidor intermediari invers que passa les capçaleres d'usuari autenticades.",
         "header_map": {
             "label": "Mapeig de capçaleres",
-            "description": "Mapa les capçaleres del servidor intermediari entrant a l'usuari de Frigate i als camps de rol per a l'autenticació basada en el servidor intermediari.",
+            "description": "Mapa les capçaleres del servidor intermediari entrant a l'usuari de Gannet i als camps de rol per a l'autenticació basada en el servidor intermediari.",
             "user": {
                 "label": "Capçalera d'usuari",
                 "description": "Capçalera que conté el nom d'usuari autenticat proporcionat pel servidor intermediari de la font."
@@ -1044,7 +1044,7 @@
             },
             "role_map": {
                 "label": "Mapatge del rol",
-                "description": "Mapa els valors de grup de la font als rols de Frigate (per exemple, assigna els grups d'administració al rol d'administrador)."
+                "description": "Mapa els valors de grup de la font als rols de Gannet (per exemple, assigna els grups d'administració al rol d'administrador)."
             }
         },
         "logout_url": {
@@ -1092,15 +1092,15 @@
         },
         "version_check": {
             "label": "Comprovació de versió",
-            "description": "Activa una comprovació de sortida per detectar si hi ha disponible una versió de Frigate més nova."
+            "description": "Activa una comprovació de sortida per detectar si hi ha disponible una versió de Gannet més nova."
         }
     },
     "tls": {
         "label": "TLS",
-        "description": "Configuració de TLS per als punts finals web de Frigate (port 8971).",
+        "description": "Configuració de TLS per als punts finals web de Gannet (port 8971).",
         "enabled": {
             "label": "Habilita TLS",
-            "description": "Activa TLS per a la interfície d'usuari web i l'API de Frigate al port TLS configurat."
+            "description": "Activa TLS per a la interfície d'usuari web i l'API de Gannet al port TLS configurat."
         }
     },
     "genai": {

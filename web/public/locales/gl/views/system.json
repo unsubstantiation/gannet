@@ -1,11 +1,11 @@
 {
   "documentTitle": {
-    "cameras": "Estatísticas de cámaras - Frigate",
-    "storage": "Estatísticas de Almacenamento - Frigate",
-    "general": "Estatísticas Xerais - Frigate",
-    "enrichments": "Estatísticas complementarias - Frigate",
+    "cameras": "Estatísticas de cámaras - Gannet",
+    "storage": "Estatísticas de Almacenamento - Gannet",
+    "general": "Estatísticas Xerais - Gannet",
+    "enrichments": "Estatísticas complementarias - Gannet",
     "logs": {
-      "frigate": "Rexistros de Frigate - Frigate"
+      "gannet": "Rexistros de Gannet - Gannet"
     }
   },
   "title": "Sistema",

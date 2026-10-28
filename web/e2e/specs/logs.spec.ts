@@ -14,26 +14,26 @@ function logsJsonBody(lines: string[]) {
 }
 
 test.describe("Logs — service tabs @medium", () => {
-  test("frigate tab renders by default with mocked log lines", async ({
+  test("gannet tab renders by default with mocked log lines", async ({
     frigateApp,
   }) => {
-    await frigateApp.page.route(/\/api\/logs\/frigate(\?|$)/, (route) =>
+    await frigateApp.page.route(/\/api\/logs\/gannet(\?|$)/, (route) =>
       route.fulfill({
         json: logsJsonBody([
-          "[2026-04-06 10:00:00] INFO: Frigate started",
+          "[2026-04-06 10:00:00] INFO: Gannet started",
           "[2026-04-06 10:00:01] INFO: Cameras loaded",
         ]),
       }),
     );
     // Silence the streaming fetch so it doesn't hang the test.
-    await frigateApp.page.route(/\/api\/logs\/frigate\?stream=true/, (route) =>
+    await frigateApp.page.route(/\/api\/logs\/gannet\?stream=true/, (route) =>
       route.fulfill({ status: 200, body: "" }),
     );
     await frigateApp.goto("/logs");
-    await expect(frigateApp.page.getByLabel("Select frigate")).toBeVisible({
+    await expect(frigateApp.page.getByLabel("Select gannet")).toBeVisible({
       timeout: 5_000,
     });
-    await expect(frigateApp.page.getByText(/Frigate started/)).toBeVisible({
+    await expect(frigateApp.page.getByText(/Gannet started/)).toBeVisible({
       timeout: 10_000,
     });
   });
@@ -42,8 +42,8 @@ test.describe("Logs — service tabs @medium", () => {
     frigateApp,
   }) => {
     let go2rtcCalled = false;
-    await frigateApp.page.route(/\/api\/logs\/frigate(\?|$)/, (route) =>
-      route.fulfill({ json: logsJsonBody(["frigate line"]) }),
+    await frigateApp.page.route(/\/api\/logs\/gannet(\?|$)/, (route) =>
+      route.fulfill({ json: logsJsonBody(["gannet line"]) }),
     );
     await frigateApp.page.route(/\/api\/logs\/go2rtc(\?|$)/, (route) => {
       if (!route.request().url().includes("stream=true")) {
@@ -56,7 +56,7 @@ test.describe("Logs — service tabs @medium", () => {
     );
 
     await frigateApp.goto("/logs");
-    await expect(frigateApp.page.getByLabel("Select frigate")).toBeVisible({
+    await expect(frigateApp.page.getByLabel("Select gannet")).toBeVisible({
       timeout: 5_000,
     });
     const go2rtcTab = frigateApp.page.getByLabel("Select go2rtc");
@@ -73,19 +73,19 @@ test.describe("Logs — actions @medium", () => {
     context,
   }) => {
     await grantClipboardPermissions(context);
-    await frigateApp.page.route(/\/api\/logs\/frigate(\?|$)/, (route) =>
+    await frigateApp.page.route(/\/api\/logs\/gannet(\?|$)/, (route) =>
       route.fulfill({
         json: logsJsonBody([
-          "[2026-04-06 10:00:00] INFO: Frigate started",
+          "[2026-04-06 10:00:00] INFO: Gannet started",
           "[2026-04-06 10:00:01] INFO: Cameras loaded",
         ]),
       }),
     );
-    await frigateApp.page.route(/\/api\/logs\/frigate\?stream=true/, (route) =>
+    await frigateApp.page.route(/\/api\/logs\/gannet\?stream=true/, (route) =>
       route.fulfill({ status: 200, body: "" }),
     );
     await frigateApp.goto("/logs");
-    await expect(frigateApp.page.getByText(/Frigate started/)).toBeVisible({
+    await expect(frigateApp.page.getByText(/Gannet started/)).toBeVisible({
       timeout: 10_000,
     });
 
@@ -101,13 +101,13 @@ test.describe("Logs — actions @medium", () => {
     frigateApp,
   }) => {
     let downloadCalled = false;
-    await frigateApp.page.route(/\/api\/logs\/frigate(\?|$)/, (route) => {
+    await frigateApp.page.route(/\/api\/logs\/gannet(\?|$)/, (route) => {
       if (route.request().url().includes("download=true")) {
         downloadCalled = true;
       }
-      return route.fulfill({ json: logsJsonBody(["frigate line"]) });
+      return route.fulfill({ json: logsJsonBody(["gannet line"]) });
     });
-    await frigateApp.page.route(/\/api\/logs\/frigate\?stream=true/, (route) =>
+    await frigateApp.page.route(/\/api\/logs\/gannet\?stream=true/, (route) =>
       route.fulfill({ status: 200, body: "" }),
     );
 
@@ -123,10 +123,10 @@ test.describe("Logs — websocket tab @medium", () => {
   test("switching to websocket tab renders WsMessageFeed container", async ({
     frigateApp,
   }) => {
-    await frigateApp.page.route(/\/api\/logs\/frigate(\?|$)/, (route) =>
-      route.fulfill({ json: logsJsonBody(["frigate line"]) }),
+    await frigateApp.page.route(/\/api\/logs\/gannet(\?|$)/, (route) =>
+      route.fulfill({ json: logsJsonBody(["gannet line"]) }),
     );
-    await frigateApp.page.route(/\/api\/logs\/frigate\?stream=true/, (route) =>
+    await frigateApp.page.route(/\/api\/logs\/gannet\?stream=true/, (route) =>
       route.fulfill({ status: 200, body: "" }),
     );
     await frigateApp.goto("/logs");
@@ -139,7 +139,7 @@ test.describe("Logs — websocket tab @medium", () => {
 
 test.describe("Logs — streaming @medium", () => {
   test("streamed log lines appear in the viewport", async ({ frigateApp }) => {
-    await frigateApp.page.route(/\/api\/logs\/frigate(\?|$)/, (route) => {
+    await frigateApp.page.route(/\/api\/logs\/gannet(\?|$)/, (route) => {
       if (route.request().url().includes("stream=true")) {
         // Intercepted below via addInitScript fetch override.
         return route.fallback();
@@ -149,7 +149,7 @@ test.describe("Logs — streaming @medium", () => {
       });
     });
 
-    // Override window.fetch so the /api/logs/frigate?stream=true request
+    // Override window.fetch so the /api/logs/gannet?stream=true request
     // resolves with a real ReadableStream that emits chunks over time.
     // This is the only way to validate streaming-append behavior through
     // Playwright — route.fulfill() cannot return a stream.
@@ -164,7 +164,7 @@ test.describe("Logs — streaming @medium", () => {
             : input instanceof URL
               ? input.toString()
               : (input as Request).url;
-        if (url.includes("api/logs/frigate") && url.includes("stream=true")) {
+        if (url.includes("api/logs/gannet") && url.includes("stream=true")) {
           const encoder = new TextEncoder();
           const stream = new ReadableStream({
             async start(controller) {
@@ -208,14 +208,14 @@ test.describe("Logs — mobile @medium @mobile", () => {
   test.skip(({ frigateApp }) => !frigateApp.isMobile, "Mobile-only");
 
   test("service tabs render at mobile viewport", async ({ frigateApp }) => {
-    await frigateApp.page.route(/\/api\/logs\/frigate(\?|$)/, (route) =>
-      route.fulfill({ json: logsJsonBody(["frigate line"]) }),
+    await frigateApp.page.route(/\/api\/logs\/gannet(\?|$)/, (route) =>
+      route.fulfill({ json: logsJsonBody(["gannet line"]) }),
     );
-    await frigateApp.page.route(/\/api\/logs\/frigate\?stream=true/, (route) =>
+    await frigateApp.page.route(/\/api\/logs\/gannet\?stream=true/, (route) =>
       route.fulfill({ status: 200, body: "" }),
     );
     await frigateApp.goto("/logs");
-    await expect(frigateApp.page.getByLabel("Select frigate")).toBeVisible({
+    await expect(frigateApp.page.getByLabel("Select gannet")).toBeVisible({
       timeout: 5_000,
     });
   });

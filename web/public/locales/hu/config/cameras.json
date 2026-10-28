@@ -36,7 +36,7 @@
     },
     "friendly_name": {
         "label": "Egyszerű név",
-        "description": "A Frigate felhasználói felületén használt, könnyen megjegyezhető kamera név"
+        "description": "A Gannet felhasználói felületén használt, könnyen megjegyezhető kamera név"
     },
     "enabled": {
         "label": "Engedélyezve",

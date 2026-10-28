@@ -20,7 +20,7 @@ class ListenConfig(FrigateBaseModel):
         default=5000,
         title="Internal port",
         description=(
-            "Loopback-only port for Frigate media jobs. Requests on this port "
+            "Loopback-only port for Gannet media jobs. Requests on this port "
             'are trusted and never exposed to the LAN. A "host:port" value '
             "is accepted for compatibility, but the internal listener always "
             "binds 127.0.0.1."

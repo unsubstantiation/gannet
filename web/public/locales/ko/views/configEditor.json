@@ -1,8 +1,8 @@
 {
-  "documentTitle": "설정 편집기 - Frigate",
+  "documentTitle": "설정 편집기 - Gannet",
   "configEditor": "설정 편집기",
   "safeConfigEditor": "설정 편집기 (안전 모드)",
-  "safeModeDescription": "설정 유효성 검사 오류로 인해 Frigate가 안전 모드로 실행 중입니다.",
+  "safeModeDescription": "설정 유효성 검사 오류로 인해 Gannet가 안전 모드로 실행 중입니다.",
   "copyConfig": "설정 복사",
   "saveAndRestart": "저장 및 재시작",
   "saveOnly": "저장만 하기",

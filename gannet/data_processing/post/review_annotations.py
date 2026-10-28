@@ -80,7 +80,7 @@ def describe_heading(dx: float, dy: float) -> str:
 def event_name(event: dict[str, Any]) -> str:
     """Name an object for the notes, e.g. 'a person' or 'waste bin "Compost"'.
 
-    Objects are never numbered or given track identifiers. Frigate opens a new
+    Objects are never numbered or given track identifiers. Gannet opens a new
     tracked object whenever a subject is re-detected, so the tracking data
     cannot say whether two entries are the same subject, and the notes stay
     ambiguous rather than implying either answer.
@@ -224,7 +224,7 @@ def build_timeline(
 
     `state_changes` are timeline rows (timestamp, source_id, class_type); the
     stationary and active ones become "has stopped moving" / "starts moving
-    again". Frigate only marks an object stationary after it has been still
+    again". Gannet only marks an object stationary after it has been still
     for a while, which the past-tense wording reflects.
 
     Each object keeps its own notes. Folding an object into the note of the

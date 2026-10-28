@@ -1,8 +1,8 @@
 {
   "documentTitle": {
-    "default": "Ao vivo - Frigate"
+    "default": "Ao vivo - Gannet"
   },
-  "documentTitle.withCamera": "{{camera}} - Ao vivo - Frigate",
+  "documentTitle.withCamera": "{{camera}} - Ao vivo - Gannet",
   "lowBandwidthMode": "Modo de baixa largura de banda",
   "twoWayTalk": {
     "enable": "Habilitar Fala em Dois Sentidos",
@@ -139,7 +139,7 @@
       "resetStream": "Resetar transmissão",
       "force": {
         "label": "Forçar modo de baixa largura de banda",
-        "desc": "Sempre reproduz o feed de baixa largura de banda integrado do Frigate em vez do stream selecionado. Funciona em qualquer conexão, mas tem qualidade inferior e não tem áudio."
+        "desc": "Sempre reproduz o feed de baixa largura de banda integrado do Gannet em vez do stream selecionado. Funciona em qualquer conexão, mas tem qualidade inferior e não tem áudio."
       }
     },
     "playInBackground": {
@@ -157,7 +157,7 @@
         "webrtc": "WebRTC",
         "jsmpeg": "JSMpeg"
       },
-      "description": "Escolha a sua tecnologia de streaming preferida. O Frigate ainda pode recorrer ao modo de baixa largura de banda em caso de erros de reprodução ou de rede.",
+      "description": "Escolha a sua tecnologia de streaming preferida. O Gannet ainda pode recorrer ao modo de baixa largura de banda em caso de erros de reprodução ou de rede.",
       "tips": {
         "mse": "Padrão recomendado, ampla compatibilidade e reprodução fluida",
         "webrtc": "Requer configuração adicional e não é compatível com todos os dispositivos"
@@ -205,7 +205,7 @@
   },
   "noCameras": {
     "title": "Nenhuma Câmera Configurada",
-    "description": "Inicie conectando uma câmera ao Frigate.",
+    "description": "Inicie conectando uma câmera ao Gannet.",
     "buttonText": "Adicionar Câmera",
     "restricted": {
       "title": "Nenhuma Câmera Disponível",
@@ -213,7 +213,7 @@
     },
     "default": {
       "title": "Nenhuma Câmera Configurada",
-      "description": "Comece conectando uma câmera ao Frigate.",
+      "description": "Comece conectando uma câmera ao Gannet.",
       "buttonText": "Adicionar Câmera"
     },
     "group": {

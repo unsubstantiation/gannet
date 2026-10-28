@@ -1,5 +1,5 @@
 {
-  "documentTitle": "Klasifikační modely - Frigate",
+  "documentTitle": "Klasifikační modely - Gannet",
   "button": {
     "deleteClassificationAttempts": "Odstranit klasifikační obrázky",
     "renameCategory": "Přejmenovat třídu",
@@ -44,7 +44,7 @@
       "deleteCategoryFailed": "Chyba při mazání třídy: {{errorMessage}}",
       "deleteModelFailed": "Chyba při mazání modelu: {{errorMessage}}",
       "categorizeFailed": "Nepodařilo se zařadit obrázek: {{errorMessage}}",
-      "trainingFailed": "Trénování modelu selhalo. Zkontrolujte logy Frigate pro zjištění detailů.",
+      "trainingFailed": "Trénování modelu selhalo. Zkontrolujte logy Gannet pro zjištění detailů.",
       "trainingFailedToStart": "Chyba spuštění trénování modelu: {{errorMessage}}",
       "updateModelFailed": "Chyba aktualizace modelu: {{errorMessage}}",
       "renameCategoryFailed": "Chyba přejmenování třídy: {{errorMessage}}",
@@ -86,7 +86,7 @@
       "selectImagesDescription": "Kliknutím vybírejte obrázky. Po dokončení této třídy klikněte na Pokračovat.",
       "generating": {
         "title": "Generování ukázkových obrázků",
-        "description": "Frigate získává reprezentativní obrázky ze záznamů. Může to chvíli trvat…"
+        "description": "Gannet získává reprezentativní obrázky ze záznamů. Může to chvíli trvat…"
       },
       "training": {
         "title": "Trénování modelu",

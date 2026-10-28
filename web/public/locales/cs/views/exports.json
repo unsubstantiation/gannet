@@ -1,6 +1,6 @@
 {
   "search": "Hledat",
-  "documentTitle": "Exportovat - Frigate",
+  "documentTitle": "Exportovat - Gannet",
   "noExports": "Žádné exporty nenalezeny",
   "deleteExport.desc": "Opravdu chcete smazat {{exportName}}?",
   "editExport": {

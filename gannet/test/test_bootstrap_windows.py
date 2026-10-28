@@ -6,6 +6,9 @@ the digest bookkeeping, archive extraction, layout resolution and launcher
 generation without touching the network.
 """
 
+import ast
+import base64
+import csv
 import hashlib
 import importlib.util
 import json
@@ -13,6 +16,7 @@ import os
 import subprocess
 import tempfile
 import unittest
+import warnings
 import zipfile
 from pathlib import Path
 from unittest.mock import patch
@@ -48,7 +52,7 @@ class TestBaseLayout(unittest.TestCase):
             ):
                 layout = bootstrap.BaseLayout()
 
-        self.assertEqual(layout.base_dir, Path(appdata) / "Frigate")
+        self.assertEqual(layout.base_dir, Path(appdata) / "Gannet")
         self.assertEqual(layout.config_dir, layout.base_dir / "config")
         self.assertEqual(layout.tmp_dir, layout.base_dir / "tmp")
         self.assertEqual(
@@ -69,7 +73,7 @@ class TestBaseLayout(unittest.TestCase):
         ):
             layout = bootstrap.BaseLayout(service_mode=True)
 
-        self.assertEqual(layout.base_dir, Path(r"C:\ProgramData") / "Frigate")
+        self.assertEqual(layout.base_dir, Path(r"C:\ProgramData") / "Gannet")
 
     def test_base_dir_moves_every_directory(self):
         with tempfile.TemporaryDirectory() as base:
@@ -95,6 +99,50 @@ class TestBaseLayout(unittest.TestCase):
 
         self.assertEqual(layout.config_dir, Path(config))
         self.assertEqual(layout.media_dir, Path(base) / "media")
+
+    def test_legacy_env_alias_still_selects_the_base_dir(self):
+        with patch.dict(os.environ, {"FRIGATE_BASE_DIR": r"D:\OldData"}):
+            layout = bootstrap.BaseLayout()
+        self.assertEqual(layout.base_dir, Path(r"D:\OldData"))
+
+    def test_preferred_env_name_wins_over_the_legacy_alias(self):
+        with patch.dict(
+            os.environ,
+            {"GANNET_BASE_DIR": r"D:\NewData", "FRIGATE_BASE_DIR": r"D:\OldData"},
+        ):
+            layout = bootstrap.BaseLayout()
+        self.assertEqual(layout.base_dir, Path(r"D:\NewData"))
+
+    def test_legacy_directory_warns_instead_of_being_adopted(self):
+        with tempfile.TemporaryDirectory() as appdata:
+            legacy = Path(appdata) / "Frigate"
+            legacy.mkdir()
+            with patch.dict(
+                os.environ,
+                {
+                    "LOCALAPPDATA": appdata,
+                    "GANNET_BASE_DIR": "",
+                    "FRIGATE_BASE_DIR": "",
+                },
+            ):
+                warning = bootstrap.legacy_data_dir_warning(Path(appdata))
+                layout = bootstrap.BaseLayout()
+
+        self.assertIsNotNone(warning)
+        self.assertIn(str(legacy), warning)
+        # Clean cutover: no silent fallback to the old folder.
+        self.assertEqual(layout.base_dir, Path(appdata) / "Gannet")
+
+    def test_explicit_base_dir_suppresses_the_legacy_warning(self):
+        with tempfile.TemporaryDirectory() as appdata:
+            legacy = Path(appdata) / "Frigate"
+            legacy.mkdir()
+            with patch.dict(
+                os.environ,
+                {"LOCALAPPDATA": appdata, "FRIGATE_BASE_DIR": str(legacy)},
+            ):
+                warning = bootstrap.legacy_data_dir_warning(Path(appdata))
+        self.assertIsNone(warning)
 
 
 class TestDigests(unittest.TestCase):
@@ -220,8 +268,8 @@ class TestLauncher(unittest.TestCase):
         self.assertIn("restart.requested", script)
         self.assertIn(str(bootstrap.python_executable_in(venv).resolve()), script)
         self.assertIn("-m gannet", script)
-        self.assertIn("$env:FRIGATE_BASE_DIR", script)
-        self.assertIn("$env:FRIGATE_CONFIG_DIR", script)
+        self.assertIn("$env:GANNET_BASE_DIR", script)
+        self.assertIn("$env:GANNET_CONFIG_DIR", script)
         # UTF-8 mode so non-ASCII camera names survive the console and files
         self.assertIn('$env:PYTHONUTF8 = "1"', script)
         # the marker is consumed so a later manual stop is not mistaken
@@ -374,3 +422,161 @@ class TestServiceInstall(unittest.TestCase):
                 bootstrap.install_service(Path("python.exe"), bootstrap.BaseLayout())
 
         self.assertIn("not found", str(raised.exception))
+
+
+class TestFilterpyEscapePatch(unittest.TestCase):
+    """The filterpy 1.4.5 source fix used by both install paths.
+
+    CPython 3.12 turns the invalid escapes in filterpy's LaTeX docstrings into
+    SyntaxWarnings. The portable bundle ships no bytecode, so the first launch
+    compiles them in front of the user. These tests use small stand-ins for the
+    two affected modules, including CRLF endings, raw strings and a real wheel
+    RECORD, so no download is needed.
+    """
+
+    HELPERS = (
+        b"# a comment with \\Sum that must not change\n"
+        b"def outer_product_sum(A, B=None):\n"
+        b'    """\n'
+        b"    P = \\Sum {A[i] B[i].T} for i in 0..N\n"
+        b"    sigma $\\sigma$, and a valid escape\\n is here\n"
+        b'    """\n'
+        b"    PATTERN = r'\\s+\\d'\n"
+        b"    return A\n"
+    )
+    GH_FILTER = (
+        b"def vrf():\r\n"
+        b'    """\r\n'
+        b"    VRF(\\hat{x}) = \\\\frac{VAR(\\hat{x})}{\\sigma^2_x}\r\n"
+        b'    """\r\n'
+        b"    return 1\r\n"
+    )
+    PATHS = ("filterpy/common/helpers.py", "filterpy/gh/gh_filter.py")
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.site = Path(temporary.name) / "site-packages"
+        self.originals = {
+            self.PATHS[0]: self.HELPERS,
+            self.PATHS[1]: self.GH_FILTER,
+            "filterpy/__init__.py": b"# untouched\n",
+        }
+        for relative, data in self.originals.items():
+            path = self.site / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+
+        record = self.site / "filterpy-1.4.5.dist-info" / "RECORD"
+        record.parent.mkdir(parents=True, exist_ok=True)
+        with record.open("w", encoding="utf-8", newline="") as handle:
+            writer = csv.writer(handle, lineterminator="\n")
+            for relative, data in self.originals.items():
+                writer.writerow([relative, self.digest(data), str(len(data))])
+            writer.writerow(["filterpy-1.4.5.dist-info/METADATA", "sha256=kept", "12"])
+            writer.writerow(["filterpy-1.4.5.dist-info/RECORD", "", ""])
+        self.record = record
+
+    @staticmethod
+    def digest(data: bytes) -> str:
+        encoded = base64.urlsafe_b64encode(hashlib.sha256(data).digest()).decode()
+        return f"sha256={encoded.rstrip('=')}"
+
+    @staticmethod
+    def escape_warnings(data: bytes) -> list[str]:
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            compile(data, "module.py", "exec")
+        return [str(item.message) for item in caught]
+
+    def rows(self):
+        with self.record.open(encoding="utf-8", newline="") as handle:
+            return list(csv.reader(handle))
+
+    def test_rewrites_invalid_escapes_without_changing_string_values(self):
+        self.assertIn(
+            "invalid escape sequence", " ".join(self.escape_warnings(self.HELPERS))
+        )
+
+        fixed = bootstrap.fix_filterpy_escapes(self.site)
+
+        self.assertEqual(fixed, list(self.PATHS))
+        helpers = (self.site / self.PATHS[0]).read_bytes()
+        gh_filter = (self.site / self.PATHS[1]).read_bytes()
+        self.assertEqual(self.escape_warnings(helpers), [])
+        self.assertEqual(self.escape_warnings(gh_filter), [])
+        # The source now has doubled backslashes, but the docstring still says
+        # exactly what it said before the patch.
+        self.assertIn(b"P = \\\\Sum", helpers)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            before = ast.parse(self.HELPERS)
+            after = ast.parse(helpers)
+        self.assertEqual(
+            ast.dump(before, include_attributes=False),
+            ast.dump(after, include_attributes=False),
+        )
+        self.assertIn(r"P = \Sum", ast.get_docstring(after.body[0]))
+        # Raw strings, comments and CRLF endings are untouched.
+        self.assertIn(b"PATTERN = r'\\s+\\d'", helpers)
+        self.assertIn(b"# a comment with \\Sum that must not change", helpers)
+        self.assertEqual(gh_filter.count(b"\r\n"), self.GH_FILTER.count(b"\r\n"))
+        self.assertNotIn(b"\r\r\n", gh_filter)
+
+    def test_updates_the_owning_record_and_only_its_own_rows(self):
+        bootstrap.fix_filterpy_escapes(self.site)
+
+        rows = {row[0]: row for row in self.rows()}
+        for relative in self.PATHS:
+            data = (self.site / relative).read_bytes()
+            self.assertEqual(rows[relative][1], self.digest(data))
+            self.assertEqual(rows[relative][2], str(len(data)))
+        self.assertEqual(rows["filterpy/__init__.py"][1], self.digest(b"# untouched\n"))
+        self.assertEqual(rows["filterpy-1.4.5.dist-info/METADATA"][1], "sha256=kept")
+        self.assertEqual(rows["filterpy-1.4.5.dist-info/RECORD"][1], "")
+
+    def test_is_idempotent_and_a_no_op_on_clean_installs(self):
+        bootstrap.fix_filterpy_escapes(self.site)
+        contents = {
+            relative: (self.site / relative).read_bytes() for relative in self.originals
+        }
+        record = self.record.read_bytes()
+
+        self.assertEqual(bootstrap.fix_filterpy_escapes(self.site), [])
+        for relative, data in contents.items():
+            self.assertEqual((self.site / relative).read_bytes(), data)
+        self.assertEqual(self.record.read_bytes(), record)
+
+        with tempfile.TemporaryDirectory() as empty:
+            self.assertEqual(bootstrap.fix_filterpy_escapes(Path(empty)), [])
+
+    def test_refuses_to_patch_an_unrecorded_or_signed_install(self):
+        self.record.unlink()
+        with self.assertRaises(bootstrap.VendorPatchError):
+            bootstrap.fix_filterpy_escapes(self.site)
+        self.assertEqual((self.site / self.PATHS[0]).read_bytes(), self.HELPERS)
+
+    def test_signed_record_is_not_invalidated(self):
+        (self.record.parent / "RECORD.jws").write_text("signature", encoding="utf-8")
+        with self.assertRaises(bootstrap.VendorPatchError):
+            bootstrap.fix_filterpy_escapes(self.site)
+        self.assertEqual((self.site / self.PATHS[0]).read_bytes(), self.HELPERS)
+
+    def test_site_packages_follows_the_venv_interpreter(self):
+        python = Path("C:/Gannet/.venv/Scripts/python.exe")
+        self.assertEqual(
+            bootstrap.site_packages_for(python),
+            Path("C:/Gannet/.venv/Lib/site-packages"),
+        )
+
+    def test_install_requirements_applies_the_patch(self):
+        with (
+            patch.object(bootstrap, "run"),
+            patch.object(
+                bootstrap, "fix_filterpy_escapes", return_value=["filterpy/a.py"]
+            ) as fix,
+        ):
+            bootstrap.install_requirements(
+                Path("C:/Gannet/.venv/Scripts/python.exe"), "cpu"
+            )
+        fix.assert_called_once_with(Path("C:/Gannet/.venv/Lib/site-packages"))

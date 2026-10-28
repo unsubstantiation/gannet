@@ -64,6 +64,14 @@ MPL-2.0 (`py-vapid`, `pywebpush`) is file-level copyleft: use it as a dependency
 and nothing is asked of you, modify those files and they stay MPL. That is
 compatible with the terms in `LICENSE`; it is just not ours to relicense.
 
+`filterpy` 1.4.5 (MIT) is installed from its sdist and then modified in place by
+`bootstrap_windows.py`: invalid escape sequences in its LaTeX docstrings are
+doubled so CPython 3.12 does not print a `SyntaxWarning` on first import. The
+package's license and copyright notices are shipped unchanged; the change and
+the location of the unmodified source are recorded in `SOURCE-OFFER.txt` inside
+the portable bundle and in `DEPENDENCIES.md` §1.5. MIT permits this provided the
+notice travels with the copy, which it does.
+
 The generated table below is a snapshot of what each registry reports, taken on
 2026-10-18. Registry metadata is the author's own claim, and several entries
 report nothing or report prose instead of an SPDX id. Those were resolved by hand

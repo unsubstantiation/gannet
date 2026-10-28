@@ -131,7 +131,7 @@ class FrigateApp:
 
     @property
     def config(self) -> FrigateConfig:
-        """The current config, not the one Frigate booted with.
+        """The current config, not the one Gannet booted with.
 
         Read through the holder so the deferred watchdog factories below build
         a replacement process from the config as it is now. There is no setter
@@ -641,7 +641,7 @@ class FrigateApp:
                 ).execute()
 
     def start(self) -> None:
-        logger.info(f"Starting Frigate ({VERSION})")
+        logger.info(f"Starting Gannet ({VERSION})")
 
         # Ensure global state.
         self.ensure_dirs()
@@ -740,7 +740,7 @@ class FrigateApp:
 
         # The launcher can use this runtime marker to distinguish a clean stop
         # from a crash.
-        stopping_flag = Path(TMP_DIR) / ".frigate-is-stopping"
+        stopping_flag = Path(TMP_DIR) / ".gannet-is-stopping"
 
         try:
             stopping_flag.parent.mkdir(parents=True, exist_ok=True)

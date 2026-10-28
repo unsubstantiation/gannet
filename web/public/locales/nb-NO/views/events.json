@@ -29,9 +29,9 @@
   },
   "allCameras": "Alle kameraer",
   "timeline.aria": "Velg tidslinje",
-  "documentTitle": "Inspeksjon - Frigate",
+  "documentTitle": "Inspeksjon - Gannet",
   "recordings": {
-    "documentTitle": "Opptak - Frigate",
+    "documentTitle": "Opptak - Gannet",
     "invalidSharedLink": "Kunne ikke åpne tidsstemplet opptakslenke på grunn av tolkningsfeil.",
     "invalidSharedCamera": "Kunne ikke åpne tidsstemplet opptakslenke på grunn av et ukjent eller uautorisert kamera."
   },

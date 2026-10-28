@@ -1,11 +1,11 @@
 {
   "restart": {
-    "title": "Estás seguro/a que queres reiniciar Frigate?",
+    "title": "Estás seguro/a que queres reiniciar Gannet?",
     "button": "Reiniciar",
     "restarting": {
       "button": "Forzar reinicio",
       "content": "Esta páxina recargarase en {{countdown}} segundos.",
-      "title": "Frigate está Reiniciando"
+      "title": "Gannet está Reiniciando"
     }
   },
   "explore": {

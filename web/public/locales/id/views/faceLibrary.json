@@ -9,7 +9,7 @@
     "timestamp": "Cap waktu",
     "unknown": "Tidak diketahui"
   },
-  "documentTitle": "Perpustakaan Wajah - Frigate",
+  "documentTitle": "Perpustakaan Wajah - Gannet",
   "collections": "Koleksi",
   "createFaceLibrary": {
     "nextSteps": "Untuk membangun fondasi yang kuat:<li>Gunakan tab Pengenalan Terbaru untuk memilih dan melatih gambar untuk setiap orang yang terdeteksi.</li><li>Fokus pada gambar langsung untuk hasil terbaik; hindari melatih gambar yang menangkap wajah pada sudut tertentu.</li></ul>",

@@ -1,5 +1,5 @@
 {
-  "documentTitle.withCamera": "{{camera}} - Trực tiếp - Frigate",
+  "documentTitle.withCamera": "{{camera}} - Trực tiếp - Gannet",
   "lowBandwidthMode": "Chế độ băng thông thấp",
   "twoWayTalk": {
     "enable": "Bật đàm thoại hai chiều",
@@ -170,7 +170,7 @@
   },
   "noCameras": {
     "title": "Không có camera nào được cấu hình",
-    "description": "Bắt đầu bằng cách kết nối một camera với Frigate.",
+    "description": "Bắt đầu bằng cách kết nối một camera với Gannet.",
     "buttonText": "Thêm Camera",
     "restricted": {
       "title": "Không có Camera nào khả dụng",

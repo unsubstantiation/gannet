@@ -146,6 +146,62 @@ def _file_sha256(path: str) -> str:
     return digest.hexdigest()
 
 
+#: Model file formats each detector can actually read. A model is validated
+#: against this before any detector process is started, because a mismatch
+#: otherwise surfaces as a crash inside a detector subprocess - which the
+#: watchdog reads as a dead detector and answers with a whole-app restart, so
+#: the mistake becomes an endless restart loop instead of one clear error.
+DETECTOR_MODEL_FORMATS = {
+    "cpu": {".tflite"},
+    "onnx": {".onnx"},
+    "openvino": {".xml", ".onnx", ".pdmodel", ".pb"},
+}
+
+_TFLITE_OPENVINO_HINT = (
+    "OpenVINO cannot read detection models exported for the TFLite runtime. "
+    "Its TFLite frontend has no translator for the TFLite_Detection_PostProcess "
+    "op that SSDLite, MobileNet-SSD and other TFLite detectors use to run their "
+    "non-max suppression, so it fails with 'No translator found for "
+    "TFLite_Detection_PostProcess node'. Run this model on the cpu detector "
+    "instead, or set models[].path to an OpenVINO IR (.xml) or ONNX export of "
+    "the same detector. Converting the .tflite file itself cannot work, because "
+    "no converter has a translation for that op, so the IR or ONNX export has "
+    "to come from the model author or from the framework it was trained in."
+)
+
+
+def _validate_model_format(path: str, detector: str, scene: str) -> None:
+    """Reject a model file the chosen detector cannot load.
+
+    Runs on every configured model before detectors start. A file without a
+    suffix is left alone: an upstream Frigate+ model is cached under its id
+    with no extension, and its format is only knowable by opening it.
+    """
+    suffix = os.path.splitext(path)[1].lower()
+
+    if not suffix:
+        return
+
+    supported = DETECTOR_MODEL_FORMATS.get(detector)
+
+    if supported is None or suffix in supported:
+        return
+
+    if detector == "openvino" and suffix == ".tflite":
+        raise ValueError(
+            f"Model '{scene}' uses {path}, which the openvino detector cannot "
+            f"load. {_TFLITE_OPENVINO_HINT}"
+        )
+
+    expected = ", ".join(sorted(supported))
+    raise ValueError(
+        f"Model '{scene}' uses {path}, which the {detector} detector cannot "
+        f"load; it reads {expected} files. Set models[].path to a compatible "
+        f"model, or switch the device in models[].devices to a detector that "
+        f"reads {suffix} files."
+    )
+
+
 def _ensure_default_cpu_model(model_path: str) -> None:
     """Download the default CPU model on first use of the native Windows config."""
     # A file already present at the documented model path may be an
@@ -600,14 +656,14 @@ class FrigateConfig(FrigateBaseModel):
     safe_mode: bool = Field(
         default=False,
         title="Safe mode",
-        description="When enabled, start Frigate in safe mode with reduced features for troubleshooting.",
+        description="When enabled, start Gannet in safe mode with reduced features for troubleshooting.",
     )
 
     # Fields that install global state should be defined first, so that their validators run first.
     environment_vars: EnvVars = Field(
         default_factory=dict,
         title="Environment variables",
-        description="Key/value pairs exposed to Frigate child processes. Security-sensitive startup overrides must be set in the Windows process or service environment instead.",
+        description="Key/value pairs exposed to Gannet child processes. Security-sensitive startup overrides must be set in the Windows process or service environment instead.",
     )
     logger: LoggerConfig = Field(
         default_factory=LoggerConfig,
@@ -625,7 +681,7 @@ class FrigateConfig(FrigateBaseModel):
     database: DatabaseConfig = Field(
         default_factory=DatabaseConfig,
         title="Database",
-        description="Settings for the SQLite database used by Frigate to store tracked object and recording metadata.",
+        description="Settings for the SQLite database used by Gannet to store tracked object and recording metadata.",
     )
     go2rtc: RestreamConfig = Field(
         default_factory=RestreamConfig,
@@ -644,12 +700,12 @@ class FrigateConfig(FrigateBaseModel):
     networking: NetworkingConfig = Field(
         default_factory=NetworkingConfig,
         title="Networking",
-        description="Network-related settings such as IPv6 enablement for Frigate endpoints.",
+        description="Network-related settings such as IPv6 enablement for Gannet endpoints.",
     )
     proxy: ProxyConfig = Field(
         default_factory=ProxyConfig,
         title="Proxy",
-        description="Settings for integrating Frigate behind a reverse proxy that passes authenticated user headers.",
+        description="Settings for integrating Gannet behind a reverse proxy that passes authenticated user headers.",
     )
     telemetry: TelemetryConfig = Field(
         default_factory=TelemetryConfig,
@@ -659,7 +715,7 @@ class FrigateConfig(FrigateBaseModel):
     tls: TlsConfig = Field(
         default_factory=TlsConfig,
         title="TLS",
-        description="TLS settings for Frigate's web endpoints (port 8971).",
+        description="TLS settings for Gannet's web endpoints (port 8971).",
     )
     ui: UIConfig = Field(
         default_factory=UIConfig,
@@ -887,21 +943,30 @@ class FrigateConfig(FrigateBaseModel):
         model_config = model.model_dump(exclude_unset=True, warnings="none")
 
         if "path" not in model_config:
-            if detector in ("cpu", "openvino"):
+            if detector == "cpu":
                 model_config["path"] = DEFAULT_MODEL_PATH
+            elif detector == "openvino":
+                # The bundled default is a TFLite detector, which OpenVINO
+                # cannot convert (see _validate_model_format). Require an
+                # explicit model rather than failing inside the detector
+                # subprocess, where it would look like a crash.
+                raise ValueError(
+                    f"model.path must be set when using the openvino detector. "
+                    f"Point it at an OpenVINO IR (.xml) or ONNX model. The "
+                    f"bundled default model ({DEFAULT_MODEL_PATH}) is TFLite, "
+                    f"which only the cpu detector can load. {_TFLITE_OPENVINO_HINT}"
+                )
             else:
                 raise ValueError(
                     f"model.path must be set when using the {detector} detector"
                 )
 
-        if (
-            detector in ("cpu", "openvino")
-            and model_config.get("path") == DEFAULT_MODEL_PATH
-        ):
+        if detector == "cpu" and model_config.get("path") == DEFAULT_MODEL_PATH:
             _ensure_default_cpu_model(DEFAULT_MODEL_PATH)
 
         loaded = ModelConfig.model_validate(model_config)
         loaded.check_and_load_plus_model(self.plus_api, detector)
+        _validate_model_format(loaded.path, detector, model.scene)
         loaded.compute_model_hash()
         return loaded
 
@@ -1564,7 +1629,7 @@ class FrigateConfig(FrigateBaseModel):
 
     @classmethod
     def load(cls, **kwargs):
-        """Loads the Frigate config file, runs migrations, and creates the config object."""
+        """Loads the Gannet config file, runs migrations, and creates the config object."""
         config_path = find_config_file()
 
         # No configuration file found, create one.
@@ -1618,7 +1683,7 @@ class FrigateConfig(FrigateBaseModel):
         else:
             config = yaml.load(config)
 
-        # load minimal Frigate config after the full config did not validate
+        # load minimal Gannet config after the full config did not validate
         if safe_load:
             safe_config = {"safe_mode": True, "cameras": {}, "mqtt": {"enabled": False}}
 

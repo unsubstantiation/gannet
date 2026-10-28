@@ -1,5 +1,5 @@
 {
-  "documentTitle.withCamera": "{{camera}} - Naživo - Frigate",
+  "documentTitle.withCamera": "{{camera}} - Naživo - Gannet",
   "lowBandwidthMode": "Režim nízkej šírky pásma",
   "twoWayTalk": {
     "enable": "Povoliť obojsmernú komunikáciu",
@@ -168,7 +168,7 @@
   },
   "noCameras": {
     "title": "Nie sú konfigurované žiadne kamery",
-    "description": "Začnite tým, že pripojíte kameru do Frigate.",
+    "description": "Začnite tým, že pripojíte kameru do Gannet.",
     "buttonText": "Pridať kameru",
     "restricted": {
       "title": "Žiadne kamery k dispozícii",
@@ -182,6 +182,6 @@
     "downloadStarted": "Sťahovanie snímky sa začalo."
   },
   "documentTitle": {
-    "default": "Naživo - Frigate"
+    "default": "Naživo - Gannet"
   }
 }

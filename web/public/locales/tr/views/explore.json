@@ -1,5 +1,5 @@
 {
-  "documentTitle": "Keşfet - Frigate",
+  "documentTitle": "Keşfet - Gannet",
   "details": {
     "timestamp": "Zaman Damgası",
     "item": {
@@ -10,7 +10,7 @@
         "viewInExplore": "Keşfet'te Görüntüle"
       },
       "tips": {
-        "hasMissingObjects": "Frigate'in <em>{{objects}}</em> etiketlerine sahip nesneleri kaydetmesini istiyorsanız yapılandırmanızı ayarlayın",
+        "hasMissingObjects": "Gannet'in <em>{{objects}}</em> etiketlerine sahip nesneleri kaydetmesini istiyorsanız yapılandırmanızı ayarlayın",
         "mismatch_one": "Algılanan {{count}} nesne bu incelenen öğeye dahil edildi. Bu nesne uyarı veya tespit olarak derecelendirilemedi veya çoktan temizlendi/silindi.",
         "mismatch_other": "Algılanan {{count}} nesne bu incelenen öğeye dahil edildi. Bu nesneler uyarı veya tespit olarak derecelendirilemediler veya çoktan temizlendiler/silindiler."
       },
@@ -19,7 +19,7 @@
           "updatedSublabel": "Alt etiket başarıyla güncellendi.",
           "regenerate": "Yeni bir açıklama {{provider}} sağlayıcısından talep edildi. Sağlayıcınızın hızına bağlı olarak yeni açıklamanın oluşturulması biraz zaman alabilir.",
           "updatedLPR": "Plaka başarıyla güncellendi.",
-          "audioTranscription": "Ses dökümü başarıyla istendi. Frigate sunucunuzun hızına bağlı olarak ses dökümü işleminin tamamlanması biraz zaman alabilir.",
+          "audioTranscription": "Ses dökümü başarıyla istendi. Gannet sunucunuzun hızına bağlı olarak ses dökümü işleminin tamamlanması biraz zaman alabilir.",
           "updatedAttributes": "Öznitelikler başarıyla güncellendi."
         },
         "error": {
@@ -42,7 +42,7 @@
     "zones": "Bölgeler",
     "description": {
       "label": "Açıklama",
-      "aiTips": "Frigate, Nesne Geçmişi tamamlanana kadar Üretken Yapay Zeka sağlayıcısından bir resim açıklaması talep etmeyecektir.",
+      "aiTips": "Gannet, Nesne Geçmişi tamamlanana kadar Üretken Yapay Zeka sağlayıcısından bir resim açıklaması talep etmeyecektir.",
       "placeholder": "Takip edilen nesnenin açıklaması"
     },
     "expandRegenerationMenu": "Yeniden Üretim menüsünü genişlet",
@@ -107,11 +107,11 @@
         "textModel": "Metin modeli",
         "textTokenizer": "Metin parçalayıcı (tokenizer)"
       },
-      "error": "Bir hata oluştu. Frigate günlüklerini kontrol edin.",
+      "error": "Bir hata oluştu. Gannet günlüklerini kontrol edin.",
       "tips": {
         "context": "Model indirildikten sonra takip edilmiş nesnelerinizin gömüleri tekrar dizinlemeyi tercih edebilirsiniz."
       },
-      "context": "Frigate, Anlamsal Arama özelliği için gereken gömü modellerini indiriyor. Ağ bağlantınızın hızına göre birkaç dakika sürebilir."
+      "context": "Gannet, Anlamsal Arama özelliği için gereken gömü modellerini indiriyor. Ağ bağlantınızın hızına göre birkaç dakika sürebilir."
     }
   },
   "trackedObjectDetails": "Takip Edilen Nesne Detayları",
@@ -136,7 +136,7 @@
     },
     "submitToPlus": {
       "label": "Frigate+'ya gönder",
-      "aria": "Frigate Artı'ya gönder"
+      "aria": "Gannet Artı'ya gönder"
     },
     "viewInHistory": {
       "label": "Geçmiş'te Görüntüle",

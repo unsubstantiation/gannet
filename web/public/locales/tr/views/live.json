@@ -1,8 +1,8 @@
 {
   "documentTitle": {
-    "default": "Canlı - Frigate"
+    "default": "Canlı - Gannet"
   },
-  "documentTitle.withCamera": "{{camera}} - Canlı - Frigate",
+  "documentTitle.withCamera": "{{camera}} - Canlı - Gannet",
   "muteCameras": {
     "disable": "Tüm Kameraların Sesini Aç",
     "enable": "Tüm Kameraları Sustur"
@@ -49,7 +49,7 @@
       "resetStream": "Yayını sıfırla",
       "force": {
         "label": "Düşük bant genişliği moduna zorla",
-        "desc": "Seçili yayın yerine her zaman Frigate'in kendi düşük bant genişlikli akışını oynat. Her bağlantıda çalışır ancak kalitesi daha düşüktür ve ses içermez."
+        "desc": "Seçili yayın yerine her zaman Gannet'in kendi düşük bant genişlikli akışını oynat. Her bağlantıda çalışır ancak kalitesi daha düşüktür ve ses içermez."
       }
     },
     "playInBackground": {
@@ -63,7 +63,7 @@
     },
     "mode": "Yayın Teknolojisi",
     "technology": {
-      "description": "Tercih ettiğiniz yayın teknolojisini seçin. Yine de oynatma veya ağ hataları durumunda Frigate düşük bant genişliği moduna geçebilir.",
+      "description": "Tercih ettiğiniz yayın teknolojisini seçin. Yine de oynatma veya ağ hataları durumunda Gannet düşük bant genişliği moduna geçebilir.",
       "name": {
         "mse": "MSE",
         "webrtc": "WebRTC",
@@ -220,7 +220,7 @@
   },
   "noCameras": {
     "title": "Yapılandırılmış Kamera Yok",
-    "description": "Frigate’e bir kamera bağlayarak başlayın.",
+    "description": "Gannet’e bir kamera bağlayarak başlayın.",
     "buttonText": "Kamera Ekle",
     "restricted": {
       "title": "Kullanılabilir Kamera Yok",
@@ -228,7 +228,7 @@
     },
     "default": {
       "title": "Yapılandırılmış Kamera Yok",
-      "description": "Frigate'e bir kamera bağlayarak başlayın.",
+      "description": "Gannet'e bir kamera bağlayarak başlayın.",
       "buttonText": "Kamera Ekle"
     },
     "group": {

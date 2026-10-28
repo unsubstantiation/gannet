@@ -34,7 +34,7 @@ BANDWIDTH_SAMPLE_TARGET = 50
 
 
 class StorageMaintainer(threading.Thread):
-    """Maintain frigates recording storage."""
+    """Maintain Gannet's recording storage."""
 
     def __init__(self, config: FrigateConfig, stop_event: MpEvent) -> None:
         super().__init__(name="storage_maintainer")

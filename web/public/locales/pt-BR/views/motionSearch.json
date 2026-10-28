@@ -1,6 +1,6 @@
 {
     "title": "Busca de movimento",
-    "documentTitle": "Busca de movimento - Frigate",
+    "documentTitle": "Busca de movimento - Gannet",
     "description": "Desenhe um polígono para definir a região de interesse e especifique um intervalo de tempo para buscar mudanças de movimento nessa região.",
     "startSearch": "Iniciar busca",
     "searchStarted": "Busca iniciada",

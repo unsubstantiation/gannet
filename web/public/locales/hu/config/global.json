@@ -35,7 +35,7 @@
     },
     "safe_mode": {
         "label": "Biztonságos mód",
-        "description": "Ha engedélyezve van, a Frigate programot biztonsági módban indítja el, csökkentett funkciókkal a hibaelhárítás érdekében."
+        "description": "Ha engedélyezve van, a Gannet programot biztonsági módban indítja el, csökkentett funkciókkal a hibaelhárítás érdekében."
     },
     "environment_vars": {
         "label": "Környezeti változók"
@@ -82,7 +82,7 @@
         "description": "Bejelentkezési és munkamenet-beállítások, többek között süti- és lekérdezési korlátok (rate limit) megadásához.",
         "enabled": {
             "label": "Bejelentkezés engedélyezése",
-            "description": "Natív bejelentkezés (azonosítás) engedélyezése a Frigate felületén."
+            "description": "Natív bejelentkezés (azonosítás) engedélyezése a Gannet felületén."
         },
         "reset_admin_password": {
             "label": "Admin jelszó visszaállítása",

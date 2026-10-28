@@ -29,7 +29,7 @@ For the default service install this is `%ProgramData%\Gannet\config\go2rtc_home
 Open the go2rtc editor through Gannet's authenticated gateway:
 
 ```text
-https://frigate-host:8971/go2rtc/editor.html
+https://gannet-host:8971/go2rtc/editor.html
 ```
 
 The go2rtc management port is loopback-only by default and should not be exposed directly.
@@ -53,7 +53,7 @@ If the camera's main stream is not HomeKit-compatible, define a dedicated stream
 go2rtc:
   streams:
     front_door:
-      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@camera/main
+      - rtsp://{GANNET_RTSP_USER}:{GANNET_RTSP_PASSWORD}@camera/main
     front_door_homekit:
       - "ffmpeg:front_door#video=h264#width=1280#height=720#audio=opus/16000"
 ```

@@ -15,7 +15,7 @@
     "noFoundForTimePeriod": "ไม่เจอกิจกรรมในช่วงเวลานี้"
   },
   "recordings": {
-    "documentTitle": "การบันทึก - Frigate"
+    "documentTitle": "การบันทึก - Gannet"
   },
   "calendarFilter": {
     "last24Hours": "24 ชั่วโมงล่าสุด"
@@ -33,6 +33,6 @@
   "detections": "การตรวจจับ",
   "selected_one": "เลือก {{count}} แล้ว",
   "timeline.aria": "เลือกไทม์ไลน์",
-  "documentTitle": "รีวิว - Frigate",
+  "documentTitle": "รีวิว - Gannet",
   "zoomIn": "ซูมเข้า"
 }

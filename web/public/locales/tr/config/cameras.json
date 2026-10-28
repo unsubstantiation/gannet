@@ -5,7 +5,7 @@
     },
     "friendly_name": {
         "label": "Kolay ad",
-        "description": "Frigate arayüzünde kullanılacak kolay ad"
+        "description": "Gannet arayüzünde kullanılacak kolay ad"
     },
     "enabled": {
         "label": "Etkin",
@@ -604,7 +604,7 @@
         "description": "Bölgeler, bir nesnenin belli bir alanda olup olmadığını algılayabilmeniz için görüntü karesinde belirli bir alan tanımlamanızı sağlar.",
         "friendly_name": {
             "label": "Bölge adı",
-            "description": "Bölgenin Frigate kullanıcı arayüzünde gözüken kullanıcı dostu adı. Belirtilmezse bölge adının biçimlendirilmiş bir hali kullanılacaktır."
+            "description": "Bölgenin Gannet kullanıcı arayüzünde gözüken kullanıcı dostu adı. Belirtilmezse bölge adının biçimlendirilmiş bir hali kullanılacaktır."
         },
         "enabled": {
             "label": "Etkin",
@@ -981,7 +981,7 @@
             },
             "calibrate_on_startup": {
                 "label": "Başlangıçta ölçüm ayarı yap",
-                "description": "Takip hassasiyetini artırmak için başlangıçta PTZ motor hızlarını ölç. Frigate ölçüm ayarı (kalibrasyon) sonrasında yapılandırmayı movement_weights (hareket ağırlıkları) ile güncelleyecektir."
+                "description": "Takip hassasiyetini artırmak için başlangıçta PTZ motor hızlarını ölç. Gannet ölçüm ayarı (kalibrasyon) sonrasında yapılandırmayı movement_weights (hareket ağırlıkları) ile güncelleyecektir."
             },
             "zooming": {
                 "label": "Yaklaştırma modu",
@@ -1018,7 +1018,7 @@
         },
         "ignore_time_mismatch": {
             "label": "Zaman uyumsuzluğunu yoksay",
-            "description": "ONVIF iletişimi için kamera ve Frigate sunucusu arasındaki zaman senkronizasyonu farklarını yoksay."
+            "description": "ONVIF iletişimi için kamera ve Gannet sunucusu arasındaki zaman senkronizasyonu farklarını yoksay."
         }
     },
     "type": {

@@ -1,5 +1,5 @@
 {
-  "documentTitle": "瀏覽 - Frigate",
+  "documentTitle": "瀏覽 - Gannet",
   "generativeAI": "生成式 AI",
   "exploreMore": "瀏覽更多 {{label}} 物件",
   "exploreIsUnavailable": {
@@ -16,7 +16,7 @@
       "estimatedTime": "預計剩餘時間："
     },
     "downloadingModels": {
-      "context": "Frigate 正在下載所需的嵌入式模型以支援語意搜尋功能。根據你的網路連接速度，這可能會需要幾分鐘。",
+      "context": "Gannet 正在下載所需的嵌入式模型以支援語意搜尋功能。根據你的網路連接速度，這可能會需要幾分鐘。",
       "setup": {
         "visionModel": "視覺模型",
         "visionModelFeatureExtractor": "視覺模型特徵提取器",
@@ -26,7 +26,7 @@
       "tips": {
         "context": "在模型下載完成後，你可能會需要重新建立追蹤物件的特徵索引。"
       },
-      "error": "發生錯誤。請檢查 Frigate 日誌。"
+      "error": "發生錯誤。請檢查 Gannet 日誌。"
     }
   },
   "details": {
@@ -40,7 +40,7 @@
       },
       "tips": {
         "mismatch_other": "在此審核項目中偵測到 {{count}} 個不可用物件。這些物件可能不符合警示或偵測標準，或者已被清除/刪除。",
-        "hasMissingObjects": "如果你想要 Frigate 儲存以下標籤的追蹤物件：<em>{{objects}}</em>，請調整設定"
+        "hasMissingObjects": "如果你想要 Gannet 儲存以下標籤的追蹤物件：<em>{{objects}}</em>，請調整設定"
       },
       "toast": {
         "success": {
@@ -48,7 +48,7 @@
           "updatedSublabel": "成功更新子標籤。",
           "updatedLPR": "成功更新車牌。",
           "updatedAttributes": "已成功更新屬性。",
-          "audioTranscription": "已成功送出音訊轉錄請求。轉錄完成所需時間會依您的 Frigate 伺服器速度而定，可能需要一段時間。"
+          "audioTranscription": "已成功送出音訊轉錄請求。轉錄完成所需時間會依您的 Gannet 伺服器速度而定，可能需要一段時間。"
         },
         "error": {
           "regenerate": "請求 {{provider}} 生成新的說明失敗：{{errorMessage}}",
@@ -92,7 +92,7 @@
     "description": {
       "label": "說明",
       "placeholder": "追蹤物件的說明",
-      "aiTips": "在追蹤物件的生命週期結束前，Frigate 不會向你設定的生成式 AI 提供者請求說明。"
+      "aiTips": "在追蹤物件的生命週期結束前，Gannet 不會向你設定的生成式 AI 提供者請求說明。"
     },
     "expandRegenerationMenu": "展開重新生成選單",
     "regenerateFromSnapshot": "從截圖重新生成",

@@ -2,17 +2,17 @@ import { LogLine, LogSeverity, LogType } from "@/types/log";
 
 const pythonSeverity = /(DEBUG)|(INFO)|(WARNING)|(ERROR)/;
 
-const frigateDateStamp = /\[[\d\s-:]*]/;
-const frigateSection = /[\w.]*/;
+const gannetDateStamp = /\[[\d\s-:]*]/;
+const gannetSection = /[\w.]*/;
 
 const goSeverity = /(DEB )|(INF )|(WRN )|(ERR )/;
 const goSection = /\[[\w]*]/;
 
 export function parseLogLines(logService: LogType, logs: string[]) {
-  if (logService == "frigate") {
+  if (logService == "gannet") {
     return logs
       .map((line) => {
-        const match = frigateDateStamp.exec(line);
+        const match = gannetDateStamp.exec(line);
 
         if (!match) {
           const infoIndex = line.indexOf("[INFO]");
@@ -53,7 +53,7 @@ export function parseLogLines(logService: LogType, logs: string[]) {
           };
         }
 
-        const sectionMatch = frigateSection.exec(
+        const sectionMatch = gannetSection.exec(
           line.substring(match.index + match[0].length).trim(),
         );
 

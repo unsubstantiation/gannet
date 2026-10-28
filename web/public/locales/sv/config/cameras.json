@@ -180,7 +180,7 @@
         },
         "retry_interval": {
             "label": "Återförsöksintervall för FFmpeg",
-            "description": "Antal sekunder att vänta innan Frigate försöker återansluta en kameraström efter ett fel. Standardvärdet är 10."
+            "description": "Antal sekunder att vänta innan Gannet försöker återansluta en kameraström efter ett fel. Standardvärdet är 10."
         },
         "apple_compatibility": {
             "label": "Apple-kompatibilitet",
@@ -803,7 +803,7 @@
             },
             "calibrate_on_startup": {
                 "label": "Kalibrera vid start",
-                "description": "Mät PTZ-motorernas hastigheter vid start för att förbättra spårningsnoggrannheten. Frigate uppdaterar konfigurationen med movement_weights efter kalibreringen."
+                "description": "Mät PTZ-motorernas hastigheter vid start för att förbättra spårningsnoggrannheten. Gannet uppdaterar konfigurationen med movement_weights efter kalibreringen."
             },
             "zooming": {
                 "label": "Zoomläge",
@@ -840,7 +840,7 @@
         },
         "ignore_time_mismatch": {
             "label": "Ignorera tidsavvikelse",
-            "description": "Ignorera skillnader i tidssynkronisering mellan kameran och Frigate-servern vid ONVIF-kommunikation."
+            "description": "Ignorera skillnader i tidssynkronisering mellan kameran och Gannet-servern vid ONVIF-kommunikation."
         }
     },
     "type": {

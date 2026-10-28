@@ -235,7 +235,7 @@ one:
 ```
 
 With no arguments, either entry point just starts Gannet. Use the
-`FRIGATE_BASE_DIR` environment variable to move the writable data directory
+`GANNET_BASE_DIR` environment variable to move the writable data directory
 (`run_gannet.ps1 -BaseDir <path>` is the PowerShell equivalent). The launcher
 recognises any renamed copy of the interpreter (winget installs the command as
 `GannetNVR`), so don't rename `python.exe` for other purposes inside the bundle.
@@ -250,7 +250,7 @@ differs only in where it finds Python:
 
 1. resolves the bundle root from its own location, so the archive can be extracted
    anywhere writable;
-2. seeds `model_cache/*.tflite` into `%LOCALAPPDATA%\Frigate\config\model_cache`
+2. seeds `model_cache/*.tflite` into `%LOCALAPPDATA%\Gannet\config\model_cache`
    when a file is absent, so an upgraded model is never overwritten;
 3. sets `PYTHONUTF8=1`, because the application reads and writes UTF-8;
 4. runs `python.exe -m gannet` **with the working directory set to `app`**;
@@ -258,7 +258,7 @@ differs only in where it finds Python:
    Ctrl+C and closing the window still stop it.
 
 `-BaseDir <path>` keeps the writable data somewhere other than
-`%LOCALAPPDATA%\Frigate`. The bundle itself is never written to.
+`%LOCALAPPDATA%\Gannet`. The bundle itself is never written to.
 
 ## First run
 
@@ -270,13 +270,24 @@ differs only in where it finds Python:
 3. Open <https://localhost:8971> and accept the first-run warning for the
    generated self-signed certificate. The generated administrator password is
    printed on first start and recorded in
-   `%LOCALAPPDATA%\Frigate\tmp\logs\frigate\current`.
-4. Data appears in `%LOCALAPPDATA%\Frigate`: `config/`, `media/`, `cache/`, `tmp/`.
+   `%LOCALAPPDATA%\Gannet\tmp\logs\gannet\current`.
+4. Data appears in `%LOCALAPPDATA%\Gannet`: `config/`, `media/`, `cache/`, `tmp/`.
 
 The first launch is slower than later ones because CPython compiles the installed
 packages to bytecode as they are imported. Nothing is precompiled at build time:
 bytecode is tied to the interpreter's magic number, and a build host that is not
 3.12 would write files the bundled interpreter must ignore.
+
+**Existing installs.** The default data root changed from
+`%LOCALAPPDATA%\Frigate` to `%LOCALAPPDATA%\Gannet`, and the application log
+moved from `tmp\logs\frigate\current` to `tmp\logs\gannet\current`. This is a
+clean cutover: nothing is moved automatically. Set `GANNET_BASE_DIR` (the old
+`FRIGATE_BASE_DIR` still works) to the legacy folder before launching an
+upgraded bundle, or copy `config\`, `media\`, `cache\` and `tmp\` into the new
+tree. All three launchers print a warning when a legacy folder exists without
+an override. The `FRIGATE_*` environment names, MQTT `frigate` topic prefix,
+`frigate_token` cookie, `frigate_` Prometheus metrics, and the `frigate-nvr`
+distribution metadata remain as compatibility identifiers.
 
 ## Supply chain and pinning
 
@@ -429,6 +440,8 @@ downstream packager needs to reconstruct the obligations.
 | `unknown option --validate-config` when passing a Gannet flag | CPython parsed the flag as its own option before `site` ran | put `--` before application flags (`GannetNVR.cmd` does this for you) |
 | `python312.dll was not found` when running the .exe | `GannetNVR.exe` was moved out of `python\` | keep the copy next to `python.exe` and the DLLs; the Windows loader looks beside the executable |
 | `win32service` / `pywintypes` import error | `pywintypes312.dll` is not next to `python.exe` | the builder copies it from `pywin32_system32`; a re-zipped tree that dropped it will fail |
+| `SyntaxWarning: invalid escape sequence '\S'` from `filterpy\common\helpers.py` on first launch | a bundle built before the post-install source fix; filterpy 1.4.5 ships LaTeX docstrings with unescaped backslashes, and the bundle has no `.pyc` | harmless, but rebuild: `install_wheels` now calls `fix_filterpy_escapes`, which doubles the invalid escapes in the installed sources and updates their `RECORD` hashes. For an existing extraction, see `DEPENDENCIES.md` §1.5 |
+| The app keeps restarting ("the process resets") | the watchdog saw a detector process die and asked the launcher for a whole-app restart, or an UI/automation kept requesting one | read `%LOCALAPPDATA%\Gannet\tmp\logs\launcher.log` (reason + exit code per restart) and `...\logs\gannet\current`; see [Common errors](docs/docs/troubleshooting/common_errors.md) |
 | Antivirus quarantines the archive | unsigned executables in a ZIP | expected for unsigned builds; ship a signature or document the exclusion |
 
 ## Changing dependencies

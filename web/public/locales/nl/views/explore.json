@@ -19,8 +19,8 @@
         "visionModelFeatureExtractor": "kenmerkextractie van een visiemodel",
         "textModel": "Tekstmodel"
       },
-      "error": "Er is iets misgegaan. Raadpleeg de Frigate-logs.",
-      "context": "Frigate downloadt de vereiste inbedmodellen om de functie Semantisch zoeken te ondersteunen. Dit kan enkele minuten duren, afhankelijk van de snelheid van je netwerkverbinding.",
+      "error": "Er is iets misgegaan. Raadpleeg de Gannet-logs.",
+      "context": "Gannet downloadt de vereiste inbedmodellen om de functie Semantisch zoeken te ondersteunen. Dit kan enkele minuten duren, afhankelijk van de snelheid van je netwerkverbinding.",
       "tips": {
         "context": "Je wilt misschien de embeddings van je gevolgde objecten opnieuw indexeren zodra de modellen zijn gedownload."
       }
@@ -38,7 +38,7 @@
   "objectLifecycle": {
     "noImageFound": "Er is geen afbeelding beschikbaar voor dit tijdstip."
   },
-  "documentTitle": "Verken - Frigate",
+  "documentTitle": "Verken - Gannet",
   "details": {
     "item": {
       "button": {
@@ -48,7 +48,7 @@
       "title": "Details van item bekijken",
       "desc": "Details van item bekijken",
       "tips": {
-        "hasMissingObjects": "Pas je configuratie aan als je wilt dat Frigate gevolgde objecten opslaat voor de volgende labels: <em>{{objects}}</em>",
+        "hasMissingObjects": "Pas je configuratie aan als je wilt dat Gannet gevolgde objecten opslaat voor de volgende labels: <em>{{objects}}</em>",
         "mismatch_one": "{{count}} Niet-beschikbaar object werd gedetecteerd en opgenomen in dit beoordelingsitem. Het voldeed mogelijk niet aan de criteria voor een waarschuwing of detectie, of is inmiddels opgeschoond of verwijderd.",
         "mismatch_other": "{{count}} Niet-beschikbare objecten zijn gedetecteerd en opgenomen in dit beoordelingsitem. Deze objecten voldeden mogelijk niet aan de voorwaarden voor een waarschuwing of detectie, of zijn inmiddels verwijderd of opgeruimd."
       },
@@ -57,7 +57,7 @@
           "regenerate": "Er is een nieuwe beschrijving aangevraagd bij {{provider}}. Afhankelijk van de snelheid van je provider kan het regenereren van de nieuwe beschrijving enige tijd duren.",
           "updatedSublabel": "Sublabel succesvol bijgewerkt.",
           "updatedLPR": "Kenteken succesvol bijgewerkt.",
-          "audioTranscription": "Audio-transcriptie succesvol aangevraagd. Afhankelijk van de snelheid van uw Frigate-server kan het even duren voordat de transcriptie voltooid is.",
+          "audioTranscription": "Audio-transcriptie succesvol aangevraagd. Afhankelijk van de snelheid van uw Gannet-server kan het even duren voordat de transcriptie voltooid is.",
           "updatedAttributes": "Attributen succesvol bijgewerkt."
         },
         "error": {
@@ -91,7 +91,7 @@
     "description": {
       "placeholder": "Beschrijving van het gevolgde object",
       "label": "Beschrijving",
-      "aiTips": "Frigate vraagt pas om een beschrijving van uw Generative AI-provider als de levenscyclus van het gevolgde object is afgelopen."
+      "aiTips": "Gannet vraagt pas om een beschrijving van uw Generative AI-provider als de levenscyclus van het gevolgde object is afgelopen."
     },
     "expandRegenerationMenu": "Regeneratiemenu uitbreiden",
     "regenerateFromSnapshot": "Regenereren vanuit Snapshot",

@@ -1,4 +1,4 @@
-"""Frigate-managed go2rtc live streams: transcoded rungs and bitrate probes."""
+"""Gannet-managed go2rtc live streams: transcoded rungs and bitrate probes."""
 
 import logging
 import re
@@ -109,7 +109,7 @@ def raw_transcode_streams(config: dict[str, Any]) -> dict[str, str]:
         if qualities is None:
             qualities = DEFAULT_TRANSCODE_QUALITIES
 
-        # malformed entries fail Frigate's validation; skipping them here keeps
+        # malformed entries fail Gannet's validation; skipping them here keeps
         # go2rtc from crash-looping alongside it
         valid = [
             quality

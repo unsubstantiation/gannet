@@ -41,7 +41,7 @@
     },
     "safe_mode": {
         "label": "安全模式",
-        "description": "開啟後，Frigate 將以安全模式啟動，將會關閉部分功能，以便排查問題。"
+        "description": "開啟後，Gannet 將以安全模式啟動，將會關閉部分功能，以便排查問題。"
     },
     "environment_vars": {
         "label": "環境變數"
@@ -63,7 +63,7 @@
         "description": "身份驗證和工作階段相關設定，包括 Cookie 和速率限制選項。",
         "enabled": {
             "label": "開啟身份驗證",
-            "description": "為 Frigate 頁面開啟原生身份驗證。"
+            "description": "為 Gannet 頁面開啟原生身份驗證。"
         },
         "reset_admin_password": {
             "label": "重設管理員密碼",
@@ -108,10 +108,10 @@
     },
     "database": {
         "label": "資料庫",
-        "description": "Frigate 用於儲存追蹤目標和錄影中繼資料的 SQLite 資料庫設定。",
+        "description": "Gannet 用於儲存追蹤目標和錄影中繼資料的 SQLite 資料庫設定。",
         "path": {
             "label": "資料庫路徑",
-            "description": "Frigate SQLite 資料庫檔案的儲存路徑。"
+            "description": "Gannet SQLite 資料庫檔案的儲存路徑。"
         }
     },
     "go2rtc": {
@@ -135,7 +135,7 @@
         },
         "topic_prefix": {
             "label": "主題字首",
-            "description": "所有 Frigate 主題的 MQTT 主題字首；如果執行多個例項，必須唯一。"
+            "description": "所有 Gannet 主題的 MQTT 主題字首；如果執行多個例項，必須唯一。"
         },
         "client_id": {
             "label": "用戶端 ID",
@@ -196,33 +196,33 @@
     },
     "networking": {
         "label": "網路",
-        "description": "網路相關設定，如 Frigate 端點的 IPv6 啟用。",
+        "description": "網路相關設定，如 Gannet 端點的 IPv6 啟用。",
         "ipv6": {
             "label": "IPv6 配置",
-            "description": "Frigate 網路服務的 IPv6 特定設定。",
+            "description": "Gannet 網路服務的 IPv6 特定設定。",
             "enabled": {
                 "label": "開啟 IPv6",
-                "description": "在適用的情況下為 Frigate 服務（API 和 UI）啟用 IPv6 支援。"
+                "description": "在適用的情況下為 Gannet 服務（API 和 UI）啟用 IPv6 支援。"
             }
         },
         "listen": {
             "label": "監聽埠配置",
             "internal": {
                 "label": "內部埠",
-                "description": "Frigate 的內部監聽埠（預設 5000）。"
+                "description": "Gannet 的內部監聽埠（預設 5000）。"
             },
             "external": {
                 "label": "外部埠",
-                "description": "Frigate 的外部監聽埠（預設 8971）。"
+                "description": "Gannet 的外部監聽埠（預設 8971）。"
             }
         }
     },
     "proxy": {
         "label": "代理",
-        "description": "用於將 Frigate 整合到傳遞已認證使用者頭的反向代理後面的設定。",
+        "description": "用於將 Gannet 整合到傳遞已認證使用者頭的反向代理後面的設定。",
         "header_map": {
             "label": "請求頭對映",
-            "description": "將傳入的代理請求頭對映到 Frigate 使用者和權限組欄位，用於基於代理的身份驗證。",
+            "description": "將傳入的代理請求頭對映到 Gannet 使用者和權限組欄位，用於基於代理的身份驗證。",
             "user": {
                 "label": "使用者請求頭",
                 "description": "包含上游代理提供的已認證使用者名稱的請求頭。"
@@ -233,7 +233,7 @@
             },
             "role_map": {
                 "label": "權限組對映",
-                "description": "將上游組值對映到 Frigate 權限組（例如將管理員組對映到管理員權限組）。"
+                "description": "將上游組值對映到 Gannet 權限組（例如將管理員組對映到管理員權限組）。"
             }
         },
         "logout_url": {
@@ -281,15 +281,15 @@
         },
         "version_check": {
             "label": "版本檢查",
-            "description": "啟用出站檢查以偵測是否有更新版本的 Frigate 可用。"
+            "description": "啟用出站檢查以偵測是否有更新版本的 Gannet 可用。"
         }
     },
     "tls": {
         "label": "TLS",
-        "description": "Frigate Web 端點（埠 8971）的 TLS 設定。",
+        "description": "Gannet Web 端點（埠 8971）的 TLS 設定。",
         "enabled": {
             "label": "開啟 TLS",
-            "description": "為 Frigate 的網頁頁面和 API 的埠開啟 TLS 加密。"
+            "description": "為 Gannet 的網頁頁面和 API 的埠開啟 TLS 加密。"
         }
     },
     "ui": {
@@ -1314,7 +1314,7 @@
         },
         "dashboard": {
             "label": "在即時儀表板上顯示",
-            "description": "切換此攝影機在 Frigate 頁面中是否可見。停用後需要手動編輯配置才能再次在頁面中檢視此攝影機。"
+            "description": "切換此攝影機在 Gannet 頁面中是否可見。停用後需要手動編輯配置才能再次在頁面中檢視此攝影機。"
         },
         "review": {
             "label": "在審查中顯示",
@@ -1357,7 +1357,7 @@
             },
             "calibrate_on_startup": {
                 "label": "啟動時校準",
-                "description": "在啟動時測量 PTZ 電機速度以提高追蹤精度。Frigate 將在校準後用 movement_weights 更新配置。"
+                "description": "在啟動時測量 PTZ 電機速度以提高追蹤精度。Gannet 將在校準後用 movement_weights 更新配置。"
             },
             "zooming": {
                 "label": "變焦模式",
@@ -1394,7 +1394,7 @@
         },
         "ignore_time_mismatch": {
             "label": "忽略時間不匹配",
-            "description": "忽略 ONVIF 通訊中攝影機和 Frigate 伺服器之間的時間同步差異。"
+            "description": "忽略 ONVIF 通訊中攝影機和 Gannet 伺服器之間的時間同步差異。"
         }
     }
 }

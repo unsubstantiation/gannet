@@ -561,5 +561,62 @@ class TestSourceRobustness(unittest.TestCase):
         self.assertNotIn("FRIGATE_CAM_PASS", env.FRIGATE_ENV_VARS)
 
 
+class TestGannetEnvAliases(unittest.TestCase):
+    """GANNET_* is preferred; FRIGATE_* keeps resolving for existing configs."""
+
+    def setUp(self):
+        self._original = dict(env.FRIGATE_ENV_VARS)
+
+    def tearDown(self):
+        env.FRIGATE_ENV_VARS.clear()
+        env.FRIGATE_ENV_VARS.update(self._original)
+
+    def test_normalize_exposes_both_spellings(self):
+        normalized = env._normalize_env_keys({"FRIGATE_CAM_PASS": "old"})
+        self.assertEqual(normalized["FRIGATE_CAM_PASS"], "old")
+        self.assertEqual(normalized["GANNET_CAM_PASS"], "old")
+
+    def test_preferred_value_wins_when_both_are_set(self):
+        normalized = env._normalize_env_keys(
+            {"FRIGATE_CAM_PASS": "old", "GANNET_CAM_PASS": "new"}
+        )
+        self.assertEqual(normalized["FRIGATE_CAM_PASS"], "new")
+        self.assertEqual(normalized["GANNET_CAM_PASS"], "new")
+
+    def test_both_placeholders_substitute(self):
+        env.FRIGATE_ENV_VARS.update(
+            {"GANNET_USER": "cam", "FRIGATE_USER": "cam", "FRIGATE_PASS": "pw"}
+        )
+        self.assertEqual(validate_env_string("{GANNET_USER}"), "cam")
+        self.assertEqual(validate_env_string("{FRIGATE_USER}"), "cam")
+        self.assertEqual(
+            validate_env_string("rtsp://{GANNET_USER}:{FRIGATE_PASS}@host"),
+            "rtsp://cam:pw@host",
+        )
+
+    def test_malformed_gannet_placeholder_is_rejected(self):
+        with self.assertRaises(ValueError):
+            validate_env_string("{GANNET_FOO:>5}")
+
+    def test_config_block_exports_both_spellings(self):
+        info = MagicMock()
+        info.context = {"install": True}
+        with patch.dict(os.environ, {}, clear=False):
+            validate_env_vars({"GANNET_RTSP_PASSWORD": "secret"}, info)
+            self.assertEqual(os.environ["GANNET_RTSP_PASSWORD"], "secret")
+            self.assertEqual(os.environ["FRIGATE_RTSP_PASSWORD"], "secret")
+
+    def test_secrets_file_accepts_the_preferred_prefix(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with open(os.path.join(tmp, "secrets.yaml"), "w") as handle:
+                handle.write("GANNET_CAM_PASS: from_secrets\n")
+            with patch.dict(
+                os.environ, {"CONFIG_FILE": os.path.join(tmp, "config.yml")}
+            ):
+                env.reload_sources()
+            self.assertEqual(env.GANNET_ENV_VARS["GANNET_CAM_PASS"], "from_secrets")
+            self.assertEqual(env.GANNET_ENV_VARS["FRIGATE_CAM_PASS"], "from_secrets")
+
+
 if __name__ == "__main__":
     unittest.main()

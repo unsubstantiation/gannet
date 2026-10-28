@@ -44,9 +44,9 @@
     "trackedPoint": "Tracked point",
     "clickToSeek": "Click to seek to this time"
   },
-  "documentTitle": "Review - Frigate",
+  "documentTitle": "Review - Gannet",
   "recordings": {
-    "documentTitle": "Recordings - Frigate",
+    "documentTitle": "Recordings - Gannet",
     "invalidSharedLink": "Unable to open timestamped recording link due to parsing error.",
     "invalidSharedCamera": "Unable to open timestamped recording link due to an unknown or unauthorized camera."
   },

@@ -1,15 +1,15 @@
 {
   "documentTitle": {
-    "cameras": "Statystyki kamer - Frigate",
-    "storage": "Statystyki Magazynowania - Frigate",
-    "general": "Statystyki Ogólne - Frigate",
-    "enrichments": "Statystyki Wzbogacania - Frigate",
+    "cameras": "Statystyki kamer - Gannet",
+    "storage": "Statystyki Magazynowania - Gannet",
+    "general": "Statystyki Ogólne - Gannet",
+    "enrichments": "Statystyki Wzbogacania - Gannet",
     "logs": {
-      "frigate": "Logi Frigate - Frigate",
-      "go2rtc": "Logi Go2RTC - Frigate",
-      "websocket": "Logi komunikatów - Frigate"
+      "gannet": "Logi Gannet - Gannet",
+      "go2rtc": "Logi Go2RTC - Gannet",
+      "websocket": "Logi komunikatów - Gannet"
     },
-    "health": "Zdrowie – Frigate"
+    "health": "Zdrowie – Gannet"
   },
   "general": {
     "hardwareInfo": {
@@ -148,7 +148,7 @@
     "cameraStorage": {
       "unused": {
         "title": "Niewykorzystane",
-        "tips": "Ta wartość może niedokładnie przedstawiać wolne miejsce dostępne dla Frigate, jeśli masz inne pliki przechowywane na dysku poza nagraniami Frigate. Frigate nie śledzi wykorzystania magazynu poza swoimi nagraniami."
+        "tips": "Ta wartość może niedokładnie przedstawiać wolne miejsce dostępne dla Gannet, jeśli masz inne pliki przechowywane na dysku poza nagraniami Gannet. Gannet nie śledzi wykorzystania magazynu poza swoimi nagraniami."
       },
       "title": "Magazyn kamery",
       "camera": "Kamera",
@@ -161,7 +161,7 @@
     "overview": "Przegląd",
     "recordings": {
       "title": "Nagrania",
-      "tips": "Ta wartość reprezentuje całkowite miejsce zajmowane przez nagrania w bazie danych Frigate. Frigate nie śledzi wykorzystania magazynu dla wszystkich plików na twoim dysku.",
+      "tips": "Ta wartość reprezentuje całkowite miejsce zajmowane przez nagrania w bazie danych Gannet. Gannet nie śledzi wykorzystania magazynu dla wszystkich plików na twoim dysku.",
       "earliestRecording": "Najwcześniejsze dostępne nagranie:"
     },
     "shm": {
@@ -267,7 +267,7 @@
     "title": "Zdrowie",
     "notices": {
       "title": "Ogłoszenia",
-      "empty": "Instalacja programu Frigate działa poprawnie",
+      "empty": "Instalacja programu Gannet działa poprawnie",
       "acknowledge": "Potwierdzić",
       "acknowledgeHint": "Ukryj, dopóki to się nie powtórzy",
       "mute": "Wycisz",

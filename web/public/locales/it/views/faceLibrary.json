@@ -67,7 +67,7 @@
     "nextSteps": "Per costruire una base solida:<li>Usa la scheda \"Riconoscimenti recenti\" per selezionare e addestrare le immagini per ogni persona rilevata.</li><li>Concentrati sulle immagini dritte per ottenere risultati migliori; evita di addestrare immagini che catturano i volti da un'angolazione.</li></ul>",
     "new": "Crea nuovo volto"
   },
-  "documentTitle": "Libreria dei Volti - Frigate",
+  "documentTitle": "Libreria dei Volti - Gannet",
   "uploadFaceImage": {
     "desc": "Carica un'immagine per scansionare i volti e includerla in {{pageToggle}}",
     "title": "Carica l'immagine del volto"

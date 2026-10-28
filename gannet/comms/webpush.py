@@ -1,4 +1,4 @@
-"""Handle sending notifications for Frigate via Firebase."""
+"""Handle sending notifications for Gannet via Firebase."""
 
 import datetime
 import json
@@ -98,7 +98,7 @@ def _build_web_pushers(user: str, subs: list[dict[str, Any]]) -> list[WebPusher]
 
 
 class WebPushClient(Communicator):
-    """Frigate wrapper for webpush client."""
+    """Gannet wrapper for webpush client."""
 
     def __init__(self, config: FrigateConfig, stop_event: MpEvent) -> None:
         self.config = config
@@ -455,7 +455,7 @@ class WebPushClient(Communicator):
                 user=user,
                 payload={},
                 title="Test Notification",
-                message="This is a test notification from Frigate.",
+                message="This is a test notification from Gannet.",
                 direct_url="/",
                 notification_type="test",
             )

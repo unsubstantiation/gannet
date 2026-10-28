@@ -11,19 +11,25 @@ from unittest.mock import MagicMock, patch
 
 from gannet.util.builtin import get_ffmpeg_arg_list
 from gannet.util.platform import (
+    BASE_DIR_VAR,
     IPC_ENDPOINTS,
     IS_WINDOWS,
     MAX_PATH_LIMIT,
     SERVICE_STOP_EVENT_VAR,
     ffmpeg_concat_file_line,
     ffmpeg_stdin_input,
+    first_env_value,
+    get_base_dir,
     get_fs_type,
     get_process_priority_class,
+    get_service_log_path,
     get_web_host,
     get_web_port,
     install_service_stop_watcher,
     ipc_endpoint,
     is_subpath,
+    legacy_base_dir_warning,
+    legacy_env_name,
     long_path_warning,
     longest_recording_path,
     quote_ffmpeg_arg,
@@ -470,6 +476,74 @@ class TestServiceStopWatcher(unittest.TestCase):
                 stop_event.wait(30),
                 "the watcher did not stop Frigate when the service signalled",
             )
+
+
+class TestGannetPathAliases(unittest.TestCase):
+    def test_default_base_dir_uses_the_gannet_name(self):
+        with tempfile.TemporaryDirectory() as appdata:
+            with patch.dict(
+                os.environ,
+                {
+                    "LOCALAPPDATA": appdata,
+                    "GANNET_BASE_DIR": "",
+                    "FRIGATE_BASE_DIR": "",
+                },
+            ):
+                self.assertEqual(get_base_dir(), os.path.join(appdata, "Gannet"))
+
+    def test_legacy_alias_still_overrides_the_default(self):
+        with patch.dict(
+            os.environ,
+            {"FRIGATE_BASE_DIR": r"D:\OldData", "GANNET_BASE_DIR": ""},
+        ):
+            self.assertEqual(
+                os.path.normcase(get_base_dir()),
+                os.path.normcase(os.path.abspath(r"D:\OldData")),
+            )
+
+    def test_preferred_name_wins(self):
+        self.assertEqual(legacy_env_name(BASE_DIR_VAR), "FRIGATE_BASE_DIR")
+        with patch.dict(
+            os.environ,
+            {"GANNET_WEB_PORT": "9000", "FRIGATE_WEB_PORT": "8000"},
+        ):
+            self.assertEqual(first_env_value("GANNET_WEB_PORT"), "9000")
+
+    def test_log_file_moved_to_the_gannet_name(self):
+        self.assertTrue(
+            get_service_log_path("gannet")
+            .replace("\\", "/")
+            .endswith("logs/gannet/current")
+        )
+
+    def test_legacy_directory_warns_without_being_adopted(self):
+        with tempfile.TemporaryDirectory() as appdata:
+            legacy = Path(appdata) / "Frigate"
+            legacy.mkdir()
+            with patch.dict(
+                os.environ,
+                {
+                    "LOCALAPPDATA": appdata,
+                    "GANNET_BASE_DIR": "",
+                    "FRIGATE_BASE_DIR": "",
+                },
+            ):
+                warning = legacy_base_dir_warning()
+                base = get_base_dir()
+
+        self.assertIsNotNone(warning)
+        self.assertIn(str(legacy), warning)
+        self.assertIn("GANNET_BASE_DIR", warning)
+        self.assertEqual(base, os.path.join(appdata, "Gannet"))
+
+    def test_no_warning_when_a_base_dir_is_pinned(self):
+        with tempfile.TemporaryDirectory() as appdata:
+            (Path(appdata) / "Frigate").mkdir()
+            with patch.dict(
+                os.environ,
+                {"LOCALAPPDATA": appdata, "FRIGATE_BASE_DIR": appdata},
+            ):
+                self.assertIsNone(legacy_base_dir_warning())
 
 
 if __name__ == "__main__":

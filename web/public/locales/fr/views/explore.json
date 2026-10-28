@@ -1,6 +1,6 @@
 {
   "generativeAI": "IA générative",
-  "documentTitle": "Explorer - Frigate",
+  "documentTitle": "Explorer - Gannet",
   "exploreIsUnavailable": {
     "title": "L'exploration est indisponible",
     "embeddingsReindexing": {
@@ -15,7 +15,7 @@
       }
     },
     "downloadingModels": {
-      "context": "Frigate télécharge les modèles d'embeddings nécessaires pour prendre en charge la fonctionnalité de recherche sémantique. Cette opération peut prendre plusieurs minutes selon la vitesse de votre connexion réseau.",
+      "context": "Gannet télécharge les modèles d'embeddings nécessaires pour prendre en charge la fonctionnalité de recherche sémantique. Cette opération peut prendre plusieurs minutes selon la vitesse de votre connexion réseau.",
       "setup": {
         "visionModelFeatureExtractor": "Extracteur de caractéristiques de modèle de vision",
         "textTokenizer": "Tokeniseur de texte",
@@ -25,7 +25,7 @@
       "tips": {
         "context": "Une fois les modèles téléchargés, il est conseillé de réindexer les embeddings de vos objets suivis."
       },
-      "error": "Une erreur est survenue. Vérifiez les journaux Frigate."
+      "error": "Une erreur est survenue. Vérifiez les journaux Gannet."
     }
   },
   "details": {
@@ -41,7 +41,7 @@
           "regenerate": "Une nouvelle description a été demandée à {{provider}}. Selon la vitesse de votre fournisseur, la régénération de la nouvelle description peut prendre un certain temps.",
           "updatedSublabel": "Sous-étiquette mise à jour avec succès",
           "updatedLPR": "Plaque d'immatriculation mise à jour avec succès",
-          "audioTranscription": "Transcription audio demandée avec succès. Selon la vitesse de votre serveur Frigate, la transcription peut prendre un certain temps.",
+          "audioTranscription": "Transcription audio demandée avec succès. Selon la vitesse de votre serveur Gannet, la transcription peut prendre un certain temps.",
           "updatedAttributes": "Attributs mis à jour avec succès"
         },
         "error": {
@@ -56,7 +56,7 @@
         "mismatch_one": "{{count}} objet indisponible a été détecté et intégré dans cette activité. Cet objet n'a pas été qualifié comme une alerte ou une détection, ou a déjà été nettoyé / supprimé.",
         "mismatch_many": "{{count}} objets indisponibles ont été détectés et intégrés dans cette activité. Ces objets n'ont pas été qualifiés comme une alerte ou une détection, ou ont déjà été nettoyés / supprimés.",
         "mismatch_other": "{{count}} objets indisponibles ont été détectés et intégrés dans cette activité. Ces objets n'ont pas été qualifiés comme une alerte ou une détection, ou ont déjà été nettoyés / supprimés.",
-        "hasMissingObjects": "Ajustez votre configuration si vous souhaitez que Frigate enregistre les objets suivis pour les étiquettes suivantes : <em>{{objects}}</em>"
+        "hasMissingObjects": "Ajustez votre configuration si vous souhaitez que Gannet enregistre les objets suivis pour les étiquettes suivantes : <em>{{objects}}</em>"
       },
       "desc": "Détails de l'activité"
     },
@@ -81,7 +81,7 @@
     "description": {
       "label": "Description",
       "placeholder": "Description de l'objet suivi",
-      "aiTips": "Frigate ne demandera pas de description à votre fournisseur d'IA générative tant que le cycle de vie de l'objet suivi ne sera pas terminé."
+      "aiTips": "Gannet ne demandera pas de description à votre fournisseur d'IA générative tant que le cycle de vie de l'objet suivi ne sera pas terminé."
     },
     "regenerateFromSnapshot": "Générer à nouveau à partir d'un instantané",
     "regenerateFromThumbnails": "Générer à nouveau à partir des miniatures",

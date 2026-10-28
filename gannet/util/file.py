@@ -545,8 +545,8 @@ _RMTREE_ACCEPTS_ONEXC = "onexc" in inspect.signature(shutil.rmtree).parameters
 
 #: Windows error codes another process holding a file produces: access denied,
 #: sharing violation and lock violation. Antivirus real time scanning and the
-#: search indexer open every file Frigate writes for a moment after it appears,
-#: so a move or a delete can fail even though nothing in Frigate holds it.
+#: search indexer open every file Gannet writes for a moment after it appears,
+#: so a move or a delete can fail even though nothing in Gannet holds it.
 WINDOWS_SHARING_ERRORS = (5, 32, 33)
 
 FILE_OPERATION_ATTEMPTS = 5

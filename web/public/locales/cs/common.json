@@ -1,7 +1,7 @@
 {
   "time": {
     "untilForTime": "Do {{time}}",
-    "untilForRestart": "Do restartu Frigate.",
+    "untilForRestart": "Do restartu Gannet.",
     "untilRestart": "Do restartu",
     "justNow": "Teď",
     "today": "Dnes",
@@ -168,7 +168,7 @@
   "selectItem": "Vybrat {{item}}",
   "menu": {
     "documentation": {
-      "label": "Dokumentace Frigate",
+      "label": "Dokumentace Gannet",
       "title": "Dokumentace"
     },
     "live": {
@@ -244,7 +244,7 @@
       "red": "Červená"
     },
     "help": "Nápověda",
-    "restart": "Restartovat Frigate",
+    "restart": "Restartovat Gannet",
     "user": {
       "logout": "Odhlásit",
       "setPassword": "Nastavit heslo",
@@ -289,13 +289,13 @@
     "more": "Více stran"
   },
   "accessDenied": {
-    "documentTitle": "Přístup odepřen - Frigate",
+    "documentTitle": "Přístup odepřen - Gannet",
     "title": "Přístup odepřen",
     "desc": "Nemáte oprávnění zobrazit tuto stránku."
   },
   "notFound": {
     "desc": "Stránka nenalezena",
-    "documentTitle": "Nenalezeno - Frigate",
+    "documentTitle": "Nenalezeno - Gannet",
     "title": "404"
   },
   "toast": {
@@ -313,7 +313,7 @@
     "title": "Role",
     "admin": "Správce",
     "viewer": "Divák",
-    "desc": "Správci mají plný přístup ke všem funkcím v uživatelském rozhraní Frigate. Diváci jsou omezeni na sledování kamer, položek revize a historických záznamů v UI."
+    "desc": "Správci mají plný přístup ke všem funkcím v uživatelském rozhraní Gannet. Diváci jsou omezeni na sledování kamer, položek revize a historických záznamů v UI."
   },
   "readTheDocumentation": "Přečtěte si dokumentaci",
   "list": {
@@ -323,7 +323,7 @@
   },
   "field": {
     "optional": "Volitelné",
-    "internalID": "Interní ID, které Frigate používá v konfiguraci a databázi"
+    "internalID": "Interní ID, které Gannet používá v konfiguraci a databázi"
   },
   "information": {
     "pixels": "{{area}}px"
@@ -337,7 +337,7 @@
     "title": "Tato stránka přestala odpovídat",
     "desc": "Na stránce došlo k neočekávané chybě. Opětovné načtení ji obvykle vyřeší. Pokud chyba přetrvává, zkopírujte podrobnosti a přiložte je k diskusi na GitHubu.",
     "staleTitle": "Je potřeba obnovit stránku",
-    "staleDesc": "Část rozhraní se nepodařilo načíst. Obvykle to znamená, že Frigate byl aktualizován, když byla tato karta otevřená. Znovu načtěte stránku pro použití nové verze.",
+    "staleDesc": "Část rozhraní se nepodařilo načíst. Obvykle to znamená, že Gannet byl aktualizován, když byla tato karta otevřená. Znovu načtěte stránku pro použití nové verze.",
     "partial": "Část rozhraní přestala odpovídat.",
     "copyDetails": "Kopírovat detaily",
     "copyFailed": "Nebylo možné zkopírovat detaily do schránky"

@@ -1,15 +1,15 @@
 ---
 id: plus
-title: Frigate+
+title: upstream Frigate+
 ---
 
 import NavPath from "@site/src/components/NavPath";
 
-For more information about how to use Frigate+ to improve your model, see the [Frigate+ docs](/plus/).
+For more information about how to use upstream Frigate+ to improve your model, see the [upstream Frigate+ docs](/plus/).
 
 :::info
 
-Frigate+ requires an active internet connection to communicate with `https://api.frigate.video` for model downloads, image uploads, and annotations. See [Network Requirements](/frigate/network_requirements#frigate) for details.
+Upstream Frigate+ requires an active internet connection to communicate with `https://api.frigate.video` for model downloads, image uploads, and annotations. See [Network Requirements](/frigate/network_requirements#frigate) for details.
 
 :::
 
@@ -27,14 +27,14 @@ Once logged in, you can generate an API key for Gannet in Settings.
 
 ### Set your API key
 
-Set `PLUS_API_KEY` in the Windows process environment to enable Frigate+ actions:
+Set `PLUS_API_KEY` in the Windows process environment to enable upstream Frigate+ actions:
 
 ```powershell
 $env:PLUS_API_KEY = '<your API key>'
-.\run_frigate.ps1
+.\run_gannet.ps1
 ```
 
-For a service, set it in the elevated PowerShell session before running `install_frigate_service.ps1 -Action Install` or `-Action Configure`. The installer copies it into the service environment.
+For a service, set it in the elevated PowerShell session before running `install_gannet_service.ps1 -Action Install` or `-Action Configure`. The installer copies it into the service environment.
 
 :::warning
 
@@ -44,13 +44,13 @@ Do not put this key in `config.yml`, source control, or a command transcript. Th
 
 ## Submit examples
 
-Once your API key is configured, you can submit examples directly from the Explore page in Gannet. From the More Filters menu, select "Has a Snapshot - Yes" and "Submitted to Frigate+ - No", and press Apply at the bottom of the pane. Then, click on a thumbnail and select the Snapshot tab.
+Once your API key is configured, you can submit examples directly from the Explore page in Gannet. From the More Filters menu, select "Has a Snapshot - Yes" and "Submitted to upstream Frigate+ - No", and press Apply at the bottom of the pane. Then, click on a thumbnail and select the Snapshot tab.
 
 You can use your keyboard's left and right arrow keys to quickly navigate between the tracked object snapshots.
 
 :::note
 
-Snapshots must be enabled to be able to submit examples to Frigate+
+Snapshots must be enabled to be able to submit examples to upstream Frigate+
 
 :::
 
@@ -64,9 +64,9 @@ You can view all of your submitted images at [https://plus.frigate.video](https:
 
 ## Use Models
 
-Once you have [requested your first model](../plus/first_model.md) and gotten your own model ID, it can be used with a special model path. No other information needs to be configured for Frigate+ models because it fetches the remaining config from Frigate+ automatically.
+Once you have [requested your first model](../plus/first_model.md) and gotten your own model ID, it can be used with a special model path. No other information needs to be configured for upstream Frigate+ models because it fetches the remaining config from upstream Frigate+ automatically.
 
-You can either choose the new model from the <NavPath path="Settings > System > Detection models" /> pane in the Gannet UI (on the **Frigate+** tab of the model you want to change), or set it on that model in your config:
+You can either choose the new model from the <NavPath path="Settings > System > Detection models" /> pane in the Gannet UI (on the **upstream Frigate+** tab of the model you want to change), or set it on that model in your config:
 
 ```yaml
 models:
@@ -82,7 +82,7 @@ Model IDs are not secret values and can be shared freely. Access to your model i
 
 Models are downloaded on demand into `config\model_cache` beneath the configured Windows data root.
 
-If needed, you can override the labelmap for Frigate+ models. This is not recommended as renaming labels will break the Submit to Frigate+ feature if the labels are not available in Frigate+.
+If needed, you can override the labelmap for upstream Frigate+ models. This is not recommended as renaming labels will break the Submit to upstream Frigate+ feature if the labels are not available in upstream Frigate+.
 
 ```yaml
 models:

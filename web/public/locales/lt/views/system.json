@@ -1,14 +1,14 @@
 {
   "documentTitle": {
-    "cameras": "Kamerų Statistika - Frigate",
-    "storage": "Saugyklos Statistika - Frigate",
+    "cameras": "Kamerų Statistika - Gannet",
+    "storage": "Saugyklos Statistika - Gannet",
     "logs": {
-      "frigate": "Frigate Žurnalas - Frigate",
-      "go2rtc": "Go2RTC Žurnalas - Frigate",
-      "websocket": "Žinučių Išrašas - Frigate"
+      "gannet": "Gannet Žurnalas - Gannet",
+      "go2rtc": "Go2RTC Žurnalas - Gannet",
+      "websocket": "Žinučių Išrašas - Gannet"
     },
-    "general": "Bendroji Statistika - Frigate",
-    "enrichments": "Pagerinimų Statistika - Frigate"
+    "general": "Bendroji Statistika - Gannet",
+    "enrichments": "Pagerinimų Statistika - Gannet"
   },
   "title": "Sistema",
   "metrics": "Sistemos metrikos",
@@ -126,7 +126,7 @@
     "overview": "Apžvalga",
     "recordings": {
       "title": "Įrašai",
-      "tips": "Ši reikšmė nurodo kiek iš viso Frigate duombazėje esantys įrašai užima vietos saugykloje. Frigate neseka kiek vietos užima visi kiti failai esantys laikmenoje.",
+      "tips": "Ši reikšmė nurodo kiek iš viso Gannet duombazėje esantys įrašai užima vietos saugykloje. Gannet neseka kiek vietos užima visi kiti failai esantys laikmenoje.",
       "earliestRecording": "Anksčiausias esantis įrašas:"
     },
     "cameraStorage": {
@@ -138,7 +138,7 @@
       "bandwidth": "Pralaidumas",
       "unused": {
         "title": "Nepanaudota",
-        "tips": "Jei saugykloje turite daugiau failų apart Frigate įrašų, ši reikšmė neatspindės tikslios likusios laisvos vietos Frigate panaudojimui. Frigate neseka saugyklos panaudojimo už savo įrašų ribų."
+        "tips": "Jei saugykloje turite daugiau failų apart Gannet įrašų, ši reikšmė neatspindės tikslios likusios laisvos vietos Gannet panaudojimui. Gannet neseka saugyklos panaudojimo už savo įrašų ribų."
       }
     },
     "shm": {

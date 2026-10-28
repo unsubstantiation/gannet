@@ -1,4 +1,4 @@
-"""JSON schema utilities for Frigate."""
+"""JSON schema utilities for Gannet."""
 
 from typing import Any
 

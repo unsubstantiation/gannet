@@ -11,7 +11,7 @@ class AuthConfig(FrigateBaseModel):
     enabled: bool = Field(
         default=True,
         title="Enable authentication",
-        description="Enable native authentication for the Frigate UI.",
+        description="Enable native authentication for the Gannet UI.",
     )
     reset_admin_password: bool = Field(
         default=False,
@@ -30,8 +30,8 @@ class AuthConfig(FrigateBaseModel):
         description=(
             "Always set the Secure flag on the authentication cookie. The "
             "native server already sets it when serving TLS; enable this when "
-            "a reverse proxy terminates TLS in front of plain-HTTP Frigate. A "
-            "proxy on the TLS port must serve Frigate to browsers over HTTPS."
+            "a reverse proxy terminates TLS in front of plain-HTTP Gannet. A "
+            "proxy on the TLS port must serve Gannet to browsers over HTTPS."
         ),
     )
     session_length: int = Field(

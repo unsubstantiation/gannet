@@ -200,7 +200,7 @@ class TestNativeEndToEnd(unittest.TestCase):
             "-ExecutionPolicy",
             "Bypass",
             "-File",
-            str(Path(REPO_ROOT) / "scripts" / "install_frigate_service.ps1"),
+            str(Path(REPO_ROOT) / "scripts" / "install_gannet_service.ps1"),
             "-Action",
             action,
         ]
@@ -658,7 +658,7 @@ class TestNativeEndToEnd(unittest.TestCase):
 
         # FrigateApp.stop() writes this before doing anything else. A process
         # that was terminated rather than signalled never gets there.
-        stopping_flag = Path(self.base) / "tmp" / ".frigate-is-stopping"
+        stopping_flag = Path(self.base) / "tmp" / ".gannet-is-stopping"
         self.assertTrue(
             stopping_flag.exists(),
             "Frigate exited without running FrigateApp.stop(); it was killed "

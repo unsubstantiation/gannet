@@ -18,11 +18,11 @@ Gannet defaults to `%LOCALAPPDATA%\Gannet` for an interactive install. The boots
 Override paths before startup with:
 
 ```powershell
-$env:FRIGATE_BASE_DIR = 'D:\Gannet'
-$env:FRIGATE_CONFIG_DIR = 'D:\Gannet\config'
-$env:FRIGATE_MEDIA_DIR = 'E:\FrigateMedia'
-$env:FRIGATE_CACHE_DIR = 'D:\Gannet\cache'
-$env:FRIGATE_TMP_DIR = 'D:\Gannet\tmp'
+$env:GANNET_BASE_DIR = 'D:\Gannet'
+$env:GANNET_CONFIG_DIR = 'D:\Gannet\config'
+$env:GANNET_MEDIA_DIR = 'E:\GannetMedia'
+$env:GANNET_CACHE_DIR = 'D:\Gannet\cache'
+$env:GANNET_TMP_DIR = 'D:\Gannet\tmp'
 ```
 
 The Windows service receives its own environment. Use the service installer to persist service paths rather than relying on variables in an interactive PowerShell profile.

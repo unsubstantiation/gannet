@@ -1,13 +1,13 @@
 {
   "restart": {
-    "title": "Ste si istý, že chcete reštartovať Frigate ?",
+    "title": "Ste si istý, že chcete reštartovať Gannet ?",
     "button": "Reštart",
     "restarting": {
-      "title": "Frigate sa reštartuje",
+      "title": "Gannet sa reštartuje",
       "content": "Táto stránka bude obnovená o {{countdown}} sekúnd.",
       "button": "Vynútiť opätovné načítanie teraz"
     },
-    "description": "Počas reštartu bude Frigate nakrátko zastavený."
+    "description": "Počas reštartu bude Gannet nakrátko zastavený."
   },
   "explore": {
     "plus": {

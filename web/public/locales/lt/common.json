@@ -1,7 +1,7 @@
 {
   "time": {
     "untilForTime": "Iki {{time}}",
-    "untilForRestart": "Iki kol Frigate persikraus.",
+    "untilForRestart": "Iki kol Gannet persikraus.",
     "untilRestart": "Iki perkrovimo",
     "ago": "prieš {{timeAgo}}",
     "justNow": "Ką tik",
@@ -239,9 +239,9 @@
     "help": "Pagalba",
     "documentation": {
       "title": "Dokumentacija",
-      "label": "Frigate dokumentacija"
+      "label": "Gannet dokumentacija"
     },
-    "restart": "Perkrauti Frigate",
+    "restart": "Perkrauti Gannet",
     "live": {
       "title": "Tiesiogiai",
       "allCameras": "Visos Kameros",
@@ -286,7 +286,7 @@
     "title": "Rolė",
     "admin": "Adminas",
     "viewer": "Žiūrėtojas",
-    "desc": "Adminai turi pilną prieigą prie visų Frigate vartotojo sąsajos fukncijų. Žiūrėtojai yra apriboti peržiūrėti kameras, peržiūrų įrašus ir istorinius įrašus."
+    "desc": "Adminai turi pilną prieigą prie visų Gannet vartotojo sąsajos fukncijų. Žiūrėtojai yra apriboti peržiūrėti kameras, peržiūrų įrašus ir istorinius įrašus."
   },
   "pagination": {
     "label": "puslapiavimas",
@@ -301,12 +301,12 @@
     "more": "Daugiau puslapių"
   },
   "accessDenied": {
-    "documentTitle": "Priegai Nesuteikta - Frigate",
+    "documentTitle": "Priegai Nesuteikta - Gannet",
     "title": "Prieiga Nesuteikta",
     "desc": "Jūs neturite leidimo žiūrėti šį puslapį."
   },
   "notFound": {
-    "documentTitle": "Nerasta - Frigate",
+    "documentTitle": "Nerasta - Gannet",
     "title": "404",
     "desc": "Puslapis nerastas"
   },
@@ -322,7 +322,7 @@
   },
   "field": {
     "optional": "Pasirinktinis",
-    "internalID": "Vidinį ID Frigate naudoja konfiguracijoje ir duombazėje"
+    "internalID": "Vidinį ID Gannet naudoja konfiguracijoje ir duombazėje"
   },
   "no_items": "Nėra įrašų",
   "validation_errors": "Tikrinimo Klaidos",

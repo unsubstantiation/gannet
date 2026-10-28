@@ -1,16 +1,16 @@
 {
   "documentTitle": {
-    "default": "設定 - Frigate",
-    "authentication": "認證設定 - Frigate",
-    "masksAndZones": "遮罩與區域編輯器 - Frigate",
-    "motionTuner": "移動調校器 - Frigate",
-    "object": "除錯 - Frigate",
-    "general": "介面設定 - Frigate",
-    "frigatePlus": "Frigate+ 設定 - Frigate",
-    "notifications": "通知設定 - Frigate",
-    "enrichments": "進階功能設定 - Frigate",
-    "cameraManagement": "管理鏡頭 - Frigate",
-    "cameraReview": "鏡頭檢視設定 - Frigate"
+    "default": "設定 - Gannet",
+    "authentication": "認證設定 - Gannet",
+    "masksAndZones": "遮罩與區域編輯器 - Gannet",
+    "motionTuner": "移動調校器 - Gannet",
+    "object": "除錯 - Gannet",
+    "general": "介面設定 - Gannet",
+    "frigatePlus": "Frigate+ 設定 - Gannet",
+    "notifications": "通知設定 - Gannet",
+    "enrichments": "進階功能設定 - Gannet",
+    "cameraManagement": "管理鏡頭 - Gannet",
+    "cameraReview": "鏡頭檢視設定 - Gannet"
   },
   "menu": {
     "ui": "介面",
@@ -210,11 +210,11 @@
         "title": "區域可讓你定義畫面中的特定範圍，以判斷物件是否進入該範圍。",
         "documentation": "文件"
       },
-      "documentTitle": "編輯區域 - Frigate"
+      "documentTitle": "編輯區域 - Gannet"
     },
     "motionMasks": {
       "label": "移動遮罩",
-      "documentTitle": "編輯移動遮罩 - Frigate",
+      "documentTitle": "編輯移動遮罩 - Gannet",
       "desc": {
         "title": "移動遮罩可防止不需要的移動觸發偵測。遮罩過多會令物件追蹤變得困難。",
         "documentation": "文件"
@@ -258,7 +258,7 @@
           "noName": "物件遮罩已儲存。"
         }
       },
-      "documentTitle": "編輯物件遮罩 - Frigate",
+      "documentTitle": "編輯物件遮罩 - Gannet",
       "edit": "編輯物件遮罩"
     },
     "filter": {
@@ -271,7 +271,7 @@
   "motionDetectionTuner": {
     "title": "移動偵測調校器",
     "desc": {
-      "title": "Frigate首先利用移動偵測作初步篩選，以判斷畫面中是否出現值得進行物件偵測的情況。",
+      "title": "Gannet首先利用移動偵測作初步篩選，以判斷畫面中是否出現值得進行物件偵測的情況。",
       "documentation": "閱讀移動調整指南"
     },
     "Threshold": {
@@ -322,7 +322,7 @@
       "title": "時間戳記",
       "desc": "在圖片上疊加時間戳記"
     },
-    "detectorDesc": "Frigate 使用你的偵測器（{{detectors}}）來偵測鏡頭影片串流中的物件。",
+    "detectorDesc": "Gannet 使用你的偵測器（{{detectors}}）來偵測鏡頭影片串流中的物件。",
     "debugging": "除錯中",
     "mask": {
       "title": "移動遮罩",
@@ -352,7 +352,7 @@
   },
   "users": {
     "management": {
-      "desc": "管理此Frigate個體的用戶帳戶。",
+      "desc": "管理此Gannet個體的用戶帳戶。",
       "title": "用戶管理"
     },
     "addUser": "新增用戶",
@@ -426,7 +426,7 @@
       },
       "createUser": {
         "title": "建立新用戶",
-        "desc": "新增用戶帳戶，並指定可存取Frigate介面各區域的角色。",
+        "desc": "新增用戶帳戶，並指定可存取Gannet介面各區域的角色。",
         "usernameOnlyInclude": "用戶名稱只可包含字母、數字、句號或底線",
         "confirmPassword": "請確認你的密碼"
       },
@@ -467,7 +467,7 @@
     "title": "通知",
     "notificationSettings": {
       "title": "通知設定",
-      "desc": "Frigate可原生向你的裝置推送通知，無論在瀏覽器中運行或安裝為PWA。"
+      "desc": "Gannet可原生向你的裝置推送通知，無論在瀏覽器中運行或安裝為PWA。"
     },
     "notificationUnavailable": {
       "desc": "網頁推送通知需在安全環境下運作（<code>https://…</code>），這是瀏覽器的限制。請透過安全連線存取Frigate以使用通知功能。"
@@ -507,7 +507,7 @@
         "registerFailed": "儲存通知登記失敗。"
       },
       "success": {
-        "registered": "成功登記通知功能。必須重新啟動Frigate後，才能發送任何通知（包括測試通知）。",
+        "registered": "成功登記通知功能。必須重新啟動Gannet後，才能發送任何通知（包括測試通知）。",
         "settingSaved": "通知設定已儲存。"
       }
     },
@@ -552,7 +552,7 @@
     },
     "toast": {
       "error": "儲存設定變更失敗：{{errorMessage}}",
-      "success": "Frigate+設定已儲存。請重新啟動Frigate以套用更改。"
+      "success": "Frigate+設定已儲存。請重新啟動Gannet以套用更改。"
     },
     "restart_required": "需要重新啟動（已更改Frigate+模型）",
     "unsavedChanges": "Frigate+ 設定更改尚未儲存"
@@ -571,7 +571,7 @@
           "desc": "使用<em>小型</em>模型會採用 FaceNet 臉部嵌入模型，在大多數 CPU 上能有效運行。"
         }
       },
-      "desc": "人臉識別功能允許為人物分配名字，當辨識到他們的臉孔時，Frigate 會將名字加到子標籤上。此資訊會顯示於介面、篩選器及通知中。",
+      "desc": "人臉識別功能允許為人物分配名字，當辨識到他們的臉孔時，Gannet 會將名字加到子標籤上。此資訊會顯示於介面、篩選器及通知中。",
       "title": "人臉識別"
     },
     "birdClassification": {
@@ -579,7 +579,7 @@
       "desc": "鳥類分類會使用量化 Tensorflow 模型識別已知鳥類。當辨識到已知鳥類時，牠的常見名稱會加到子標籤上。此資訊會顯示在介面、篩選器及通知中。"
     },
     "semanticSearch": {
-      "desc": "Frigate 的語意搜尋功能讓你可以利用影像本身、自訂文字描述，或自動產生的描述，在審查項目中尋找已追蹤的物件。",
+      "desc": "Gannet 的語意搜尋功能讓你可以利用影像本身、自訂文字描述，或自動產生的描述，在審查項目中尋找已追蹤的物件。",
       "reindexNow": {
         "confirmDesc": "你確定要重建索引所有已追蹤物件的嵌入向量嗎？這個過程會在背景運行，但可能會用盡你的 CPU，而且需要一定時間。你可以在「瀏覽」頁面查看進度。",
         "label": "立即重建索引",
@@ -606,20 +606,20 @@
     },
     "licensePlateRecognition": {
       "title": "車牌識別",
-      "desc": "Frigate 可以識別車輛上的車牌，自動將偵測到的字元加到已辨識車牌欄位，或將已知名稱加到屬於車輛類型的物件的子標籤上。常見用途包括讀取駛入車道或在街道上駛過的車輛的車牌。"
+      "desc": "Gannet 可以識別車輛上的車牌，自動將偵測到的字元加到已辨識車牌欄位，或將已知名稱加到屬於車輛類型的物件的子標籤上。常見用途包括讀取駛入車道或在街道上駛過的車輛的車牌。"
     },
     "title": "進階功能設定",
     "unsavedChanges": "未儲存進階功能設定變更",
     "restart_required": "需要重新啟動（進階功能設定已變更）",
     "toast": {
-      "success": "進階功能設定已儲存。請重新啟動 Frigate 以套用你的更改。",
+      "success": "進階功能設定已儲存。請重新啟動 Gannet 以套用你的更改。",
       "error": "儲存設定變更失敗：{{errorMessage}}"
     }
   },
   "roles": {
     "management": {
       "title": "觀察者角色管理",
-      "desc": "管理自訂觀察者角色及其對此 Frigate 實例的鏡頭存取權限。"
+      "desc": "管理自訂觀察者角色及其對此 Gannet 實例的鏡頭存取權限。"
     },
     "addRole": "新增角色",
     "table": {
@@ -759,7 +759,7 @@
         },
         "actions": {
           "title": "操作",
-          "desc": "預設情況下，Frigate 會對所有觸發器發送 MQTT 訊息。子標籤會將觸發器名稱加入到物件標籤中。屬性是可搜尋的元數據，單獨儲存在被追蹤對象的元數據中。",
+          "desc": "預設情況下，Gannet 會對所有觸發器發送 MQTT 訊息。子標籤會將觸發器名稱加入到物件標籤中。屬性是可搜尋的元數據，單獨儲存在被追蹤對象的元數據中。",
           "error": {
             "min": "至少需要選擇一個操作。"
           }
@@ -798,7 +798,7 @@
   },
   "cameraWizard": {
     "title": "新增鏡頭",
-    "description": "請依照以下步驟，將新鏡頭加入 Frigate。",
+    "description": "請依照以下步驟，將新鏡頭加入 Gannet。",
     "steps": {
       "nameAndConnection": "名稱與連線",
       "streamConfiguration": "串流設定",
@@ -955,7 +955,7 @@
       "estimatedBandwidth": "預計頻寬",
       "roles": "角色",
       "ffmpegModule": "使用串流相容模式",
-      "ffmpegModuleDescription": "若多次嘗試仍無法載入，建議啟用。啟用後，Frigate 將使用 ffmpeg 模組和 go2rtc。這可能會提高與某些鏡頭串流相容性。",
+      "ffmpegModuleDescription": "若多次嘗試仍無法載入，建議啟用。啟用後，Gannet 將使用 ffmpeg 模組和 go2rtc。這可能會提高與某些鏡頭串流相容性。",
       "none": "無",
       "error": "錯誤",
       "streamValidated": "串流 {{number}} 驗證成功",
@@ -1028,21 +1028,21 @@
     "title": "鏡頭檢視設定",
     "object_descriptions": {
       "title": "生成式 AI 物件描述",
-      "desc": "暫時啟用／停用此鏡頭的生成式 AI 物件描述直到Frigate重新啟動。停用時，系統不會為此鏡頭的追蹤物件生成 AI 描述。"
+      "desc": "暫時啟用／停用此鏡頭的生成式 AI 物件描述直到Gannet重新啟動。停用時，系統不會為此鏡頭的追蹤物件生成 AI 描述。"
     },
     "review_descriptions": {
       "title": "生成式 AI 審查描述",
-      "desc": "暫時啟用／停用此鏡頭的生成式 AI 審查描述直到Frigate重新啟動。停用時，系統不會為此鏡頭的審查項目生成 AI 描述。"
+      "desc": "暫時啟用／停用此鏡頭的生成式 AI 審查描述直到Gannet重新啟動。停用時，系統不會為此鏡頭的審查項目生成 AI 描述。"
     },
     "review": {
       "title": "審查",
-      "desc": "暫時啟用／停用此鏡頭的警報與偵測，直到 Frigate 重啟。停用時，不會產生新的審查項目。 ",
+      "desc": "暫時啟用／停用此鏡頭的警報與偵測，直到 Gannet 重啟。停用時，不會產生新的審查項目。 ",
       "alerts": "警報 ",
       "detections": "偵測 "
     },
     "reviewClassification": {
       "title": "審查分類",
-      "desc": "Frigate 將審查項目分類為警報與偵測。預設情況下，所有 <em>person</em> 與 <em>car</em> 物件會視為警報。你可以透過設定對應區域來精確分類審查項目。",
+      "desc": "Gannet 將審查項目分類為警報與偵測。預設情況下，所有 <em>person</em> 與 <em>car</em> 物件會視為警報。你可以透過設定對應區域來精確分類審查項目。",
       "noDefinedZones": "此鏡頭未定義任何區域。",
       "objectAlertsTips": "在{{cameraName}}上所有{{alertsLabels}}物件將會顯示為警報。",
       "zoneObjectAlertsTips": "在{{cameraName}}的{{zone}}區域偵測到的所有{{alertsLabels}}物件將會顯示為警報。",
@@ -1057,7 +1057,7 @@
       "selectDetectionsZones": "選擇偵測的區域",
       "limitDetections": "限制偵測至特定區域",
       "toast": {
-        "success": "審查分類設定已儲存。請重新啟動Frigate以套用更改。"
+        "success": "審查分類設定已儲存。請重新啟動Gannet以套用更改。"
       }
     }
   }

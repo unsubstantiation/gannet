@@ -130,7 +130,7 @@
       "failure": "Viga kaamera '{{cameraName}}' salvestamisel."
     },
     "title": "Lisa kaamera",
-    "description": "Uue kaamera lisamiseks oma Frigate paigaldisesse järgige alltoodud samme."
+    "description": "Uue kaamera lisamiseks oma Gannet paigaldisesse järgige alltoodud samme."
   },
   "users": {
     "updatePassword": "Lähtesta salasõna",
@@ -243,22 +243,22 @@
     }
   },
   "documentTitle": {
-    "default": "Seadistused - Frigate",
-    "authentication": "Autentimise seaded - Frigate",
-    "cameraReview": "Kaamerate kordusvaatuste seaded - Frigate",
-    "general": "Profiili seaded - Frigate",
-    "frigatePlus": "Frigate+ seaded - Frigate",
-    "notifications": "Teavituste seaded - Frigate",
-    "cameraManagement": "Kaamerate haldus - Frigate",
-    "masksAndZones": "Maskide ja tsoonide haldus - Frigate",
-    "object": "Silumine ja veaotsing - Frigate",
-    "enrichments": "Rikastamise seaded - Frigate",
-    "motionTuner": "Liikumise häälestaja – Frigate",
-    "globalConfig": "Globaalsed seaded – Frigate",
-    "cameraConfig": "Kaamera seaded - Frigate",
-    "detectorsAndModel": "Detektorid ja mudel – Frigate",
-    "maintenance": "Hooldus – Frigate",
-    "profiles": "Profiilid - Frigate"
+    "default": "Seadistused - Gannet",
+    "authentication": "Autentimise seaded - Gannet",
+    "cameraReview": "Kaamerate kordusvaatuste seaded - Gannet",
+    "general": "Profiili seaded - Gannet",
+    "frigatePlus": "Frigate+ seaded - Gannet",
+    "notifications": "Teavituste seaded - Gannet",
+    "cameraManagement": "Kaamerate haldus - Gannet",
+    "masksAndZones": "Maskide ja tsoonide haldus - Gannet",
+    "object": "Silumine ja veaotsing - Gannet",
+    "enrichments": "Rikastamise seaded - Gannet",
+    "motionTuner": "Liikumise häälestaja – Gannet",
+    "globalConfig": "Globaalsed seaded – Gannet",
+    "cameraConfig": "Kaamera seaded - Gannet",
+    "detectorsAndModel": "Detektorid ja mudel – Gannet",
+    "maintenance": "Hooldus – Gannet",
+    "profiles": "Profiilid - Gannet"
   },
   "general": {
     "title": "Kasutajaliidese seadistused",
@@ -333,7 +333,7 @@
     "title": "Frigate+ seadistused",
     "unsavedChanges": "Frigate+ seadistuste muudatused on salvestamata",
     "toast": {
-      "success": "Frigate+ seadistuste muudatused on salvestatud. Muudatuste kasutuselevõtmiseks käivita Frigate uuesti."
+      "success": "Frigate+ seadistuste muudatused on salvestatud. Muudatuste kasutuselevõtmiseks käivita Gannet uuesti."
     },
     "snapshotConfig": {
       "title": "Hetkvõtte seadistused",
@@ -538,7 +538,7 @@
     "title": "Andmerikastuse seadistused",
     "restart_required": "Taaskäivitamine on vajalik (Andmerikastuse seadeid on muudetud)",
     "toast": {
-      "success": "Andmerikastamise seaded on salvestatud. Muudatuste rakendamiseks taaskäivitage Frigate.",
+      "success": "Andmerikastamise seaded on salvestatud. Muudatuste rakendamiseks taaskäivitage Gannet.",
       "error": "Seadete muudatuste salvestamine ei õnnestunud: {{errorMessage}}"
     }
   },
@@ -550,7 +550,7 @@
     },
     "object_descriptions": {
       "title": "Generatiivse tehisaru objektikirjeldused",
-      "desc": "Luba/keela ajutiselt selle kaamera jaoks generatiivse tehisaru objektikirjeldused kuni Frigate'i taaskäivitamiseni. Kui see on keelatud, ei küsita selle kaamera jälgitavate objektide kohta tehisintellekti poolt loodud kirjeldusi."
+      "desc": "Luba/keela ajutiselt selle kaamera jaoks generatiivse tehisaru objektikirjeldused kuni Gannet'i taaskäivitamiseni. Kui see on keelatud, ei küsita selle kaamera jälgitavate objektide kohta tehisintellekti poolt loodud kirjeldusi."
     },
     "review_descriptions": {
       "title": "Generatiivne tehisaru ülevaatamisele kuuluva sisu kirjedlused"

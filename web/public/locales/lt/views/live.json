@@ -1,8 +1,8 @@
 {
   "documentTitle": {
-    "default": "Tiesiogiai - Frigate"
+    "default": "Tiesiogiai - Gannet"
   },
-  "documentTitle.withCamera": "{{camera}} - Tiesiogiai - Frigate",
+  "documentTitle.withCamera": "{{camera}} - Tiesiogiai - Gannet",
   "lowBandwidthMode": "Mažo-pralaidumo Rėžimas",
   "cameraAudio": {
     "enable": "Įgalinti Kamerų Garsą",
@@ -174,7 +174,7 @@
   },
   "noCameras": {
     "title": "Nėra Sukonfiguruotų Kamerų",
-    "description": "Pradėti nuo kameros prijungimo pire Frigate.",
+    "description": "Pradėti nuo kameros prijungimo pire Gannet.",
     "buttonText": "Pridėti Kamerą",
     "restricted": {
       "title": "Nėra Prieinamų Kamerų",
@@ -182,7 +182,7 @@
     },
     "default": {
       "title": "Nėra Sukonfiguruotų Kamerų",
-      "description": "Pradėkite nuo kameros prijungimo prie Frigate.",
+      "description": "Pradėkite nuo kameros prijungimo prie Gannet.",
       "buttonText": "Pridėti Kamerą"
     },
     "group": {

@@ -15,14 +15,14 @@
       "description": "Granskningsobjekt kan bara skapas för en kamera när inspelningar är aktiverade för kameran."
     }
   },
-  "documentTitle": "Granska - Frigate",
+  "documentTitle": "Granska - Gannet",
   "events": {
     "noFoundForTimePeriod": "Inga händelser hittades för den här tidsperioden.",
     "aria": "Välj händelse",
     "label": "Händelse"
   },
   "recordings": {
-    "documentTitle": "Inspelningar - Frigate"
+    "documentTitle": "Inspelningar - Gannet"
   },
   "newReviewItems": {
     "label": "Visa nya objekt att granska",

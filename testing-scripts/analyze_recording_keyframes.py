@@ -1,6 +1,6 @@
 r"""Analyze keyframes and timestamps in native Windows recordings.
 
-This read-only diagnostic uses Frigate's bundled ``ffprobe.exe`` and defaults
+This read-only diagnostic uses Gannet's bundled ``ffprobe.exe`` and defaults
 to the recordings directory selected by ``FRIGATE_BASE_DIR``. Run from the
 repository root in PowerShell::
 
@@ -8,7 +8,7 @@ repository root in PowerShell::
     .\.venv\Scripts\python.exe testing-scripts\analyze_recording_keyframes.py front `
       --count 10 --timestamp 1713471234.567
     .\.venv\Scripts\python.exe testing-scripts\analyze_recording_keyframes.py front `
-      --recordings-dir 'E:\FrigateMedia\recordings'
+      --recordings-dir 'E:\GannetMedia\recordings'
 
 Pass ``--ffprobe`` only to override the installed Windows executable.
 """
@@ -68,7 +68,7 @@ def find_segments_near_timestamp(
         return [], None
 
     # Largest filename_ts that is <= target_ts — that's the segment that
-    # should contain the timestamp (Frigate catalogs segments by filename).
+    # should contain the timestamp (Gannet catalogs segments by filename).
     target_idx = -1
     for i, (ts, _) in enumerate(with_ts):
         if ts <= target_ts:
@@ -92,7 +92,7 @@ def find_segments_near_timestamp(
 
 
 def filename_to_timestamp(segment: Path) -> float | None:
-    """Parse the wall-clock time from Frigate's segment path layout."""
+    """Parse the wall-clock time from Gannet's segment path layout."""
     try:
         date = segment.parent.parent.parent.name  # YYYY-MM-DD
         hour = segment.parent.parent.name  # HH
@@ -250,11 +250,11 @@ def analyze(ffprobe: str, segment: Path, highlight: bool = False) -> None:
         print("  !! Only one keyframe in segment — very long GOP")
 
     # Report how well filename time aligns with first-packet PTS.
-    # (Filename time is what Frigate uses as recording.start_time in the DB.)
+    # (Filename time is what Gannet uses as recording.start_time in the DB.)
     if filename_ts is not None and first_pts is not None:
         print(
             f"  Notes: first packet PTS is {first_pts:.3f}s into the file; "
-            f"Frigate treats filename time as PTS=0 for seek math."
+            f"Gannet treats filename time as PTS=0 for seek math."
         )
 
 
@@ -278,7 +278,7 @@ def main() -> None:
     parser.add_argument(
         "--ffprobe",
         default=None,
-        help=("Full path to ffprobe.exe (defaults to Frigate's bundled executable)."),
+        help=("Full path to ffprobe.exe (defaults to Gannet's bundled executable)."),
     )
     parser.add_argument(
         "--timestamp",

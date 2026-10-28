@@ -405,9 +405,7 @@ class CustomCollector:
                 "latest_version": stats["service"]["latest_version"],
                 "version": stats["service"]["version"],
             }
-            yield InfoMetricFamily(
-                "frigate_service", "Frigate version info", value=info
-            )
+            yield InfoMetricFamily("frigate_service", "Gannet version info", value=info)
 
         except KeyError:
             pass

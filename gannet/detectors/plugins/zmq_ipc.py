@@ -29,7 +29,7 @@ class ZmqDetectorConfig(BaseDetectorConfig):
         default_factory=lambda: ipc_endpoint("zmq_detector"),
         title="ZMQ IPC endpoint",
         description="The ZMQ endpoint to connect to. Defaults to the socket "
-        "Frigate creates for a detector running in another process.",
+        "Gannet creates for a detector running in another process.",
     )
     request_timeout_ms: int = Field(
         default=200,

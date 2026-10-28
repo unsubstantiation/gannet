@@ -1,7 +1,7 @@
 {
   "time": {
     "untilForTime": "Tot {{time}}",
-    "untilForRestart": "Totdat Frigate opnieuw opstart.",
+    "untilForRestart": "Totdat Gannet opnieuw opstart.",
     "untilRestart": "Tot herstart",
     "12hours": "12 uur",
     "lastWeek": "Vorige week",
@@ -243,10 +243,10 @@
         "count_other": "{{count}} Camera's"
       }
     },
-    "restart": "Herstart Frigate",
+    "restart": "Herstart Gannet",
     "documentation": {
       "title": "Documentatie",
-      "label": "Frigate documentatie"
+      "label": "Gannet documentatie"
     },
     "review": "Beoordelen",
     "explore": "Verkennen",
@@ -282,7 +282,7 @@
     "title": "Rol",
     "admin": "Beheerder",
     "viewer": "Kijker",
-    "desc": "Beheerders hebben volledige toegang tot alle functies in de Frigate-interface. Kijkers kunnen alleen camera’s bekijken, items beoordelen en historische beelden terugkijken."
+    "desc": "Beheerders hebben volledige toegang tot alle functies in de Gannet-interface. Kijkers kunnen alleen camera’s bekijken, items beoordelen en historische beelden terugkijken."
   },
   "pagination": {
     "previous": {
@@ -297,14 +297,14 @@
     }
   },
   "accessDenied": {
-    "documentTitle": "Toegang geweigerd - Frigate",
+    "documentTitle": "Toegang geweigerd - Gannet",
     "desc": "Je hebt geen toestemming om deze pagina te bekijken.",
     "title": "Toegang geweigerd"
   },
   "notFound": {
     "desc": "Pagina niet gevonden",
     "title": "404",
-    "documentTitle": "Niet gevonden - Frigate"
+    "documentTitle": "Niet gevonden - Gannet"
   },
   "selectItem": "Selecteer {{item}}",
   "readTheDocumentation": "Lees de documentatie",
@@ -318,7 +318,7 @@
   },
   "field": {
     "optional": "Optioneel",
-    "internalID": "De interne ID die Frigate gebruikt in de configuratie en database"
+    "internalID": "De interne ID die Gannet gebruikt in de configuratie en database"
   },
   "credentialField": {
     "savedPlaceholder": "Opgeslagen - leeg laten om huidige te behouden"
@@ -328,7 +328,7 @@
   "error": {
     "desc": "Er is een onverwachte fout opgetreden op deze pagina. Meestal helpt het om de pagina opnieuw te laden. Blijft het probleem zich voordoen? Kopieer dan de foutdetails en voeg deze toe aan een discussie op GitHub.",
     "staleTitle": "Opnieuw laden vereist",
-    "staleDesc": "Een deel van de interface kon niet worden geladen. Waarschijnlijk is Frigate bijgewerkt terwijl dit tabblad nog openstond. Vernieuw de pagina om de bijgewerkte versie te laden.",
+    "staleDesc": "Een deel van de interface kon niet worden geladen. Waarschijnlijk is Gannet bijgewerkt terwijl dit tabblad nog openstond. Vernieuw de pagina om de bijgewerkte versie te laden.",
     "partial": "Een deel van de interface werkt niet meer.",
     "copyDetails": "Details kopiëren",
     "copyFailed": "Details konden niet worden gekopieerd.",

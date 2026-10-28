@@ -17,8 +17,8 @@
     },
     "account": {
       "title": "Secure your account",
-      "descriptionSignedIn": "You're signed in as {{username}} using the temporary password from the Frigate logs. Set one you'll remember.",
-      "descriptionAnonymous": "You're accessing Frigate on a port that doesn't require a login. Set a password for the admin account so you can sign in on the secured port.",
+      "descriptionSignedIn": "You're signed in as {{username}} using the temporary password from the Gannet logs. Set one you'll remember.",
+      "descriptionAnonymous": "You're accessing Gannet on a port that doesn't require a login. Set a password for the admin account so you can sign in on the secured port.",
       "passwordSet": "Password set",
       "changePassword": "Change password",
       "addUser": "Add user",
@@ -39,8 +39,8 @@
       "detecting": "Checking your hardware...",
       "auto": "Auto",
       "autoResolved": "Will use {{family}} for your cameras.",
-      "autoNone": "No supported video card found. Frigate will decide at startup.",
-      "recommendFailed": "Hardware detection is unavailable. Frigate will decide at startup.",
+      "autoNone": "No supported video card found. Gannet will decide at startup.",
+      "recommendFailed": "Hardware detection is unavailable. Gannet will decide at startup.",
       "families": {
         "nvidia": "CUDA (NVIDIA)",
         "intel-qsv": "QuickSync (Intel)",
@@ -57,12 +57,12 @@
     },
     "detector": {
       "title": "Object Detection",
-      "description": "Choose the hardware Frigate uses to detect people and objects.",
+      "description": "Choose the hardware Gannet uses to detect people and objects.",
       "detecting": "Checking for detection hardware...",
       "probeFailed": "Hardware detection is unavailable. You can configure detection later in Settings.",
       "recommended": "Recommended",
-      "modelRequired": "{{name}} needs a detection model before it can run. Pick a Frigate+ model, or finish setup and add one under Settings > Detection models.",
-      "plusModelPlaceholder": "Select a Frigate+ model",
+      "modelRequired": "{{name}} needs a detection model before it can run. Pick a upstream Frigate+ model, or finish setup and add one under Settings > Detection models.",
+      "plusModelPlaceholder": "Select a upstream Frigate+ model",
       "continueWithout": "Continue without detection"
     },
     "recording": {
@@ -76,7 +76,7 @@
       "modes": {
         "events": {
           "label": "Only when something is detected",
-          "description": "Saves video around people, cars, and other objects Frigate detects. Uses far less disk space."
+          "description": "Saves video around people, cars, and other objects Gannet detects. Uses far less disk space."
         },
         "continuous": {
           "label": "All the time",
@@ -84,13 +84,13 @@
         }
       },
       "retentionHint": {
-        "events": "Video of anything Frigate detects is kept this long, then deleted automatically.",
+        "events": "Video of anything Gannet detects is kept this long, then deleted automatically.",
         "continuous": "All video is kept this long, then deleted automatically."
       }
     },
     "complete": {
       "title": "You're done!",
-      "description": "Your Frigate system is configured. Here's what we set up:",
+      "description": "Your Gannet system is configured. Here's what we set up:",
       "configured": "Configured",
       "notConfigured": "Not configured",
       "configureInSettings": "Configure in Settings",
@@ -100,9 +100,9 @@
       "recording": "Recording",
       "goToLiveView": "Go to Live View",
       "applyAndRestart": "Apply & Restart",
-      "restartNotice": "Frigate needs to restart to apply your settings. This takes about 30 seconds.",
+      "restartNotice": "Gannet needs to restart to apply your settings. This takes about 30 seconds.",
       "nextSteps": "Next steps: Set up motion masks, zones, and notifications in Settings.",
-      "restarting": "Starting Frigate...",
+      "restarting": "Starting Gannet...",
       "restartingDescription": "This takes about 30 seconds."
     },
     "actions": {

@@ -9,7 +9,7 @@
   "allCameras": "Tất cả Camera",
   "detected": "Đã phát hiện",
   "recordings": {
-    "documentTitle": "Bản ghi - Frigate"
+    "documentTitle": "Bản ghi - Gannet"
   },
   "events": {
     "aria": "Chọn sự kiện",
@@ -24,7 +24,7 @@
     "detection": "Không có phát hiện nào để xem xét",
     "motion": "Không tìm thấy dữ liệu chuyển động"
   },
-  "documentTitle": "Xem lại - Frigate",
+  "documentTitle": "Xem lại - Gannet",
   "calendarFilter": {
     "last24Hours": "24 giờ qua"
   },

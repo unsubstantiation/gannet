@@ -38,7 +38,7 @@
 git clone https://github.com/unsubstantiation/gannet.git
 cd gannet
 py -3.12 bootstrap_windows.py
-powershell -ExecutionPolicy Bypass -File .\run_frigate.ps1
+powershell -ExecutionPolicy Bypass -File .\run_gannet.ps1
 ```
 
 引导脚本需要 64 位 CPython 3.12。它会创建虚拟环境、安装 Windows 依赖、下载固定版本的 FFmpeg、go2rtc 以及检测与音频模型、在检测到 Node.js 时构建 Web 界面，并生成一个启动脚本（Gannet 请求重启时由它负责重新拉起）。只有构建前端时才需要 Node.js；打包的发行版可以预先包含 `web/dist`。
@@ -47,18 +47,18 @@ Windows 相关特性：
 
 - 检测器：CPU（TFLite、ONNX Runtime、OpenVINO），通过 OpenVINO 使用 Intel 显卡/NPU，以及通过 DirectML（`onnxruntime-directml`，默认安装）在 AMD、Intel 和 Nvidia 显卡上推理。Coral、Hailo 等依赖 Linux 专用驱动的加速器不可用，配置中若指定这类设备会在启动校验阶段报错并列出 Windows 可用的检测器。
 - 视频：`preset-windows-d3d11va`、`preset-windows-dxva2`、`preset-windows-qsv`、`preset-windows-nvenc`，`ffmpeg.hwaccel_args: auto` 会自动选择合适的预设。
-- 文件：所有内容位于同一个基础目录，默认为 `%LOCALAPPDATA%\Frigate`，可用 `FRIGATE_BASE_DIR` 迁移。
+- 文件：所有内容位于同一个基础目录，默认为 `%LOCALAPPDATA%\Gannet`，可用 `GANNET_BASE_DIR` 迁移。
 - 可选的 Windows 服务（SCM）：`bootstrap_windows.py --install-service`。
 
 安装、端口与调优请阅读 [Windows 安装文档](docs/docs/frigate/installation.md#windows)，移植审计（改了什么、验证了什么、还缺什么）见 [WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md)。
 
 ## 上游中文社区翻译文档
 
-上游 Frigate 的中文社区翻译文档位于 https://docs.frigate-cn.video；本分支文档站的主机名仍待单独配置。
+上游 Gannet 的中文社区翻译文档位于 https://docs.frigate-cn.video；本分支文档站的主机名仍待单独配置。
 
 ## 赞助
 
-如需支持开发，捐款请通过 [Github Sponsors](https://github.com/sponsors/blakeblackshear) 捐给**上游 Frigate**；
+如需支持开发，捐款请通过 [Github Sponsors](https://github.com/sponsors/blakeblackshear) 捐给**上游 Gannet**；
 本分支没有自己的捐款渠道，其开发由[LICENSE](LICENSE) 第 15 条所述商业许可的收入支持。
 
 ## 协议
@@ -69,13 +69,13 @@ Windows 相关特性：
 遵循 [Gannet 非商业许可证 1.0](LICENSE)：可自由用于个人学习、研究、教学及非营利用途，衍生作品须采用相同条款；
 **不得**用于任何商业用途（企业内部的免费使用同样不允许）；不得用于训练 AI 模型，也不得发布由 AI 生成的衍生版本。
 
-**继承自 [Frigate](https://github.com/blakeblackshear/frigate) 的代码**仍然适用其
+**继承自 [上游 Frigate](https://github.com/blakeblackshear/frigate) 的代码**仍然适用其
 [MIT 许可证](LICENSES/MIT.txt)，本分支无权收回上游已授予的权利；这部分占本仓库的大多数文件，
 包括商业使用在内的 MIT 权利依然有效。具体文件归属请见 [`REUSE.toml`](REUSE.toml) 与
 [`LICENSING.md`](LICENSING.md)（说明边界、理由以及商业许可的申请方式）。
 
 **商标部分**：“Gannet”、“Gannet NVR” 以及 Gannet 的 Logo 为 **unsubstantiation**（fairuniversal.com）的商标；
-“Frigate” 名称与 Frigate 的 Logo 为 **Frigate, Inc. 的商标**。两者**均不**在 MIT 许可证覆盖范围内，
+上游项目 “[Frigate](https://github.com/blakeblackshear/frigate)” 名称与 Frigate 的 Logo 为 **Frigate, Inc. 的商标**。两者**均不**在 MIT 许可证覆盖范围内，
 任何分支都必须把这两套品牌资产替换成自己的。详见[《商标政策》](TRADEMARK.md)。
 
 ## 截图
@@ -121,5 +121,5 @@ Bilibili：https://space.bilibili.com/3546894915602564
 
 ---
 
-**Copyright © 2026 Frigate, Inc.**（Frigate 代码部分，MIT 许可证）
+**Copyright © 2026 Frigate, Inc.**（继承自上游 Frigate 的代码部分，MIT 许可证）
 **Copyright © 2026 unsubstantiation**（本分支原创部分，Gannet 非商业许可证）

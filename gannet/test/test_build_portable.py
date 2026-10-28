@@ -53,12 +53,25 @@ class TestLauncher(unittest.TestCase):
         self.assertIn("restart.requested", self.launcher)
         self.assertIn("if (Test-Path $Marker)", self.launcher)
 
+    def test_restarts_are_logged_with_a_reason_and_bounded(self):
+        # A tight restart loop used to be invisible: the marker carried no
+        # reason and a closing console window took the messages with it.
+        for fragment in (
+            "$RestartLog",
+            "Write-RestartLog",
+            "reason: $reason",
+            "Remove-Item $Marker -ErrorAction SilentlyContinue",
+            "restart loop detected",
+            "Start-Sleep -Seconds $BackoffSeconds",
+        ):
+            self.assertIn(fragment, self.launcher)
+
     def test_seeds_models_without_overwriting_existing_ones(self):
         self.assertIn('-Filter "*.tflite"', self.launcher)
         self.assertIn("if (-not (Test-Path $destination))", self.launcher)
 
     def test_never_writes_into_the_bundle(self):
-        # Data belongs in %LOCALAPPDATA%\Frigate or -BaseDir; nothing may be
+        # Data belongs in %LOCALAPPDATA%\Gannet or -BaseDir; nothing may be
         # copied to $Root or set as the working directory for writes.
         self.assertNotIn("Copy-Item -Destination $Root", self.launcher)
 
@@ -153,6 +166,9 @@ class TestExeLauncher(unittest.TestCase):
             'glob("*.tflite")',
             "os._exit",
             'getattr(sys, "orig_argv", sys.argv)',
+            "launcher.log",
+            "restart loop detected",
+            "RESTART_BACKOFF_S",
         ):
             self.assertIn(fragment, self.module_source)
 
@@ -207,6 +223,62 @@ class TestExeLauncher(unittest.TestCase):
             b"weights",
         )
         self.assertEqual(exit_calls, [0])
+
+    def test_exe_launcher_logs_restarts_and_backs_off_a_loop(self):
+        """The .exe path has no durable console; the log is the evidence."""
+        import os
+        import subprocess
+        import time as time_module
+        from unittest import mock
+
+        root = self.root.resolve() / "bundle"
+        site_packages = root / "python" / "Lib" / "site-packages"
+        site_packages.mkdir(parents=True)
+        (root / "python" / "python.exe").write_bytes(b"MZ")
+        (root / "app").mkdir(parents=True)
+        module = site_packages / "gannet_launcher.py"
+        module.write_text(self.module_source, encoding="utf-8")
+
+        data = self.root / "data"
+        marker = data / "tmp" / "restart.requested"
+        marker.parent.mkdir(parents=True)
+        environ = {
+            "LOCALAPPDATA": str(self.root / "appdata"),
+            "FRIGATE_BASE_DIR": str(data),
+        }
+
+        popen = mock.MagicMock()
+        calls = {"count": 0}
+
+        def wait():
+            calls["count"] += 1
+            if calls["count"] <= 7:
+                marker.write_text(
+                    "detector ov (PID 42) exited with code 1", encoding="utf-8"
+                )
+            return 0
+
+        popen.return_value.wait.side_effect = wait
+        spec = importlib.util.spec_from_file_location("gannet_launcher_loop", module)
+        hooked = importlib.util.module_from_spec(spec)
+        with (
+            mock.patch.object(
+                sys, "executable", str(root / "python" / "GannetNVR.exe")
+            ),
+            mock.patch.object(sys, "orig_argv", ["GannetNVR.exe"]),
+            mock.patch.dict(os.environ, environ, clear=True),
+            mock.patch.object(subprocess, "Popen", popen),
+            mock.patch.object(os, "_exit"),
+            mock.patch.object(time_module, "sleep") as sleep,
+        ):
+            spec.loader.exec_module(hooked)
+
+        log = (data / "tmp" / "logs" / "launcher.log").read_text(encoding="utf-8")
+        self.assertIn("detector ov (PID 42) exited with code 1", log)
+        self.assertIn("restart loop detected", log)
+        self.assertIn("no restart requested", log)
+        self.assertEqual(sleep.call_args.args, (hooked.RESTART_BACKOFF_S,))
+        self.assertFalse(marker.exists())
 
     def test_site_processing_of_the_pth_file_triggers_the_launch(self):
         """The exact mechanism CPython uses, exercised on any host."""
@@ -630,6 +702,28 @@ class TestLayoutAssertions(unittest.TestCase):
         staging = self._complete_tree()
         self.builder.verify_layout(staging, expect_wheels=False, expect_artifacts=False)
 
+    def test_rejects_an_unpatched_filterpy_source(self):
+        staging = self._complete_tree()
+        helpers = (
+            staging
+            / "python"
+            / "Lib"
+            / "site-packages"
+            / "filterpy"
+            / "common"
+            / "helpers.py"
+        )
+        helpers.parent.mkdir(parents=True)
+        helpers.write_text('"""P = \\Sum {A[i] B[i].T}"""\n', encoding="utf-8")
+        with self.assertRaises(self.builder.BuildError) as caught:
+            self.builder.verify_layout(
+                staging, expect_wheels=False, expect_artifacts=False
+            )
+        self.assertIn("invalid escape sequence", str(caught.exception))
+
+        helpers.write_text('"""P = \\\\Sum {A[i] B[i].T}"""\n', encoding="utf-8")
+        self.builder.verify_layout(staging, expect_wheels=False, expect_artifacts=False)
+
     def test_reports_every_missing_runtime_path(self):
         staging = self._complete_tree()
         (staging / "app" / "web" / "dist" / "index.html").unlink()
@@ -762,7 +856,7 @@ class TestManifestInputs(unittest.TestCase):
 
         self.assertIn("https://localhost:8971", notes)
         self.assertNotIn("http://localhost:8971", notes)
-        self.assertIn(r"tmp\logs\frigate\current", notes)
+        self.assertIn(r"tmp\logs\gannet\current", notes)
 
     def test_release_notes_put_the_exe_first(self):
         notes = self.builder.release_notes(
@@ -775,7 +869,7 @@ class TestManifestInputs(unittest.TestCase):
         self.assertIn("GannetNVR.cmd --validate-config", notes)
         self.assertNotIn("GannetNVR.cmd -- --validate-config", notes)
         self.assertIn(r"python\GannetNVR.exe -- --validate-config", notes)
-        self.assertIn("FRIGATE_BASE_DIR", notes)
+        self.assertIn("GANNET_BASE_DIR", notes)
         self.assertIn("run_gannet.ps1", notes)
 
     def test_winget_manifest_points_at_the_real_executable(self):
@@ -1000,3 +1094,66 @@ class TestSlimBuild(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestVendorSourcePatch(unittest.TestCase):
+    """The bundle must not ship filterpy's Python 3.12 SyntaxWarnings."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.builder = _load_builder()
+
+    def test_install_wheels_patches_filterpy_after_the_cross_install(self):
+        # --no-compile means the user's first launch compiles the sources, so
+        # this has to happen after pip has populated site-packages.
+        with tempfile.TemporaryDirectory() as temporary:
+            site_packages = Path(temporary)
+            fake_bootstrap = mock.Mock()
+            fake_bootstrap.fix_filterpy_escapes.return_value = [
+                "filterpy/common/helpers.py"
+            ]
+            with (
+                mock.patch.object(self.builder, "run"),
+                mock.patch.object(
+                    self.builder, "build_sdist_only_wheels", return_value=None
+                ),
+                mock.patch.object(self.builder, "fix_pywin32"),
+                mock.patch.object(
+                    self.builder, "load_bootstrap", return_value=fake_bootstrap
+                ),
+            ):
+                self.builder.install_wheels(
+                    site_packages, REPO_ROOT / "requirements.txt"
+                )
+
+            fake_bootstrap.fix_filterpy_escapes.assert_called_once_with(site_packages)
+
+    def test_a_failed_patch_fails_the_build(self):
+        class BootstrapError(Exception):
+            pass
+
+        fake_bootstrap = mock.Mock()
+        fake_bootstrap.BootstrapError = BootstrapError
+        fake_bootstrap.fix_filterpy_escapes.side_effect = BootstrapError("no RECORD")
+        with (
+            mock.patch.object(self.builder, "run"),
+            mock.patch.object(
+                self.builder, "build_sdist_only_wheels", return_value=None
+            ),
+            mock.patch.object(self.builder, "fix_pywin32"),
+            mock.patch.object(
+                self.builder, "load_bootstrap", return_value=fake_bootstrap
+            ),
+            self.assertRaises(self.builder.BuildError),
+        ):
+            self.builder.install_wheels(
+                Path("site-packages"), REPO_ROOT / "requirements.txt"
+            )
+
+    def test_the_shared_patch_is_reachable_from_bootstrap(self):
+        self.assertTrue(callable(self.builder.load_bootstrap().fix_filterpy_escapes))
+
+    def test_source_offer_discloses_the_modified_filterpy_files(self):
+        offer = self.builder.source_offer([])
+        self.assertIn("filterpy (MIT) is modified in place", offer)
+        self.assertIn("fix_filterpy_escapes", offer)

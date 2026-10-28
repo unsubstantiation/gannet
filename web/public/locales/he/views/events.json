@@ -21,9 +21,9 @@
     "aria": "בחירת אירועים",
     "noFoundForTimePeriod": "לא נמצאו אירועים עבור תקופת זמן זו."
   },
-  "documentTitle": "סקירה - Frigate",
+  "documentTitle": "סקירה - Gannet",
   "recordings": {
-    "documentTitle": "הקלטות - Frigate"
+    "documentTitle": "הקלטות - Gannet"
   },
   "calendarFilter": {
     "last24Hours": "24 שעות אחרונות"

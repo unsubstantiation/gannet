@@ -1,8 +1,8 @@
 {
   "documentTitle": {
-    "default": "실시간 - Frigate"
+    "default": "실시간 - Gannet"
   },
-  "documentTitle.withCamera": "{{camera}} - 실시간 - Frigate",
+  "documentTitle.withCamera": "{{camera}} - 실시간 - Gannet",
   "lowBandwidthMode": "저대역폭 모드",
   "twoWayTalk": {
     "enable": "양방향 대화 켜기",
@@ -147,7 +147,7 @@
       "resetStream": "스트림 초기화",
       "force": {
         "label": "저대역폭 모드 강제 적용",
-        "desc": "선택된 스트림 대신 항상 Frigate 내장 저대역폭 피드를 재생합니다. 어떤 네트워크 환경에서도 작동하지만 화질이 낮고 오디오가 제공되지 않습니다."
+        "desc": "선택된 스트림 대신 항상 Gannet 내장 저대역폭 피드를 재생합니다. 어떤 네트워크 환경에서도 작동하지만 화질이 낮고 오디오가 제공되지 않습니다."
       }
     },
     "playInBackground": {
@@ -169,7 +169,7 @@
     },
     "mode": "스트리밍 기술",
     "technology": {
-      "description": "선호하는 스트리밍 기술을 선택하세요. 재생 또는 네트워크 오류 발생 시 Frigate가 저대역폭 모드로 자동 전환될 수 있습니다.",
+      "description": "선호하는 스트리밍 기술을 선택하세요. 재생 또는 네트워크 오류 발생 시 Gannet가 저대역폭 모드로 자동 전환될 수 있습니다.",
       "name": {
         "mse": "MSE",
         "webrtc": "WebRTC",
@@ -218,7 +218,7 @@
   },
   "noCameras": {
     "title": "설정된 카메라 없음",
-    "description": "Frigate에 카메라를 연결하여 시작하세요.",
+    "description": "Gannet에 카메라를 연결하여 시작하세요.",
     "buttonText": "카메라 추가",
     "restricted": {
       "title": "사용 가능한 카메라 없음",
@@ -226,7 +226,7 @@
     },
     "default": {
       "title": "설정된 카메라 없음",
-      "description": "Frigate에 카메라를 연결하여 시작하세요.",
+      "description": "Gannet에 카메라를 연결하여 시작하세요.",
       "buttonText": "카메라 추가"
     },
     "group": {

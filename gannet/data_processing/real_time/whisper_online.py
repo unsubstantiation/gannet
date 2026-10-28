@@ -1,4 +1,4 @@
-# imported to Frigate from https://github.com/ufal/whisper_streaming
+# imported to Gannet from https://github.com/ufal/whisper_streaming
 # with only minor modifications
 import io
 import logging

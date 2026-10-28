@@ -112,7 +112,7 @@
   },
   "field": {
     "optional": "Optional",
-    "internalID": "The Internal ID Frigate uses in the configuration and database"
+    "internalID": "The Internal ID Gannet uses in the configuration and database"
   },
   "button": {
     "add": "Add",
@@ -294,7 +294,7 @@
     "title": "Role",
     "admin": "Admin",
     "viewer": "Viewer",
-    "desc": "Admins have full access to all features in the Frigate UI. Viewers are limited to viewing cameras, review items, and historical footage in the UI."
+    "desc": "Admins have full access to all features in the Gannet UI. Viewers are limited to viewing cameras, review items, and historical footage in the UI."
   },
   "pagination": {
     "label": "pagination",
@@ -322,7 +322,7 @@
     "title": "This page stopped working",
     "desc": "The page ran into an unexpected error. Reloading usually clears it. If it keeps happening, copy the details and attach them to a discussion on GitHub.",
     "staleTitle": "Reload required",
-    "staleDesc": "Part of the interface could not be loaded, which usually means Frigate was updated while this tab was open. Reload to pick up the new version.",
+    "staleDesc": "Part of the interface could not be loaded, which usually means Gannet was updated while this tab was open. Reload to pick up the new version.",
     "partial": "Part of the interface stopped working.",
     "copyDetails": "Copy details",
     "copyFailed": "Could not copy details to clipboard"

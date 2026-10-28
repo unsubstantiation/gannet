@@ -42,14 +42,14 @@ Alert and detection retention can preserve event recordings longer than the cont
 
 ## Storage location
 
-Media defaults to `%LOCALAPPDATA%\Gannet\media`. Set `FRIGATE_MEDIA_DIR` before installation to use another local volume. For a service installation, configure the path through the service installer so it is present at boot.
+Media defaults to `%LOCALAPPDATA%\Gannet\media`. Set `GANNET_MEDIA_DIR` before installation to use another local volume. For a service installation, configure the path through the service installer so it is present at boot.
 
 Use NTFS and grant Modify permission to the Gannet service account. Avoid removable media and sleep-prone network shares. Do not store the SQLite database on a network share.
 
 Example ACL command from an elevated PowerShell session:
 
 ```powershell
-$path = 'E:\FrigateMedia'
+$path = 'E:\GannetMedia'
 icacls $path /grant 'NT AUTHORITY\LOCAL SERVICE:(OI)(CI)M' /T
 ```
 

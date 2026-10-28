@@ -52,7 +52,7 @@ test.describe("setup wizard account @high @mobile", () => {
     await installFirstRun(frigateApp, page);
     const sent = await captureUserCalls(page);
 
-    await frigateApp.gotoAndWait("/", "text=Welcome to Frigate");
+    await frigateApp.gotoAndWait("/", "text=Welcome to Gannet");
     await gotoAccountStep(page);
 
     await page.getByRole("button", { name: "Change password" }).click();
@@ -83,7 +83,7 @@ test.describe("setup wizard account @high @mobile", () => {
     await installFirstRun(frigateApp, page);
     const sent = await captureUserCalls(page);
 
-    await frigateApp.gotoAndWait("/", "text=Welcome to Frigate");
+    await frigateApp.gotoAndWait("/", "text=Welcome to Gannet");
     await gotoAccountStep(page);
 
     await page.getByRole("button", { name: "Add user" }).click();
@@ -114,7 +114,7 @@ test.describe("setup wizard account @high @mobile", () => {
     });
     await captureUserCalls(page);
 
-    await frigateApp.gotoAndWait("/", "text=Welcome to Frigate");
+    await frigateApp.gotoAndWait("/", "text=Welcome to Gannet");
     await gotoAccountStep(page);
 
     await expect(page.getByText("doesn't require a login")).toBeVisible();
@@ -130,7 +130,7 @@ test.describe("setup wizard account @high @mobile", () => {
     });
     await captureUserCalls(page);
 
-    await frigateApp.gotoAndWait("/", "text=Welcome to Frigate");
+    await frigateApp.gotoAndWait("/", "text=Welcome to Gannet");
     await page.getByRole("button", { name: "Get Started" }).click();
 
     // straight from welcome to the camera step, with no gap in the indicator
@@ -144,7 +144,7 @@ test.describe("setup wizard account @high @mobile", () => {
     await installFirstRun(frigateApp, page);
     const sent = await captureUserCalls(page);
 
-    await frigateApp.gotoAndWait("/", "text=Welcome to Frigate");
+    await frigateApp.gotoAndWait("/", "text=Welcome to Gannet");
     await gotoAccountStep(page);
     await page.getByRole("button", { name: "Skip" }).click();
 
@@ -158,7 +158,7 @@ test.describe("setup wizard account @high @mobile", () => {
     await installFirstRun(frigateApp, page);
     await captureUserCalls(page);
 
-    await frigateApp.gotoAndWait("/", "text=Welcome to Frigate");
+    await frigateApp.gotoAndWait("/", "text=Welcome to Gannet");
     await gotoAccountStep(page);
 
     await page.getByRole("button", { name: "Change password" }).click();
@@ -190,7 +190,7 @@ test.describe("setup wizard account @high @mobile", () => {
       page.getByRole("button", { name: "Go to Live View" }),
     ).toBeVisible();
     await expect(
-      page.getByText("Frigate needs to restart to apply your settings"),
+      page.getByText("Gannet needs to restart to apply your settings"),
     ).toBeHidden();
   });
 });

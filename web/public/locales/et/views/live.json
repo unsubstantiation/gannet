@@ -15,9 +15,9 @@
     "camera": "Kaamera"
   },
   "documentTitle": {
-    "default": "Frigate reaalajas"
+    "default": "Gannet reaalajas"
   },
-  "documentTitle.withCamera": "{{camera}} - Otseülekanne - Frigate",
+  "documentTitle.withCamera": "{{camera}} - Otseülekanne - Gannet",
   "lowBandwidthMode": "Väikese ribalaiusega režiim",
   "twoWayTalk": {
     "enable": "Lülita kahepoolne kõneside sisse",
@@ -120,7 +120,7 @@
       "tips": "Reaalaja pilt on puhverdamise või voogedastuse vigade tõttu madala ribalaiusega režiimis.",
       "force": {
         "label": "Kasuta sundkorras väikese ribalaiusega režiimi",
-        "desc": "Valitud voogedastuse asemel esita sisu alati Frigate'i sisseehitatud väikese ribalaiusega voogedastusena. Toimib igasuguste ühendustega, aga pildikvaliteet on kehvem ning heliriba pole kasutusel."
+        "desc": "Valitud voogedastuse asemel esita sisu alati Gannet'i sisseehitatud väikese ribalaiusega voogedastusena. Toimib igasuguste ühendustega, aga pildikvaliteet on kehvem ning heliriba pole kasutusel."
       }
     },
     "debug": {
@@ -129,7 +129,7 @@
     },
     "mode": "Voogedastuse tehnoloogia",
     "technology": {
-      "description": "Vali eelistatud voogedastuse tehnoloogia. Taasesituse ja võrguvigade puhul võib Frigate tagavaravariandina kasutada väikese ribalaiusega režiimi.",
+      "description": "Vali eelistatud voogedastuse tehnoloogia. Taasesituse ja võrguvigade puhul võib Gannet tagavaravariandina kasutada väikese ribalaiusega režiimi.",
       "name": {
         "mse": "MSE",
         "webrtc": "WebRTC",
@@ -209,10 +209,10 @@
       "description": "Sul pole õigust ühegi selle grupi kaamera vaatamiseks."
     },
     "title": "Ühtegi kaamerat pole seadistatud",
-    "description": "Alustamiseks ühenda mõni kaamera Frigate'iga.",
+    "description": "Alustamiseks ühenda mõni kaamera Gannet'iga.",
     "default": {
       "title": "Ühtegi kaamerat pole seadistatud",
-      "description": "Alustamiseks ühenda mõni kaamera Frigate'iga.",
+      "description": "Alustamiseks ühenda mõni kaamera Gannet'iga.",
       "buttonText": "Lisa kaamera"
     },
     "group": {

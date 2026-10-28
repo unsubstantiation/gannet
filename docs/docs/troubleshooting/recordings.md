@@ -74,7 +74,7 @@ Stop the service before manually clearing a stale cache. Do not delete files whi
 The default service media path is `%ProgramData%\Gannet\media`. For another volume:
 
 ```powershell
-$path = 'E:\FrigateMedia'
+$path = 'E:\GannetMedia'
 icacls $path /grant 'NT AUTHORITY\LOCAL SERVICE:(OI)(CI)M' /T
 ```
 

@@ -1,4 +1,4 @@
-"""OpenAI Provider for Frigate AI."""
+"""OpenAI Provider for Gannet AI."""
 
 import base64
 import json
@@ -40,7 +40,7 @@ def _stats_from_openai_usage(usage: Any) -> dict[str, Any] | None:
 
 @register_genai_provider(GenAIProviderEnum.openai)
 class OpenAIClient(GenAIClient):
-    """Generative AI client for Frigate using OpenAI."""
+    """Generative AI client for Gannet using OpenAI."""
 
     provider: OpenAI
     context_size: int | None = None

@@ -1,4 +1,4 @@
-"""Ollama Provider for Frigate AI."""
+"""Ollama Provider for Gannet AI."""
 
 import base64
 import binascii
@@ -117,7 +117,7 @@ def _normalize_multimodal_content(
 
 @register_genai_provider(GenAIProviderEnum.ollama)
 class OllamaClient(GenAIClient):
-    """Generative AI client for Frigate using Ollama."""
+    """Generative AI client for Gannet using Ollama."""
 
     LOCAL_OPTIMIZED_OPTIONS = {
         "options": {

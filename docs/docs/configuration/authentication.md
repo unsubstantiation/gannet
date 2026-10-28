@@ -39,7 +39,7 @@ proxy:
   header_map:
     user: X-Remote-User
     role: X-Remote-Role
-  auth_secret: ${FRIGATE_PROXY_AUTH_SECRET}
+  auth_secret: ${GANNET_PROXY_AUTH_SECRET}
 ```
 
 Set the secret through the process environment or `secrets.yaml`; do not commit it. Gannet removes untrusted forwarded identity, address, credential, and proxy-secret headers before routing a request. A client cannot become trusted merely by supplying `X-Forwarded-For`.

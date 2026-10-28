@@ -1,7 +1,7 @@
 {
   "time": {
     "untilForTime": "Till {{time}}",
-    "untilForRestart": "Tills Frigate startar om.",
+    "untilForRestart": "Tills Gannet startar om.",
     "untilRestart": "Tills omstart",
     "ago": "{{timeAgo}} sedan",
     "justNow": "Just nu",
@@ -224,10 +224,10 @@
     "help": "Hjälp",
     "documentation": {
       "title": "Dokumentation",
-      "label": "Frigate-dokumentation"
+      "label": "Gannet-dokumentation"
     },
     "uiPlayground": "Testmiljö för gränssnittet",
-    "restart": "Starta om Frigate",
+    "restart": "Starta om Gannet",
     "review": "Granska",
     "languages": "Språk",
     "configurationEditor": "Konfigurationsredigerare",
@@ -254,7 +254,7 @@
   "accessDenied": {
     "title": "Åtkomst nekad",
     "desc": "Du har inte rättigheter att visa den här sidan.",
-    "documentTitle": "Åtkomst nekad – Frigate"
+    "documentTitle": "Åtkomst nekad – Gannet"
   },
   "role": {
     "admin": "Administratör",
@@ -263,7 +263,7 @@
     "title": "Roll"
   },
   "notFound": {
-    "documentTitle": "Sidan hittades inte – Frigate",
+    "documentTitle": "Sidan hittades inte – Gannet",
     "desc": "Sidan hittades inte",
     "title": "404"
   },
@@ -317,7 +317,7 @@
   },
   "field": {
     "optional": "Valfritt",
-    "internalID": "Det interna ID som Frigate använder i konfigurationen och databasen"
+    "internalID": "Det interna ID som Gannet använder i konfigurationen och databasen"
   },
   "no_items": "Inga objekt",
   "validation_errors": "Valideringsfel",

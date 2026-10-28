@@ -185,7 +185,7 @@
       "title": "Úložiště kamery",
       "unused": {
         "title": "Nepoužité",
-        "tips": "Tato hodnota nemusí přesně odpovídat volnému místu dostupnému pro Frigate, pokud máte na disku další soubory kromě jeho záznamů. Frigate nesleduje využití úložiště mimo své záznamy."
+        "tips": "Tato hodnota nemusí přesně odpovídat volnému místu dostupnému pro Gannet, pokud máte na disku další soubory kromě jeho záznamů. Gannet nesleduje využití úložiště mimo své záznamy."
       },
       "bandwidth": "Šířka pásma",
       "unusedStorageInformation": "Informace o nepoužitém úložišti",
@@ -198,7 +198,7 @@
     "recordings": {
       "title": "Záznamy",
       "earliestRecording": "Nejstarší dostupný záznam:",
-      "tips": "Tato hodnota uvádí celkové využití disku záznamy uloženými v databázi Frigate. Frigate nesleduje využití disku ostatními soubory na vašem disku."
+      "tips": "Tato hodnota uvádí celkové využití disku záznamy uloženými v databázi Gannet. Gannet nesleduje využití disku ostatními soubory na vašem disku."
     },
     "title": "Úložiště",
     "overview": "Přehled",
@@ -213,16 +213,16 @@
   },
   "lastRefreshed": "Poslední aktualizace: ",
   "documentTitle": {
-    "cameras": "Statistiky kamer – Frigate",
-    "storage": "Statistiky úložiště – Frigate",
-    "general": "Obecné statistiky - Frigate",
-    "enrichments": "Statistiky obohacení – Frigate",
+    "cameras": "Statistiky kamer – Gannet",
+    "storage": "Statistiky úložiště – Gannet",
+    "general": "Obecné statistiky - Gannet",
+    "enrichments": "Statistiky obohacení – Gannet",
     "logs": {
-      "frigate": "Protokoly Frigate - Frigate",
-      "go2rtc": "Protokoly Go2RTC - Frigate",
-      "websocket": "Protokoly zpráv – Frigate"
+      "gannet": "Protokoly Gannet - Gannet",
+      "go2rtc": "Protokoly Go2RTC - Gannet",
+      "websocket": "Protokoly zpráv – Gannet"
     },
-    "health": "Stav systému – Frigate"
+    "health": "Stav systému – Gannet"
   },
   "title": "Systém",
   "logs": {
@@ -282,7 +282,7 @@
     "title": "Stav systému",
     "notices": {
       "title": "Hlášení",
-      "empty": "Vaše instalace Frigate je v pořádku",
+      "empty": "Vaše instalace Gannet je v pořádku",
       "acknowledge": "Vzít na vědomí",
       "acknowledgeHint": "Skrýt do dalšího výskytu",
       "mute": "Trvale skrýt",
@@ -312,10 +312,10 @@
         "skipped_detections": "Detekce nestíhala a déle než minutu vynechávala {{pct}} % snímků",
         "ffmpeg_high_cpu": "Využití CPU procesem FFmpeg je vysoké (průměr {{cpu}} %)",
         "detect_high_cpu": "Využití CPU detekcí je vysoké (průměr {{cpu}} %)",
-        "object_processing_behind": "Zpracování sledovaných objektů nestíhalo, proto byly snímky kamer vynechány. Zkontrolujte využití CPU a zda limity CPU nebo přiřazení jader kontejneru či virtuálního stroje neposkytují Frigate příliš málo výkonu CPU",
+        "object_processing_behind": "Zpracování sledovaných objektů nestíhalo, proto byly snímky kamer vynechány. Zkontrolujte využití CPU a zda limity CPU nebo přiřazení jader kontejneru či virtuálního stroje neposkytují Gannet příliš málo výkonu CPU",
         "failed_login_one": "Neúspěšný pokus o přihlášení uživatele {{user}}",
         "failed_login_other": "Neúspěšné pokusy o přihlášení uživatele {{user}}",
-        "update_available": "Je dostupný Frigate {{version}}"
+        "update_available": "Je dostupný Gannet {{version}}"
       },
       "streamPrefix": "Stream {{index}}: {{message}}",
       "streamPrefixRestream": "Stream {{index}} (přes go2rtc): {{message}}",
@@ -339,7 +339,7 @@
       "nothingConfigured": "Nic není nastaveno",
       "allCameras": "Všechny kamery",
       "probeUnavailable": "Detekce hardwaru není dostupná",
-      "justStarted": "Frigate právě nastartoval",
+      "justStarted": "Gannet právě nastartoval",
       "deviceNotFound": "V tomto systému nebylo nalezeno zařízení {{devices}}",
       "detectorNotRunning": "Proces detektoru neběží",
       "inferenceVerySlow": "Inference je velmi pomalá ({{speed}} ms)",

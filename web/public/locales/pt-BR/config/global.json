@@ -5,7 +5,7 @@
     },
     "safe_mode": {
         "label": "Modo Seguro",
-        "description": "Quando habilitado, Frigate inicia em modo seguro com recursos reduzidos para solucionar problemas."
+        "description": "Quando habilitado, Gannet inicia em modo seguro com recursos reduzidos para solucionar problemas."
     },
     "environment_vars": {
         "label": "Variáveis de ambiente"
@@ -67,7 +67,7 @@
         "description": "Configurações de autenticação e relacionadas à sessão, incluindo opções de cookies e limite de taxa.",
         "enabled": {
             "label": "Habilitar autenticação",
-            "description": "Ative a autenticação nativa para a interface do usuário do Frigate."
+            "description": "Ative a autenticação nativa para a interface do usuário do Gannet."
         },
         "reset_admin_password": {
             "label": "Redefinir senha de administrador",
@@ -135,7 +135,7 @@
         },
         "model": {
             "label": "Modelo de transcrição de áudio ou nome do provedor de IA generativa",
-            "description": "O backend de transcrição: 'whisper' para os modelos locais integrados do Frigate, ou o nome de um provedor de IA generativa com a função transcribe."
+            "description": "O backend de transcrição: 'whisper' para os modelos locais integrados do Gannet, ou o nome de um provedor de IA generativa com a função transcribe."
         }
     },
     "detect": {
@@ -1058,7 +1058,7 @@
             },
             "calibrate_on_startup": {
                 "label": "Calibrar ao iniciar",
-                "description": "Meça as velocidades do motor PTZ na inicialização para melhorar a precisão do rastreamento. O Frigate atualizará a configuração com movement_weights após a calibração."
+                "description": "Meça as velocidades do motor PTZ na inicialização para melhorar a precisão do rastreamento. O Gannet atualizará a configuração com movement_weights após a calibração."
             },
             "zooming": {
                 "label": "Modo de zoom",
@@ -1095,7 +1095,7 @@
         },
         "ignore_time_mismatch": {
             "label": "Ignorar diferença de tempo",
-            "description": "Ignorar diferenças de horário na sincronização entre câmera e servidor Frigate nas comunicações ONVIF."
+            "description": "Ignorar diferenças de horário na sincronização entre câmera e servidor Gannet nas comunicações ONVIF."
         }
     },
     "timestamp_style": {
@@ -1150,7 +1150,7 @@
             "description": "Porta do broker MQTT (geralmente 1883 para MQTT sem criptografia)."
         },
         "topic_prefix": {
-            "description": "Prefixo de tópico MQTT para todos os tópicos do Frigate; deve ser único se você executar várias instâncias.",
+            "description": "Prefixo de tópico MQTT para todos os tópicos do Gannet; deve ser único se você executar várias instâncias.",
             "label": "Prefixo do tópico"
         },
         "client_id": {
@@ -1231,10 +1231,10 @@
         }
     },
     "database": {
-        "description": "Configurações do banco de dados SQLite usado pelo Frigate para armazenar os metadados de objetos rastreados e de gravações.",
+        "description": "Configurações do banco de dados SQLite usado pelo Gannet para armazenar os metadados de objetos rastreados e de gravações.",
         "path": {
             "label": "Caminho do banco de dados",
-            "description": "Caminho no sistema de arquivos onde o arquivo do banco de dados SQLite do Frigate será armazenado."
+            "description": "Caminho no sistema de arquivos onde o arquivo do banco de dados SQLite do Gannet será armazenado."
         },
         "label": "Banco de dados"
     },
@@ -1244,24 +1244,24 @@
     },
     "networking": {
         "label": "Rede",
-        "description": "Configurações relacionadas à rede, como a habilitação de IPv6 nos endpoints do Frigate.",
+        "description": "Configurações relacionadas à rede, como a habilitação de IPv6 nos endpoints do Gannet.",
         "ipv6": {
             "label": "Configuração de IPv6",
-            "description": "Configurações específicas de IPv6 para os serviços de rede do Frigate.",
+            "description": "Configurações específicas de IPv6 para os serviços de rede do Gannet.",
             "enabled": {
-                "description": "Habilita o suporte a IPv6 nos serviços do Frigate (API e interface), quando aplicável.",
+                "description": "Habilita o suporte a IPv6 nos serviços do Gannet (API e interface), quando aplicável.",
                 "label": "Habilitar IPv6"
             }
         },
         "listen": {
             "internal": {
                 "label": "Porta interna",
-                "description": "Porta de escuta interna do Frigate (padrão 5000)."
+                "description": "Porta de escuta interna do Gannet (padrão 5000)."
             },
             "label": "Configuração das portas de escuta",
             "external": {
                 "label": "Porta externa",
-                "description": "Porta de escuta externa do Frigate (padrão 8971)."
+                "description": "Porta de escuta externa do Gannet (padrão 8971)."
             }
         }
     },
@@ -1269,7 +1269,7 @@
         "label": "Proxy",
         "header_map": {
             "label": "Mapeamento de cabeçalhos",
-            "description": "Mapeia os cabeçalhos recebidos do proxy para os campos de usuário e função do Frigate na autenticação via proxy.",
+            "description": "Mapeia os cabeçalhos recebidos do proxy para os campos de usuário e função do Gannet na autenticação via proxy.",
             "user": {
                 "description": "Cabeçalho que contém o nome de usuário autenticado fornecido pelo proxy de origem.",
                 "label": "Cabeçalho de usuário"
@@ -1280,10 +1280,10 @@
             },
             "role_map": {
                 "label": "Mapeamento de funções",
-                "description": "Mapeia os valores de grupo do proxy de origem para funções do Frigate (por exemplo, mapear grupos de administradores para a função admin)."
+                "description": "Mapeia os valores de grupo do proxy de origem para funções do Gannet (por exemplo, mapear grupos de administradores para a função admin)."
             }
         },
-        "description": "Configurações para integrar o Frigate atrás de um proxy reverso que repassa cabeçalhos de usuário autenticado.",
+        "description": "Configurações para integrar o Gannet atrás de um proxy reverso que repassa cabeçalhos de usuário autenticado.",
         "logout_url": {
             "label": "URL de logout",
             "description": "URL para a qual os usuários são redirecionados ao sair pelo proxy."
@@ -1328,16 +1328,16 @@
             }
         },
         "version_check": {
-            "description": "Habilita uma verificação externa para detectar se há uma versão mais recente do Frigate disponível.",
+            "description": "Habilita uma verificação externa para detectar se há uma versão mais recente do Gannet disponível.",
             "label": "Verificação de versão"
         }
     },
     "tls": {
         "label": "TLS",
-        "description": "Configurações de TLS para os endpoints web do Frigate (porta 8971).",
+        "description": "Configurações de TLS para os endpoints web do Gannet (porta 8971).",
         "enabled": {
             "label": "Habilitar TLS",
-            "description": "Habilita o TLS para a interface web e a API do Frigate na porta TLS configurada."
+            "description": "Habilita o TLS para a interface web e a API do Gannet na porta TLS configurada."
         }
     },
     "genai": {

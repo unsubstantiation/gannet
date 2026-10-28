@@ -25,7 +25,7 @@ class PtzAutotrackConfig(FrigateBaseModel):
     calibrate_on_startup: bool = Field(
         default=False,
         title="Calibrate on start",
-        description="Measure PTZ motor speeds on startup to improve tracking accuracy. Frigate will update config with movement_weights after calibration.",
+        description="Measure PTZ motor speeds on startup to improve tracking accuracy. Gannet will update config with movement_weights after calibration.",
     )
     zooming: ZoomingModeEnum = Field(
         default=ZoomingModeEnum.disabled,
@@ -130,5 +130,5 @@ class OnvifConfig(FrigateBaseModel):
     ignore_time_mismatch: bool = Field(
         default=False,
         title="Ignore time mismatch",
-        description="Ignore time synchronization differences between camera and Frigate server for ONVIF communication.",
+        description="Ignore time synchronization differences between camera and Gannet server for ONVIF communication.",
     )

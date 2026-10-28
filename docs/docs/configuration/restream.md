@@ -227,10 +227,10 @@ To enable these sources, set the protected startup variable before launching Gan
 
 ```powershell
 $env:GO2RTC_ALLOW_ARBITRARY_EXEC = 'true'
-.\run_frigate.ps1
+.\run_gannet.ps1
 ```
 
-For a service, set the variable in the elevated PowerShell session before running `install_frigate_service.ps1 -Action Install` or `-Action Configure`; the installer copies this explicit opt-in into the service environment.
+For a service, set the variable in the elevated PowerShell session before running `install_gannet_service.ps1 -Action Install` or `-Action Configure`; the installer copies this explicit opt-in into the service environment.
 
 :::warning
 
@@ -253,7 +253,7 @@ NOTE: RTSP output will need to be passed with two curly braces `{{output}}`, whe
 ```yaml
 go2rtc:
   streams:
-    sample: 'exec:ffmpeg.exe -hide_banner -re -stream_loop -1 -i "C:\FrigateSamples\camera.mp4" -c copy -rtsp_transport tcp -f rtsp {{output}}'
+    sample: 'exec:ffmpeg.exe -hide_banner -re -stream_loop -1 -i "C:\GannetSamples\camera.mp4" -c copy -rtsp_transport tcp -f rtsp {{output}}'
 ```
 
 The Gannet service account must be able to read the executable and input file. Prefer normal go2rtc URL sources; arbitrary commands run with all permissions granted to the Gannet service.

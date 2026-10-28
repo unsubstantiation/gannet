@@ -29,7 +29,7 @@ class MqttConfig(FrigateBaseModel):
     topic_prefix: str = Field(
         default="frigate",
         title="Topic prefix",
-        description="MQTT topic prefix for all Frigate topics; must be unique if running multiple instances.",
+        description="MQTT topic prefix for all Gannet topics; must be unique if running multiple instances.",
     )
     client_id: str = Field(
         default="frigate",

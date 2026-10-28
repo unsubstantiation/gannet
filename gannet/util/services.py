@@ -33,7 +33,9 @@ from gannet.util.platform import (
 
 logger = logging.getLogger(__name__)
 RESTART_MARKER_NAME = "restart.requested"
-PROCESS_KEYWORDS = ("ffmpeg", "go2rtc", "frigate.", "python.exe")
+# "gannet" covers the current entry point (``-m gannet``) and the install
+# path; "frigate." stays for processes started from a pre-rename checkout.
+PROCESS_KEYWORDS = ("ffmpeg", "go2rtc", "gannet", "frigate.", "python.exe")
 # The processes that move camera bytes over the network. Detector
 # processes read frames from shared memory, so they are not part of
 # the bandwidth picture on Windows.
@@ -46,12 +48,20 @@ def _stop_self() -> None:
     signal.raise_signal(signal.SIGINT)
 
 
-def _mark_restart_requested() -> None:
+def _mark_restart_requested(reason: str) -> None:
+    """Write the marker the launcher waits for, including why it was written.
+
+    The marker used to be a bare ``restart`` flag, which made a crash loop
+    indistinguishable from a user pressing Restart in the UI. A single
+    sanitised line gives the launcher something to put in its restart log;
+    consumers that only check for the file's existence are unaffected.
+    """
+    line = " ".join(reason.split())[:200] or "unspecified"
     try:
         path = os.path.join(get_tmp_dir(), RESTART_MARKER_NAME)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w", encoding="utf-8") as file:
-            file.write("restart")
+            file.write(line)
     except OSError as err:
         logger.debug("Unable to write the restart marker: %s", err)
 
@@ -68,9 +78,13 @@ def consume_restart_request() -> bool:
     return True
 
 
-def restart_frigate() -> None:
-    """Request restart from the PowerShell launcher or SCM wrapper."""
-    _mark_restart_requested()
+def restart_frigate(reason: str = "unspecified") -> None:
+    """Request restart from the PowerShell launcher or SCM wrapper.
+
+    ``reason`` is recorded in the marker for the launcher's restart log, so a
+    repeated watchdog restart says which child died.
+    """
+    _mark_restart_requested(reason)
     _stop_self()
 
 
@@ -88,7 +102,7 @@ def _process_resident_memory(process: psutil.Process) -> float:
 
 
 def get_cpu_stats() -> dict[str, dict]:
-    """Return system and Frigate-related Windows process usage."""
+    """Return system and Gannet-related Windows process usage."""
     usages: dict[str, dict] = {}
     total_mem = psutil.virtual_memory().total / 1024
     memory = psutil.virtual_memory()
@@ -130,7 +144,7 @@ def get_bandwidth_stats(config) -> dict[str, dict]:
     The Windows equivalent of upstream's ``nethogs`` read: a real-time
     ETW kernel session reports the bytes each process moves, and only
     the ffmpeg and go2rtc processes that carry camera traffic are
-    reported. The session needs elevation, so a non-elevated Frigate
+    reported. The session needs elevation, so a non-elevated Gannet
     reports nothing and warns once, exactly like upstream reports
     nothing when it is not root.
     """
@@ -149,7 +163,7 @@ def get_bandwidth_stats(config) -> dict[str, dict]:
             _bandwidth_warning_logged = True
             logger.warning(
                 "Per-process network bandwidth stats require an elevated "
-                "Frigate session and are disabled; set "
+                "Gannet session and are disabled; set "
                 "telemetry.stats.network_bandwidth to false to silence "
                 "this warning"
             )
@@ -601,12 +615,12 @@ def get_ffmpeg_hwaccels(ffmpeg_path: str | None = None) -> list[str]:
 
 
 def get_windows_gpu_info(ffmpeg_path: str | None = None) -> dict[str, Any]:
-    """Describe the video hardware Windows exposes to Frigate.
+    """Describe the video hardware Windows exposes to Gannet.
 
     This replaces the libva ``vainfo`` diagnostic of the Linux image: it
     reports the active display adapters, the processor, the hardware
     acceleration methods compiled into the installed FFmpeg, the accelerators
-    go2rtc could open, and the ``preset-windows-*`` families Frigate would use.
+    go2rtc could open, and the ``preset-windows-*`` families Gannet would use.
     """
     from gannet.util.hwaccel import hwaccel_options, windows_hwaccel_preset
     from gannet.util.platform import (
@@ -962,8 +976,8 @@ def process_logs(
             timestamp = clean_line[:date_end]
             full_message = clean_line[date_end:].strip()
 
-            # For frigate, remove the date part from message comparison
-            if service == "frigate":
+            # For Gannet logs, remove the date part from message comparison
+            if service in ("gannet", "frigate"):
                 # Skip the date at the start of the message if it exists
                 date_parts = full_message.split("]", 1)
                 if len(date_parts) > 1:

@@ -1,4 +1,4 @@
-"""Raise and resolve notices from any Frigate process or thread.
+"""Raise and resolve notices from any Gannet process or thread.
 
 A notice records something worth seeing later, such as an event or a setup
 problem only the backend can detect. A condition that comes and goes belongs in

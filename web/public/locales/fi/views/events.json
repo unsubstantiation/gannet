@@ -24,12 +24,12 @@
     "aria": "Valitse tapahtumat",
     "noFoundForTimePeriod": "Ei tapahtumia tällä ajanjaksolla."
   },
-  "documentTitle": "Tarkastus - Frigate",
+  "documentTitle": "Tarkastus - Gannet",
   "detected": "havaittu",
   "selected_one": "{{count}} valittu",
   "selected_other": "{{count}} valittuna",
   "recordings": {
-    "documentTitle": "Tallenteet - Frigate",
+    "documentTitle": "Tallenteet - Gannet",
     "invalidSharedLink": "Aikaleimattua tallennusta ei voi avata jäsennysvirheen vuoksi.",
     "invalidSharedCamera": "Aikaleimattua tallennusta ei voi avata tuntemattomasta tai luvattomasta kamerasta."
   },

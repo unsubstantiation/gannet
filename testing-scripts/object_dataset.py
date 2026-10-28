@@ -1,4 +1,4 @@
-r"""Analyze a Frigate custom object-classification dataset on Windows.
+r"""Analyze a Gannet custom object-classification dataset on Windows.
 
 The script reads ``<clips-dir>\<model-name>\dataset`` and the deployed
 ``model.tflite``/``labelmap.txt`` below ``<model-cache>\<model-name>``. Its
@@ -10,7 +10,7 @@ Examples from the repository root in PowerShell::
       --name front_gate --top-n 25 --quality
 
     .\.venv\Scripts\python.exe testing-scripts\object_dataset.py `
-      --name front_gate --negative 'D:\FrigateSamples\misfires' `
+      --name front_gate --negative 'D:\GannetSamples\misfires' `
       --threshold 0.8
 
 For cross-class embedding analysis, download MobileNetV2 ONNX into the model
@@ -46,7 +46,7 @@ IMAGE_EXTS = (".webp", ".png", ".jpg", ".jpeg")
 
 
 # ---------------------------------------------------------------------------
-# Replicated Frigate pipeline
+# Replicated Gannet pipeline
 # ---------------------------------------------------------------------------
 
 
@@ -71,7 +71,7 @@ def load_labelmap(path: str) -> dict[int, str]:
 def preprocess_for_inference(image_bgr: np.ndarray) -> np.ndarray:
     """Mirror the inference preprocessing in process_frame.
 
-    Frigate decodes the camera frame YUV->RGB, crops, then cv2.resize to
+    Gannet decodes the camera frame YUV->RGB, crops, then cv2.resize to
     224x224, and passes the uint8 array directly to the int8-quantized
     interpreter. On disk we read BGR via cv2.imread, so we must convert
     to RGB to match the channel order the model was trained on.
@@ -123,7 +123,7 @@ def classify_image(
     """Mirror _classify_object's tensor flow.
 
     Returns the per-class probability vector (length = num_classes) after
-    the exact `probs = res / res.sum(axis=0)` renormalization Frigate uses
+    the exact `probs = res / res.sum(axis=0)` renormalization Gannet uses
     on the int8-quantized output.
     """
     resized = preprocess_for_inference(image_bgr)
@@ -679,7 +679,7 @@ def save_misclassified(samples: list[ImageSample], out_dir: str) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(
         description=(
-            "Analyze a Frigate object-classification training dataset against its "
+            "Analyze a Gannet object-classification training dataset against its "
             "deployed TFLite model."
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -693,12 +693,12 @@ def main() -> int:
     ap.add_argument(
         "--clips-dir",
         default=os.path.join(get_media_dir(), "clips"),
-        help="Frigate clips directory; dataset is read from <clips>/<name>/dataset",
+        help="Gannet clips directory; dataset is read from <clips>/<name>/dataset",
     )
     ap.add_argument(
         "--model-cache",
         default=get_model_cache_dir(),
-        help="Frigate model_cache; model is read from <cache>/<name>/model.tflite",
+        help="Gannet model_cache; model is read from <cache>/<name>/model.tflite",
     )
     ap.add_argument(
         "--threshold",

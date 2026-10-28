@@ -133,7 +133,26 @@ class DetectorRunner(FrigateProcess):
         self.pre_run_setup(self.config.logger)
 
         frame_manager = SharedMemoryFrameManager()
-        object_detector = LocalObjectDetector(detector_config=self.detector_config)
+
+        # A detector that cannot load its model raises here, in the child. The
+        # raw traceback goes to this process's stderr, which a windowed launch,
+        # the portable launcher, and the SCM service all discard, so the parent
+        # only saw a process that died. Log it through the log queue first: that
+        # is the file the web UI and the support instructions point at.
+        try:
+            object_detector = LocalObjectDetector(detector_config=self.detector_config)
+        except Exception:
+            model = self.detector_config.model
+            self.logger.exception(
+                "Detector %s could not load model %s on %s (%s model). "
+                "Detection cannot start until this is fixed.",
+                self.name,
+                getattr(model, "path", "?"),
+                getattr(self.detector_config, "device", "?"),
+                getattr(model, "model_type", "?"),
+            )
+            raise
+
         detector_publisher = ObjectDetectorPublisher()
 
         for name in self.cameras:

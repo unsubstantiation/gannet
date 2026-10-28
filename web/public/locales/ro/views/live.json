@@ -1,8 +1,8 @@
 {
   "documentTitle": {
-    "default": "Live - Frigate"
+    "default": "Live - Gannet"
   },
-  "documentTitle.withCamera": "{{camera}} - Frigate - Live",
+  "documentTitle.withCamera": "{{camera}} - Gannet - Live",
   "lowBandwidthMode": "Mod Latime de Banda Limitata",
   "twoWayTalk": {
     "enable": "Activare dialog",
@@ -139,7 +139,7 @@
       "resetStream": "Resetează stream-ul",
       "force": {
         "label": "Forțează modul de lățime de bandă redusă",
-        "desc": "Redă întotdeauna fluxul integrat Frigate de lățime de bandă redusă în locul stream-ului selectat. Funcționează pe orice conexiune, dar are calitate mai scăzută și este fără audio."
+        "desc": "Redă întotdeauna fluxul integrat Gannet de lățime de bandă redusă în locul stream-ului selectat. Funcționează pe orice conexiune, dar are calitate mai scăzută și este fără audio."
       }
     },
     "playInBackground": {
@@ -152,7 +152,7 @@
     },
     "mode": "Tehnologie de streaming",
     "technology": {
-      "description": "Alege tehnologia de streaming preferată. Frigate poate totuși să revină la modul de lățime de bandă redusă în caz de erori de redare sau de rețea.",
+      "description": "Alege tehnologia de streaming preferată. Gannet poate totuși să revină la modul de lățime de bandă redusă în caz de erori de redare sau de rețea.",
       "name": {
         "mse": "MSE",
         "webrtc": "WebRTC",
@@ -224,7 +224,7 @@
   },
   "noCameras": {
     "title": "Nicio Cameră Configurată",
-    "description": "Începe prin a conecta o cameră la Frigate.",
+    "description": "Începe prin a conecta o cameră la Gannet.",
     "buttonText": "Adaugă cameră",
     "restricted": {
       "title": "Nicio Cameră Disponibilă",
@@ -232,7 +232,7 @@
     },
     "default": {
       "title": "Nicio cameră configurată",
-      "description": "Începe prin a conecta o cameră la Frigate.",
+      "description": "Începe prin a conecta o cameră la Gannet.",
       "buttonText": "Adaugă cameră"
     },
     "group": {

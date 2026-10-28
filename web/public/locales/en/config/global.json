@@ -5,11 +5,11 @@
   },
   "safe_mode": {
     "label": "Safe mode",
-    "description": "When enabled, start Frigate in safe mode with reduced features for troubleshooting."
+    "description": "When enabled, start Gannet in safe mode with reduced features for troubleshooting."
   },
   "environment_vars": {
     "label": "Environment variables",
-    "description": "Key/value pairs exposed to Frigate child processes. Security-sensitive startup overrides must be set in the Windows process or service environment instead."
+    "description": "Key/value pairs exposed to Gannet child processes. Security-sensitive startup overrides must be set in the Windows process or service environment instead."
   },
   "logger": {
     "label": "Logging",
@@ -28,7 +28,7 @@
     "description": "Authentication and session-related settings including cookie and rate limit options.",
     "enabled": {
       "label": "Enable authentication",
-      "description": "Enable native authentication for the Frigate UI."
+      "description": "Enable native authentication for the Gannet UI."
     },
     "reset_admin_password": {
       "label": "Reset admin password",
@@ -40,7 +40,7 @@
     },
     "cookie_secure": {
       "label": "Secure cookie flag",
-      "description": "Always set the Secure flag on the authentication cookie. The native server already sets it when serving TLS; enable this when a reverse proxy terminates TLS in front of plain-HTTP Frigate. A proxy on the TLS port must serve Frigate to browsers over HTTPS."
+      "description": "Always set the Secure flag on the authentication cookie. The native server already sets it when serving TLS; enable this when a reverse proxy terminates TLS in front of plain-HTTP Gannet. A proxy on the TLS port must serve Gannet to browsers over HTTPS."
     },
     "session_length": {
       "label": "Session length",
@@ -73,10 +73,10 @@
   },
   "database": {
     "label": "Database",
-    "description": "Settings for the SQLite database used by Frigate to store tracked object and recording metadata.",
+    "description": "Settings for the SQLite database used by Gannet to store tracked object and recording metadata.",
     "path": {
       "label": "Database path",
-      "description": "Filesystem path where the Frigate SQLite database file will be stored."
+      "description": "Filesystem path where the Gannet SQLite database file will be stored."
     }
   },
   "go2rtc": {
@@ -100,7 +100,7 @@
     },
     "topic_prefix": {
       "label": "Topic prefix",
-      "description": "MQTT topic prefix for all Frigate topics; must be unique if running multiple instances."
+      "description": "MQTT topic prefix for all Gannet topics; must be unique if running multiple instances."
     },
     "client_id": {
       "label": "Client ID",
@@ -161,7 +161,7 @@
   },
   "networking": {
     "label": "Networking",
-    "description": "Network-related settings such as IPv6 enablement for Frigate endpoints.",
+    "description": "Network-related settings such as IPv6 enablement for Gannet endpoints.",
     "ipv6": {
       "label": "IPv6 configuration",
       "description": "IPv6 support for the native Windows listener.",
@@ -175,7 +175,7 @@
       "description": "The loopback-only internal port and authenticated public Windows web port. FRIGATE_WEB_PORT may override the public listener.",
       "internal": {
         "label": "Internal port",
-        "description": "Loopback-only port for Frigate media jobs. Requests on this port are trusted and never exposed to the LAN. A \"host:port\" value is accepted for compatibility, but the internal listener always binds 127.0.0.1."
+        "description": "Loopback-only port for Gannet media jobs. Requests on this port are trusted and never exposed to the LAN. A \"host:port\" value is accepted for compatibility, but the internal listener always binds 127.0.0.1."
       },
       "external": {
         "label": "External port",
@@ -185,10 +185,10 @@
   },
   "proxy": {
     "label": "Proxy",
-    "description": "Settings for integrating Frigate behind a reverse proxy that passes authenticated user headers.",
+    "description": "Settings for integrating Gannet behind a reverse proxy that passes authenticated user headers.",
     "header_map": {
       "label": "Header mapping",
-      "description": "Map incoming proxy headers to Frigate user and role fields for proxy-based auth.",
+      "description": "Map incoming proxy headers to Gannet user and role fields for proxy-based auth.",
       "user": {
         "label": "User header",
         "description": "Header containing the authenticated username provided by the upstream proxy."
@@ -199,7 +199,7 @@
       },
       "role_map": {
         "label": "Role mapping",
-        "description": "Map upstream group values to Frigate roles (for example map admin groups to the admin role)."
+        "description": "Map upstream group values to Gannet roles (for example map admin groups to the admin role)."
       }
     },
     "logout_url": {
@@ -253,10 +253,10 @@
   },
   "tls": {
     "label": "TLS",
-    "description": "TLS settings for Frigate's web endpoints (port 8971).",
+    "description": "TLS settings for Gannet's web endpoints (port 8971).",
     "enabled": {
       "label": "Enable TLS",
-      "description": "Enable TLS for Frigate's authenticated public Windows web listener."
+      "description": "Enable TLS for Gannet's authenticated public Windows web listener."
     },
     "cert_file": {
       "label": "Certificate file",
@@ -296,7 +296,7 @@
     },
     "path": {
       "label": "Custom object detector model path",
-      "description": "Path to a custom detection model file (or plus://<model_id> for Frigate+ models)."
+      "description": "Path to a custom detection model file (or plus://<model_id> for upstream Frigate+ models)."
     },
     "labelmap_path": {
       "label": "Label map for custom object detector",
@@ -1167,7 +1167,7 @@
     },
     "model": {
       "label": "Audio transcription model or GenAI provider name",
-      "description": "The transcription backend: 'whisper' for Frigate's built-in local models, or the name of a GenAI provider with the transcribe role."
+      "description": "The transcription backend: 'whisper' for Gannet's built-in local models, or the name of a GenAI provider with the transcribe role."
     },
     "device": {
       "label": "Transcription device",
@@ -1520,7 +1520,7 @@
       },
       "calibrate_on_startup": {
         "label": "Calibrate on start",
-        "description": "Measure PTZ motor speeds on startup to improve tracking accuracy. Frigate will update config with movement_weights after calibration."
+        "description": "Measure PTZ motor speeds on startup to improve tracking accuracy. Gannet will update config with movement_weights after calibration."
       },
       "zooming": {
         "label": "Zoom mode",
@@ -1557,7 +1557,7 @@
     },
     "ignore_time_mismatch": {
       "label": "Ignore time mismatch",
-      "description": "Ignore time synchronization differences between camera and Frigate server for ONVIF communication."
+      "description": "Ignore time synchronization differences between camera and Gannet server for ONVIF communication."
     }
   }
 }

@@ -384,7 +384,7 @@ async def _execute_find_similar_objects(
             "error": "semantic_search_disabled",
             "message": (
                 "Semantic search must be enabled to find similar objects. "
-                "Enable it in the Frigate config under semantic_search."
+                "Enable it in the Gannet config under semantic_search."
             ),
         }
 
@@ -547,7 +547,7 @@ async def execute_tool(
     Execute a tool function call.
 
     This endpoint receives tool calls from LLMs and executes the corresponding
-    Frigate operations, returning results in a format the LLM can understand.
+    Gannet operations, returning results in a format the LLM can understand.
     """
     tool_name = body.tool_name
     arguments = body.arguments
@@ -1443,7 +1443,7 @@ async def _execute_pending_tools(
     summary="Chat completion with tool calling",
     description=(
         "Send a chat message to the configured GenAI provider with tool calling support. "
-        "The LLM can call Frigate tools to answer questions about your cameras and events."
+        "The LLM can call Gannet tools to answer questions about your cameras and events."
     ),
 )
 async def chat_completion(
@@ -1467,7 +1467,7 @@ async def chat_completion(
     if not genai_client:
         return JSONResponse(
             content={
-                "error": "GenAI is not configured. Please configure a GenAI provider in your Frigate config.",
+                "error": "GenAI is not configured. Please configure a GenAI provider in your Gannet config.",
             },
             status_code=400,
         )

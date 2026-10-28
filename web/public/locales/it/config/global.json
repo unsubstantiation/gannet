@@ -1,7 +1,7 @@
 {
     "safe_mode": {
         "label": "Modalità sicura",
-        "description": "Quando abilitata, avvia Frigate in modalità sicura con funzionalità ridotte per la risoluzione dei problemi."
+        "description": "Quando abilitata, avvia Gannet in modalità sicura con funzionalità ridotte per la risoluzione dei problemi."
     },
     "environment_vars": {
         "label": "Variabili d'ambiente"
@@ -63,7 +63,7 @@
         "description": "Impostazioni di autenticazione e relative alla sessione, incluse le opzioni relative ai cookie e al limite di frequenza.",
         "enabled": {
             "label": "Abilita autenticazione",
-            "description": "Abilita l'autenticazione nativa per l'interfaccia utente di Frigate."
+            "description": "Abilita l'autenticazione nativa per l'interfaccia utente di Gannet."
         },
         "reset_admin_password": {
             "label": "Reimposta la password di amministratore",
@@ -214,7 +214,7 @@
         },
         "topic_prefix": {
             "label": "Prefisso argomento",
-            "description": "Prefisso dell'argomento MQTT per tutti gli argomenti Frigate; deve essere univoco se si eseguono più istanze."
+            "description": "Prefisso dell'argomento MQTT per tutti gli argomenti Gannet; deve essere univoco se si eseguono più istanze."
         },
         "client_id": {
             "label": "ID client",
@@ -271,7 +271,7 @@
             },
             "calibrate_on_startup": {
                 "label": "Calibra all'avvio",
-                "description": "Misura la velocità dei motori PTZ all'avvio per migliorare la precisione del tracciamento. Frigate aggiornerà la configurazione con i valori di movement_weights dopo la calibrazione."
+                "description": "Misura la velocità dei motori PTZ all'avvio per migliorare la precisione del tracciamento. Gannet aggiornerà la configurazione con i valori di movement_weights dopo la calibrazione."
             },
             "zooming": {
                 "label": "Modalità ingrandimento",
@@ -309,7 +309,7 @@
         },
         "ignore_time_mismatch": {
             "label": "Ignora la discrepanza oraria",
-            "description": "Ignora le differenze di sincronizzazione oraria tra la telecamera e il server Frigate per la comunicazione ONVIF."
+            "description": "Ignora le differenze di sincronizzazione oraria tra la telecamera e il server Gannet per la comunicazione ONVIF."
         },
         "label": "ONVIF",
         "port": {
@@ -440,10 +440,10 @@
             "label": "URL di disconnessione"
         },
         "label": "Proxy",
-        "description": "Impostazioni per l'integrazione di Frigate dietro un proxy inverso che trasmette le intestazioni utente autenticate.",
+        "description": "Impostazioni per l'integrazione di Gannet dietro un proxy inverso che trasmette le intestazioni utente autenticate.",
         "header_map": {
             "label": "Mappatura dell'intestazione",
-            "description": "Mappa le intestazioni proxy in entrata ai campi utente e ruolo di Frigate per l'autenticazione basata su proxy.",
+            "description": "Mappa le intestazioni proxy in entrata ai campi utente e ruolo di Gannet per l'autenticazione basata su proxy.",
             "user": {
                 "label": "Intestazione utente",
                 "description": "Intestazione contenente il nome utente autenticato fornito dal proxy a monte."
@@ -454,7 +454,7 @@
             },
             "role_map": {
                 "label": "Mappatura dei ruoli",
-                "description": "Mappa i valori dei gruppi a monte dei ruoli di Frigate (ad esempio, mappa i gruppi di amministrazione al ruolo di amministratore)."
+                "description": "Mappa i valori dei gruppi a monte dei ruoli di Gannet (ad esempio, mappa i gruppi di amministrazione al ruolo di amministratore)."
             }
         },
         "auth_secret": {
@@ -975,10 +975,10 @@
     },
     "database": {
         "label": "Database",
-        "description": "Impostazioni per il database SQLite utilizzato da Frigate per memorizzare i metadati relativi agli oggetti tracciati e alle registrazioni.",
+        "description": "Impostazioni per il database SQLite utilizzato da Gannet per memorizzare i metadati relativi agli oggetti tracciati e alle registrazioni.",
         "path": {
             "label": "Percorso del database",
-            "description": "Percorso del filesystem in cui verrà memorizzato il file del database Frigate SQLite."
+            "description": "Percorso del filesystem in cui verrà memorizzato il file del database Gannet SQLite."
         }
     },
     "go2rtc": {
@@ -1039,33 +1039,33 @@
     },
     "networking": {
         "label": "Reti",
-        "description": "Impostazioni relative alla rete, come l'abilitazione di IPv6 per i dispositivi Frigate.",
+        "description": "Impostazioni relative alla rete, come l'abilitazione di IPv6 per i dispositivi Gannet.",
         "ipv6": {
             "label": "Configurazione IPv6",
-            "description": "Impostazioni specifiche IPv6 per i servizi di rete Frigate.",
+            "description": "Impostazioni specifiche IPv6 per i servizi di rete Gannet.",
             "enabled": {
                 "label": "Abilita IPv6",
-                "description": "Abilita il supporto IPv6 per i servizi Frigate (API e interfaccia utente) ove applicabile."
+                "description": "Abilita il supporto IPv6 per i servizi Gannet (API e interfaccia utente) ove applicabile."
             }
         },
         "listen": {
             "label": "Configurazione delle porte di ascolto",
             "internal": {
                 "label": "Porta interna",
-                "description": "Porta di ascolto interna per Frigate (predefinita 5000)."
+                "description": "Porta di ascolto interna per Gannet (predefinita 5000)."
             },
             "external": {
                 "label": "Porta esterna",
-                "description": "Porta di ascolto esterna per Frigate (predefinita 8971)."
+                "description": "Porta di ascolto esterna per Gannet (predefinita 8971)."
             }
         }
     },
     "tls": {
         "label": "TLS",
-        "description": "Impostazioni TLS per gli endpoint web di Frigate (porta 8971).",
+        "description": "Impostazioni TLS per gli endpoint web di Gannet (porta 8971).",
         "enabled": {
             "label": "Abilita TLS",
-            "description": "Abilita il protocollo TLS per l'interfaccia utente web e le API di Frigate sulla porta TLS configurata."
+            "description": "Abilita il protocollo TLS per l'interfaccia utente web e le API di Gannet sulla porta TLS configurata."
         }
     },
     "telemetry": {
@@ -1096,7 +1096,7 @@
         },
         "version_check": {
             "label": "Controllo versione",
-            "description": "Abilita un controllo in uscita per rilevare se è disponibile una versione più recente di Frigate."
+            "description": "Abilita un controllo in uscita per rilevare se è disponibile una versione più recente di Gannet."
         }
     },
     "birdseye": {

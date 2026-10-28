@@ -1,13 +1,13 @@
 {
   "restart": {
-    "title": "Ești sigur că dorești să repornești Frigate?",
+    "title": "Ești sigur că dorești să repornești Gannet?",
     "button": "Repornește",
     "restarting": {
-      "title": "Frigate repornește",
+      "title": "Gannet repornește",
       "content": "Această pagină se va reâncărca automat în {{countdown}} secunde.",
       "button": "Forțează acum reîncărcarea"
     },
-    "description": "Acest lucru va opri temporar Frigate în timpul repornirii."
+    "description": "Acest lucru va opri temporar Gannet în timpul repornirii."
   },
   "explore": {
     "plus": {
@@ -55,10 +55,10 @@
     "shareTimestamp": {
       "label": "Partajează timestamp-ul",
       "title": "Partajează timestamp-ul",
-      "description": "Partajează un URL cu timestamp al poziției actuale din player sau alege un timestamp personalizat. Reține că acesta nu este un URL de partajare publică și este accesibil doar utilizatorilor care au acces la Frigate și la această cameră.",
+      "description": "Partajează un URL cu timestamp al poziției actuale din player sau alege un timestamp personalizat. Reține că acesta nu este un URL de partajare publică și este accesibil doar utilizatorilor care au acces la Gannet și la această cameră.",
       "custom": "Timestamp personalizat",
       "button": "Partajează URL-ul cu timestamp",
-      "shareTitle": "Timestamp review Frigate: {{camera}}"
+      "shareTitle": "Timestamp review Gannet: {{camera}}"
     },
     "genaiDescription": {
       "toast": {

@@ -47,7 +47,7 @@
       "updateFaceScoreFailed": "Posodobitev ocene obraza ni uspela: {{errorMessage}}"
     }
   },
-  "documentTitle": "Knjižnica obrazov - Frigate",
+  "documentTitle": "Knjižnica obrazov - Gannet",
   "collections": "Zbirke",
   "createFaceLibrary": {
     "new": "Ustvari nov obraz",

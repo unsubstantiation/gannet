@@ -19,7 +19,7 @@
     "ended": "הקלטה ידנית לפי דרישה הסתיימה.",
     "failedToEnd": "סיום ההקלטה הידנית לפי דרישה נכשל."
   },
-  "documentTitle.withCamera": "{{camera}} - שידור חי- Frigate",
+  "documentTitle.withCamera": "{{camera}} - שידור חי- Gannet",
   "lowBandwidthMode": "מצב רוחב פס נמוך",
   "twoWayTalk": {
     "enable": "אפשור דיבור דו כיווני",
@@ -170,7 +170,7 @@
   },
   "noCameras": {
     "title": "לא הוגדרו מצלמות",
-    "description": "התחל על-ידי חיבור מצלמה ל-Frigate.",
+    "description": "התחל על-ידי חיבור מצלמה ל-Gannet.",
     "buttonText": "הוסף מצלמה",
     "restricted": {
       "title": "אין מצלמות זמינות",

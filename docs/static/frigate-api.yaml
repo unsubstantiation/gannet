@@ -1048,7 +1048,7 @@ paths:
       description: |-
         **Access:** Admin role required.
 
-        Send a chat message to the configured GenAI provider with tool calling support. The LLM can call Frigate tools to answer questions about your cameras and events.
+        Send a chat message to the configured GenAI provider with tool calling support. The LLM can call Gannet tools to answer questions about your cameras and events.
       operationId: chat_completion_chat_completion_post
       requestBody:
         required: true
@@ -2879,11 +2879,11 @@ paths:
       description: |-
         **Access:** Any authenticated user.
 
-        Describe the video hardware Windows exposes to Frigate.
+        Describe the video hardware Windows exposes to Gannet.
 
         Reports the active display adapters, the processor, the hardware
         acceleration methods compiled into the installed FFmpeg, the accelerators
-        go2rtc could open, and the ``preset-windows-*`` decoder families Frigate
+        go2rtc could open, and the ``preset-windows-*`` decoder families Gannet
         recommends. This is the native replacement for the Linux ``vainfo`` output.
       operationId: gpuinfo_gpuinfo_get
       responses:
@@ -2920,7 +2920,7 @@ paths:
       description: |-
         **Access:** Admin role required.
 
-        Get logs for a native Frigate or go2rtc process.
+        Get logs for a native Gannet or go2rtc process.
       operationId: logs_logs__service__get
       parameters:
         - name: service
@@ -5279,11 +5279,11 @@ paths:
     post:
       tags:
         - Events
-      summary: Send event to Frigate+
+      summary: Send event to upstream Frigate+
       description: |-
         **Access:** Admin role required.
 
-        Sends an event to Frigate+.
+        Sends an event to upstream Frigate+.
             Returns a success message or an error if the event is not found.
       operationId: send_to_plus_events__event_id__plus_post
       parameters:
@@ -5318,12 +5318,12 @@ paths:
     put:
       tags:
         - Events
-      summary: Submit false positive to Frigate+
+      summary: Submit false positive to upstream Frigate+
       description: |-
         **Access:** Admin role required.
 
-        Submit an event as a false positive to Frigate+.
-            This endpoint is the same as the standard Frigate+ submission endpoint,
+        Submit an event as a false positive to upstream Frigate+.
+            This endpoint is the same as the standard upstream Frigate+ submission endpoint,
             but is specifically for marking an event as a false positive.
       operationId: false_positive_events__event_id__false_positive_put
       parameters:

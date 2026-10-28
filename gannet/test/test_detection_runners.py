@@ -1,5 +1,7 @@
 """Tests for ONNX Runtime session option selection."""
 
+import os
+import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -8,6 +10,9 @@ import onnxruntime as ort
 
 from gannet.detectors.detection_runners import (
     CudaGraphRunner,
+    OpenVINOModelError,
+    OpenVINOModelRunner,
+    describe_openvino_failure,
     get_ort_session_options,
 )
 from gannet.detectors.detector_config import ModelTypeEnum
@@ -105,3 +110,81 @@ class TestCudaGraphRunner(unittest.TestCase):
 
         self.assertEqual(self._annotations(), [None])
         runner._input_ortvalue.update_inplace.assert_called_once()
+
+
+class TestOpenVINOModelFormatErrors(unittest.TestCase):
+    """OpenVINO's frontend error is replaced with one an operator can act on."""
+
+    tflite_error = RuntimeError(
+        "Exception from src/inference/src/cpp/core.cpp:135:\n"
+        "Check 'translate_map.count(decoder->get_op_type())' failed at "
+        "src/frontends/tensorflow_lite/src/frontend.cpp:222:\n"
+        "FrontEnd API failed with OpConversionFailure:\n"
+        "No translator found for TFLite_Detection_PostProcess node."
+    )
+
+    def test_tflite_detection_failure_names_the_op_and_the_fix(self):
+        message = describe_openvino_failure(
+            r"C:\Models\cpu_model.tflite", "GPU", self.tflite_error
+        )
+
+        self.assertIn("TFLite_Detection_PostProcess", message)
+        self.assertIn("cpu detector", message)
+        self.assertIn("IR (.xml) or ONNX export", message)
+        # Converting the .tflite itself hits the same missing translator, and
+        # a restart cannot fix a model format problem.
+        self.assertIn("cannot help", message)
+        self.assertIn("no restart", message)
+
+    def test_a_conversion_failure_for_another_op_keeps_the_detail(self):
+        error = RuntimeError(
+            "FrontEnd API failed with OpConversionFailure:\n"
+            "No translator found for SomeCustomOp node."
+        )
+        message = describe_openvino_failure(r"C:\Models\m.onnx", "CPU", error)
+
+        self.assertIn("could not convert", message)
+        self.assertIn("SomeCustomOp", message)
+
+    def test_an_unrelated_error_is_passed_through_with_context(self):
+        message = describe_openvino_failure(
+            r"C:\Models\m.xml", "NPU", RuntimeError("device not found")
+        )
+
+        self.assertIn("device not found", message)
+        self.assertIn("NPU", message)
+
+    def test_a_tflite_detection_model_is_refused_before_openvino_runs(self):
+        with tempfile.TemporaryDirectory() as model_dir:
+            model = os.path.join(model_dir, "detector.tflite")
+            with open(model, "wb") as handle:
+                handle.write(b"not a real model")
+
+            with self.assertRaises(OpenVINOModelError) as raised:
+                OpenVINOModelRunner(
+                    model_path=model,
+                    device="CPU",
+                    model_type=ModelTypeEnum.ssd.value,
+                )
+
+        self.assertIn("TFLite_Detection_PostProcess", str(raised.exception))
+
+    def test_a_tflite_enrichment_model_is_not_refused_the_same_way(self):
+        """Only detection models use the fused NMS op that has no translator."""
+        with tempfile.TemporaryDirectory() as model_dir:
+            model = os.path.join(model_dir, "classifier.tflite")
+            with open(model, "wb") as handle:
+                handle.write(b"not a real model")
+
+            # OpenVINO still reports the load failure, but not as a format
+            # conversion problem, so no "this model cannot be converted" hint.
+            with self.assertRaises(OpenVINOModelError) as raised:
+                OpenVINOModelRunner(
+                    model_path=model,
+                    device="CPU",
+                    model_type=EnrichmentModelTypeEnum.paddleocr.value,
+                )
+
+        message = str(raised.exception)
+        self.assertIn("could not load", message)
+        self.assertNotIn("TFLite_Detection_PostProcess", message)

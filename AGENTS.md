@@ -12,8 +12,8 @@ and review rules are in [CONTRIBUTING.md](CONTRIBUTING.md).
 - `gannet.__main__` rejects every platform other than Windows before
   runtime initialization (`gannet.util.platform.require_windows`).
 - Multiprocessing always uses `spawn`.
-- Writable data defaults to `%LOCALAPPDATA%\Frigate`, relocatable with
-  `FRIGATE_BASE_DIR` and the `FRIGATE_*_DIR` overrides. Build paths with
+- Writable data defaults to `%LOCALAPPDATA%\Gannet`, relocatable with
+  `GANNET_BASE_DIR` and the `FRIGATE_*_DIR` overrides. Build paths with
   `pathlib` or `os.path`; never introduce Unix root paths, device nodes,
   Unix sockets, UID/GID ownership, or Unix service managers.
 - Executables are native `.exe` files, located through
@@ -38,10 +38,10 @@ boundaries are in [LICENSING.md](LICENSING.md). Concretely:
 
 - Do not add or remove copyright lines, and do not touch `LICENSE`,
   `LICENSES/MIT.txt`, `TRADEMARK.md`, or `REUSE.toml` by hand. `REUSE.toml` is
-  generated (`scripts/generate_reuse_toml.py`), and `LICENSES/MIT.txt` is Frigate's
+  generated (`scripts/generate_reuse_toml.py`), and `LICENSES/MIT.txt` is upstream Frigate's
   notice, which the MIT License requires to stay intact and unmodified.
 - New files must carry `SPDX-License-Identifier: LicenseRef-GNCL-1.0` in a file-header
-  comment. Frigate-authored files keep their existing identifiers; a mixed file is
+  comment. Upstream Frigate-authored files keep their existing identifiers; a mixed file is
   `MIT AND LicenseRef-GNCL-1.0` and is recorded in `REUSE.toml`, not in the header.
 - Do not copy code from AGPL or GPL-licensed projects into this tree. It cannot be
   relabeled as Gannet Material, and the resulting terms are unmanageable here.

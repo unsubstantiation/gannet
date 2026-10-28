@@ -1,5 +1,5 @@
 {
-  "documentTitle": "탐색 - Frigate",
+  "documentTitle": "탐색 - Gannet",
   "generativeAI": "생성형 AI",
   "exploreMore": "더 많은 {{label}} 객체 탐색",
   "exploreIsUnavailable": {
@@ -16,7 +16,7 @@
       }
     },
     "downloadingModels": {
-      "context": "Frigate이 시맨틱 검색 기능을 지원하기 위해 필요한 임베딩 모델을 다운로드하고 있습니다. 네트워크 연결 속도에 따라 몇 분 정도 걸릴 수 있습니다.",
+      "context": "Gannet이 시맨틱 검색 기능을 지원하기 위해 필요한 임베딩 모델을 다운로드하고 있습니다. 네트워크 연결 속도에 따라 몇 분 정도 걸릴 수 있습니다.",
       "setup": {
         "visionModel": "비전 모델",
         "visionModelFeatureExtractor": "비전 모델 특징 추출기",
@@ -26,7 +26,7 @@
       "tips": {
         "context": "모델 다운로드가 완료되면 추적 객체의 임베딩을 다시 색인하는 것이 좋습니다."
       },
-      "error": "오류가 발생했습니다. Frigate 로그를 확인하세요."
+      "error": "오류가 발생했습니다. Gannet 로그를 확인하세요."
     }
   },
   "details": {
@@ -40,7 +40,7 @@
       },
       "tips": {
         "mismatch_other": "사용할 수 없는 객체 {{count}}개가 감지되어 이 다시보기 항목에 포함되었습니다. 해당 객체는 알림 또는 감지 기준을 충족하지 못했거나 이미 정리/삭제되었습니다.",
-        "hasMissingObjects": "다음 레이블에 대해 Frigate이 추적 객체를 저장하도록 하려면 설정을 조정하세요: <em>{{objects}}</em>"
+        "hasMissingObjects": "다음 레이블에 대해 Gannet이 추적 객체를 저장하도록 하려면 설정을 조정하세요: <em>{{objects}}</em>"
       },
       "toast": {
         "success": {
@@ -48,7 +48,7 @@
           "updatedSublabel": "하위 레이블을 성공적으로 업데이트했습니다.",
           "updatedLPR": "차량 번호판을 성공적으로 업데이트했습니다.",
           "updatedAttributes": "속성을 성공적으로 업데이트했습니다.",
-          "audioTranscription": "오디오 텍스트 변환을 성공적으로 요청했습니다. Frigate 서버 성능에 따라 변환이 완료되기까지 시간이 걸릴 수 있습니다."
+          "audioTranscription": "오디오 텍스트 변환을 성공적으로 요청했습니다. Gannet 서버 성능에 따라 변환이 완료되기까지 시간이 걸릴 수 있습니다."
         },
         "error": {
           "regenerate": "{{provider}}에 새 설명 요청 실패: {{errorMessage}}",
@@ -100,7 +100,7 @@
     "description": {
       "label": "설명",
       "placeholder": "추적된 객체에 대한 설명",
-      "aiTips": "Frigate은 추적 객체의 수명주기가 완전히 끝날 때까지 생성형 AI 제공업체에 설명을 요청하지 않습니다."
+      "aiTips": "Gannet은 추적 객체의 수명주기가 완전히 끝날 때까지 생성형 AI 제공업체에 설명을 요청하지 않습니다."
     },
     "expandRegenerationMenu": "설명 재생성 메뉴 펼치기",
     "regenerateFromSnapshot": "스냅샷 기반으로 다시 생성",

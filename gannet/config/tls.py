@@ -22,7 +22,7 @@ class TlsConfig(FrigateBaseModel):
         default=True,
         title="Enable TLS",
         description=(
-            "Enable TLS for Frigate's authenticated public Windows web listener."
+            "Enable TLS for Gannet's authenticated public Windows web listener."
         ),
     )
     cert_file: str = Field(

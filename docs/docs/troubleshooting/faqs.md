@@ -7,14 +7,14 @@ title: Frequently Asked Questions
 
 ## Where are Gannet's files?
 
-Interactive installs default to `%LOCALAPPDATA%\Gannet`. The Windows service installer defaults to `%ProgramData%\Gannet`. `FRIGATE_BASE_DIR` can select another root before installation. Subdirectories contain config, media, cache, temporary files, logs, models, and tools.
+Interactive installs default to `%LOCALAPPDATA%\Gannet`. The Windows service installer defaults to `%ProgramData%\Gannet`. `GANNET_BASE_DIR` can select another root before installation. Subdirectories contain config, media, cache, temporary files, logs, models, and tools.
 
 ## Where are the logs?
 
-Use **System > Logs** or read `tmp\logs\frigate\current` and `tmp\logs\go2rtc\current` below the data root:
+Use **System > Logs** or read `tmp\logs\gannet\current` and `tmp\logs\go2rtc\current` below the data root:
 
 ```powershell
-Get-Content "$env:ProgramData\Gannet\tmp\logs\frigate\current" -Wait
+Get-Content "$env:ProgramData\Gannet\tmp\logs\gannet\current" -Wait
 ```
 
 ## Why does `localhost` not reach MQTT or a camera?
@@ -39,7 +39,7 @@ It records the last configuration format migration. Gannet backs up and rewrites
 
 ## Why is the service using different files from an interactive run?
 
-Services do not inherit the signed-in user's `%LOCALAPPDATA%` or PowerShell environment. The installer pins `FRIGATE_BASE_DIR` and supported startup variables in the service registry. Use `install_frigate_service.ps1 -Action Status` to inspect it and `-Action Configure` after changing startup settings.
+Services do not inherit the signed-in user's `%LOCALAPPDATA%` or PowerShell environment. The installer pins `GANNET_BASE_DIR` and supported startup variables in the service registry. Use `install_gannet_service.ps1 -Action Status` to inspect it and `-Action Configure` after changing startup settings.
 
 ## Can media be stored on a network share?
 

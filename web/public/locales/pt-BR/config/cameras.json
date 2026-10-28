@@ -5,7 +5,7 @@
     },
     "friendly_name": {
         "label": "Nome amigável",
-        "description": "Nome amigável da câmera utilizado na Interface de Usuário do Frigate"
+        "description": "Nome amigável da câmera utilizado na Interface de Usuário do Gannet"
     },
     "enabled": {
         "label": "Habilitado",
@@ -818,7 +818,7 @@
             },
             "calibrate_on_startup": {
                 "label": "Calibrar ao iniciar",
-                "description": "Meça as velocidades do motor PTZ na inicialização para melhorar a precisão do rastreamento. O Frigate atualizará a configuração com movement_weights após a calibração."
+                "description": "Meça as velocidades do motor PTZ na inicialização para melhorar a precisão do rastreamento. O Gannet atualizará a configuração com movement_weights após a calibração."
             },
             "zooming": {
                 "label": "Modo de zoom",
@@ -855,7 +855,7 @@
         },
         "ignore_time_mismatch": {
             "label": "Ignorar diferença de tempo",
-            "description": "Ignorar diferenças de horário na sincronização entre câmera e servidor Frigate nas comunicações ONVIF."
+            "description": "Ignorar diferenças de horário na sincronização entre câmera e servidor Gannet nas comunicações ONVIF."
         }
     },
     "timestamp_style": {

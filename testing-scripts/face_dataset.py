@@ -1,7 +1,7 @@
 r"""
 Face recognition investigation script.
 
-Standalone replica of Frigate's ArcFace pipeline (see
+Standalone replica of Gannet's ArcFace pipeline (see
 gannet/data_processing/common/face/model.py and
 gannet/embeddings/onnx/face_embedding.py) for analyzing a face collection
 outside the running service. Useful for:
@@ -50,7 +50,7 @@ ARCFACE_INPUT_SIZE = 112
 
 
 # ---------------------------------------------------------------------------
-# Replicated Frigate pipeline
+# Replicated Gannet pipeline
 # ---------------------------------------------------------------------------
 
 
@@ -691,7 +691,7 @@ def contamination_analysis(pos: list[FaceSample], neg: list[FaceSample]) -> None
 
 def main() -> int:
     ap = argparse.ArgumentParser(
-        description="Analyze a face recognition collection outside Frigate.",
+        description="Analyze a face recognition collection outside Gannet.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
@@ -712,7 +712,7 @@ def main() -> int:
         "--trim",
         type=float,
         default=0.15,
-        help="trim_mean proportion (Frigate uses 0.15)",
+        help="trim_mean proportion (Gannet uses 0.15)",
     )
     ap.add_argument(
         "--vector-outlier",

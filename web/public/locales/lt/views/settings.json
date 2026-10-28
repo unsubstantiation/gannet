@@ -1,18 +1,18 @@
 {
   "documentTitle": {
-    "default": "Nustatymai - Frigate",
-    "authentication": "Autentifikavimo Nustatymai - Frigate",
-    "object": "Debug - Frigate",
-    "general": "Išvaizdos Parametrai - Frigate",
-    "frigatePlus": "Frigate+ Nustatymai - Frigate",
-    "notifications": "Pranešimų Nustatymai - Frigate",
-    "motionTuner": "Judesio Derinimas - Frigate",
-    "enrichments": "Patobulinimų Nustatymai - Frigate",
-    "masksAndZones": "Maskavimo ir Zonų redaktorius - Frigate",
-    "cameraManagement": "Valdyti Kameras - Frigate",
-    "cameraReview": "Kameros Peržiūros Nustatymai - Frigate",
-    "globalConfig": "Visuotiniai Parametrai — Frigate",
-    "cameraConfig": "Kameros Parametrai — Frigate"
+    "default": "Nustatymai - Gannet",
+    "authentication": "Autentifikavimo Nustatymai - Gannet",
+    "object": "Debug - Gannet",
+    "general": "Išvaizdos Parametrai - Gannet",
+    "frigatePlus": "Frigate+ Nustatymai - Gannet",
+    "notifications": "Pranešimų Nustatymai - Gannet",
+    "motionTuner": "Judesio Derinimas - Gannet",
+    "enrichments": "Patobulinimų Nustatymai - Gannet",
+    "masksAndZones": "Maskavimo ir Zonų redaktorius - Gannet",
+    "cameraManagement": "Valdyti Kameras - Gannet",
+    "cameraReview": "Kameros Peržiūros Nustatymai - Gannet",
+    "globalConfig": "Visuotiniai Parametrai — Gannet",
+    "cameraConfig": "Kameros Parametrai — Gannet"
   },
   "menu": {
     "ui": "UI",
@@ -109,7 +109,7 @@
     },
     "semanticSearch": {
       "title": "Semantic Paieška",
-      "desc": "Frigate Semantic Paieška leidžia jums atrasti sekamus objektus tarp peržiūrų, naudojant arba pačius paveiksliuks, vartotojo pateiktus tekstinius aprašymus arba automatiškai sugeneruotas reikšmes.",
+      "desc": "Gannet Semantic Paieška leidžia jums atrasti sekamus objektus tarp peržiūrų, naudojant arba pačius paveiksliuks, vartotojo pateiktus tekstinius aprašymus arba automatiškai sugeneruotas reikšmes.",
       "reindexNow": {
         "label": "Perindeksuoti Dabar",
         "desc": "Perindeksavimas sugeneruos įterpinius visiems sekamiems objektams. Šis procesas veiks fone ir priklausomai nuo jūsų turimo sekamų objektų kiekio gali maksimaliai apkrauti jūsų CPU bei užtrukti nemažai laiko.",
@@ -135,7 +135,7 @@
     },
     "faceRecognition": {
       "title": "Veidų Atpažinimas",
-      "desc": "Veidų atpažinimas leidžia priskirti vardus žmonėms ir kai jų veidai atpažįstami Frigate priskirs žmogaus vardą kaip sub etiketę. Ši informacija prieinama vartotojo sąsajoje, filtruose, taip ir pranešimuose.",
+      "desc": "Veidų atpažinimas leidžia priskirti vardus žmonėms ir kai jų veidai atpažįstami Gannet priskirs žmogaus vardą kaip sub etiketę. Ši informacija prieinama vartotojo sąsajoje, filtruose, taip ir pranešimuose.",
       "modelSize": {
         "label": "Modelio Dydis",
         "desc": "Modelio dydis naudojamas veidų atpažinimui.",
@@ -151,11 +151,11 @@
     },
     "licensePlateRecognition": {
       "title": "Registracijos Numerių Atpažinimas",
-      "desc": "Frigate gali atpažinti automobilių registracijos numerius ir automatiškai pridėti aptikitus simbolius į \"recognized_license_plate\" laukelį arba žinoma pavadinima kaip sub_etiketę \"mašina\" tipo objektams. Dažnas panaudojimas būtų nuskaityti numerius mašinų įvažiuojančių į įvažiavimą arba mašinų pravažiuojančių gatve."
+      "desc": "Gannet gali atpažinti automobilių registracijos numerius ir automatiškai pridėti aptikitus simbolius į \"recognized_license_plate\" laukelį arba žinoma pavadinima kaip sub_etiketę \"mašina\" tipo objektams. Dažnas panaudojimas būtų nuskaityti numerius mašinų įvažiuojančių į įvažiavimą arba mašinų pravažiuojančių gatve."
     },
     "restart_required": "Privaloma perkrauti (Patobulinimų nustatymai pakeisti)",
     "toast": {
-      "success": "Patobulinimų nustaty buvo pakeisti. Kad pkyčiai būtų pritaikyti perkraukite Frigate.",
+      "success": "Patobulinimų nustaty buvo pakeisti. Kad pkyčiai būtų pritaikyti perkraukite Gannet.",
       "error": "Nepavyko išsaugoti konfiguracijos pakeitimų: {{errorMessage}}"
     }
   },
@@ -165,7 +165,7 @@
       "point_few": "{{count}} taškai",
       "point_other": "{{count}} taškų",
       "label": "Zonos",
-      "documentTitle": "Redaguoti Zonas - Frigate",
+      "documentTitle": "Redaguoti Zonas - Gannet",
       "desc": {
         "title": "Zonos leidžia apibrėžti specifinį kadro plotą tam, kad galėtumėte įvardinti ar objektas yra tam tikrame plote.",
         "documentation": "Dokumentacija"
@@ -229,7 +229,7 @@
         "title": "Judesio maskuoti dengia {{polygonArea}}% kameros ploto. Didelės judesio maskuotės nerekomenduojamos."
       },
       "label": "Judesio Maskuotė",
-      "documentTitle": "Redaguoti Judesio Maskuotę - Frigate",
+      "documentTitle": "Redaguoti Judesio Maskuotę - Gannet",
       "add": "Nauja Judesio Maskuotė",
       "edit": "Redaguoti Judesio Maskuotę",
       "clickDrawPolygon": "Spragtelti kad piešti poligoną ant atvaizdo.",
@@ -245,7 +245,7 @@
       "point_few": "{{count}} taškai",
       "point_other": "{{count}} taškų",
       "label": "Objekto Maskuotė",
-      "documentTitle": "Redaguoti Objekto Maskuotę - Frigate",
+      "documentTitle": "Redaguoti Objekto Maskuotę - Gannet",
       "desc": {
         "title": "Objektų filtravimo maskuotės naudojamos išfiltruoti klaidingus teigiamus rezultatus pagal vietą parinktam objekto tipui.",
         "documentation": "Dokumentacija"
@@ -335,7 +335,7 @@
     "title": "Judesių Aptikimų Derinimas",
     "unsavedChanges": "Neišsaugoti Judesių Derinimo pokyčiai ({{camera}})",
     "desc": {
-      "title": "Frigate naudoja judesių aptikimą kaip pirmos eilės patikrinimą įvertinti ar yra kadre kažkas, kam verta būtų atlikti objektų atpažinimą.",
+      "title": "Gannet naudoja judesių aptikimą kaip pirmos eilės patikrinimą įvertinti ar yra kadre kažkas, kam verta būtų atlikti objektų atpažinimą.",
       "documentation": "Skaityti Judesių Derinimo Gidą"
     },
     "Threshold": {
@@ -355,7 +355,7 @@
     }
   },
   "debug": {
-    "detectorDesc": "Frigate naudoja jūsų detektorius ({{detectors}}) objektų aptikimui jūsų kameros transliacijoje.",
+    "detectorDesc": "Gannet naudoja jūsų detektorius ({{detectors}}) objektų aptikimui jūsų kameros transliacijoje.",
     "audio": {
       "noAudioDetections": "Nėra Garso aptikimų",
       "title": "Garsas",
@@ -455,7 +455,7 @@
       },
       "createUser": {
         "title": "Sukurti Naują Vartotoją",
-        "desc": "Pridėti naują vartotojo paskyrą ir nurodyti prieigos roles prie Frigate funkcijų.",
+        "desc": "Pridėti naują vartotojo paskyrą ir nurodyti prieigos roles prie Gannet funkcijų.",
         "usernameOnlyInclude": "Vartotojo vardas gali būti sudarytas iš raidžių, skaičių, . arba _",
         "confirmPassword": "Prašome patvirtinti slaptažodį"
       },
@@ -483,7 +483,7 @@
     "title": "Vartotojai",
     "management": {
       "title": "Vartotojų Valdymas",
-      "desc": "Valdyti šios Frigate aplinkos vartotojų paskyras."
+      "desc": "Valdyti šios Gannet aplinkos vartotojų paskyras."
     },
     "addUser": "Pridėti Vartotoją",
     "updatePassword": "Atkurti Slaptažodį",
@@ -561,7 +561,7 @@
         },
         "actions": {
           "title": "Veiksmai",
-          "desc": "Pagal nutylėjimą, Frigate sukuria MQTT žinutę visiem trigeriams. Subetiketės prideda trigerio pavadinimą prie objekto etiketės. Atributai, tai paieškai pasiekiami metaduomenys saugomi atskirai sekamų objektų metaduomenyse.",
+          "desc": "Pagal nutylėjimą, Gannet sukuria MQTT žinutę visiem trigeriams. Subetiketės prideda trigerio pavadinimą prie objekto etiketės. Atributai, tai paieškai pasiekiami metaduomenys saugomi atskirai sekamų objektų metaduomenyse.",
           "error": {
             "min": "Bent vienas veiksmas privalo būti parinktas."
           }
@@ -612,10 +612,10 @@
     "title": "Pranešimai",
     "notificationSettings": {
       "title": "Pranešimų Nustatymai",
-      "desc": "Frigate praneįimai sukurti veikti su push pranešimais į įrenginį kai naršoma per naršyklę arba įdiegta kaip PWA."
+      "desc": "Gannet praneįimai sukurti veikti su push pranešimais į įrenginį kai naršoma per naršyklę arba įdiegta kaip PWA."
     },
     "notificationUnavailable": {
-      "desc": "Web push pranešimai reikalauja saugios aplinkos (<code>https://...</code>). Tai yra naršyklės apribojimai. Atsidarykit Frigate saugiu kanalu kad galėtumėte naudotis pranešimais."
+      "desc": "Web push pranešimai reikalauja saugios aplinkos (<code>https://...</code>). Tai yra naršyklės apribojimai. Atsidarykit Gannet saugiu kanalu kad galėtumėte naudotis pranešimais."
     },
     "globalSettings": {
       "title": "Visuotiniai Nustatymai",
@@ -652,7 +652,7 @@
     "cancelSuspension": "Atšaukti Sustabdymą",
     "toast": {
       "success": {
-        "registered": "Sėkmingai užregistruota pranešimams. Frigate perkrovimas yra būtinas, kad nors kokie pranešimai būtų išsiųsti (net ir bandomieji).",
+        "registered": "Sėkmingai užregistruota pranešimams. Gannet perkrovimas yra būtinas, kad nors kokie pranešimai būtų išsiųsti (net ir bandomieji).",
         "settingSaved": "Pranešimų nustatymai buvo išsaugoti."
       },
       "error": {
@@ -698,7 +698,7 @@
     "unsavedChanges": "Neišsaugoti Frigate+ nustatymų pokyčiai",
     "restart_required": "Perkrovimas privalomas (Frigate+ modeliai pakeisti)",
     "toast": {
-      "success": "Frigate+ nustatymai buvo išsaugoti. Perkraukite Frigate kad pritaikytumėte pokyčius.",
+      "success": "Frigate+ nustatymai buvo išsaugoti. Perkraukite Gannet kad pritaikytumėte pokyčius.",
       "error": "Nepavyko išsaugoti konfiguraijos pokyčių: {{errorMessage}}"
     }
   },
@@ -761,12 +761,12 @@
     },
     "management": {
       "title": "Žiūrovo Rolės Valdymas",
-      "desc": "Valdyti šios Frigate aplinkos specializuotas žiūrovo roles ir kamerų prieigos leidimus."
+      "desc": "Valdyti šios Gannet aplinkos specializuotas žiūrovo roles ir kamerų prieigos leidimus."
     }
   },
   "cameraWizard": {
     "title": "Pridėti Kamerą",
-    "description": "Sekite žemiau nurodytus žingsnius norėdami pridėti naują kamerą prie savo Frigate.",
+    "description": "Sekite žemiau nurodytus žingsnius norėdami pridėti naują kamerą prie savo Gannet.",
     "steps": {
       "nameAndConnection": "Pavadinimas ir Jungtis",
       "streamConfiguration": "Transliacijos Nustatymai",

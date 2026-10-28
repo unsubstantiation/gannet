@@ -109,7 +109,7 @@
     "autoTrackingTips": "Piirdekastide asukohad on automaatselt jälgivate kaamerate puhul ebatäpsed.",
     "trackedPoint": "Jälgitav punkt"
   },
-  "documentTitle": "Avasta - Frigate",
+  "documentTitle": "Avasta - Gannet",
   "generativeAI": "Generatiivne tehisaru",
   "exploreMore": "Avasta rohkem {{label}}-tüüpi objekte",
   "exploreIsUnavailable": {
@@ -126,7 +126,7 @@
     },
     "title": "Avastamine pole saadaval",
     "downloadingModels": {
-      "context": "Frigate laadib alla semantilise otsingu funktsiooni toetamiseks vajalikke manustamismudeleid. See võib võtta mitu minutit, olenevalt teie võrguühenduse kiirusest.",
+      "context": "Gannet laadib alla semantilise otsingu funktsiooni toetamiseks vajalikke manustamismudeleid. See võib võtta mitu minutit, olenevalt teie võrguühenduse kiirusest.",
       "setup": {
         "visionModel": "Nägemismudel",
         "visionModelFeatureExtractor": "Nägemismudeli tunnuste eraldaja",
@@ -136,7 +136,7 @@
       "tips": {
         "context": "Pärast mudelite allalaadimist tuleks oma jälgitavate objektide manused uuesti indekseerida."
       },
-      "error": "Tekkis viga. Kontrollige Frigate'i logisid."
+      "error": "Tekkis viga. Kontrollige Gannet'i logisid."
     }
   },
   "type": {
@@ -151,7 +151,7 @@
       "tips": {
         "mismatch_one": "Tuvastasin {{count}} võõra objekti ja need on lisatud ülevaatamiseks. Need objektid kas ei ole piisavad häire või tuvastamise jaoks, aga ka võivad juba olla eemaldatud või kustutatud.",
         "mismatch_other": "Tuvastasin {{count}} võõrast objekti ja need on lisatud ülevaatamiseks. Need objektid kas ei ole piisavad häire või tuvastamise jaoks, aga ka võivad juba olla eemaldatud või kustutatud.",
-        "hasMissingObjects": "Kui tahad, et Frigate salvestaks jälgitavaid objekte järgmiste siltide alusel, siis kohenda oma seadistusi: <em>{{objects}}</em>"
+        "hasMissingObjects": "Kui tahad, et Gannet salvestaks jälgitavaid objekte järgmiste siltide alusel, siis kohenda oma seadistusi: <em>{{objects}}</em>"
       },
       "title": "Vaata objekti üksikasju",
       "desc": "Vaata objekti üksikasju",
@@ -160,7 +160,7 @@
           "updatedLPR": "Sõiduki numbrimärgi uuendamine õnnestus.",
           "updatedSublabel": "Alamsildi uuendamine õnnestus.",
           "updatedAttributes": "Atribuutide uuendamine õnnestus.",
-          "audioTranscription": "Heli üleskirjutuse päringu tegemine õnnestus. Vastavalt sinu Frigate'i serveri jõudlusele võib selleks võib kuluda aega.",
+          "audioTranscription": "Heli üleskirjutuse päringu tegemine õnnestus. Vastavalt sinu Gannet'i serveri jõudlusele võib selleks võib kuluda aega.",
           "regenerate": "Uue kirjelduse koostamise päring on edastatud teenusepakkujale {{provider}}. Sõltuvalt teenusepakkuja töökiirusest võib selleks kuluda aega."
         },
         "error": {
@@ -192,7 +192,7 @@
     },
     "recognizedLicensePlate": "Tuvastatud sõiduki numbrimärk",
     "description": {
-      "aiTips": "Frigate ei küsi sinu generatiivse tehisaru teenusepakkujalt kirjeldust enne, kui jälgitava objekti elutsükkel on lõppenud.",
+      "aiTips": "Gannet ei küsi sinu generatiivse tehisaru teenusepakkujalt kirjeldust enne, kui jälgitava objekti elutsükkel on lõppenud.",
       "label": "Kirjeldus",
       "placeholder": "Jälgitava objekti kirjeldus"
     },

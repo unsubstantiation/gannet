@@ -1,7 +1,7 @@
 {
     "safe_mode": {
         "label": "セーフモード",
-        "description": "有効にすると、トラブルシューティングのため機能を制限したセーフモードでFrigateを起動します。"
+        "description": "有効にすると、トラブルシューティングのため機能を制限したセーフモードでGannetを起動します。"
     },
     "environment_vars": {
         "label": "環境変数"
@@ -58,7 +58,7 @@
         "label": "認証",
         "enabled": {
             "label": "認証を有効化",
-            "description": "Frigate UI でネイティブ認証を有効にする。"
+            "description": "Gannet UI でネイティブ認証を有効にする。"
         },
         "reset_admin_password": {
             "label": "adminパスワードをリセット",
@@ -180,10 +180,10 @@
     },
     "database": {
         "label": "データベース",
-        "description": "Frigateが追跡対象や録画メタデータを保存するために使用するSQLiteデータベースの設定。",
+        "description": "Gannetが追跡対象や録画メタデータを保存するために使用するSQLiteデータベースの設定。",
         "path": {
             "label": "データベースパス",
-            "description": "FrigateのSQLiteデータベースファイルが保存されるファイルシステムパス。"
+            "description": "GannetのSQLiteデータベースファイルが保存されるファイルシステムパス。"
         }
     },
     "detect": {
@@ -267,7 +267,7 @@
         },
         "topic_prefix": {
             "label": "トピックプレフィックス",
-            "description": "Frigate の全 MQTT トピックに付与するプレフィックス。複数インスタンスを起動する場合は重複しないようにします。"
+            "description": "Gannet の全 MQTT トピックに付与するプレフィックス。複数インスタンスを起動する場合は重複しないようにします。"
         },
         "client_id": {
             "label": "クライアント ID",
@@ -334,7 +334,7 @@
         },
         "version_check": {
             "label": "バージョンチェック",
-            "description": "新しい Frigate のバージョンが利用可能かを外部にチェックする機能を有効にします。"
+            "description": "新しい Gannet のバージョンが利用可能かを外部にチェックする機能を有効にします。"
         }
     },
     "notifications": {
@@ -359,33 +359,33 @@
     },
     "networking": {
         "label": "ネットワーキング",
-        "description": "Frigate エンドポイントの IPv6 有効化など、ネットワーク関連の設定。",
+        "description": "Gannet エンドポイントの IPv6 有効化など、ネットワーク関連の設定。",
         "ipv6": {
             "label": "IPv6 設定",
-            "description": "Frigate ネットワークサービス向けの IPv6 固有設定。",
+            "description": "Gannet ネットワークサービス向けの IPv6 固有設定。",
             "enabled": {
                 "label": "IPv6 を有効化",
-                "description": "適用可能な Frigate サービス（API および UI）で IPv6 サポートを有効にします。"
+                "description": "適用可能な Gannet サービス（API および UI）で IPv6 サポートを有効にします。"
             }
         },
         "listen": {
             "label": "待ち受けポート設定",
             "internal": {
                 "label": "内部ポート",
-                "description": "Frigate の内部待ち受けポート（デフォルト 5000）。"
+                "description": "Gannet の内部待ち受けポート（デフォルト 5000）。"
             },
             "external": {
                 "label": "外部ポート",
-                "description": "Frigate の外部待ち受けポート（デフォルト 8971）。"
+                "description": "Gannet の外部待ち受けポート（デフォルト 8971）。"
             }
         }
     },
     "proxy": {
         "label": "プロキシ",
-        "description": "認証済みユーザーヘッダーを渡すリバースプロキシの背後で Frigate を運用する際の設定。",
+        "description": "認証済みユーザーヘッダーを渡すリバースプロキシの背後で Gannet を運用する際の設定。",
         "header_map": {
             "label": "ヘッダーマッピング",
-            "description": "プロキシベース認証のため、受信したプロキシヘッダーを Frigate のユーザー・ロールフィールドにマッピングします。",
+            "description": "プロキシベース認証のため、受信したプロキシヘッダーを Gannet のユーザー・ロールフィールドにマッピングします。",
             "user": {
                 "label": "ユーザーヘッダー",
                 "description": "上流プロキシから提供される認証済みユーザー名を含むヘッダー。"
@@ -396,7 +396,7 @@
             },
             "role_map": {
                 "label": "ロールマッピング",
-                "description": "上流のグループ値を Frigate のロールにマッピングします（例: admin グループを admin ロールに）。"
+                "description": "上流のグループ値を Gannet のロールにマッピングします（例: admin グループを admin ロールに）。"
             }
         },
         "logout_url": {
@@ -418,10 +418,10 @@
     },
     "tls": {
         "label": "TLS",
-        "description": "Frigate の Web エンドポイント（ポート 8971）の TLS 設定。",
+        "description": "Gannet の Web エンドポイント（ポート 8971）の TLS 設定。",
         "enabled": {
             "label": "TLS を有効化",
-            "description": "設定された TLS ポートで Frigate の Web UI と API の TLS を有効にします。"
+            "description": "設定された TLS ポートで Gannet の Web UI と API の TLS を有効にします。"
         }
     },
     "ui": {
@@ -1394,7 +1394,7 @@
         },
         "ignore_time_mismatch": {
             "label": "時刻差異を無視",
-            "description": "ONVIF 通信時に、カメラと Frigate サーバー間の時刻同期差異を無視します。"
+            "description": "ONVIF 通信時に、カメラと Gannet サーバー間の時刻同期差異を無視します。"
         }
     }
 }

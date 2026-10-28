@@ -1,14 +1,14 @@
 {
   "documentTitle": {
-    "cameras": "Kamera statisztikák - Frigate",
-    "storage": "Tárhely statisztikák - Frigate",
-    "general": "Általános Statisztikák - Frigate",
+    "cameras": "Kamera statisztikák - Gannet",
+    "storage": "Tárhely statisztikák - Gannet",
+    "general": "Általános Statisztikák - Gannet",
     "logs": {
-      "frigate": "Frigate naplók - Frigate",
-      "go2rtc": "Go2RTC naplók - Frigate",
-      "websocket": "Üzenet naplók - Frigate"
+      "gannet": "Gannet naplók - Gannet",
+      "go2rtc": "Go2RTC naplók - Gannet",
+      "websocket": "Üzenet naplók - Gannet"
     },
-    "enrichments": "Kiegészítés statisztikák - Frigate"
+    "enrichments": "Kiegészítés statisztikák - Gannet"
   },
   "cameras": {
     "label": {
@@ -151,7 +151,7 @@
   "storage": {
     "recordings": {
       "title": "Felvételek",
-      "tips": "Ez az érték mutatja a Frigate adatbázisában található felvételek teljes tárhely felhasználását. A Frigate nem követi az összes fájl által foglalt tárhelyet.",
+      "tips": "Ez az érték mutatja a Gannet adatbázisában található felvételek teljes tárhely felhasználását. A Gannet nem követi az összes fájl által foglalt tárhelyet.",
       "earliestRecording": "Legkorábbi elérhető felvétel:"
     },
     "title": "Tárhely",
@@ -165,7 +165,7 @@
       "bandwidth": "Sávszélesség",
       "unused": {
         "title": "Felhasználatlan",
-        "tips": "Ez az érték nem feltétlenül tükrözi pontosan a Frigate számára elérhető szabad helyet, ha a meghajtón egyéb fájlok is tárolva vannak a Frigate felvételein kívül. A Frigate nem követi a tárhelyhasználatot a saját felvételein kívül."
+        "tips": "Ez az érték nem feltétlenül tükrözi pontosan a Gannet számára elérhető szabad helyet, ha a meghajtón egyéb fájlok is tárolva vannak a Gannet felvételein kívül. A Gannet nem követi a tárhelyhasználatot a saját felvételein kívül."
       }
     },
     "shm": {

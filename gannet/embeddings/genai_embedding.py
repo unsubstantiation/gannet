@@ -20,7 +20,7 @@ class GenAIEmbedding:
 
     Provides the same interface as JinaV2Embedding for semantic search:
     __call__(inputs, embedding_type) -> list[np.ndarray]. Output embeddings are
-    normalized to 768 dimensions for Frigate's sqlite-vec schema.
+    normalized to 768 dimensions for Gannet's sqlite-vec schema.
     """
 
     def __init__(self, client: "GenAIClient") -> None:

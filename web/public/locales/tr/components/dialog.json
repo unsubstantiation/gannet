@@ -1,13 +1,13 @@
 {
   "restart": {
-    "title": "Frigate'i yeniden başlatmak istediğinize emin misiniz?",
+    "title": "Gannet'i yeniden başlatmak istediğinize emin misiniz?",
     "button": "Yeniden Başlat",
     "restarting": {
       "content": "Bu sayfa {{countdown}} saniye sonra yeniden yüklenecek.",
-      "title": "Frigate Yeniden Başlıyor",
+      "title": "Gannet Yeniden Başlıyor",
       "button": "Şimdi Yeniden Yükle"
     },
-    "description": "Frigate yeniden başlayana kadar kısa süreliğine duracaktır."
+    "description": "Gannet yeniden başlayana kadar kısa süreliğine duracaktır."
   },
   "explore": {
     "plus": {
@@ -189,10 +189,10 @@
     "shareTimestamp": {
       "label": "Zaman Damgasını Paylaş",
       "title": "Zaman Damgasını Paylaş",
-      "description": "Mevcut oynatıcı konumuna ait zaman damgalı bir URL paylaşın veya özelleştirilmiş bir zaman damgası seçin. Bunun herkese açık bir paylaşım URL'i olmadığını ve yalnızca Frigate ile bu kameraya erişimi olan kullanıcılar tarafından görüntülenebileceğini unutmayın.",
+      "description": "Mevcut oynatıcı konumuna ait zaman damgalı bir URL paylaşın veya özelleştirilmiş bir zaman damgası seçin. Bunun herkese açık bir paylaşım URL'i olmadığını ve yalnızca Gannet ile bu kameraya erişimi olan kullanıcılar tarafından görüntülenebileceğini unutmayın.",
       "custom": "Özelleştirilmiş Zaman Damgası",
       "button": "Zaman Damgası URL'ini Paylaş",
-      "shareTitle": "Frigate İnceleme Zaman Damgası: {{camera}}"
+      "shareTitle": "Gannet İnceleme Zaman Damgası: {{camera}}"
     },
     "genaiDescription": {
       "toast": {

@@ -8,7 +8,7 @@ title: Native Windows Reference
 The schema served by the running application is the authoritative reference for every field and default:
 
 ```text
-https://frigate-host:8971/api/config/schema.json
+https://gannet-host:8971/api/config/schema.json
 ```
 
 The Settings UI renders that same schema. Add only values that differ from defaults; copying a complete generated configuration makes upgrades harder.
@@ -24,13 +24,21 @@ cameras:
     enabled: false
     ffmpeg:
       inputs:
-        - path: rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@camera/stream
+        - path: rtsp://{GANNET_RTSP_USER}:{GANNET_RTSP_PASSWORD}@camera/stream
           roles: [detect]
 ```
 
 ## Native paths
 
-Interactive installs default to `%LOCALAPPDATA%\Gannet`; services default to `%ProgramData%\Gannet`. Set `FRIGATE_BASE_DIR` before startup to change the root. Config, media, cache, temporary files, logs, model cache, and installed tools each have dedicated subdirectories.
+Interactive installs default to `%LOCALAPPDATA%\Gannet`; services default to `%ProgramData%\Gannet`. Set `GANNET_BASE_DIR` before startup to change the root. Config, media, cache, temporary files, logs, model cache, and installed tools each have dedicated subdirectories.
+
+`GANNET_*` is the preferred prefix for path overrides, runtime switches, and
+config substitutions; the older `FRIGATE_*` spelling is still accepted as a
+legacy alias. If both are set, `GANNET_*` wins. Placeholders may be written as
+either `{GANNET_NAME}` or `{FRIGATE_NAME}` and resolve to the same value. An
+install made before this change must set `GANNET_BASE_DIR` (or
+`FRIGATE_BASE_DIR`) to its old `%LOCALAPPDATA%\Gannet` path, because the old
+folder is not adopted automatically.
 
 Omit path fields to use that layout. When an explicit path is needed, quote it:
 
@@ -48,9 +56,9 @@ environment_vars:
   HF_HUB_OFFLINE: "1"
 
 mqtt:
-  host: "{FRIGATE_MQTT_HOST}"
-  user: "{FRIGATE_MQTT_USER}"
-  password: "{FRIGATE_MQTT_PASSWORD}"
+  host: "{GANNET_MQTT_HOST}"
+  user: "{GANNET_MQTT_USER}"
+  password: "{GANNET_MQTT_PASSWORD}"
 ```
 
 `FRIGATE_*` substitutions come from the process environment, `secrets.yaml`, then `environment_vars`. Security-sensitive startup controls such as `PLUS_API_KEY` and `GO2RTC_ALLOW_ARBITRARY_EXEC` must be in the process or Windows service environment.
@@ -84,7 +92,7 @@ auth:
       - driveway
 ```
 
-The internal listener is always loopback-only and cannot share the public port. `networking.ipv6.enabled` makes the public listener bind the dual-stack wildcard `::` (IPv6 and IPv4) instead of `0.0.0.0`; `FRIGATE_WEB_HOST` overrides either. When both TLS files are absent Gannet creates a self-signed pair and renews it itself when it is within 30 days of expiry; certificates you install are never touched. Custom role camera lists cannot be empty.
+The internal listener is always loopback-only and cannot share the public port. `networking.ipv6.enabled` makes the public listener bind the dual-stack wildcard `::` (IPv6 and IPv4) instead of `0.0.0.0`; `GANNET_WEB_HOST` overrides either. When both TLS files are absent Gannet creates a self-signed pair and renews it itself when it is within 30 days of expiry; certificates you install are never touched. Custom role camera lists cannot be empty.
 
 Proxy-supplied identity requires native authentication to be disabled and a shared secret:
 
@@ -97,10 +105,10 @@ proxy:
     user: X-Remote-User
     role: X-Remote-Groups
     role_map:
-      admin: [frigate-admins]
+      admin: [gannet-admins]
   default_role: none
   separator: ","
-  auth_secret: "{FRIGATE_PROXY_AUTH_SECRET}"
+  auth_secret: "{GANNET_PROXY_AUTH_SECRET}"
 ```
 
 ## Detection models
@@ -122,7 +130,7 @@ models:
     model_type: yolo-generic
 ```
 
-Each model needs at least one device, all devices for a model must use the same detector, and scene names must be unique. ONNX models require an explicit path. Frigate+ uses `path: plus://<model-id>` and fills model metadata automatically.
+Each model needs at least one device, all devices for a model must use the same detector, and scene names must be unique. ONNX models require an explicit path. Upstream Frigate+ uses `path: plus://<model-id>` and fills model metadata automatically.
 
 ## FFmpeg and cameras
 
@@ -160,7 +168,7 @@ Roles include `detect`, `record`, `record_sub`, and `audio`. Recording, sub-reco
 go2rtc:
   streams:
     front:
-      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@camera/mainstream
+      - rtsp://{GANNET_RTSP_USER}:{GANNET_RTSP_PASSWORD}@camera/mainstream
   webrtc:
     candidates:
       - 192.168.1.20:8555
@@ -259,8 +267,8 @@ mqtt:
   port: 1883
   topic_prefix: frigate
   client_id: frigate
-  user: "{FRIGATE_MQTT_USER}"
-  password: "{FRIGATE_MQTT_PASSWORD}"
+  user: "{GANNET_MQTT_USER}"
+  password: "{GANNET_MQTT_PASSWORD}"
   stats_interval: 60
   qos: 0
 

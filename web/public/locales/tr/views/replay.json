@@ -1,6 +1,6 @@
 {
     "title": "Hata Ayıklama Oynatımı",
-    "description": "Hata ayıklama için kamera kayıtlarını yeniden oynat. Nesne listesi, algılanan nesnelerin gecikmeli özetini gösterir. Mesajlar sekmesi ise Frigate'in oynatılan görüntüdeki dahili mesaj akışını gösterir.",
+    "description": "Hata ayıklama için kamera kayıtlarını yeniden oynat. Nesne listesi, algılanan nesnelerin gecikmeli özetini gösterir. Mesajlar sekmesi ise Gannet'in oynatılan görüntüdeki dahili mesaj akışını gösterir.",
     "websocket_messages": "Mesajlar",
     "dialog": {
         "title": "Hata Ayıklama Oynatımını Başlat",
@@ -31,7 +31,7 @@
         "noSessionDesc": "Araç çubuğundan Eylemler'e tıklayıp Hata Ayıklama Oynatımı'nı seçerek Geçmiş görünümü içinden bir Hata Ayıklama Oynatımı başlatın.",
         "goToRecordings": "Geçmiş'e Git",
         "preparingClip": "Klip hazırlanıyor…",
-        "preparingClipDesc": "Frigate seçili zaman aralığı için kayıtları birleştiriyor. Uzun aralıklarda bu bir dakika sürebilir.",
+        "preparingClipDesc": "Gannet seçili zaman aralığı için kayıtları birleştiriyor. Uzun aralıklarda bu bir dakika sürebilir.",
         "startingCamera": "Hata Ayıklama Oynatımı Başlatılıyor…",
         "startError": {
             "title": "Hata Ayıklama Oynatımı başlatılamadı",
@@ -55,6 +55,6 @@
         "activeTracking": "Aktif takip",
         "noActiveTracking": "Aktif takip yok",
         "configuration": "Yapılandırma",
-        "configurationDesc": "Hata Ayıklama Oynatımı kamerası için hareket algılaması ve nesne takibi ince ayarları. Değişiklikler Frigate yapılandırma dosyanıza kaydedilmez."
+        "configurationDesc": "Hata Ayıklama Oynatımı kamerası için hareket algılaması ve nesne takibi ince ayarları. Değişiklikler Gannet yapılandırma dosyanıza kaydedilmez."
     }
 }

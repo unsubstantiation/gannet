@@ -32,7 +32,7 @@ def ffmpeg_popen_kwargs() -> dict[str, Any]:
     :func:`request_ffmpeg_stop` must be spawned with these arguments:
     without its own process group, the break event is addressed to a
     process id that is not a group, and the console event can reach
-    Frigate's own process group instead, stopping Frigate itself.
+    Gannet's own process group instead, stopping Gannet itself.
 
     Empty where the flag does not exist, so unit tests on other hosts can
     still spawn the process.
@@ -83,7 +83,7 @@ def request_ffmpeg_stop(
 
     # 2. break event into the process group. CTRL_BREAK_EVENT can be directed
     #    at a single process group, unlike CTRL_C_EVENT, which is silently
-    #    dropped when one is named. It does need a console, so a Frigate
+    #    dropped when one is named. It does need a console, so a Gannet
     #    running as a Windows service falls through to terminate().
     ctrl_break = getattr(signal, "CTRL_BREAK_EVENT", None)
 

@@ -30,7 +30,7 @@
         "noSessionDesc": "Aloita vianmääritystoisto Historia näkymästä klikkaamalla Toiminnot-nappia työkaluriltä ja valitse Vianmääritystoisto.",
         "goToRecordings": "Siirry historiaan",
         "preparingClip": "Valmistellaan klippiä…",
-        "preparingClipDesc": "Frigate liittää tallennuksia yhteen valitulta aikaväliltä. Tämä saattaa kestää hetken pidemmillä aikaväleillä.",
+        "preparingClipDesc": "Gannet liittää tallennuksia yhteen valitulta aikaväliltä. Tämä saattaa kestää hetken pidemmillä aikaväleillä.",
         "startingCamera": "Vianmääritystoisto alkaa…",
         "startError": {
             "title": "Vianmääritystoiston aloitus epäonnistui",

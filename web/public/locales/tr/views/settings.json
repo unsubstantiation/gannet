@@ -1,21 +1,21 @@
 {
   "documentTitle": {
-    "default": "Ayarlar - Frigate",
-    "masksAndZones": "Maske ve Alan Düzenleyici - Frigate",
-    "authentication": "Kimlik Doğrulama Ayarları - Frigate",
-    "motionTuner": "Hareket İnce Ayarları - Frigate",
-    "frigatePlus": "Frigate+ Ayarları - Frigate",
-    "object": "Hata Ayıklama - Frigate",
-    "general": "Kullanıcı Arayüzü Ayarları – Frigate",
-    "notifications": "Bildirim Ayarları - Frigate",
-    "enrichments": "Zenginleştirme Ayarları - Frigate",
-    "cameraManagement": "Kameraları Yönet - Frigate",
-    "cameraReview": "Kamera İnceleme Ayarları - Frigate",
-    "globalConfig": "Genel Yapılandırma - Frigate",
-    "cameraConfig": "Kamera Yapılandırması - Frigate",
-    "detectorsAndModel": "Algılayıcılar ve model - Frigate",
-    "maintenance": "Bakım - Frigate",
-    "profiles": "Profiller - Frigate"
+    "default": "Ayarlar - Gannet",
+    "masksAndZones": "Maske ve Alan Düzenleyici - Gannet",
+    "authentication": "Kimlik Doğrulama Ayarları - Gannet",
+    "motionTuner": "Hareket İnce Ayarları - Gannet",
+    "frigatePlus": "Frigate+ Ayarları - Gannet",
+    "object": "Hata Ayıklama - Gannet",
+    "general": "Kullanıcı Arayüzü Ayarları – Gannet",
+    "notifications": "Bildirim Ayarları - Gannet",
+    "enrichments": "Zenginleştirme Ayarları - Gannet",
+    "cameraManagement": "Kameraları Yönet - Gannet",
+    "cameraReview": "Kamera İnceleme Ayarları - Gannet",
+    "globalConfig": "Genel Yapılandırma - Gannet",
+    "cameraConfig": "Kamera Yapılandırması - Gannet",
+    "detectorsAndModel": "Algılayıcılar ve model - Gannet",
+    "maintenance": "Bakım - Gannet",
+    "profiles": "Profiller - Gannet"
   },
   "menu": {
     "masksAndZones": "Maskeler / Alanlar",
@@ -157,8 +157,8 @@
         "exportUiSettingsFailed": "Ayarlar dışa aktarılamadı",
         "importNothingToApply": "Ayarlar içe aktarılamadı: dosyada hiç ayar yok",
         "importInvalidJson": "Ayarlar içe aktarılamadı: dosya geçerli bir JSON değil",
-        "importWrongType": "Ayarlar içe aktarılamadı: dosya Frigate ayar dosyası değil",
-        "importUnsupportedVersion": "Ayarlar içe aktarılamadı: dosya için daha yeni bir Frigate sürümü gerekli",
+        "importWrongType": "Ayarlar içe aktarılamadı: dosya Gannet ayar dosyası değil",
+        "importUnsupportedVersion": "Ayarlar içe aktarılamadı: dosya için daha yeni bir Gannet sürümü gerekli",
         "importInvalidSchema": "Ayarlar içe aktarılamadı: dosya hatalı oluşturulmuş",
         "importUiSettingsFailed": "Ayarlar içe aktarılamadı"
       }
@@ -173,8 +173,8 @@
       },
       "importDialog": {
         "title": "Ayarları İçe Aktar",
-        "desc": "Bu dosyadan nelerin uygulanacağını seçin. İçe aktarım bittiğinde Frigate yeniden yüklenecek.",
-        "exportedFrom": "{{date}} tarihinde {{version}} sürümlü Frigate yapılandırmasından dışa aktarılmış",
+        "desc": "Bu dosyadan nelerin uygulanacağını seçin. İçe aktarım bittiğinde Gannet yeniden yüklenecek.",
+        "exportedFrom": "{{date}} tarihinde {{version}} sürümlü Gannet yapılandırmasından dışa aktarılmış",
         "layouts_one": "Kamera grubu düzenleri ({{count}} grup)",
         "layouts_other": "Kamera grubu düzenleri ({{count}} grup)",
         "streaming_one": "Yayın ayarları ({{count}} kamera)",
@@ -287,7 +287,7 @@
     },
     "zones": {
       "label": "Bölgeler",
-      "documentTitle": "Bölgeleri Düzenle - Frigate",
+      "documentTitle": "Bölgeleri Düzenle - Gannet",
       "desc": {
         "documentation": "Dökümantasyon",
         "title": "Bölgeler, görüntü karesinin belirli bir alanını tanımlamanızı sağlar. Böylece bir nesnenin belirli bir alanda olup olmadığını tespit edebilirsiniz."
@@ -365,7 +365,7 @@
       },
       "label": "Hareket Maskesi",
       "edit": "Hareket Maskesini Düzenle",
-      "documentTitle": "Hareket Maskesini Düzenle - Frigate",
+      "documentTitle": "Hareket Maskesini Düzenle - Gannet",
       "defaultName": "{{number}}. Hareket Maskesi",
       "name": {
         "title": "Ad",
@@ -394,7 +394,7 @@
           "title": "{{polygonName}} kaydedildi."
         }
       },
-      "documentTitle": "Nesne Maskesini Düzenle - Frigate",
+      "documentTitle": "Nesne Maskesini Düzenle - Gannet",
       "label": "Nesne Maskeleri",
       "clickDrawPolygon": "Görüntü üzerinde bir çokgen çizmek için tıklayın.",
       "name": {
@@ -431,7 +431,7 @@
       "success": "Hareket ayarları kaydedildi."
     },
     "desc": {
-      "title": "Frigate, kamera görüntüsünde nesne algılamasıyla kontrol etmeye değecek bir şey olup olmadığını görmek için ilk olarak hareket algılamasını kullanır.",
+      "title": "Gannet, kamera görüntüsünde nesne algılamasıyla kontrol etmeye değecek bir şey olup olmadığını görmek için ilk olarak hareket algılamasını kullanır.",
       "documentation": "Hareket Algılama İnce Ayar Kılavuzunu Okuyun"
     },
     "improveContrast": {
@@ -473,7 +473,7 @@
       "tips": "Kamera görüntüsü üzerinde alanını ve oranını gösteren bir dikdörtgen çizmek için bu seçeneği etkinleştirin. Bu değerler daha sonra yapılandırmanızda nesne şekil filtresi parametrelerini ayarlamak için kullanılabilir."
     },
     "debugging": "Hata Ayıklama",
-    "detectorDesc": "Frigate, kamera video yayınınızdaki nesneleri algılamak için algılayıcılarınızı ({{detectors}}) kullanır.",
+    "detectorDesc": "Gannet, kamera video yayınınızdaki nesneleri algılamak için algılayıcılarınızı ({{detectors}}) kullanır.",
     "noObjects": "Nesne yok",
     "mask": {
       "title": "Hareket maskeleri",
@@ -503,7 +503,7 @@
     "title": "Kullanıcılar",
     "management": {
       "title": "Kullanıcı Yönetimi",
-      "desc": "Bu Frigate kurulumundaki kullanıcı hesaplarını yönetin."
+      "desc": "Bu Gannet kurulumundaki kullanıcı hesaplarını yönetin."
     },
     "addUser": "Kullanıcı Ekle",
     "toast": {
@@ -575,7 +575,7 @@
       },
       "createUser": {
         "title": "Yeni Kullanıcı Oluştur",
-        "desc": "Yeni bir kullanıcı hesabı ekleyin ve Frigate kullanıcı arayüzü alanlarına erişim için bir rol belirtin.",
+        "desc": "Yeni bir kullanıcı hesabı ekleyin ve Gannet kullanıcı arayüzü alanlarına erişim için bir rol belirtin.",
         "usernameOnlyInclude": "Kullanıcı adı yalnızca harfler, sayılar, . veya _ içerebilir",
         "confirmPassword": "Lütfen parolanızı onaylayın",
         "usernameOnlyDots": "Kullanıcı adı yalnızca noktalardan oluşamaz"
@@ -617,11 +617,11 @@
     "title": "Bildirimler",
     "notificationSettings": {
       "title": "Bildirim Ayarları",
-      "desc": "Frigate, tarayıcıda da çalışsa web uygulaması (PWA) olarak da kurulsa doğrudan cihazınıza anlık bildirimler gönderebilir."
+      "desc": "Gannet, tarayıcıda da çalışsa web uygulaması (PWA) olarak da kurulsa doğrudan cihazınıza anlık bildirimler gönderebilir."
     },
     "notificationUnavailable": {
-      "desc": "Anlık web bildirimleri güvenli bir bağlam gerektirir (https://…). Bu bir tarayıcı sınırlamasıdır. Bildirimleri kullanmak için Frigate'e güvenli bir şekilde erişin.",
-      "descPwa": "iOS'te anlık web bildirimleri Frigate yalnızca Ana Ekran'a kurulduğunda alınabilir. Paylaş menüsünü açın, Ana Ekrana Ekle'yi seçin, sonra da Frigate'i yeni simgeden açarak cihazı bildirimler için kaydedin."
+      "desc": "Anlık web bildirimleri güvenli bir bağlam gerektirir (https://…). Bu bir tarayıcı sınırlamasıdır. Bildirimleri kullanmak için Gannet'e güvenli bir şekilde erişin.",
+      "descPwa": "iOS'te anlık web bildirimleri Gannet yalnızca Ana Ekran'a kurulduğunda alınabilir. Paylaş menüsünü açın, Ana Ekrana Ekle'yi seçin, sonra da Gannet'i yeni simgeden açarak cihazı bildirimler için kaydedin."
     },
     "globalSettings": {
       "title": "Genel Ayarlar",
@@ -651,7 +651,7 @@
     },
     "toast": {
       "success": {
-        "registered": "Bildirimlere başarıyla kaydolundu. Herhangi bir bildirimin (test bildirimi dahil) gönderilebilmesi için Frigate'in yeniden başlatılması gereklidir.",
+        "registered": "Bildirimlere başarıyla kaydolundu. Herhangi bir bildirimin (test bildirimi dahil) gönderilebilmesi için Gannet'in yeniden başlatılması gereklidir.",
         "settingSaved": "Bildirim ayarları kaydedildi."
       },
       "error": {
@@ -710,12 +710,12 @@
       }
     },
     "toast": {
-      "success": "Frigate+ ayarları kaydedildi. Değişiklikleri uygulamak için Frigate'i yeniden başlatın.",
+      "success": "Frigate+ ayarları kaydedildi. Değişiklikleri uygulamak için Gannet'i yeniden başlatın.",
       "error": "Yapılandırma değişiklikleri kaydedilemedi: {{errorMessage}}"
     },
     "restart_required": "Yeniden başlatma gerekli (Frigate+ modeli değiştirildi)",
     "unsavedChanges": "Kaydedilmemiş Frigate+ ayar değişiklikleri",
-    "description": "Frigate+, Frigate kurulumunuz için ek özellikler ve becerilere erişim sağlayan bir abonelik hizmetidir. Kendi verinizle eğitilmiş nesne algılama modellerini kullanabilmek bu özelliklere dahildir. Frigate+ model ayarlarını buradan yönetebilirsiniz.",
+    "description": "Frigate+, Gannet kurulumunuz için ek özellikler ve becerilere erişim sağlayan bir abonelik hizmetidir. Kendi verinizle eğitilmiş nesne algılama modellerini kullanabilmek bu özelliklere dahildir. Frigate+ model ayarlarını buradan yönetebilirsiniz.",
     "cardTitles": {
       "api": "API",
       "currentModel": "Mevcut Model",
@@ -742,7 +742,7 @@
         "error": "Yeniden dizinleme başlatılamadı: {{errorMessage}}"
       },
       "title": "Anlamsal Arama",
-      "desc": "Frigate'teki Anlamsal Arama ile inceleme öğeleriniz içindeki izlenen nesneleri bulabilir; bunu görüntünün kendisini, kullanıcı tanımlı bir metin açıklamasını veya otomatik üretilmiş bir açıklamayı kullanarak yapabilirsiniz.",
+      "desc": "Gannet'teki Anlamsal Arama ile inceleme öğeleriniz içindeki izlenen nesneleri bulabilir; bunu görüntünün kendisini, kullanıcı tanımlı bir metin açıklamasını veya otomatik üretilmiş bir açıklamayı kullanarak yapabilirsiniz.",
       "modelSize": {
         "label": "Model Boyutu",
         "desc": "Anlamsal aramadaki gömüler için kullanılan modelin büyüklüğü.",
@@ -759,7 +759,7 @@
     "title": "Zenginleştirme Ayarları",
     "faceRecognition": {
       "title": "Yüz Tanıma",
-      "desc": "Yüz tanıma, kişilere isimler atanmasına izin verir. Yüzleri tanındığında Frigate kişinin ismini alt etiket olarak iliştirir. Bu bilgi arayüzde, filtrelerde ve bildirimlerde gösterilir.",
+      "desc": "Yüz tanıma, kişilere isimler atanmasına izin verir. Yüzleri tanındığında Gannet kişinin ismini alt etiket olarak iliştirir. Bu bilgi arayüzde, filtrelerde ve bildirimlerde gösterilir.",
       "modelSize": {
         "label": "Model Boyutu",
         "desc": "Yüz tanıma için kullanılan modelin büyüklüğü.",
@@ -775,11 +775,11 @@
     },
     "licensePlateRecognition": {
       "title": "Plaka Tanıma Sistemi",
-      "desc": "Frigate taşıtların tescil plakalarındaki karakterleri okuyabilir ve araba türündeki nesnelerin tanınan_plaka bölümüne, varsa bilindik adını da alt_etiket bölümüne ekleyebilir. Bu özelliği yoldan geçen yahut evin önüne park eden araçların plakalarını okumak için kullanabilirsiniz."
+      "desc": "Gannet taşıtların tescil plakalarındaki karakterleri okuyabilir ve araba türündeki nesnelerin tanınan_plaka bölümüne, varsa bilindik adını da alt_etiket bölümüne ekleyebilir. Bu özelliği yoldan geçen yahut evin önüne park eden araçların plakalarını okumak için kullanabilirsiniz."
     },
     "restart_required": "Yeniden başlatma gerekli (zenginleştirme ayarları değişti)",
     "toast": {
-      "success": "Zenginleştirme ayarları kaydedildi. Değişiklikleri uygulamak için Frigate'i yeniden başlatın.",
+      "success": "Zenginleştirme ayarları kaydedildi. Değişiklikleri uygulamak için Gannet'i yeniden başlatın.",
       "error": "Yapılandırma değişiklikleri kaydedilemedi: {{errorMessage}}"
     }
   },
@@ -825,7 +825,7 @@
         },
         "actions": {
           "title": "Eylemler",
-          "desc": "Varsayılan olarak, Frigate tüm tetikleyici isimlerini bir MQTT mesajı olarak gönderir. Alt etiketler, tetikleyici ismini nesne etiketine ekler. Öznitelikler, izlenen nesne meta verilerinde ayrı olarak depolanan aranabilir meta verilerdir.",
+          "desc": "Varsayılan olarak, Gannet tüm tetikleyici isimlerini bir MQTT mesajı olarak gönderir. Alt etiketler, tetikleyici ismini nesne etiketine ekler. Öznitelikler, izlenen nesne meta verilerinde ayrı olarak depolanan aranabilir meta verilerdir.",
           "error": {
             "min": "En az bir eylem seçilmelidir."
           }
@@ -905,7 +905,7 @@
   },
   "cameraWizard": {
     "title": "Kamera Ekle",
-    "description": "Aşağıdaki adımları izleyerek Frigate kurulumunuza yeni bir kamera ekleyin.",
+    "description": "Aşağıdaki adımları izleyerek Gannet kurulumunuza yeni bir kamera ekleyin.",
     "steps": {
       "nameAndConnection": "İsim & Bağlantı",
       "probeOrSnapshot": "Yoklama veya Anlık Fotoğraf",
@@ -1063,7 +1063,7 @@
       "estimatedBandwidth": "Tahmini Bant Genişliği",
       "roles": "Roller",
       "ffmpegModule": "Yayın uyumluluk modunu kullan",
-      "ffmpegModuleDescription": "Yayın birkaç denemeden sonra yüklenmezse bunu etkinleştirmeyi deneyin. Etkinleştirildiğinde, Frigate go2rtc ile ffmpeg modülünü kullanacaktır. Bu bazı kamera yayınları ile daha iyi uyumluluk sağlayabilir.",
+      "ffmpegModuleDescription": "Yayın birkaç denemeden sonra yüklenmezse bunu etkinleştirmeyi deneyin. Etkinleştirildiğinde, Gannet go2rtc ile ffmpeg modülünü kullanacaktır. Bu bazı kamera yayınları ile daha iyi uyumluluk sağlayabilir.",
       "none": "Hiçbiri",
       "error": "Hata",
       "description": "Yeni kameranızı kaydetmeden önce son doğrulama ve analiz. Kaydetmeden önce her yayını bağlayın.",
@@ -1120,9 +1120,9 @@
         "dashboardHelp": "Bu kamerayı varsayılan \"Tüm Kameralar\" canlı görüntü panelinde göster. Kamera diğer her yerde kalacaktır, kamera grupları dahil.",
         "edit": "Kamera ayrıntılarını düzenle",
         "title": "Kamera Ayrıntılarını Düzenle",
-        "description": "Frigate arayüzü boyunca bu kamera için kullanılan gösterilen ad, harici URL ve görünürlük ayarlarını güncelleyin.",
+        "description": "Gannet arayüzü boyunca bu kamera için kullanılan gösterilen ad, harici URL ve görünürlük ayarlarını güncelleyin.",
         "friendlyNameLabel": "Gösterilen Ad",
-        "friendlyNameHelp": "Frigate arayüzü boyunca bu kamera için gösterilen kullanıcı dostu isim. Kamera kimliğini kullanmak için boş bırakın.",
+        "friendlyNameHelp": "Gannet arayüzü boyunca bu kamera için gösterilen kullanıcı dostu isim. Kamera kimliğini kullanmak için boş bırakın.",
         "webuiUrlLabel": "Kamera Web Arabirimi URL'i",
         "webuiUrlHelp": "Hata Ayıklama görünümünde doğrudan kameranın web arabirimine ulaşmak için URL. Linki devre dışı bırakmak için boş bırakın.",
         "webuiUrlInvalid": "Geçerli bir URL olmalıdır (örn: https://example.com).",
@@ -1131,14 +1131,14 @@
         "reviewHelp": "Bu kamerayı İncele'de göster; kamera filtresi, hareket incelemesi ve geçmiş görünümü dahil."
       },
       "label": "Kamera durumu",
-      "description": "Her kameranın çalışma durumunu ayarla.<br /><br /><strong>Açık</strong>: yayınlar normal şekilde işlenir.<br /><strong>Kapalı</strong>: işlemeyi geçici olarak durdurur. Frigate yeniden başladığında eski haline döner.<br /><strong>Devre dışı</strong>: işlemeyi durdurur ve değişiklikleri yapılandırmanıza kaydeder. Devre dışı bırakılmış bir kamerayı yeniden etkinleştirmek için sistemi yeniden başlatmak gerekir.<br /><br /><em>Not: Devre dışı bırakmak go2rtc yeniden yayınlarını (restreams) etkilemez.</em><br /><br />Aktif kameraların arayüz boyunca (Canlı görüntü paneli ve açılır menüler dahil) görünümlerini yeniden sıralamak için tutamacı sürükleyin.",
+      "description": "Her kameranın çalışma durumunu ayarla.<br /><br /><strong>Açık</strong>: yayınlar normal şekilde işlenir.<br /><strong>Kapalı</strong>: işlemeyi geçici olarak durdurur. Gannet yeniden başladığında eski haline döner.<br /><strong>Devre dışı</strong>: işlemeyi durdurur ve değişiklikleri yapılandırmanıza kaydeder. Devre dışı bırakılmış bir kamerayı yeniden etkinleştirmek için sistemi yeniden başlatmak gerekir.<br /><br /><em>Not: Devre dışı bırakmak go2rtc yeniden yayınlarını (restreams) etkilemez.</em><br /><br />Aktif kameraların arayüz boyunca (Canlı görüntü paneli ve açılır menüler dahil) görünümlerini yeniden sıralamak için tutamacı sürükleyin.",
       "disabledSubheading": "Yapılandırmada devre dışı bırakılmış",
       "status": {
         "on": "Açık",
         "off": "Kapalı",
         "disabled": "Devre dışı"
       },
-      "enableSuccess": "{{cameraName}} etkinleştirildi. Uygulamak için Frigate'i yeniden başlatın.",
+      "enableSuccess": "{{cameraName}} etkinleştirildi. Uygulamak için Gannet'i yeniden başlatın.",
       "disableSuccess": "{{cameraName}} devre dışı bırakıldı ve yapılandırmaya kaydedildi.",
       "reorderHandle": "Yeniden sıralamak için sürükleyin",
       "saving": "Kaydediliyor…",
@@ -1200,7 +1200,7 @@
       "description": "Her bir kameranın türünü ayarlayın. PTS'ye (Plaka Tanıma Sistemi) özgü kameralar uzaktaki araçların plakalarını yakalamak için güçlü optik yakınlaştırma özellikleri olan tek amaçlı kameralardır. Kamera özellikle PTS için değilse ve plakalara sıkıca odaklanmış bir görüşü yoksa çoğu kamera için normal kamera türü kullanılmalıdır.",
       "normal": "Normal",
       "dedicatedLpr": "PTS'ye özgü",
-      "saveSuccess": "{{cameraName}} kamerasının türü güncellendi. Değişiklikleri uygulamak için Frigate'i yeniden başlatın."
+      "saveSuccess": "{{cameraName}} kamerasının türü güncellendi. Değişiklikleri uygulamak için Gannet'i yeniden başlatın."
     },
     "clone": {
       "sectionTitle": "Ayarları klonla",
@@ -1275,11 +1275,11 @@
       },
       "toast": {
         "success": "Ayarlar {{cameraName}} kamerasına kopyalandı",
-        "successWithRestart": "Ayarlar {{cameraName}} kamerasına kopyalandı. Tüm değişiklikleri uygulamak için Frigate'i yeniden başlatın.",
+        "successWithRestart": "Ayarlar {{cameraName}} kamerasına kopyalandı. Tüm değişiklikleri uygulamak için Gannet'i yeniden başlatın.",
         "successMulti_one": "Ayarlar {{count}} kameraya kopyalandı",
         "successMulti_other": "Ayarlar {{count}} kameraya kopyalandı",
-        "successMultiWithRestart_one": "Ayarlar {{count}} kameraya kopyalandı. Tüm değişiklikleri uygulamak için Frigate'i yeniden başlatın.",
-        "successMultiWithRestart_other": "Ayarlar {{count}} kameraya kopyalandı. Tüm değişiklikleri uygulamak için Frigate'i yeniden başlatın.",
+        "successMultiWithRestart_one": "Ayarlar {{count}} kameraya kopyalandı. Tüm değişiklikleri uygulamak için Gannet'i yeniden başlatın.",
+        "successMultiWithRestart_other": "Ayarlar {{count}} kameraya kopyalandı. Tüm değişiklikleri uygulamak için Gannet'i yeniden başlatın.",
         "partialFailure": "{{successCount}} bölüm uygulandı; '{{failedSection}}' başarısız oldu: {{errorMessage}}",
         "partialFailureMulti": "{{successCount}} kameraya kopyalandı; {{failed}} başarısız oldu: {{errorMessage}}",
         "newCameraPartialFailure": "{{cameraName}} kamerası oluşturuldu ama bazı ayarlar kopyalanamadı: {{errorMessage}}",
@@ -1292,7 +1292,7 @@
     "title": "Kamera İnceleme Ayarları",
     "object_descriptions": {
       "title": "Üretken Yapay Zeka Nesne Açıklamaları",
-      "desc": "Frigate yeniden başlatılana kadar bu kamera için Üretken Yapay Zeka nesne açıklamalarını geçici olarak etkinleştirin/devre dışı bırakın. Devre dışı bırakıldığında, bu kameradaki izlenen nesneler için yapay zeka tarafından oluşturulan açıklamalar istenmeyecektir."
+      "desc": "Gannet yeniden başlatılana kadar bu kamera için Üretken Yapay Zeka nesne açıklamalarını geçici olarak etkinleştirin/devre dışı bırakın. Devre dışı bırakıldığında, bu kameradaki izlenen nesneler için yapay zeka tarafından oluşturulan açıklamalar istenmeyecektir."
     },
     "review_descriptions": {
       "title": "Üretken Yapay Zeka İnceleme Açıklamaları",
@@ -1300,13 +1300,13 @@
     },
     "review": {
       "title": "İncele",
-      "desc": "Frigate yeniden başlatılana kadar bu kamera için uyarıları ve tespitleri geçici olarak etkinleştirin/devre dışı bırakın. Devre dışı bırakıldığında, yeni inceleme öğeleri oluşturulmaz. ",
+      "desc": "Gannet yeniden başlatılana kadar bu kamera için uyarıları ve tespitleri geçici olarak etkinleştirin/devre dışı bırakın. Devre dışı bırakıldığında, yeni inceleme öğeleri oluşturulmaz. ",
       "alerts": "Uyarılar ",
       "detections": "Tespitler "
     },
     "reviewClassification": {
       "title": "Sınıflandırmayı İncele",
-      "desc": "Frigate, inceleme öğelerini Uyarılar ve Tespitler olarak kategorize eder. Varsayılan olarak, tüm <em>kişi</em> ve <em>araba</em> nesneleri Uyarı kabul edilir. Zorunlu bölgeleri yapılandırarak inceleme öğelerinizin kategorizasyonunu iyileştirebilirsiniz.",
+      "desc": "Gannet, inceleme öğelerini Uyarılar ve Tespitler olarak kategorize eder. Varsayılan olarak, tüm <em>kişi</em> ve <em>araba</em> nesneleri Uyarı kabul edilir. Zorunlu bölgeleri yapılandırarak inceleme öğelerinizin kategorizasyonunu iyileştirebilirsiniz.",
       "noDefinedZones": "Bu kamera için herhangi bir bölge tanımlanmamıştır.",
       "objectAlertsTips": "{{cameraName}} üzerindeki tüm {{alertsLabels}} nesneleri Uyarı olarak gösterilecektir.",
       "zoneObjectAlertsTips": "{{cameraName}} kamerasının {{zone}} bölgesinde algılanan tüm {{alertsLabels}} nesneleri Uyarı olarak gösterilecektir.",
@@ -1321,14 +1321,14 @@
       "selectDetectionsZones": "Tespitler için bölgeleri seçin",
       "limitDetections": "Tespitleri belirli bölgelere sınırlayın",
       "toast": {
-        "success": "Sınıflandırma yapılandırması kaydedildi. Değişiklikleri uygulamak için Frigate'i yeniden başlatın."
+        "success": "Sınıflandırma yapılandırması kaydedildi. Değişiklikleri uygulamak için Gannet'i yeniden başlatın."
       }
     }
   },
   "roles": {
     "management": {
       "title": "Görüntüleyici Rolü Yönetimi",
-      "desc": "Bu Frigate kurulumu için özel görüntüleyici rollerini ve kamera erişim izinlerini yönetin."
+      "desc": "Bu Gannet kurulumu için özel görüntüleyici rollerini ve kamera erişim izinlerini yönetin."
     },
     "addRole": "Rol Ekle",
     "table": {
@@ -1415,7 +1415,7 @@
     "overriddenGlobalHeading_other": "Bu kamera genel yapılandırmadan farklı {{count}} istisnai ayar içeriyor:",
     "overriddenGlobalNoDeltas": "Bu kamera genel yapılandırmadan farklı istisnai ayarlar içeriyor, ancak ayarların değerleri farklı değil.",
     "overriddenLive": "İstisnalar (Canlı)",
-    "overriddenLiveTooltip": "Bu kamera, yapılandırmanızdakinden farklı olan ve burada gösterilen farklı bir değerle çalışıyor. Frigate çalışırken canlı görünüm, MQTT veya aktif bir profil bu değeri değiştirebilir.",
+    "overriddenLiveTooltip": "Bu kamera, yapılandırmanızdakinden farklı olan ve burada gösterilen farklı bir değerle çalışıyor. Gannet çalışırken canlı görünüm, MQTT veya aktif bir profil bu değeri değiştirebilir.",
     "overriddenLiveValue": "Çalışan değer: {{value}}",
     "overriddenBaseConfig": "İstisnalar (Temel Yapılandırma)",
     "overriddenBaseConfigTooltip": "{{profile}} profili bu bölümdeki yapılandırma ayarları için istisnalar oluşturmuş",
@@ -1467,7 +1467,7 @@
       "force": "Zorla",
       "forceDesc": "Güvenlik eşiğini boşver ve dosyaların %50'sinden fazlası silinecek olsa bile senkronizasyonu tamamla.",
       "start": "Senkronizasyonu Başlat",
-      "desc": "Frigate, saklama yapılandırmanızda belirtilen düzenli aralıklarla medya dosyalarını temizleyecektir. Frigate çalışırken birkaç başıboş dosya görülmesi normaldir. Veritabanında kaydı kalmamış başıboş medya dosyalarını silmek için bu özelliği kullanın.",
+      "desc": "Gannet, saklama yapılandırmanızda belirtilen düzenli aralıklarla medya dosyalarını temizleyecektir. Gannet çalışırken birkaç başıboş dosya görülmesi normaldir. Veritabanında kaydı kalmamış başıboş medya dosyalarını silmek için bu özelliği kullanın.",
       "verbose": "Ayrıntılı",
       "verboseDesc": "Başıboş dosyaların tam listesini incelemek için diske yaz.",
       "running": "Senkronizasyon Çalışıyor...",
@@ -1498,10 +1498,10 @@
     },
     "regionGrid": {
       "title": "Bölge Izgarası",
-      "desc": "Bölge ızgarası, farklı boyutlardaki nesnelerin her kameranın görüş alanı içinde genelde nerede göründüğünü öğrenen bir optimizasyondur. Frigate bu verileri algılama bölgelerini verimli bir şekilde boyutlandırmak için kullanır. Izgara, takip edilen nesne verileriyle zaman içinde otomatik olarak inşa edilir.",
+      "desc": "Bölge ızgarası, farklı boyutlardaki nesnelerin her kameranın görüş alanı içinde genelde nerede göründüğünü öğrenen bir optimizasyondur. Gannet bu verileri algılama bölgelerini verimli bir şekilde boyutlandırmak için kullanır. Izgara, takip edilen nesne verileriyle zaman içinde otomatik olarak inşa edilir.",
       "clear": "Bölge ızgarasını temizle",
       "clearConfirmTitle": "Bölge Izgarasını Temizle",
-      "clearConfirmDesc": "Yakın zamanda algılayıcı model boyutunu ya da kameranın fiziksel konumunu değiştirmediyseniz ve nesne takip sorunları yaşamıyorsanız bölge ızgarasını temizlemeniz önerilmez. Nesneler takip edildikçe ızgara otomatik olarak yeniden inşa edilecektir. Değişikliklerin geçerli olması için Frigate yeniden başlatılmalıdır.",
+      "clearConfirmDesc": "Yakın zamanda algılayıcı model boyutunu ya da kameranın fiziksel konumunu değiştirmediyseniz ve nesne takip sorunları yaşamıyorsanız bölge ızgarasını temizlemeniz önerilmez. Nesneler takip edildikçe ızgara otomatik olarak yeniden inşa edilecektir. Değişikliklerin geçerli olması için Gannet yeniden başlatılmalıdır.",
       "clearSuccess": "Bölge ızgarası başarıyla temizlendi",
       "clearError": "Bölge ızgarası temizlenemedi",
       "restartRequired": "Izgara değişikliklerinin geçerli olması için yeniden başlatma gerekiyor"
@@ -1800,19 +1800,19 @@
   "toast": {
     "success": "Ayarlar başarıyla kaydedildi",
     "applied": "Ayarlar başarıyla uygulandı",
-    "successRestartRequired": "Ayarlar başarıyla kaydedildi. Değişikliklerinizi uygulamak için Frigate'i yeniden başlatın.",
+    "successRestartRequired": "Ayarlar başarıyla kaydedildi. Değişikliklerinizi uygulamak için Gannet'i yeniden başlatın.",
     "error": "Ayarlar kaydedilemedi",
     "validationError": "Doğrulama başarısız: {{message}}",
     "resetSuccess": "Genel varsayılanlara sıfırla",
     "resetError": "Ayarlar sıfırlanamadı",
     "saveAllSuccess_one": "{{count}} bölüm başarıyla kaydedildi.",
     "saveAllSuccess_other": "{{count}} bölümün tümü başarıyla kaydedildi.",
-    "saveAllSuccessRestartRequired_one": "{{count}} bölüm başarıyla kaydedildi. Değişikliklerinizi uygulamak için Frigate'i yeniden başlatın.",
-    "saveAllSuccessRestartRequired_other": "{{count}} bölümün tümü başarıyla kaydedildi. Değişikliklerinizi uygulamak için Frigate'i yeniden başlatın.",
+    "saveAllSuccessRestartRequired_one": "{{count}} bölüm başarıyla kaydedildi. Değişikliklerinizi uygulamak için Gannet'i yeniden başlatın.",
+    "saveAllSuccessRestartRequired_other": "{{count}} bölümün tümü başarıyla kaydedildi. Değişikliklerinizi uygulamak için Gannet'i yeniden başlatın.",
     "saveAllPartial_one": "{{totalCount}} bölümün {{successCount}} tanesi kaydedildi. {{failCount}} tanesi başarısız.",
     "saveAllPartial_other": "{{totalCount}} bölümün {{successCount}} tanesi kaydedildi. {{failCount}} tanesi başarısız.",
     "saveAllFailure": "Tüm bölümler kaydedilemedi.",
-    "go2rtcSyncFailed": "Kaydedildi ama go2rtc güncellenemedi. Uygulamak için Frigate'i yeniden başlatın."
+    "go2rtcSyncFailed": "Kaydedildi ama go2rtc güncellenemedi. Uygulamak için Gannet'i yeniden başlatın."
   },
   "profiles": {
     "title": "Profiller",
@@ -1981,8 +1981,8 @@
       "detectDisabled": "Nesne algılaması devre dışı. İnceleme öğeleri için algılanan nesnelerin uyarı ve tespit olarak sınıflandırmaları gerekir.",
       "detectRuntimeDisabled": "Nesne algılaması yapılandırmanızda etkinleştirilmiş ama bu kamera için kapatılmış. İnceleme öğeleri için, algılanan nesnelerde uyarı ve tespitlerin sınıflandırılması gerekir. Kameranın canlı görünümünden geri açın veya aktif bir profil bunu devre dışı mı bırakıyor diye kontrol edin.",
       "allNonAlertDetections": "Uyarı faaliyetleri dışındakilerin hepsi tespitlere dahil edilecek.",
-      "genaiImageSourceRecordingsRecordDisabled": "Görsel kaynağı 'kayıtlar' olarak ayarlanmış ama kayıt özelliği devre dışı. Frigate onun yerine önizleme görsellerini kullanacak.",
-      "genaiImageSourceRecordingsRecordRuntimeDisabled": "Görsel kaynağı 'kayıtlar' olarak ayarlanmış; ancak kayıt özelliği yapılandırmanızda etkinleştirilmiş olsa da bu kamera için kapatılmış. Frigate onun yerine önizleme görsellerini kullanacak."
+      "genaiImageSourceRecordingsRecordDisabled": "Görsel kaynağı 'kayıtlar' olarak ayarlanmış ama kayıt özelliği devre dışı. Gannet onun yerine önizleme görsellerini kullanacak.",
+      "genaiImageSourceRecordingsRecordRuntimeDisabled": "Görsel kaynağı 'kayıtlar' olarak ayarlanmış; ancak kayıt özelliği yapılandırmanızda etkinleştirilmiş olsa da bu kamera için kapatılmış. Gannet onun yerine önizleme görsellerini kullanacak."
     },
     "audio": {
       "noAudioRole": "Hiçbir yayında ses rolü tanımlanmamış. Ses algılamasının çalışabilmesi için ses rolünü etkinleştirmelisiniz."
@@ -2005,7 +2005,7 @@
       "globalResolutionMultipleCameras": "Birden fazla kamera yapılandırıldığında genel bir tespit çözünürlüğü ayarlanır. Tüm kameralar aynı çözünürlük ve en:boy oranını paylaşmadığı sürece her kamera için algılama genişliği ve yüksekliği kameranın yerleşik en:boy oranıyla eşleşecek şekilde tanımlanmalıdır."
     },
     "model": {
-      "optimizedFor320": "Frigate, çoğu kurulumda en iyi tercih olan 320x320 modeli için optimize edilmiştir. 640x640 modeller daha yavaştır ve yalnızca belirli senaryolarda yardımcı olur.",
+      "optimizedFor320": "Gannet, çoğu kurulumda en iyi tercih olan 320x320 modeli için optimize edilmiştir. 640x640 modeller daha yavaştır ve yalnızca belirli senaryolarda yardımcı olur.",
       "inputDimensionsNotDetectResolution": "Model girdi genişliği ve yüksekliği kameranızın tespit çözünürlüğü değil, nesne algılama modelinin girdi boyutlarıdır. Kullandığınız modelin boyutlarıyla eşleşmelidir — genelde 320x320 veya 640x640 boyutlarında bir kare."
     },
     "ffmpeg": {

@@ -2,7 +2,7 @@
   "time": {
     "untilForTime": "Kuni {{time}}",
     "today": "Täna",
-    "untilForRestart": "Kuni Frigate käivitub uuesti.",
+    "untilForRestart": "Kuni Gannet käivitub uuesti.",
     "untilRestart": "Kuni uuesti käivitamiseni",
     "ago": "{{timeAgo}} tagasi",
     "justNow": "Hetk tagasi",
@@ -173,9 +173,9 @@
     "help": "Abiteave",
     "documentation": {
       "title": "Dokumentatsioon",
-      "label": "Frigate'i dokumentatsioon"
+      "label": "Gannet'i dokumentatsioon"
     },
-    "restart": "Käivita Frigate uuesti",
+    "restart": "Käivita Gannet uuesti",
     "review": "Ülevaatamine",
     "explore": "Uuri",
     "export": "Ekspordi",
@@ -275,7 +275,7 @@
   },
   "field": {
     "optional": "Valikuline",
-    "internalID": "Seadistustes ja andmebaasis kasutatav Frigate'i sisemine tunnus"
+    "internalID": "Seadistustes ja andmebaasis kasutatav Gannet'i sisemine tunnus"
   },
   "toast": {
     "copyUrlToClipboard": "Võrguaadress on kopeeritud lõikelauale.",
@@ -292,7 +292,7 @@
     "title": "Roll",
     "admin": "Peakasutaja",
     "viewer": "Vaataja",
-    "desc": "Peakasutajatel on Frigate'i kasutajaliideses kõik õigused. Vaatajad võivad vaid kaamerate pilti vaadata, objekte ülevaadata ning otsida arhiivist vanu videoid."
+    "desc": "Peakasutajatel on Gannet'i kasutajaliideses kõik õigused. Vaatajad võivad vaid kaamerate pilti vaadata, objekte ülevaadata ning otsida arhiivist vanu videoid."
   },
   "pagination": {
     "label": "lehenummerdus",
@@ -307,12 +307,12 @@
     "more": "Järgnevad lehed"
   },
   "accessDenied": {
-    "documentTitle": "Ligipääs on keelatud - Frigate",
+    "documentTitle": "Ligipääs on keelatud - Gannet",
     "title": "Ligipääs on keelatud",
     "desc": "Sul pole õigusi selle lehe vaatamiseks."
   },
   "notFound": {
-    "documentTitle": "Lehte ei leidu - Frigate",
+    "documentTitle": "Lehte ei leidu - Gannet",
     "title": "404",
     "desc": "Veebilehte ei leidu"
   },
@@ -330,7 +330,7 @@
     "title": "Leht lõpetas toimimise",
     "desc": "Lehel tekkis ootamatu viga. Tavaliselt aitab lehe uuesti laadimine seda kõrvaldada. Kui viga kordub, kopeeri üksikasjad ja lisa need GitHubi arutelusse või veakirjeldusse.",
     "staleTitle": "Uuesti laadimine on vajalik",
-    "staleDesc": "Osa kasutajaliidesest ei õnnestunud laadida, mis tähendab tavaliselt, et Frigate'i sai uuendatud, kui see vahekaart oli avatud. Uue versiooni kuvamiseks laadi leht uuesti.",
+    "staleDesc": "Osa kasutajaliidesest ei õnnestunud laadida, mis tähendab tavaliselt, et Gannet'i sai uuendatud, kui see vahekaart oli avatud. Uue versiooni kuvamiseks laadi leht uuesti.",
     "partial": "Osa kasutajaliidestest lõpetas toimimise.",
     "copyDetails": "Kopeeri üksikasjad",
     "copyFailed": "Üksikasjade kopeerimine lõikelauale ei õnnestunud"

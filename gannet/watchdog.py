@@ -50,6 +50,11 @@ class FrigateWatchdog(threading.Thread):
         self.detectors = detectors
         self.stop_event = stop_event
         self._monitored: list[MonitoredProcess] = []
+        # A detector death requests a whole-application restart. That request
+        # only needs to be made once per death; the watchdog keeps ticking while
+        # the app shuts down, and re-writing the marker each tick would bury the
+        # original reason in the launcher's restart log.
+        self._dead_detectors: set[str] = set()
 
     def register(
         self,
@@ -129,8 +134,20 @@ class FrigateWatchdog(threading.Thread):
                 detector.detect_process is not None
                 and not detector.detect_process.is_alive()
             ):
-                logger.info("Detection appears to have stopped. Exiting Frigate...")
-                restart_frigate()
+                if name in self._dead_detectors:
+                    continue
+                self._dead_detectors.add(name)
+                process = detector.detect_process
+                reason = (
+                    f"detector {name} (PID {process.pid}) exited with code "
+                    f"{process.exitcode}"
+                )
+                # ERROR, not INFO: this is the single line that explains a
+                # whole-application restart, and it has to survive a log tail.
+                logger.error("Detection appears to have stopped: %s", reason)
+                restart_frigate(reason)
+            else:
+                self._dead_detectors.discard(name)
 
     def run(self) -> None:
         time.sleep(10)

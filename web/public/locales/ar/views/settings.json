@@ -3,11 +3,11 @@
     "default": "الإعدادات - فرايجيت",
     "authentication": "إعدادات المصادقة - فرايجيت",
     "enrichments": "إحصاء الاعدادات",
-    "masksAndZones": "القناع ومحرر المنطقة - Frigate",
+    "masksAndZones": "القناع ومحرر المنطقة - Gannet",
     "motionTuner": "مضبط الحركة - Firgate",
-    "object": "تصحيح الأخطاء - Frigate",
-    "general": "الإعدادات العامة - Frigate",
-    "notifications": "إعدادات الإشعارات - Frigate"
+    "object": "تصحيح الأخطاء - Gannet",
+    "general": "الإعدادات العامة - Gannet",
+    "notifications": "إعدادات الإشعارات - Gannet"
   },
   "menu": {
     "ui": "واجهة المستخدم",

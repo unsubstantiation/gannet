@@ -397,7 +397,7 @@ def _get_max_concurrent(config: FrigateConfig) -> int:
 def reap_stale_exports() -> None:
     """Sweep Export rows stuck with in_progress=True from previous sessions.
 
-    On Frigate startup no export job is alive yet, so any in_progress=True
+    On Gannet startup no export job is alive yet, so any in_progress=True
     row must be a leftover from a previous session that crashed, was killed
     mid-export, or returned early from RecordingExporter.run() without
     flipping the flag. For each stale row we either:
@@ -409,7 +409,7 @@ def reap_stale_exports() -> None:
       through the normal UI
 
     Must only be called when the export job manager is certain to have no
-    active jobs — i.e., at Frigate startup, before any worker runs.
+    active jobs — i.e., at Gannet startup, before any worker runs.
 
     All exceptions are caught and logged; the caller does not need to wrap
     this in a try/except. A failure on a single row will not stop the rest

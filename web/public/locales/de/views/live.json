@@ -53,9 +53,9 @@
     }
   },
   "documentTitle": {
-    "default": "Live - Frigate"
+    "default": "Live - Gannet"
   },
-  "documentTitle.withCamera": "{{camera}} - Live - Frigate",
+  "documentTitle.withCamera": "{{camera}} - Live - Gannet",
   "muteCameras": {
     "disable": "Stumm aller Kameras aufheben",
     "enable": "Alle Kameras auf stumm"
@@ -182,7 +182,7 @@
     },
     "default": {
       "title": "Keine Kameras konfiguriert",
-      "description": "Zum Start eine Kamera mit Frigate verbinden.",
+      "description": "Zum Start eine Kamera mit Gannet verbinden.",
       "buttonText": "Kamera hinzufügen"
     },
     "group": {

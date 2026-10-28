@@ -1,4 +1,4 @@
-"""Handle communication between Frigate and other applications."""
+"""Handle communication between Gannet and other applications."""
 
 import datetime
 import json
@@ -61,7 +61,7 @@ BARE_COMMAND_TOPICS = frozenset({"onConnect", "restart"})
 
 
 class Dispatcher:
-    """Handle communication between Frigate and communicators."""
+    """Handle communication between Gannet and communicators."""
 
     def __init__(
         self,
@@ -137,7 +137,7 @@ class Dispatcher:
 
         Transports that fan a whole topic tree in must filter on this:
         _receive() republishes anything it does not recognize, so forwarding
-        unfiltered would echo Frigate's own publishes back.
+        unfiltered would echo Gannet's own publishes back.
         """
         parts = topic.split("/")
 
@@ -266,7 +266,7 @@ class Dispatcher:
                 logger.error(f"Invalid command type or handler: {command_type}")
 
         def handle_restart() -> None:
-            restart_frigate()
+            restart_frigate("restart command received over inter-process comms")
 
         def handle_insert_many_recordings() -> None:
             try:
@@ -571,7 +571,7 @@ class Dispatcher:
         return applied
 
     def restore_runtime_state(self) -> None:
-        """Replay persisted runtime overrides once Frigate startup completes.
+        """Replay persisted runtime overrides once Gannet startup completes.
 
         Called after every ``config_updater`` subscriber is up so the resulting
         broadcasts are not dropped by ZMQ PUB/SUB.

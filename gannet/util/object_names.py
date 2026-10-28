@@ -37,7 +37,7 @@ def get_categorized_object_names(
     as a sub label.
 
     Args:
-        config: The running Frigate config
+        config: The running Gannet config
         allowed_cameras: Cameras the requesting user may see
         object_type: Optional object label to restrict the result to
 

@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: Launch Frigate",
+      "name": "Python: Launch Gannet",
       "type": "debugpy",
       "request": "launch",
       "module": "gannet"
@@ -16,7 +16,7 @@
     {
       "type": "editor-browser",
       "request": "launch",
-      "name": "Frigate: Launch in integrated browser",
+      "name": "Gannet: Launch in integrated browser",
       "url": "https://localhost:8971"
     },
     {

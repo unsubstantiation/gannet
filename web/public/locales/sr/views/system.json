@@ -1,12 +1,12 @@
 {
   "documentTitle": {
-    "cameras": "Statusi kamera - Frigate",
-    "storage": "Statistika skladištenja - Frigate",
+    "cameras": "Statusi kamera - Gannet",
+    "storage": "Statistika skladištenja - Gannet",
     "general": "Општа статистика - Фригејт",
-    "enrichments": "Statistika obogaćivanja - Frigate",
+    "enrichments": "Statistika obogaćivanja - Gannet",
     "logs": {
-      "frigate": "Frigate logovi - Frigate",
-      "go2rtc": "Go2RTC dnevnici - Frigate"
+      "gannet": "Gannet logovi - Gannet",
+      "go2rtc": "Go2RTC dnevnici - Gannet"
     }
   },
   "title": "Sistem",

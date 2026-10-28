@@ -1,5 +1,5 @@
 {
-  "documentTitle": "Sınıflandırma Modelleri - Frigate",
+  "documentTitle": "Sınıflandırma Modelleri - Gannet",
   "details": {
     "scoreInfo": "Skor, modelin nesneyi algıladığı tüm durumlar için ortalama güven düzeyini gösterir.",
     "none": "Hiçbiri",
@@ -34,7 +34,7 @@
       "deleteImageFailed": "Silinemedi: {{errorMessage}}",
       "deleteModelFailed": "Model silinemedi: {{errorMessage}}",
       "categorizeFailed": "Görsel kategorize edilemedi: {{errorMessage}}",
-      "trainingFailed": "Model eğitimi başarısız oldu. Ayrıntılar için Frigate günlüklerini kontrol edin.",
+      "trainingFailed": "Model eğitimi başarısız oldu. Ayrıntılar için Gannet günlüklerini kontrol edin.",
       "deleteCategoryFailed": "Sınıf silinemedi: {{errorMessage}}",
       "trainingFailedToStart": "Model eğitimi başlatılamadı: {{errorMessage}}",
       "updateModelFailed": "Model güncellenemedi: {{errorMessage}}",
@@ -176,7 +176,7 @@
       "allImagesRequired_other": "Lütfen tüm görselleri sınıflandırın. {{count}} görsel kaldı.",
       "generating": {
         "title": "Örnek Görseller Oluşturuluyor",
-        "description": "Frigate kayıtlarınızdan temsili görüntüler alınıyor. Bu işlem biraz zaman alabilir…"
+        "description": "Gannet kayıtlarınızdan temsili görüntüler alınıyor. Bu işlem biraz zaman alabilir…"
       },
       "training": {
         "title": "Model Eğitiliyor",

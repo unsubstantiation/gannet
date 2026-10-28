@@ -12,12 +12,12 @@
   "explore": {
     "plus": {
       "submitToPlus": {
-        "label": "Submit To Frigate+",
+        "label": "Submit To upstream Frigate+",
         "desc": "Objects in locations you want to avoid are not false positives. Submitting them as false positives will confuse the model."
       },
       "review": {
         "question": {
-          "label": "Confirm this label for Frigate Plus",
+          "label": "Confirm this label for upstream Frigate Plus",
           "ask_a": "Is this object a <code>{{label}}</code>?",
           "ask_an": "Is this object an <code>{{label}}</code>?",
           "ask_full": "Is this object a <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?"
@@ -26,7 +26,7 @@
           "submitted": "Submitted"
         },
         "toast": {
-          "error": "Failed to submit to Frigate+. Please check your network connection and try again."
+          "error": "Failed to submit to upstream Frigate+. Please check your network connection and try again."
         }
       }
     },
@@ -172,10 +172,10 @@
     "shareTimestamp": {
       "label": "Share Timestamp",
       "title": "Share Timestamp",
-      "description": "Share a timestamped URL of current player position or choose a custom timestamp. Note that this is not a public share URL and is only accessible to users with access to Frigate and this camera.",
+      "description": "Share a timestamped URL of current player position or choose a custom timestamp. Note that this is not a public share URL and is only accessible to users with access to Gannet and this camera.",
       "custom": "Custom Timestamp",
       "button": "Share Timestamp URL",
-      "shareTitle": "Frigate Review Timestamp: {{camera}}"
+      "shareTitle": "Gannet Review Timestamp: {{camera}}"
     },
     "confirmDelete": {
       "title": "Confirm Delete",

@@ -3,13 +3,13 @@ id: index
 title: Models
 ---
 
-<a href="https://gannet.video/plus" target="_blank" rel="nofollow">Frigate+</a> provides object-detection models trained for security-camera images. Account-specific training fine-tunes a base model with verified images from your cameras.
+<a href="https://gannet.video/plus" target="_blank" rel="nofollow">upstream Frigate+</a> provides object-detection models trained for security-camera images. Account-specific training fine-tunes a base model with verified images from your cameras.
 
 A subscription includes model trainings and access to base models published while the subscription is active. See the [integration guide](../integrations/plus.md) to connect the native Windows application.
 
 ## Available model types
 
-Frigate+ may offer several architectures. The model picker shows only files compatible with the native Windows detector selected for that model.
+Upstream Frigate+ may offer several architectures. The model picker shows only files compatible with the native Windows detector selected for that model.
 
 | Model type | Windows use |
 | --- | --- |
@@ -21,7 +21,7 @@ Test a base model before spending a training request. Resolution and architectur
 
 ## Supported detector types
 
-The native Windows application accepts Frigate+ variants for:
+The native Windows application accepts upstream Frigate+ variants for:
 
 | Hardware | Detector | Typical model |
 | --- | --- | --- |
@@ -33,7 +33,7 @@ Models that contain only unsupported detector variants are hidden by the API. If
 
 ## Improving your model
 
-Some users may find that Frigate+ models result in more false positives initially, but by submitting true and false positives, the model will improve. With all the new images now being submitted by subscribers, future base models will improve as more and more examples are incorporated. Note that only images with at least one verified label will be used when training your model. Submitting an image from Gannet as a true or false positive will not verify the image. You still must verify the image in Frigate+ in order for it to be used in training.
+Some users may find that upstream Frigate+ models result in more false positives initially, but by submitting true and false positives, the model will improve. With all the new images now being submitted by subscribers, future base models will improve as more and more examples are incorporated. Note that only images with at least one verified label will be used when training your model. Submitting an image from Gannet as a true or false positive will not verify the image. You still must verify the image in upstream Frigate+ in order for it to be used in training.
 
 - **Submit both true positives and false positives**. This will help the model differentiate between what is and isn't correct. You should aim for a target of 80% true positive submissions and 20% false positives across all of your images. If you are experiencing false positives in a specific area, submitting true positives for any object type near that area in similar lighting conditions will help teach the model what that area looks like when no objects are present.
 - **Lower your thresholds a little in order to generate more false/true positives near the threshold value**. For example, if you have some false positives that are scoring at 68% and some true positives scoring at 72%, you can try lowering your threshold to 65% and submitting both true and false positives within that range. This will help the model learn and widen the gap between true and false positive scores.
@@ -41,7 +41,7 @@ Some users may find that Frigate+ models result in more false positives initiall
 
 ## Available label types
 
-Frigate+ models support a more relevant set of objects for security cameras. The labels for annotation in Frigate+ are configurable by editing the camera in the Cameras section of Frigate+. Currently, the following objects are supported:
+Upstream Frigate+ models support a more relevant set of objects for security cameras. The labels for annotation in upstream Frigate+ are configurable by editing the camera in the Cameras section of upstream Frigate+. Currently, the following objects are supported:
 
 - **People**: `person`, `face`, `baby`
 - **Vehicles**: `car`, `motorcycle`, `bicycle`, `boat`, `school_bus`, `garbage truck`, `license_plate`
@@ -66,7 +66,7 @@ Candidate labels are not available for automatic suggestions.
 
 ### Label attributes
 
-Gannet has special handling for some labels when using Frigate+ models. `face`, `license_plate`, and delivery logos such as `amazon`, `ups`, and `fedex` are considered attribute labels which are not tracked like regular objects and do not generate review items directly. In addition, the `threshold` filter will have no effect on these labels. You should adjust the `min_score` and other filter values as needed.
+Gannet has special handling for some labels when using upstream Frigate+ models. `face`, `license_plate`, and delivery logos such as `amazon`, `ups`, and `fedex` are considered attribute labels which are not tracked like regular objects and do not generate review items directly. In addition, the `threshold` filter will have no effect on these labels. You should adjust the `min_score` and other filter values as needed.
 
 In order to have Gannet start using these attribute labels, you will need to add them to the list of objects to track:
 
@@ -85,7 +85,7 @@ objects:
     - package
 ```
 
-When using Frigate+ models, Gannet will choose the snapshot of a person object that has the largest visible face. For cars, the snapshot with the largest visible license plate will be selected. This aids in secondary processing such as facial and license plate recognition for person and car objects.
+When using upstream Frigate+ models, Gannet will choose the snapshot of a person object that has the largest visible face. For cars, the snapshot with the largest visible license plate will be selected. This aids in secondary processing such as facial and license plate recognition for person and car objects.
 
 ![Face Attribute](/img/plus/attribute-example-face.jpg)
 

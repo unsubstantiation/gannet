@@ -1,21 +1,21 @@
 {
   "documentTitle": {
-    "default": "Instellingen - Frigate",
-    "authentication": "Authenticatie-instellingen - Frigate",
-    "motionTuner": "Beweging Tuner - Frigate",
-    "masksAndZones": "Masker- en zone-editor - Frigate",
-    "object": "Foutopsporing Frigate",
-    "general": "UI Instellingen - Frigate",
-    "frigatePlus": "Frigate+ Instellingen - Frigate",
-    "notifications": "Meldingsinstellingen - Frigate",
-    "enrichments": "Verrijkingsinstellingen - Frigate",
-    "cameraManagement": "Camera's beheren - Frigate",
-    "cameraReview": "Camera Beoordeling Instellingen - Frigate",
-    "globalConfig": "Globaale configuratie - Frigate",
-    "cameraConfig": "Camera-instellingen - Frigate",
-    "maintenance": "Onderhoud - Frigate",
-    "profiles": "Profielen - Frigate",
-    "detectorsAndModel": "Detectoren en model - Frigate"
+    "default": "Instellingen - Gannet",
+    "authentication": "Authenticatie-instellingen - Gannet",
+    "motionTuner": "Beweging Tuner - Gannet",
+    "masksAndZones": "Masker- en zone-editor - Gannet",
+    "object": "Foutopsporing Gannet",
+    "general": "UI Instellingen - Gannet",
+    "frigatePlus": "Frigate+ Instellingen - Gannet",
+    "notifications": "Meldingsinstellingen - Gannet",
+    "enrichments": "Verrijkingsinstellingen - Gannet",
+    "cameraManagement": "Camera's beheren - Gannet",
+    "cameraReview": "Camera Beoordeling Instellingen - Gannet",
+    "globalConfig": "Globaale configuratie - Gannet",
+    "cameraConfig": "Camera-instellingen - Gannet",
+    "maintenance": "Onderhoud - Gannet",
+    "profiles": "Profielen - Gannet",
+    "detectorsAndModel": "Detectoren en model - Gannet"
   },
   "menu": {
     "ui": "Gebruikersinterface",
@@ -242,7 +242,7 @@
       }
     },
     "zones": {
-      "documentTitle": "Bewerkingszone - Frigate",
+      "documentTitle": "Bewerkingszone - Gannet",
       "desc": {
         "title": "Zones stellen je in staat om een specifiek gedeelte van het beeld te definiëren, zodat je kunt bepalen of een object zich binnen dat gebied bevindt of niet.",
         "documentation": "Documentatie"
@@ -299,7 +299,7 @@
     },
     "motionMasks": {
       "label": "Bewegingsmasker",
-      "documentTitle": "Bewerken Bewegingsmasker - Frigate",
+      "documentTitle": "Bewerken Bewegingsmasker - Gannet",
       "desc": {
         "documentation": "Documentatie",
         "title": "Bewegingsmaskers worden gebruikt om te voorkomen dat ongewenste vormen van beweging een detectie activeren. Te veel maskeren maakt het moeilijker om objecten te volgen."
@@ -331,7 +331,7 @@
     },
     "objectMasks": {
       "label": "Objectmaskers",
-      "documentTitle": "Objectmasker bewerken - Frigate",
+      "documentTitle": "Objectmasker bewerken - Gannet",
       "desc": {
         "title": "Objectfiltermaskers worden gebruikt om valse positieven uit te filteren voor een bepaald objecttype op basis van locatie.",
         "documentation": "Documentatie"
@@ -376,7 +376,7 @@
   "motionDetectionTuner": {
     "title": "Bewegingsdetectie-afsteller",
     "desc": {
-      "title": "Frigate gebruikt bewegingsdetectie als eerste controle om te zien of er iets gebeurt in het frame dat de moeite waard is om te controleren met objectdetectie.",
+      "title": "Gannet gebruikt bewegingsdetectie als eerste controle om te zien of er iets gebeurt in het frame dat de moeite waard is om te controleren met objectdetectie.",
       "documentation": "Lees de handleiding voor bewegingsafstelling"
     },
     "Threshold": {
@@ -440,7 +440,7 @@
       "score": "Score",
       "ratio": "Verhouding"
     },
-    "detectorDesc": "Frigate gebruikt je detectoren ({{detectors}}) om objecten in de videostream van je camera te detecteren.",
+    "detectorDesc": "Gannet gebruikt je detectoren ({{detectors}}) om objecten in de videostream van je camera te detecteren.",
     "paths": {
       "title": "Paden",
       "desc": "Toon belangrijke punten van het pad van het gevolgde object",
@@ -458,7 +458,7 @@
   "users": {
     "title": "Gebruikers",
     "management": {
-      "desc": "Beheer de gebruikersaccounts van deze Frigate-installatie.",
+      "desc": "Beheer de gebruikersaccounts van deze Gannet-installatie.",
       "title": "Gebruikersbeheer"
     },
     "addUser": "Gebruiker toevoegen",
@@ -532,7 +532,7 @@
       },
       "createUser": {
         "title": "Nieuwe gebruiker aanmaken",
-        "desc": "Voeg een nieuw gebruikersaccount toe en geef een rol op voor toegang tot onderdelen van de Frigate-interface.",
+        "desc": "Voeg een nieuw gebruikersaccount toe en geef een rol op voor toegang tot onderdelen van de Gannet-interface.",
         "usernameOnlyInclude": "Gebruikersnaam mag alleen letters, cijfers, . of _ bevatten",
         "confirmPassword": "Bevestig uw wachtwoord"
       },
@@ -571,10 +571,10 @@
   "notification": {
     "notificationSettings": {
       "title": "Meldingen instellen",
-      "desc": "Frigate kan rechtstreeks pushmeldingen naar uw apparaat verzenden als het in de browser actief is of als een PWA geïnstalleerd is."
+      "desc": "Gannet kan rechtstreeks pushmeldingen naar uw apparaat verzenden als het in de browser actief is of als een PWA geïnstalleerd is."
     },
     "notificationUnavailable": {
-      "desc": "Webpushmeldingen vereisen een veilige omgeving (<code>https://…</code>). Dit is een beperking van de browser. Open Frigate via een beveiligde verbinding om meldingen te kunnen ontvangen."
+      "desc": "Webpushmeldingen vereisen een veilige omgeving (<code>https://…</code>). Dit is een beperking van de browser. Open Gannet via een beveiligde verbinding om meldingen te kunnen ontvangen."
     },
     "globalSettings": {
       "title": "Globaale instellingen",
@@ -606,7 +606,7 @@
     "toast": {
       "success": {
         "settingSaved": "De instellingen voor meldingen zijn opgeslagen.",
-        "registered": "Succesvol geregistreerd voor meldingen. Het opnieuw starten van Frigate is vereist voordat meldingen kunnen worden verzonden (inclusief een testmelding)."
+        "registered": "Succesvol geregistreerd voor meldingen. Het opnieuw starten van Gannet is vereist voordat meldingen kunnen worden verzonden (inclusief een testmelding)."
       },
       "error": {
         "registerFailed": "Het opslaan van de meldingsregistratie is mislukt."
@@ -664,12 +664,12 @@
       }
     },
     "toast": {
-      "success": "Frigate+ instellingen zijn opgeslagen. Herstart Frigate om de wijzigingen toe te passen.",
+      "success": "Frigate+ instellingen zijn opgeslagen. Herstart Gannet om de wijzigingen toe te passen.",
       "error": "Configuratiewijzigingen konden niet worden opgeslagen: {{errorMessage}}"
     },
     "restart_required": "Herstart vereist (Frigate+ model gewijzigd)",
     "unsavedChanges": "Niet-opgeslagen wijzigingen in Frigate+ instellingen",
-    "description": "Frigate+ is een abonnementsdienst die toegang biedt tot extra functies en mogelijkheden voor je Frigate-installatie, waaronder het gebruik van aangepaste objectdetectiemodellen die op je eigen gegevens zijn getraind. Je kunt je Frigate+-modelinstellingen hier beheren.",
+    "description": "Frigate+ is een abonnementsdienst die toegang biedt tot extra functies en mogelijkheden voor je Gannet-installatie, waaronder het gebruik van aangepaste objectdetectiemodellen die op je eigen gegevens zijn getraind. Je kunt je Frigate+-modelinstellingen hier beheren.",
     "cardTitles": {
       "api": "API",
       "currentModel": "Huidig model",
@@ -703,7 +703,7 @@
         }
       },
       "title": "Semantisch zoeken",
-      "desc": "Semantisch zoeken in Frigate stelt je in staat om getraceerde objecten binnen je review-items te vinden, met behulp van de afbeelding zelf, een door de gebruiker gedefinieerde tekstbeschrijving of een automatisch gegenereerde beschrijving."
+      "desc": "Semantisch zoeken in Gannet stelt je in staat om getraceerde objecten binnen je review-items te vinden, met behulp van de afbeelding zelf, een door de gebruiker gedefinieerde tekstbeschrijving of een automatisch gegenereerde beschrijving."
     },
     "faceRecognition": {
       "modelSize": {
@@ -718,11 +718,11 @@
           "desc": "Het gebruik van <em>groot</em> maakt gebruik van een ArcFace-gezichtsembeddingmodel en wordt automatisch op de GPU uitgevoerd als die beschikbaar is."
         }
       },
-      "desc": "Gezichtsherkenning maakt het mogelijk om namen aan mensen toe te wijzen. Wanneer hun gezicht wordt herkend, wijst Frigate de naam van de persoon toe als sublabel. Deze informatie is opgenomen in de gebruikersinterface, filters en meldingen.",
+      "desc": "Gezichtsherkenning maakt het mogelijk om namen aan mensen toe te wijzen. Wanneer hun gezicht wordt herkend, wijst Gannet de naam van de persoon toe als sublabel. Deze informatie is opgenomen in de gebruikersinterface, filters en meldingen.",
       "title": "Gezichtsherkenning"
     },
     "licensePlateRecognition": {
-      "desc": "Frigate kan kentekenplaten op voertuigen herkennen en automatisch de gedetecteerde tekens toevoegen aan het veld recognized_license_plate of een bekende naam als sublabel toekennen aan objecten van het type auto. Een veelvoorkomende toepassing is het uitlezen van kentekens van auto's die een oprit oprijden of voorbijrijden op straat.",
+      "desc": "Gannet kan kentekenplaten op voertuigen herkennen en automatisch de gedetecteerde tekens toevoegen aan het veld recognized_license_plate of een bekende naam als sublabel toekennen aan objecten van het type auto. Een veelvoorkomende toepassing is het uitlezen van kentekens van auto's die een oprit oprijden of voorbijrijden op straat.",
       "title": "Kentekenherkenning"
     },
     "birdClassification": {
@@ -733,7 +733,7 @@
     "unsavedChanges": "Niet-opgeslagen wijzigingen in verrijkingsinstellingen",
     "restart_required": "Opnieuw opstarten vereist (verrijkingsinstellingen gewijzigd)",
     "toast": {
-      "success": "Verrijkingsinstellingen zijn opgeslagen. Start Frigate opnieuw op om je wijzigingen toe te passen.",
+      "success": "Verrijkingsinstellingen zijn opgeslagen. Start Gannet opnieuw op om je wijzigingen toe te passen.",
       "error": "Configuratiewijzigingen konden niet worden opgeslagen: {{errorMessage}}"
     }
   },
@@ -817,7 +817,7 @@
         },
         "actions": {
           "title": "Acties",
-          "desc": "Standaard stuurt Frigate een MQTT-bericht voor alle triggers. Sublabels voegen de triggernaam toe aan het objectlabel. Attributen zijn doorzoekbare metadata die afzonderlijk worden opgeslagen in de metadata van het gevolgde object.",
+          "desc": "Standaard stuurt Gannet een MQTT-bericht voor alle triggers. Sublabels voegen de triggernaam toe aan het objectlabel. Attributen zijn doorzoekbare metadata die afzonderlijk worden opgeslagen in de metadata van het gevolgde object.",
           "error": {
             "min": "Er moet ten minste één actie worden geselecteerd."
           }
@@ -860,7 +860,7 @@
   "roles": {
     "management": {
       "title": "Beheer van kijkersrollen",
-      "desc": "Beheer aangepaste kijkersrollen en hun camera-toegangsrechten voor deze Frigate-instantie."
+      "desc": "Beheer aangepaste kijkersrollen en hun camera-toegangsrechten voor deze Gannet-instantie."
     },
     "addRole": "Rol toevoegen",
     "table": {
@@ -920,7 +920,7 @@
   },
   "cameraWizard": {
     "title": "Camera toevoegen",
-    "description": "Volg de onderstaande stappen om een nieuwe camera toe te voegen aan uw Frigate-installatie.",
+    "description": "Volg de onderstaande stappen om een nieuwe camera toe te voegen aan uw Gannet-installatie.",
     "steps": {
       "nameAndConnection": "Naam & Verbinding",
       "streamConfiguration": "Streamconfiguratie",
@@ -1077,7 +1077,7 @@
       "estimatedBandwidth": "Geschatte bandbreedte",
       "roles": "Rollen",
       "ffmpegModule": "Gebruik stream-compatibiliteitsmodus",
-      "ffmpegModuleDescription": "Als de stream na meerdere pogingen niet wordt geladen, probeer dit dan in te schakelen. Wanneer deze optie is ingeschakeld, gebruikt Frigate de ffmpeg-module samen met go2rtc. Dit kan zorgen voor een betere compatibiliteit met sommige camerastreams.",
+      "ffmpegModuleDescription": "Als de stream na meerdere pogingen niet wordt geladen, probeer dit dan in te schakelen. Wanneer deze optie is ingeschakeld, gebruikt Gannet de ffmpeg-module samen met go2rtc. Dit kan zorgen voor een betere compatibiliteit met sommige camerastreams.",
       "none": "Geen",
       "error": "Fout",
       "streamValidated": "Stream {{number}} is succesvol gevalideerd",
@@ -1116,7 +1116,7 @@
     "backToSettings": "Terug naar camera-instellingen",
     "streams": {
       "title": "Camera's in-/uitschakelen",
-      "enableSuccess": "{{cameraName}} ingeschakeld in de configuratie. Herstart Frigate om de wijzigingen toe te passen."
+      "enableSuccess": "{{cameraName}} ingeschakeld in de configuratie. Herstart Gannet om de wijzigingen toe te passen."
     },
     "cameraConfig": {
       "add": "Camera toevoegen",
@@ -1172,28 +1172,28 @@
       "description": "Stel het type voor elke camera in. Speciale LPR-camera's zijn camera's met één doel en krachtige optische zoom om kentekens van voertuigen op afstand vast te leggen. De meeste camera's moeten het normale cameratype gebruiken, tenzij de camera specifiek voor LPR is bedoeld en een nauwkeurig gericht beeld op kentekens heeft.",
       "normal": "Normal",
       "dedicatedLpr": "Speciale LPR",
-      "saveSuccess": "Cameratype voor {{cameraName}} bijgewerkt. Herstart Frigate om de wijzigingen toe te passen."
+      "saveSuccess": "Cameratype voor {{cameraName}} bijgewerkt. Herstart Gannet om de wijzigingen toe te passen."
     }
   },
   "cameraReview": {
     "title": "Camerabeoordelings-instellingen",
     "object_descriptions": {
       "title": "AI-gegenereerde objectomschrijvingen",
-      "desc": "AI-gegenereerde objectomschrijvingen tijdelijk uitschakelen voor deze camera totdat Frigate opnieuw opstart. Wanneer uitgeschakeld, zullen omschrijvingen van gevolgde objecten op deze camera niet aangevraagd worden."
+      "desc": "AI-gegenereerde objectomschrijvingen tijdelijk uitschakelen voor deze camera totdat Gannet opnieuw opstart. Wanneer uitgeschakeld, zullen omschrijvingen van gevolgde objecten op deze camera niet aangevraagd worden."
     },
     "review_descriptions": {
       "title": "Generatieve-AI Beoordelingsbeschrijvingen",
-      "desc": "Schakel tijdelijk generatieve AI-beoordelingsbeschrijvingen voor deze camera in/uit totdat Frigate opnieuw wordt opgestart. Wanneer deze functie is uitgeschakeld, worden er geen door AI gegenereerde beschrijvingen gevraagd voor beoordelingsitems op deze camera."
+      "desc": "Schakel tijdelijk generatieve AI-beoordelingsbeschrijvingen voor deze camera in/uit totdat Gannet opnieuw wordt opgestart. Wanneer deze functie is uitgeschakeld, worden er geen door AI gegenereerde beschrijvingen gevraagd voor beoordelingsitems op deze camera."
     },
     "review": {
       "title": "Beoordeel",
-      "desc": "Schakel waarschuwingen en detecties voor deze camera tijdelijk in of uit totdat Frigate opnieuw wordt gestart. Wanneer uitgeschakeld, worden er geen nieuwe beoordelingsitems gegenereerd. ",
+      "desc": "Schakel waarschuwingen en detecties voor deze camera tijdelijk in of uit totdat Gannet opnieuw wordt gestart. Wanneer uitgeschakeld, worden er geen nieuwe beoordelingsitems gegenereerd. ",
       "alerts": "Meldingen ",
       "detections": "Detecties "
     },
     "reviewClassification": {
       "title": "Beoordelingsclassificatie",
-      "desc": "Frigate categoriseert beoordelingsitems als meldingen en detecties.Standaard worden alle <em>person</em>- en <em>car</em>-objecten als meldingen beschouwd. Je kunt de categorisatie verfijnen door zones te configureren waarin uitsluitend deze objecten gedetecteerd moeten worden.",
+      "desc": "Gannet categoriseert beoordelingsitems als meldingen en detecties.Standaard worden alle <em>person</em>- en <em>car</em>-objecten als meldingen beschouwd. Je kunt de categorisatie verfijnen door zones te configureren waarin uitsluitend deze objecten gedetecteerd moeten worden.",
       "noDefinedZones": "Voor deze camera zijn nog geen zones ingesteld.",
       "objectAlertsTips": "Alle {{alertsLabels}}-objecten op {{cameraName}} worden weergegeven als meldingen.",
       "zoneObjectAlertsTips": "Alle {{alertsLabels}}-objecten die zijn gedetecteerd in {{zone}} op {{cameraName}} worden weergegeven als meldingen.",
@@ -1208,7 +1208,7 @@
       "selectDetectionsZones": "Selecteer zones voor detecties",
       "limitDetections": "Beperk detecties tot specifieke zones",
       "toast": {
-        "success": "Configuratie voor beoordelingsclassificatie is opgeslagen. Herstart Frigate om de wijzigingen toe te passen."
+        "success": "Configuratie voor beoordelingsclassificatie is opgeslagen. Herstart Gannet om de wijzigingen toe te passen."
       }
     }
   },
@@ -1265,7 +1265,7 @@
     "title": "Onderhoud",
     "sync": {
       "title": "Media synchroniseren",
-      "desc": "Frigate ruimt media periodiek op volgens je retentieconfiguratie. Het is normaal dat er tijdens het gebruik van Frigate enkele verweesde bestanden ontstaan. Gebruik deze functie om verweesde mediabestanden van de schijf te verwijderen die niet langer in de database worden gebruikt.",
+      "desc": "Gannet ruimt media periodiek op volgens je retentieconfiguratie. Het is normaal dat er tijdens het gebruik van Gannet enkele verweesde bestanden ontstaan. Gebruik deze functie om verweesde mediabestanden van de schijf te verwijderen die niet langer in de database worden gebruikt.",
       "started": "De mediasynchronisatie is gestart.",
       "alreadyRunning": "Er wordt al een synchronisatietaak uitgevoerd",
       "error": "Kan synchronisatie niet starten",
@@ -1312,10 +1312,10 @@
     },
     "regionGrid": {
       "title": "Regio-raster",
-      "desc": "Het region grid is een optimalisatie die leert waar objecten van verschillende groottes meestal verschijnen in het gezichtsveld van elke camera. Frigate gebruikt deze gegevens om detectieregio's efficiënt te schalen. Het grid wordt na verloop van tijd automatisch opgebouwd uit gegevens van gevolgde objecten.",
+      "desc": "Het region grid is een optimalisatie die leert waar objecten van verschillende groottes meestal verschijnen in het gezichtsveld van elke camera. Gannet gebruikt deze gegevens om detectieregio's efficiënt te schalen. Het grid wordt na verloop van tijd automatisch opgebouwd uit gegevens van gevolgde objecten.",
       "clear": "Raster van de regio wissen",
       "clearConfirmTitle": "Raster van de regio wissen",
-      "clearConfirmDesc": "Het wissen van het region grid wordt niet aanbevolen, tenzij je onlangs de modelgrootte van je detector hebt gewijzigd of de fysieke positie van je camera hebt aangepast en problemen hebt met objecttracking. Het grid wordt na verloop van tijd automatisch opnieuw opgebouwd terwijl objecten worden gevolgd. Een herstart van Frigate is vereist om de wijzigingen toe te passen.",
+      "clearConfirmDesc": "Het wissen van het region grid wordt niet aanbevolen, tenzij je onlangs de modelgrootte van je detector hebt gewijzigd of de fysieke positie van je camera hebt aangepast en problemen hebt met objecttracking. Het grid wordt na verloop van tijd automatisch opnieuw opgebouwd terwijl objecten worden gevolgd. Een herstart van Gannet is vereist om de wijzigingen toe te passen.",
       "clearSuccess": "Het raster van de regio is succesvol gewist",
       "clearError": "Kan region grid niet wissen",
       "restartRequired": "Herstart vereist om wijzigingen aan het region grid toe te passen"
@@ -1518,7 +1518,7 @@
   "toast": {
     "success": "Instellingen saved successfully",
     "applied": "Instellingen applied successfully",
-    "successRestartRequired": "Instellingen saved successfully. Restart Frigate to apply your changes.",
+    "successRestartRequired": "Instellingen saved successfully. Restart Gannet to apply your changes.",
     "error": "Kan instellingen niet opslaan",
     "validationError": "Validatie mislukt: {{message}}",
     "resetSuccess": "Resetten to global defaults",
@@ -1675,7 +1675,7 @@
       "recordDisabled": "Opname is disabled, review items will not be generated.",
       "detectDisabled": "Object detection is disabled. Beoordeling items require detected objects to categorize alerts and detections.",
       "allNonAlertDetections": "Alle activiteit die geen melding is, wordt opgenomen als detecties.",
-      "genaiImageSourceRecordingsRecordDisabled": "De afbeeldingsbron is ingesteld op 'recordings', maar opnemen is uitgeschakeld. Frigate valt terug op voorbeeldafbeeldingen."
+      "genaiImageSourceRecordingsRecordDisabled": "De afbeeldingsbron is ingesteld op 'recordings', maar opnemen is uitgeschakeld. Gannet valt terug op voorbeeldafbeeldingen."
     },
     "audio": {
       "noAudioRole": "Er zijn geen streams met de audiorol gedefinieerd. Je moet de audiorol inschakelen om audiodetectie te laten werken."

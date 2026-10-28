@@ -1,13 +1,13 @@
 {
   "documentTitle": {
-    "cameras": "Statistik Kamera - Frigate",
-    "storage": "Statistik Penyimpanan - Frigate",
-    "general": "Statistik Umum - Frigate",
-    "enrichments": "Statistik Enrichment - Frigate",
+    "cameras": "Statistik Kamera - Gannet",
+    "storage": "Statistik Penyimpanan - Gannet",
+    "general": "Statistik Umum - Gannet",
+    "enrichments": "Statistik Enrichment - Gannet",
     "logs": {
-      "frigate": "Log Frigate - Frigate",
-      "go2rtc": "Log Go2RTC - Frigate",
-      "websocket": "Log Pesan - Frigate"
+      "gannet": "Log Gannet - Gannet",
+      "go2rtc": "Log Go2RTC - Gannet",
+      "websocket": "Log Pesan - Gannet"
     }
   },
   "title": "Sistem",
@@ -126,7 +126,7 @@
     "overview": "Ringkasan",
     "recordings": {
       "title": "Rekaman",
-      "tips": "Nilai ini menunjukkan total penyimpanan yang digunakan oleh rekaman di basis data Frigate. Frigate tidak melacak penggunaan penyimpanan untuk semua file di disk Anda.",
+      "tips": "Nilai ini menunjukkan total penyimpanan yang digunakan oleh rekaman di basis data Gannet. Gannet tidak melacak penggunaan penyimpanan untuk semua file di disk Anda.",
       "earliestRecording": "Rekaman paling awal yang tersedia:"
     },
     "shm": {
@@ -146,7 +146,7 @@
       "bandwidth": "Bandwidth",
       "unused": {
         "title": "Tidak Terpakai",
-        "tips": "Nilai ini mungkin tidak secara akurat merepresentasikan ruang kosong yang tersedia untuk Frigate jika Anda memiliki file lain yang disimpan di drive selain rekaman Frigate. Frigate tidak melacak penggunaan penyimpanan di luar rekamannya."
+        "tips": "Nilai ini mungkin tidak secara akurat merepresentasikan ruang kosong yang tersedia untuk Gannet jika Anda memiliki file lain yang disimpan di drive selain rekaman Gannet. Gannet tidak melacak penggunaan penyimpanan di luar rekamannya."
       }
     }
   },

@@ -1,6 +1,6 @@
 {
-  "documentTitle": "Chat - Frigate",
-  "title": "Frigate Chat",
+  "documentTitle": "Chat - Gannet",
+  "title": "Gannet Chat",
   "subtitle": "Your AI assistant for camera management and insights",
   "placeholder": "Ask anything...",
   "error": "Something went wrong. Please try again.",
@@ -77,7 +77,7 @@
   },
   "approval": {
     "title": "Approve {{tool}}?",
-    "desc": "This action changes something in Frigate. Review the details before approving.",
+    "desc": "This action changes something in Gannet. Review the details before approving.",
     "approve": "Approve",
     "always_allow": "Always allow",
     "reject": "Reject",

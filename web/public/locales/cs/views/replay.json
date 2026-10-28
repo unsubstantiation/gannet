@@ -1,6 +1,6 @@
 {
     "title": "Ladicí přehrávání",
-    "description": "Přehrávejte záznamy kamer pro účely ladění. Seznam objektů zobrazuje časově zpožděný přehled detekovaných objektů a karta Zprávy zobrazuje proud interních zpráv Frigate z přehrávaného záznamu.",
+    "description": "Přehrávejte záznamy kamer pro účely ladění. Seznam objektů zobrazuje časově zpožděný přehled detekovaných objektů a karta Zprávy zobrazuje proud interních zpráv Gannet z přehrávaného záznamu.",
     "websocket_messages": "Zprávy",
     "dialog": {
         "title": "Spustit ladicí přehrávání",
@@ -31,7 +31,7 @@
         "noSessionDesc": "Spusťte ladicí přehrávání ze zobrazení historie kliknutím na tlačítko Akce na panelu nástrojů a výběrem možnosti Ladicí přehrávání.",
         "goToRecordings": "Přejít do historie",
         "preparingClip": "Příprava klipu…",
-        "preparingClipDesc": "Frigate spojuje záznamy z vybraného časového rozsahu. U delších rozsahů to může chvíli trvat.",
+        "preparingClipDesc": "Gannet spojuje záznamy z vybraného časového rozsahu. U delších rozsahů to může chvíli trvat.",
         "startingCamera": "Spouštění ladicího přehrávání…",
         "startError": {
             "title": "Nepodařilo se spustit ladicí přehrávání",
@@ -55,6 +55,6 @@
         "activeTracking": "Aktivní sledování",
         "noActiveTracking": "Žádné aktivní sledování",
         "configuration": "Konfigurace",
-        "configurationDesc": "Dolaďte nastavení detekce pohybu a sledování objektů pro kameru ladicího přehrávání. Žádné změny se neukládají do konfiguračního souboru Frigate."
+        "configurationDesc": "Dolaďte nastavení detekce pohybu a sledování objektů pro kameru ladicího přehrávání. Žádné změny se neukládají do konfiguračního souboru Gannet."
     }
 }

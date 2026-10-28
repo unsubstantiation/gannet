@@ -10,7 +10,7 @@
     "scoreInfo": "Score er et vektet gjennomsnitt av alle ansiktsscorer, vektet etter størrelsen på ansiktet i hvert bilde.",
     "unknown": "Ukjent"
   },
-  "documentTitle": "Ansiktsbibliotek – Frigate",
+  "documentTitle": "Ansiktsbibliotek – Gannet",
   "createFaceLibrary": {
     "new": "Opprett nytt ansikt",
     "nextSteps": "For å bygge et sterkt grunnlag:<li>Bruk Nylige gjenkjennelser-fanen for å velge og trene på bilder for hver oppdaget person.</li><li>Fokuser på bilder rett forfra for best resultat; unngå å trene bilder som fanger ansikter i vinkel.</li></ul>"

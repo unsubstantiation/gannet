@@ -101,7 +101,7 @@ def main(argv: list[str] | None = None) -> int:
     if "WebGpuExecutionProvider" in names and not experimental_webgpu_enabled():
         print(
             "WebGPU is experimental. Set FRIGATE_ENABLE_EXPERIMENTAL_WEBGPU=1 "
-            "before installing or running Frigate to opt in.",
+            "before installing or running Gannet to opt in.",
             file=sys.stderr,
         )
         return 1

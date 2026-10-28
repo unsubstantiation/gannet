@@ -1,7 +1,7 @@
 {
-  "documentTitle.withCamera": "{{camera}} - Live - Frigate",
+  "documentTitle.withCamera": "{{camera}} - Live - Gannet",
   "documentTitle": {
-    "default": "Live - Frigate"
+    "default": "Live - Gannet"
   },
   "lowBandwidthMode": "Mode bandwidth rendah",
   "twoWayTalk": {
@@ -149,7 +149,7 @@
       "resetStream": "Atur ulang stream",
       "force": {
         "label": "Paksa mode bandwidth rendah",
-        "desc": "Selalu putar feed bandwidth rendah bawaan Frigate, bukan stream yang dipilih. Berfungsi pada semua koneksi, tetapi kualitasnya lebih rendah dan tanpa audio."
+        "desc": "Selalu putar feed bandwidth rendah bawaan Gannet, bukan stream yang dipilih. Berfungsi pada semua koneksi, tetapi kualitasnya lebih rendah dan tanpa audio."
       }
     },
     "playInBackground": {
@@ -158,7 +158,7 @@
     },
     "mode": "Teknologi Streaming",
     "technology": {
-      "description": "Pilih teknologi streaming yang Anda inginkan. Frigate mungkin tetap beralih ke mode bandwidth rendah jika terjadi kesalahan pemutaran atau jaringan.",
+      "description": "Pilih teknologi streaming yang Anda inginkan. Gannet mungkin tetap beralih ke mode bandwidth rendah jika terjadi kesalahan pemutaran atau jaringan.",
       "name": {
         "mse": "MSE",
         "webrtc": "WebRTC",
@@ -207,7 +207,7 @@
   },
   "noCameras": {
     "title": "Tidak Ada Kamera yang Dikonfigurasi",
-    "description": "Mulai dengan menghubungkan kamera ke Frigate.",
+    "description": "Mulai dengan menghubungkan kamera ke Gannet.",
     "buttonText": "Tambahkan Kamera",
     "restricted": {
       "title": "Tidak Ada Kamera yang Tersedia",
@@ -215,7 +215,7 @@
     },
     "default": {
       "title": "Tidak Ada Kamera yang Dikonfigurasi",
-      "description": "Mulai dengan menghubungkan kamera ke Frigate.",
+      "description": "Mulai dengan menghubungkan kamera ke Gannet.",
       "buttonText": "Tambahkan Kamera"
     },
     "group": {
