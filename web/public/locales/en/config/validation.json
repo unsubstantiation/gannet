@@ -35,6 +35,8 @@
   "models": {
     "defaultRequired": "One model must use the default scene. Without it, any camera that does not choose a scene has no model to fall back to.",
     "sceneDuplicate": "Each model must use a different scene.",
+    "modelFormat": "The {{detector}} detector cannot load {{format}} files; it reads {{supported}} files. Point this model at a compatible file, or switch its device to a detector that reads {{format}} files.",
+    "pathRequired": "The {{detector}} detector needs a model file. The built-in default model is a TFLite file, which only the cpu detector can run.",
     "sameModel": "The {{scene}} and {{other}} models use the same model file. Running one model under several scenes only splits the detection work across separate detectors, which is slower than one model with all of the hardware listed under it."
   }
 }

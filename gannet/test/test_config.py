@@ -116,17 +116,104 @@ class TestConfig(unittest.TestCase):
 
     @patch("gannet.config.config._ensure_default_cpu_model")
     @patch("gannet.detectors.detector_config.load_labels")
-    def test_native_detector_default_model_paths(self, mock_labels, _ensure_model):
+    def test_native_cpu_default_model_path(self, mock_labels, _ensure_model):
         mock_labels.return_value = {}
 
-        for devices in (["cpu"], ["openvino:CPU"]):
-            with self.subTest(devices=devices):
-                config = {"models": [{"devices": devices}]}
+        config = {"models": [{"devices": ["cpu"]}]}
+        frigate_config = FrigateConfig(**(deep_merge(config, self.minimal)))
+        self.assertEqual(
+            frigate_config.primary_model.path,
+            MODEL_CACHE_DIR + os.sep + "cpu_model.tflite",
+        )
+
+    @patch("gannet.detectors.detector_config.load_labels")
+    def test_openvino_requires_an_explicit_model(self, mock_labels):
+        """The bundled default is TFLite, which OpenVINO cannot convert.
+
+        Defaulting to it used to fail inside the detector subprocess with
+        "No translator found for TFLite_Detection_PostProcess node", which the
+        watchdog reads as a dead detector and restarts the whole app for.
+        """
+        mock_labels.return_value = {}
+
+        config = {"models": [{"devices": ["openvino:CPU"]}]}
+        with self.assertRaises(ValidationError) as raised:
+            FrigateConfig(**(deep_merge(config, self.minimal)))
+
+        message = str(raised.exception)
+        self.assertIn("model.path must be set when using the openvino", message)
+        self.assertIn("TFLite", message)
+
+    @patch("gannet.detectors.detector_config.load_labels")
+    def test_openvino_rejects_a_tflite_detection_model(self, mock_labels):
+        mock_labels.return_value = {}
+
+        config = {
+            "models": [
+                {"path": r"C:\Models\detector.tflite", "devices": ["openvino:GPU"]}
+            ]
+        }
+        with self.assertRaises(ValidationError) as raised:
+            FrigateConfig(**(deep_merge(config, self.minimal)))
+
+        message = str(raised.exception)
+        self.assertIn("TFLite_Detection_PostProcess", message)
+        self.assertIn("cpu detector", message)
+
+    @patch("gannet.detectors.detector_config.load_labels")
+    def test_openvino_accepts_ir_and_onnx_models(self, mock_labels):
+        mock_labels.return_value = {}
+
+        for path in (r"C:\Models\detector.xml", r"C:\Models\detector.onnx"):
+            with self.subTest(path=path):
+                config = {"models": [{"path": path, "devices": ["openvino:CPU"]}]}
                 frigate_config = FrigateConfig(**(deep_merge(config, self.minimal)))
-                self.assertEqual(
-                    frigate_config.primary_model.path,
-                    MODEL_CACHE_DIR + os.sep + "cpu_model.tflite",
-                )
+                self.assertEqual(frigate_config.primary_model.path, path)
+
+    @patch("gannet.detectors.detector_config.load_labels")
+    def test_onnx_rejects_a_tflite_model(self, mock_labels):
+        mock_labels.return_value = {}
+
+        config = {
+            "models": [
+                {"path": r"C:\Models\detector.tflite", "devices": ["onnx:0"]}
+            ]
+        }
+        with self.assertRaises(ValidationError) as raised:
+            FrigateConfig(**(deep_merge(config, self.minimal)))
+
+        self.assertIn("onnx detector cannot", str(raised.exception))
+
+    @patch("gannet.detectors.detector_config.load_labels")
+    def test_cpu_detector_rejects_an_onnx_model(self, mock_labels):
+        mock_labels.return_value = {}
+
+        config = {
+            "models": [{"path": r"C:\Models\detector.onnx", "devices": ["cpu"]}]
+        }
+        with self.assertRaises(ValidationError) as raised:
+            FrigateConfig(**(deep_merge(config, self.minimal)))
+
+        self.assertIn("cpu detector cannot", str(raised.exception))
+
+    @patch("gannet.detectors.detector_config.load_labels")
+    def test_a_model_without_an_extension_is_left_to_the_detector(self, mock_labels):
+        """An upstream Frigate+ model is cached under its id, with no suffix."""
+        mock_labels.return_value = {}
+
+        config = {
+            "models": [
+                {
+                    "path": r"C:\Models\e63b7345cc83a84ed79dedfc99c16616",
+                    "devices": ["openvino:GPU"],
+                }
+            ]
+        }
+        frigate_config = FrigateConfig(**(deep_merge(config, self.minimal)))
+        self.assertEqual(
+            frigate_config.primary_model.path,
+            r"C:\Models\e63b7345cc83a84ed79dedfc99c16616",
+        )
 
     def test_reserved_camera_name_is_rejected_on_windows(self):
         """A device name is not a file name, so the path layer will not use it."""
@@ -239,7 +326,12 @@ class TestConfig(unittest.TestCase):
         config = {
             "models": [
                 {"scene": "outdoor", "devices": ["cpu"], "width": 320},
-                {"scene": "indoor", "devices": ["openvino:CPU"], "width": 300},
+                {
+                    "scene": "indoor",
+                    "path": "/etc/hosts",
+                    "devices": ["openvino:CPU"],
+                    "width": 300,
+                },
             ],
             "cameras": {
                 "back": {
@@ -308,7 +400,12 @@ class TestConfig(unittest.TestCase):
         config = {
             "models": [
                 {"devices": ["cpu"], "width": 320},
-                {"scene": "outdoor", "devices": ["openvino:CPU"], "width": 416},
+                {
+                    "scene": "outdoor",
+                    "path": "/etc/hosts",
+                    "devices": ["openvino:CPU"],
+                    "width": 416,
+                },
             ],
         }
 
@@ -337,7 +434,12 @@ class TestConfig(unittest.TestCase):
         config = {
             "models": [
                 {"devices": ["cpu"], "width": 320},
-                {"scene": "outdoor", "devices": ["openvino:CPU"], "width": 416},
+                {
+                    "scene": "outdoor",
+                    "path": "/etc/hosts",
+                    "devices": ["openvino:CPU"],
+                    "width": 416,
+                },
             ],
         }
 
@@ -385,7 +487,11 @@ class TestConfig(unittest.TestCase):
         config = {
             "models": [
                 {"devices": ["cpu"]},
-                {"scene": "garage_thermal", "devices": ["openvino:CPU"]},
+                {
+                    "scene": "garage_thermal",
+                    "path": "/etc/hosts",
+                    "devices": ["openvino:CPU"],
+                },
             ],
             "cameras": {"back": {"detect": {"scene": "garage_thermal"}}},
         }
@@ -524,7 +630,11 @@ class TestConfig(unittest.TestCase):
     @patch("gannet.detectors.detector_config.load_labels")
     def test_shareable_devices_may_repeat(self, mock_labels):
         mock_labels.return_value = {}
-        config = {"models": [{"devices": ["openvino:GPU", "openvino:GPU"]}]}
+        config = {
+            "models": [
+                {"path": "/etc/hosts", "devices": ["openvino:GPU", "openvino:GPU"]}
+            ]
+        }
 
         frigate_config = FrigateConfig(**(deep_merge(config, self.minimal)))
         devices = frigate_config.devices_for_model(frigate_config.primary_model)
@@ -1732,7 +1842,9 @@ class TestConfig(unittest.TestCase):
             },
         }
 
-        with self.assertRaisesRegex(ValidationError, "Unable to connect to Frigate+"):
+        with self.assertRaisesRegex(
+            ValidationError, "Unable to connect to upstream Frigate+"
+        ):
             FrigateConfig(**config)
 
     def test_fails_on_invalid_role(self):

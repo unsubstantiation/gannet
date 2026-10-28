@@ -9,12 +9,12 @@ Gannet runs object detection locally. A model declares one or more Windows detec
 
 ## Supported detectors
 
-| Detector | Device examples | Runtime |
-| --- | --- | --- |
-| CPU TFLite | `cpu` | `ai-edge-litert` |
-| ONNX Runtime | `onnx`, `onnx:0`, `onnx:CPU` | CPU, CUDA, or DirectML provider exposed by the installed ONNX Runtime package |
-| OpenVINO | `openvino:CPU`, `openvino:GPU`, `openvino:NPU` | Intel CPU, GPU, and NPU through OpenVINO |
-| Remote ZMQ | `zmq:tcp://host:5555` | A compatible remote inference service |
+| Detector | Device examples | Runtime | Model formats |
+| --- | --- | --- | --- |
+| CPU TFLite | `cpu` | `ai-edge-litert` | `.tflite` |
+| ONNX Runtime | `onnx`, `onnx:0`, `onnx:CPU` | CPU, CUDA, or DirectML provider exposed by the installed ONNX Runtime package | `.onnx` |
+| OpenVINO | `openvino:CPU`, `openvino:GPU`, `openvino:NPU` | Intel CPU, GPU, and NPU through OpenVINO | `.xml`, `.onnx`, `.pdmodel`, `.pb` |
+| Remote ZMQ | `zmq:tcp://host:5555` | A compatible remote inference service | `.onnx` and other formats the endpoint loads |
 
 Coral Edge TPU, Hailo, TensorRT, RKNN, MemryX, DeepX, Synaptics, AXEngine, and other Linux or appliance-specific detectors are not part of the native Windows application.
 
@@ -62,6 +62,8 @@ models:
 
 Valid device values are those reported by OpenVINO on the machine, commonly `CPU`, `GPU`, `GPU.0`, and `NPU`. Current Intel graphics and NPU drivers must be installed.
 
+OpenVINO reads OpenVINO IR (`.xml`), ONNX (`.onnx`), Paddle (`.pdmodel`), and TensorFlow (`.pb`) models. It cannot read `.tflite` detection models: SSDLite and MobileNet-SSD exports run their non-max suppression in a `TFLite_Detection_PostProcess` op, which OpenVINO's TFLite frontend has no translator for, so the detector fails with `No translator found for TFLite_Detection_PostProcess node`. Gannet rejects this combination when it validates the config rather than at detector startup. Run a `.tflite` model on the `cpu` detector, or point `path` at an IR or ONNX export of the same detector. Converting the `.tflite` file itself does not help, because the conversion fails at the same op; the export has to come from the model author or from the framework the model was trained in.
+
 ## Remote ZMQ
 
 ```yaml
@@ -95,4 +97,4 @@ Repeated shareable devices receive unique worker names automatically. Cameras se
 
 ## Model compatibility
 
-The model format, dimensions, tensor layout, pixel format, and label map must match the selected detector. Frigate+ metadata supplies these values for a `plus://` model. For local files, configure them explicitly when they differ from the defaults.
+The model format, dimensions, tensor layout, pixel format, and label map must match the selected detector. Gannet checks the file suffix against the detector when it validates the config: a mismatch is reported at that point instead of at detector startup, because a detector that cannot load its model is restarted until the app gives up. Files without a suffix, such as a `plus://` model cached under its numeric id, are left to the detector to identify. Upstream Frigate+ metadata supplies the dimensions, tensor layout, pixel format, and label map for a `plus://` model. For local files, configure them explicitly when they differ from the defaults.

@@ -3,11 +3,51 @@ import type { TFunction } from "i18next";
 import { isJsonObject } from "@/lib/utils";
 import { DEFAULT_SCENE, getSceneLabel } from "@/utils/modelUtil";
 
-/** The model the backend loads when no path is configured. */
+/**
+ * The model the backend loads when no path is configured. Only the cpu
+ * detector has one: it is a TFLite file, which OpenVINO cannot read.
+ */
 function defaultModelPath(detector: string): string | undefined {
-  return detector === "cpu" || detector === "openvino"
-    ? "__frigate_default_cpu_model__"
-    : undefined;
+  return detector === "cpu" ? "__gannet_default_cpu_model__" : undefined;
+}
+
+/** Model formats each detector can load, mirroring DETECTOR_MODEL_FORMATS. */
+const DETECTOR_MODEL_FORMATS: Record<string, string[]> = {
+  cpu: [".tflite"],
+  onnx: [".onnx"],
+  openvino: [".xml", ".onnx", ".pdmodel", ".pb"],
+};
+
+/**
+ * Detectors load one model format, and rejecting the wrong one here says so
+ * before a save that the backend would refuse at startup. A path with no
+ * suffix is left alone: an upstream Frigate+ model is cached under its id.
+ */
+function modelFormatError(
+  detector: string,
+  path: string,
+  t: TFunction,
+): string | undefined {
+  // Only the file name carries the suffix; a directory can contain a dot.
+  const fileName = path.split(/[\\/]/).pop() ?? "";
+  const dot = fileName.lastIndexOf(".");
+  const suffix = dot > 0 ? fileName.slice(dot).toLowerCase() : "";
+  const supported = DETECTOR_MODEL_FORMATS[detector];
+
+  if (path.includes("://") || !suffix || !supported) {
+    return undefined;
+  }
+
+  if (supported.includes(suffix)) {
+    return undefined;
+  }
+
+  return t("models.modelFormat", {
+    ns: "config/validation",
+    detector,
+    format: suffix,
+    supported: supported.join(", "),
+  });
 }
 
 /**
@@ -82,10 +122,25 @@ export function validateModelScenes(
     const devices = Array.isArray(model.devices) ? model.devices : [];
     const detector =
       typeof devices[0] === "string" ? devices[0].split(":")[0] : "";
-    const path =
-      typeof model.path === "string" && model.path
-        ? normalizeModelPath(model.path)
-        : defaultModelPath(detector);
+    const configuredPath =
+      typeof model.path === "string" && model.path ? model.path : "";
+
+    if (configuredPath) {
+      const formatError = modelFormatError(detector, configuredPath, t);
+
+      if (formatError) {
+        errors.addError?.(formatError);
+      }
+    } else if (detector === "openvino") {
+      // The built-in default is a TFLite model, so only cpu can run pathless.
+      errors.addError?.(
+        t("models.pathRequired", { ns: "config/validation", detector }),
+      );
+    }
+
+    const path = configuredPath
+      ? normalizeModelPath(configuredPath)
+      : defaultModelPath(detector);
 
     if (!path) {
       return;

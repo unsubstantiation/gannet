@@ -1,4 +1,4 @@
-"""Tests for Frigate+ model metadata."""
+"""Tests for upstream Frigate+ model metadata."""
 
 import json
 import os

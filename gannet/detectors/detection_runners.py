@@ -50,6 +50,63 @@ _PROVIDER_LABELS = {
 }
 
 
+class OpenVINOModelError(RuntimeError):
+    """An OpenVINO model could not be loaded, with a readable cause.
+
+    Raised instead of the raw RuntimeError that OpenVINO's frontend produces,
+    which names C++ source locations and leaves the operator to work out what
+    went wrong. The original exception is chained.
+    """
+
+
+#: OpenVINO's frontend reports an unreadable model this way. A TFLite detector
+#: always lands here: TFLite_Detection_PostProcess, the fused NMS op that
+#: SSDLite and MobileNet-SSD models end in, has no translator.
+_OPENVINO_CONVERSION_MARKERS = (
+    "OpConversionFailure",
+    "No translator found",
+    "FrontEnd API failed",
+    "Failed to convert",
+)
+
+_TFLITE_POSTPROCESS_MARKERS = (
+    "TFLite_Detection_PostProcess",
+    "Detection_PostProcess",
+)
+
+
+def describe_openvino_failure(
+    model_path: str, device: str, error: BaseException
+) -> str:
+    """Turn OpenVINO's frontend error into one sentence an operator can act on."""
+    detail = str(error)
+    converted = any(marker in detail for marker in _OPENVINO_CONVERSION_MARKERS)
+    postprocess = any(marker in detail for marker in _TFLITE_POSTPROCESS_MARKERS)
+    suffix = os.path.splitext(model_path)[1].lower()
+
+    if postprocess or (converted and suffix == ".tflite"):
+        return (
+            f"OpenVINO cannot load the TFLite model {model_path} on {device}: its "
+            "TFLite frontend has no translator for the TFLite_Detection_PostProcess "
+            "op, which SSDLite, MobileNet-SSD and similar detectors use for their "
+            "non-max suppression. Run this model on the cpu detector, or set "
+            "models[].path to an OpenVINO IR (.xml) or ONNX export of the same "
+            "detector. Converting the .tflite file itself cannot help, because "
+            "the same missing translator fails the conversion. This is a model "
+            "format problem, so no restart, reinstall or driver update fixes it."
+        )
+
+    if converted:
+        return (
+            f"OpenVINO could not convert {model_path} for {device}. The model "
+            f"uses an operation its frontends do not support: {detail.strip()}"
+        )
+
+    return (
+        f"OpenVINO could not load {model_path} on {device}: {detail.strip() or error!r}"
+    )
+
+
 def get_ort_session_options(
     model_type: str | None = None, cpu: bool = False
 ) -> ort.SessionOptions | None:
@@ -384,6 +441,22 @@ class OpenVINOModelRunner(BaseModelRunner):
         if not os.path.isfile(model_path):
             raise FileNotFoundError(f"OpenVINO model file {model_path} not found.")
 
+        # Fail with the real reason before OpenVINO's C++ frontend produces a
+        # stack of source locations. Config validation rejects this combination
+        # first; this covers callers that load a model directly (enrichment
+        # models, tests, a plus:// file resolved after validation).
+        suffix = os.path.splitext(model_path)[1].lower()
+        if suffix == ".tflite" and OpenVINOModelRunner.is_detection_model(model_type):
+            raise OpenVINOModelError(
+                describe_openvino_failure(
+                    model_path,
+                    device,
+                    RuntimeError(
+                        "No translator found for TFLite_Detection_PostProcess node"
+                    ),
+                )
+            )
+
         if ov is None:
             raise ImportError(
                 "OpenVINO is not available. Please install openvino package."
@@ -418,15 +491,22 @@ class OpenVINOModelRunner(BaseModelRunner):
                     model=model_path, device_name=device, config=compile_config
                 )
             except RuntimeError as e:
-                if not compile_config:
-                    raise
-
-                logger.debug(
-                    f"Failed to compile with {compile_config}, retrying without: {e}"
-                )
-                self.compiled_model = self.ov_core.compile_model(
-                    model=model_path, device_name=device
-                )
+                if compile_config:
+                    logger.debug(
+                        f"Failed to compile with {compile_config}, retrying without: {e}"
+                    )
+                    try:
+                        self.compiled_model = self.ov_core.compile_model(
+                            model=model_path, device_name=device
+                        )
+                    except RuntimeError as retry_error:
+                        raise OpenVINOModelError(
+                            describe_openvino_failure(model_path, device, retry_error)
+                        ) from retry_error
+                else:
+                    raise OpenVINOModelError(
+                        describe_openvino_failure(model_path, device, e)
+                    ) from e
 
             # Create reusable inference request
             self.infer_request = self.compiled_model.create_infer_request()
@@ -602,7 +682,7 @@ def get_optimized_runner(
             raise RuntimeError(
                 "This ONNX Runtime build does not support plugin execution "
                 "providers. Install the Windows ML compatible ONNX Runtime "
-                "version from the Frigate requirements."
+                "version from the Gannet requirements."
             )
         add_provider(devices, {})
         return _record_runner(
