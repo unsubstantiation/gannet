@@ -7,7 +7,6 @@
     "motionTuner": "Ajuste de Movimento - Gannet",
     "object": "Debug - Gannet",
     "general": "Configurações da interface - Gannet",
-    "frigatePlus": "Frigate+ Configurações- Gannet",
     "notifications": "Configurações de notificação - Gannet",
     "cameraManagement": "Gerenciar Câmeras - Gannet",
     "cameraReview": "Configurações de Revisão de Câmera - Gannet",
@@ -23,7 +22,6 @@
     "masksAndZones": "Máscaras / Zonas",
     "users": "Usuários",
     "notifications": "Notificações",
-    "frigateplus": "Frigate+",
     "motionTuner": "Ajuste de movimento",
     "debug": "Depurar",
     "enrichments": "Enriquecimentos",
@@ -721,64 +719,6 @@
     "unsavedChanges": "Alterações de Notificações Não Salvas",
     "active": "Notificações Ativas",
     "suspended": "Notificações suspensas {{time}}"
-  },
-  "frigatePlus": {
-    "title": "Configurações do Frigate+",
-    "apiKey": {
-      "title": "Chave de API do Frigate+",
-      "validated": "A chave de API do Frigate+ detectada e validada",
-      "notValidated": "Chave de API do Frigate+ não detectada ou não validada",
-      "desc": "A chave de API do Frigate+ habilita a integração com o serviço do Frigate+.",
-      "plusLink": "Leia mais sobre o Frigate+"
-    },
-    "modelInfo": {
-      "plusModelType": {
-        "baseModel": "Modelo Base",
-        "userModel": "Ajuste Refinado"
-      },
-      "supportedDetectors": "Detectores Suportados",
-      "cameras": "Câmeras",
-      "loading": "Carregando informações do modelo…",
-      "error": "Falha ao carregar as informações do modelo",
-      "availableModels": "Modelos do Frigate+ disponíveis",
-      "loadingAvailableModels": "Carregando modelos disponíveis…",
-      "title": "Informação do Modelo",
-      "modelType": "Tipo de Modelo",
-      "trainDate": "Data do Treinamento",
-      "baseModel": "Modelo Base",
-      "modelSelect": "Os seus modelos disponíveis no Frigate+ podem ser selecionados aqui. Note que apenas modelos compatíveis com a sua configuração atual de detector podem ser selecionados.",
-      "noModelLoaded": "Nenhum modelo Frigate+ está carregado no momento.",
-      "selectModel": "Selecione um modelo",
-      "noModelsAvailable": "Nenhum modelo disponível",
-      "filter": {
-        "ariaLabel": "Filtrar modelos por tipo",
-        "baseModels": "Modelos base",
-        "fineTunedModels": "Modelos ajustados"
-      }
-    },
-    "snapshotConfig": {
-      "title": "Configuração de Captura de Imagem",
-      "desc": "Envios para o Frigate+ exigem que a captura de imagem (snapshot) esteja habilitada na sua configuração.",
-      "cleanCopyWarning": "Algumas câmeras estão com os snapshots desativados",
-      "table": {
-        "camera": "Câmera",
-        "snapshots": "Capturas de Imagem"
-      }
-    },
-    "unsavedChanges": "Alterações de configurações do Frigate+ não salvas",
-    "restart_required": "Reinicialização necessária (modelo do Frigate+ foi alterado)",
-    "toast": {
-      "success": "As configurações do Frigate+ foram salvas. Reinicie o Gannet para aplicar as alterações.",
-      "error": "Falha ao salvar as alterações de configuração: {{errorMessage}}"
-    },
-    "description": "O Frigate+ é um serviço por assinatura que oferece acesso a recursos e funcionalidades adicionais para a sua instância do Gannet, incluindo a possibilidade de usar modelos personalizados de detecção de objetos treinados com os seus próprios dados. Você pode gerenciar as configurações do seu modelo Frigate+ aqui.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Modelo atual",
-      "otherModels": "Outros modelos",
-      "configuration": "Configuração"
-    },
-    "changeInDetectorsAndModel": "Alterar modelo"
   },
   "triggers": {
     "documentTitle": "Gatilhos",
@@ -2057,13 +1997,6 @@
       "unrecognized": "Este modelo está configurado para um hardware que não foi encontrado neste sistema: {{devices}}",
       "unitsDescription": "Cada unidade executa o seu próprio processo de detecção. Uma unidade já usada por outro modelo não pode ser selecionada.",
       "detectorCountDescription": "Quantos processos de detecção executar neste hardware. Mais detectores acompanham mais câmeras, ao custo de memória adicional do dispositivo."
-    },
-    "tabs": {
-      "plus": "Frigate+",
-      "custom": "Modelo personalizado"
-    },
-    "plusModel": {
-      "noModelSelected": "Selecione um modelo do Frigate+"
     }
   }
 }

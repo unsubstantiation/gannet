@@ -2,11 +2,6 @@
   "noRecordingsFoundForThisTime": "Nu au fost gasite inregistrari in perioada de timp mentionata",
   "noPreviewFound": "Nu a fost gasita o Previzualizare",
   "noPreviewFoundFor": "Nu există previzualizari pentru {{cameraName}}",
-  "submitFrigatePlus": {
-    "title": "Trimiteti acest cadru catre Frigate+?",
-    "submit": "Trimite",
-    "previewError": "Nu s-a putut încărca previzualizarea snapshot-ului. S-ar putea ca înregistrarea să nu fie disponibilă în acest moment."
-  },
   "livePlayerRequiredIOSVersion": "iOS 17.1 sau mai recent este necesar pentru acest tip de stream live.",
   "streamOffline": {
     "title": "Stream Offline",
@@ -36,12 +31,9 @@
   },
   "toast": {
     "error": {
-      "submitFrigatePlusFailed": "Eraoare trimitere Cadru catre Frigate+",
       "playRecordingsFailed": "Redarea înregistrărilor a eșuat (eroare {{code}}): {{message}}"
     },
-    "success": {
-      "submittedFrigatePlus": "Cadru trimis cu Succes catre Frigate+"
-    }
+    "success": {}
   },
   "cameraOff": "Camera este oprită",
   "quality": {

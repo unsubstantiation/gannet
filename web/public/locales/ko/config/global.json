@@ -1508,8 +1508,7 @@
             "label": "감지 하드웨어"
         },
         "path": {
-            "label": "사용자 지정 객체 감지기 모델 경로",
-            "description": "사용자 지정 감지 모델 파일의 경로입니다 (Frigate+ 모델의 경우 plus://<model_id>)."
+            "label": "사용자 지정 객체 감지기 모델 경로"
         },
         "labelmap_path": {
             "label": "사용자 지정 객체 감지기 라벨 맵",

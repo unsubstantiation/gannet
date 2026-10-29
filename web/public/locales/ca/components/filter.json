@@ -37,11 +37,7 @@
   "features": {
     "label": "Característiques",
     "hasSnapshot": "Té una instantània",
-    "hasVideoClip": "Té un clip de vídeo",
-    "submittedToFrigatePlus": {
-      "label": "Enviat a Frigate+",
-      "tips": "Primer heu de filtrar els objectes de seguiment que tenen una instantània.<br /><br />Els objectes de seguiment sense una instantània no es poden enviar a Frigate+."
-    }
+    "hasVideoClip": "Té un clip de vídeo"
   },
   "sort": {
     "label": "Ordenar",

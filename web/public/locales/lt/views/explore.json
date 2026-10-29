@@ -160,10 +160,6 @@
       "label": "Aprašyti",
       "aria": "Užklausti garso aprašymo"
     },
-    "submitToPlus": {
-      "label": "Pateikti į Frigate+",
-      "aria": "Pateikti į Gannet Plius"
-    },
     "viewInHistory": {
       "label": "Žiūrėti Istorijoje",
       "aria": "Žiūrėti Istorijoje"

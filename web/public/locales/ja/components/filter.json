@@ -45,11 +45,7 @@
   "features": {
     "label": "機能",
     "hasSnapshot": "スナップショットあり",
-    "hasVideoClip": "ビデオクリップあり",
-    "submittedToFrigatePlus": {
-      "label": "Frigate+ に送信済み",
-      "tips": "まずスナップショットのある追跡オブジェクトでフィルターしてください。<br /><br />スナップショットのない追跡オブジェクトは Frigate+ に送信できません。"
-    }
+    "hasVideoClip": "ビデオクリップあり"
   },
   "sort": {
     "label": "並び替え",

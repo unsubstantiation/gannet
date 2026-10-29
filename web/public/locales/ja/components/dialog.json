@@ -10,26 +10,6 @@
     "description": "再起動の間、Gannetが一時的に停止します。"
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "Frigate+ に送信",
-        "desc": "回避したい場所でのオブジェクトは誤検知ではありません。誤検知として送信するとモデルが混乱します。"
-      },
-      "review": {
-        "question": {
-          "label": "Frigate Plus 用ラベルの確認",
-          "ask_a": "このオブジェクトは <code>{{label}}</code> ですか？",
-          "ask_an": "このオブジェクトは <code>{{label}}</code> ですか？",
-          "ask_full": "このオブジェクトは <code>{{untranslatedLabel}}</code>（{{translatedLabel}}）ですか？"
-        },
-        "state": {
-          "submitted": "送信済み"
-        },
-        "toast": {
-          "error": "Frigate+への送信に失敗しました。ネットワーク接続を確認して、もう一度お試しください。"
-        }
-      }
-    },
     "video": {
       "viewInHistory": "履歴で表示"
     }

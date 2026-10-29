@@ -47,10 +47,6 @@
     "findSimilar": {
       "label": "Намери подобни"
     },
-    "submitToPlus": {
-      "label": "Изпрати към Frigate+",
-      "aria": "Изпрати към Frigate Plus"
-    },
     "viewInHistory": {
       "label": "Виж в история",
       "aria": "Виж в история"

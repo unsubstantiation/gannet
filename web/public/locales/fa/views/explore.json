@@ -204,10 +204,6 @@
       "aria": "درخواست رونویسیِ صوتی",
       "label": "رونویسی"
     },
-    "submitToPlus": {
-      "aria": "ارسال به Frigate Plus",
-      "label": "ارسال به Frigate+"
-    },
     "viewInHistory": {
       "label": "مشاهده در تاریخچه",
       "aria": "مشاهده در تاریخچه"

@@ -10,26 +10,6 @@
     "description": "Gannet yeniden başlayana kadar kısa süreliğine duracaktır."
   },
   "explore": {
-    "plus": {
-      "review": {
-        "state": {
-          "submitted": "Gönderildi"
-        },
-        "question": {
-          "ask_an": "Bu bir <code>{{label}}</code> nesnesi mi?",
-          "label": "Bu etiketi Frigate+ için onaylayın",
-          "ask_a": "Bu bir <code>{{label}}</code> nesnesi mi?",
-          "ask_full": "Bu nesne bir <code>{{untranslatedLabel}}</code> ({{translatedLabel}}) nesnesi mi?"
-        },
-        "toast": {
-          "error": "Frigate+'ya gönderilemedi. Lütfen ağ bağlantınızı kontrol edin ve tekrar deneyin."
-        }
-      },
-      "submitToPlus": {
-        "label": "Frigate+'ya Gönder",
-        "desc": "Kaçınmak istediğiniz yerlerdeki nesneler yanlış pozitif değildir. Bunları yanlış pozitif olarak göndermek modeli yanıltacaktır."
-      }
-    },
     "video": {
       "viewInHistory": "Geçmiş'te Görüntüle"
     }

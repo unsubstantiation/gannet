@@ -2,11 +2,6 @@
   "noPreviewFound": "Esikatselua ei löytynyt",
   "noPreviewFoundFor": "Ei esikatselua {{cameraName}}lle",
   "noRecordingsFoundForThisTime": "Ei tallenteita valitulta ajalta",
-  "submitFrigatePlus": {
-    "title": "Lähetä tämä kuva Frigate+:aan?",
-    "submit": "Lähetä",
-    "previewError": "Pysäytyskuvan esikatselua ei voi ladata. Tallenne ei ole ehkä saatavissa tällä hetkellä."
-  },
   "livePlayerRequiredIOSVersion": "iOS 17.1 tai uudempi vaaditaan tälle suoratoistotyypille.",
   "streamOffline": {
     "title": "Kamera poissa verkosta",
@@ -33,11 +28,7 @@
     "droppedFrameRate": "Pudotettujen kehysten nopeus:"
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Onnistuneesti lähetetty Frigate+:aan"
-    },
-    "error": {
-      "submitFrigatePlusFailed": "Frigate+:aan lähetys epäonnistui"
-    }
+    "success": {},
+    "error": {}
   }
 }

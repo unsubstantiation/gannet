@@ -13,10 +13,6 @@
       "label": "מצא דומה",
       "aria": "מצא אובייקטים דומים במעקב"
     },
-    "submitToPlus": {
-      "label": "שלח ל- +Gannet",
-      "aria": "שלח ל +Gannet"
-    },
     "viewInHistory": {
       "label": "צפה בהיסטוריה",
       "aria": "צפה בהיסטוריה"

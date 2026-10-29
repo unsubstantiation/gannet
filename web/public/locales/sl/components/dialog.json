@@ -10,23 +10,6 @@
     "description": "To bo za kratek čas ustavilo delovanje programa."
   },
   "explore": {
-    "plus": {
-      "review": {
-        "question": {
-          "ask_full": "Je ta predmet <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?",
-          "label": "Potrdi to oznako za Frigate Plus",
-          "ask_a": "Je ta predmet <code>{{label}}</code>?",
-          "ask_an": "Je ta predmet <code>{{label}}</code>?"
-        },
-        "state": {
-          "submitted": "Oddano"
-        }
-      },
-      "submitToPlus": {
-        "label": "Pošlji v Frigate+",
-        "desc": "Predmeti na lokacijah, ki se jim želiš izogniti, niso lažni zadetki. Če jih pošlješ kot lažne zadetke, boš zmedli model."
-      }
-    },
     "video": {
       "viewInHistory": "Poglej v zgodovini"
     }

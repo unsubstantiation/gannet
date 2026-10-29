@@ -10,26 +10,6 @@
     "description": "Gannet laikinai sustabdoma, iki kol programa persikraus."
   },
   "explore": {
-    "plus": {
-      "review": {
-        "question": {
-          "ask_a": "Ar šis objektas yra <code>{{label}}</code>?",
-          "ask_an": "Ar šis objektas yra <code>{{label}}</code>?",
-          "label": "Patvirtinti šią etiketę į Frigate Plus",
-          "ask_full": "Ar šis objektas yra <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?"
-        },
-        "state": {
-          "submitted": "Pateikta"
-        },
-        "toast": {
-          "error": "Pateikti į Frigate+ nepavyko. Prašau patikrinkite savo tinklo nustatymus ir bandykite dar kartą."
-        }
-      },
-      "submitToPlus": {
-        "label": "Pateiktį į Frigate+",
-        "desc": "Objektai vietose kurių norite vengti nėra klaidingai teigiami. Pateikiant juos kaip klaidingai teigiamus įneš neatitikimų į modelį."
-      }
-    },
     "video": {
       "viewInHistory": "Pažiūrėti Istorijoje"
     }

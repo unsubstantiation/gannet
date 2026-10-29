@@ -6,7 +6,6 @@
     "motionTuner": "移動調校器 - Gannet",
     "object": "除錯 - Gannet",
     "general": "介面設定 - Gannet",
-    "frigatePlus": "Frigate+ 設定 - Gannet",
     "notifications": "通知設定 - Gannet",
     "enrichments": "進階功能設定 - Gannet",
     "cameraManagement": "管理鏡頭 - Gannet",
@@ -20,7 +19,6 @@
     "debug": "除錯",
     "users": "用戶",
     "notifications": "通知",
-    "frigateplus": "Frigate+",
     "enrichments": "進階功能",
     "triggers": "觸發器",
     "roles": "角色",
@@ -514,48 +512,6 @@
     "cancelSuspension": "取消暫停",
     "unsavedRegistrations": "通知註冊尚未儲存",
     "unsavedChanges": "通知設定更改尚未儲存"
-  },
-  "frigatePlus": {
-    "title": "Frigate+設定",
-    "apiKey": {
-      "title": "Frigate+ API金鑰",
-      "validated": "已偵測並驗證Frigate+ API金鑰",
-      "notValidated": "未偵測到Frigate+ API金鑰或驗證失敗",
-      "desc": "Frigate+ API金鑰可啟用與Frigate+服務的整合功能。",
-      "plusLink": "了解更多Frigate+資料"
-    },
-    "snapshotConfig": {
-      "title": "快照設定",
-      "table": {
-        "camera": "鏡頭",
-        "snapshots": "快照"
-      },
-      "cleanCopyWarning": "部分鏡頭已啟用快照，但未啟用乾淨副本。你必須於快照設定中啟用<code>clean_copy</code>，才能從這些鏡頭提交影像至Frigate+。",
-      "desc": "提交至Frigate+需要在設定中同時啟用快照及<code>clean_copy</code>快照功能。"
-    },
-    "modelInfo": {
-      "title": "模型資料",
-      "modelType": "模型類型",
-      "trainDate": "訓練日期",
-      "baseModel": "基礎模型",
-      "plusModelType": {
-        "baseModel": "基礎模型",
-        "userModel": "微調"
-      },
-      "supportedDetectors": "支援的偵測器",
-      "cameras": "鏡頭",
-      "availableModels": "可用模型",
-      "loadingAvailableModels": "正在載入可用模型…",
-      "modelSelect": "可於此選擇你在Frigate+上的可用模型。請注意，只能選擇與當前偵測器設定相容的模型。",
-      "loading": "正在載入模型資料…",
-      "error": "載入模型資料失敗"
-    },
-    "toast": {
-      "error": "儲存設定變更失敗：{{errorMessage}}",
-      "success": "Frigate+設定已儲存。請重新啟動Gannet以套用更改。"
-    },
-    "restart_required": "需要重新啟動（已更改Frigate+模型）",
-    "unsavedChanges": "Frigate+ 設定更改尚未儲存"
   },
   "enrichments": {
     "faceRecognition": {

@@ -143,10 +143,6 @@
       "aria": "Descarregar vídeo",
       "label": "Descarregar vídeo"
     },
-    "submitToPlus": {
-      "aria": "Enviar a Frigate Plus",
-      "label": "Enviar a Frigate+"
-    },
     "downloadSnapshot": {
       "label": "Descarregar instantània",
       "aria": "Descarregar instantània"

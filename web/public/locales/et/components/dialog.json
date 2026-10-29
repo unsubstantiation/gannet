@@ -26,26 +26,6 @@
   "explore": {
     "video": {
       "viewInHistory": "Vaata ajaloos"
-    },
-    "plus": {
-      "review": {
-        "state": {
-          "submitted": "Saadetud"
-        },
-        "question": {
-          "ask_a": "Kas see objekt on <code>{{label}}</code>?",
-          "ask_an": "Kas see objekt on <code>{{label}}</code>?",
-          "ask_full": "Kas see objekt on <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?",
-          "label": "Kinnita see silt Frigate+ teenuse jaoks"
-        },
-        "toast": {
-          "error": "Frigate+ teenusesse saatmine ei õnnestunud. Palun kontrolli seadme võrguühenduse toimimist ja proovi uuesti."
-        }
-      },
-      "submitToPlus": {
-        "label": "Saada teenusesse Frigate+",
-        "desc": "Objektid asukohtades, mida sa tahad vältida, pole valepositiivsed. Kui sa neid sellistena saadad teenusele, siis see ainult ajab tehisaru mudeli sassi."
-      }
     }
   },
   "export": {

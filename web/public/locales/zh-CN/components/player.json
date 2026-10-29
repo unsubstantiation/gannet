@@ -2,11 +2,6 @@
   "noRecordingsFoundForThisTime": "找不到此次录制",
   "noPreviewFound": "没有找到预览",
   "noPreviewFoundFor": "没有在 {{cameraName}} 下找到预览",
-  "submitFrigatePlus": {
-    "title": "提交此帧到 Frigate+？",
-    "submit": "提交",
-    "previewError": "无法加载快照预览。该录制当前可能不可用。"
-  },
   "livePlayerRequiredIOSVersion": "此直播流类型需要 iOS 17.1 或更高版本。",
   "streamOffline": {
     "title": "视频流离线",
@@ -33,12 +28,8 @@
     "droppedFrameRate": "丢帧率："
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "已成功提交帧到 Frigate+"
-    },
-    "error": {
-      "submitFrigatePlusFailed": "提交帧到 Frigate+ 失败"
-    }
+    "success": {},
+    "error": {}
   },
   "cameraOff": "摄像头已关闭"
 }

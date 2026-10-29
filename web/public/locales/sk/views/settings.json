@@ -7,7 +7,6 @@
     "motionTuner": "Ladič detekcie pohybu - Gannet",
     "object": "Ladenie - Gannet",
     "general": "UI nastavenia – Gannet",
-    "frigatePlus": "Nastavenia Frigate+ – Gannet",
     "notifications": "Nastavenia upozornení – Gannet",
     "cameraManagement": "Manažment kamier - Gannet",
     "cameraReview": "Nastavenie kamier - Gannet"
@@ -21,7 +20,6 @@
     "debug": "Ladenie",
     "users": "Uživatelia",
     "notifications": "Notifikacie",
-    "frigateplus": "Frigate+",
     "triggers": "Spúšťače",
     "roles": "Roly",
     "cameraManagement": "Manažment",
@@ -884,48 +882,6 @@
       "error": {
         "registerFailed": "Uloženie registrácie upozornenia zlyhalo."
       }
-    }
-  },
-  "frigatePlus": {
-    "title": "Nastavenie Frigate+",
-    "apiKey": {
-      "title": "Gannet + API kľúč",
-      "validated": "Gannet + API kľúč je detekovaný a overený",
-      "notValidated": "Gannet + API kľúč nie je detekovaný alebo nie je overený",
-      "desc": "Frigate+ API kľúč umožňuje integráciu s Frigate+ služby.",
-      "plusLink": "Prečítajte si viac o Frigate+"
-    },
-    "snapshotConfig": {
-      "title": "Konfigurácia snímky",
-      "desc": "Odosielanie do Frigate+ vyžaduje, aby boli v konfigurácii povolené snímky aj snímky <code>clean_copy</code>.",
-      "cleanCopyWarning": "Niektoré kamery majú povolené snímky, ale voľba <code>clean_copy</code> je zakázaná. Pre možnosť odosielania snímok z týchto kamier do služby Frigate+ je nutné túto voľbu povoliť v konfigurácii snímok.",
-      "table": {
-        "camera": "Kamera",
-        "snapshots": "Snímky"
-      }
-    },
-    "modelInfo": {
-      "title": "Informácie o Modele",
-      "modelType": "Typ Modelu",
-      "trainDate": "Dátum Tréningu",
-      "baseModel": "Základný Model",
-      "plusModelType": {
-        "baseModel": "Základný Model",
-        "userModel": "Doladené"
-      },
-      "supportedDetectors": "Podporované Detektory",
-      "cameras": "Kamery",
-      "loading": "Načítavam informácie o modeli…",
-      "error": "Chyba načítania informácií o modeli",
-      "availableModels": "Dostupné Moduly",
-      "loadingAvailableModels": "Načítavam dostupné modely…",
-      "modelSelect": "Tu môžete vybrať dostupné modely zo služby Frigate+. Upozorňujeme, že je možné zvoliť iba modely kompatibilné s aktuálnou konfiguráciou detektora."
-    },
-    "unsavedChanges": "Neuložené zmeny nastavenia Frigate+",
-    "restart_required": "Vyžadovaný reštart (model Frigate+ zmenený)",
-    "toast": {
-      "success": "Nastavenia Frigate+ boli uložené. Reštartujte Frigate+ pre aplikovanie zmien.",
-      "error": "Chyba pri ukladaní zmien konfigurácie: {{errorMessage}}"
     }
   },
   "triggers": {

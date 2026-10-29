@@ -2,11 +2,6 @@
   "noRecordingsFoundForThisTime": "Nisu pronađeni snimci za ovo vrijeme",
   "noPreviewFound": "Nije pronađen pregled",
   "noPreviewFoundFor": "Nije pronađen pregled za {{cameraName}}",
-  "submitFrigatePlus": {
-    "title": "Pošalji ovaj okvir Frigate+?",
-    "submit": "Pošalji",
-    "previewError": "Nije moguće učitati prikaz snimke. Snimka možda trenutno nije dostupna."
-  },
   "livePlayerRequiredIOSVersion": "Za ovaj tip uživo prijenosa potreban je iOS 17.1 ili noviji.",
   "streamOffline": {
     "title": "Prijenos je offline",
@@ -33,11 +28,7 @@
     "droppedFrameRate": "Stopa izgubljenih okvira:"
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Uspješno je poslano okvir Frigate+"
-    },
-    "error": {
-      "submitFrigatePlusFailed": "Neuspješno slanje okvira Frigate+"
-    }
+    "success": {},
+    "error": {}
   }
 }

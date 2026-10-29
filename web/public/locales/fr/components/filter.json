@@ -45,10 +45,6 @@
     "relevance": "Pertinence"
   },
   "features": {
-    "submittedToFrigatePlus": {
-      "tips": "Vous devez d'abord filtrer les objets suivis qui ont un instantané.<br /><br />Les objets suivis sans instantané ne peuvent pas être soumis à Frigate+.",
-      "label": "Soumis à Frigate+"
-    },
     "hasVideoClip": "Avec une séquence vidéo",
     "hasSnapshot": "Avec un instantané",
     "label": "Caractéristiques"

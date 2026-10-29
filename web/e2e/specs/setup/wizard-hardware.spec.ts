@@ -62,6 +62,7 @@ test.describe("setup wizard hardware @high @mobile", () => {
     page,
   }) => {
     await installFirstRun(frigateApp, page, {
+      hardware: [NVIDIA_HARDWARE[1]],
       hwaccel: {
         recommended: "vaapi",
         available: [
@@ -81,20 +82,16 @@ test.describe("setup wizard hardware @high @mobile", () => {
     await frigateApp.gotoAndWait("/", "text=Welcome to Gannet");
     await gotoDetectorStep(page);
 
-    // the default hardware mock reports two Corals, an Intel GPU, and the CPU
-    await expect(
-      page.getByRole("radio", { name: /Coral EdgeTPU \(PCIe\) \(2\)/ }),
-    ).toBeChecked();
-    await expect(page.getByText("Recommended")).toBeVisible();
+    // CPU ships a default model and can be saved without a custom path.
+    await expect(page.getByRole("radio", { name: "CPU" })).toBeChecked();
+    await expect(page.getByText("Recommended")).toHaveCount(0);
 
     await page.getByRole("button", { name: "Next" }).click();
 
     await expect(page.getByText("Hardware Acceleration")).toBeVisible();
 
     const detectorSave = saves.find((save) => save.config_data?.models);
-    expect(detectorSave?.config_data?.models).toEqual([
-      { devices: ["edgetpu:pci:0"] },
-    ]);
+    expect(detectorSave?.config_data?.models).toEqual([{ devices: ["cpu"] }]);
     expect(detectorSave?.config_data?.detect).toEqual({ enabled: true });
 
     // VAAPI decodes any codec, so one global value covers every camera
@@ -120,7 +117,7 @@ test.describe("setup wizard hardware @high @mobile", () => {
     expect(restarts).toHaveLength(1);
   });
 
-  test("defers model setup for onnx hardware without Frigate+", async ({
+  test("defers ONNX hardware until a local model is configured", async ({
     frigateApp,
     page,
   }) => {
@@ -135,9 +132,13 @@ test.describe("setup wizard hardware @high @mobile", () => {
     await expect(
       page.getByRole("radio", { name: /NVIDIA GeForce RTX 3060/ }),
     ).toBeChecked();
+    await expect(
+      page.getByText(/needs a local detection model/i),
+    ).toBeVisible();
+    await expect(page.getByText(/frigate\s*\+/i)).toHaveCount(0);
 
     await page
-      .getByRole("button", { name: "Continue without detection" })
+      .getByRole("button", { name: "Continue without configuring" })
       .click();
 
     // advances without touching the config
@@ -161,6 +162,38 @@ test.describe("setup wizard hardware @high @mobile", () => {
     expect(restarts).toHaveLength(0);
   });
 
+  test("defers OpenVINO hardware until a local model is configured", async ({
+    frigateApp,
+    page,
+  }) => {
+    await installFirstRun(frigateApp, page, {
+      hardware: [
+        {
+          key: "openvino:intel",
+          detector: "openvino",
+          name: "Intel GPU",
+          units: [{ device: "openvino:GPU", label: "Intel GPU" }],
+          count: 1,
+          unlimited: true,
+        },
+        NVIDIA_HARDWARE[1],
+      ],
+    });
+    const saves = await captureSaves(page);
+
+    await frigateApp.gotoAndWait("/", "text=Welcome to Gannet");
+    await gotoDetectorStep(page);
+    await expect(page.getByRole("radio", { name: "Intel GPU" })).toBeChecked();
+    await expect(
+      page.getByText(/needs a local detection model/i),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: "Continue without configuring" })
+      .click();
+    await expect(page.getByText("Hardware Acceleration")).toBeVisible();
+    expect(saves.filter((save) => save.config_data?.models)).toHaveLength(0);
+  });
+
   test("offers only the presets the hardware supports", async ({
     frigateApp,
     page,
@@ -177,7 +210,7 @@ test.describe("setup wizard hardware @high @mobile", () => {
     await frigateApp.gotoAndWait("/", "text=Welcome to Gannet");
     await gotoDetectorStep(page);
     await page
-      .getByRole("button", { name: "Continue without detection" })
+      .getByRole("button", { name: "Continue without configuring" })
       .click();
     await expect(page.getByText("Hardware Acceleration")).toBeVisible();
 

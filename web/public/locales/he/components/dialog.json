@@ -66,23 +66,6 @@
     "debugView": "תצוגת ניפוי שגיאות"
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "העלה ל- +Gannet",
-        "desc": "אובייקטים במיקומים שברצונך להימנע מהם אינם תוצאות חיוביות שגויות. הגשתם כתוצאות חיוביות שגויות תבלבל את המודל."
-      },
-      "review": {
-        "question": {
-          "label": "אשר תווית זו עבור +Gannet",
-          "ask_a": "האם אובייקט זה הוא <code>{{label}}</code>?",
-          "ask_an": "האם אובייקט זה הוא - <code>{{label}}</code>?",
-          "ask_full": "האם אובייקט זה הוא <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?"
-        },
-        "state": {
-          "submitted": "נשלח"
-        }
-      }
-    },
     "video": {
       "viewInHistory": "צפה בהיסטוריה"
     }

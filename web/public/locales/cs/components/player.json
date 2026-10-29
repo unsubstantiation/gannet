@@ -2,11 +2,6 @@
   "noRecordingsFoundForThisTime": "V tomto období nebyly nalezeny žádné záznamy",
   "noPreviewFound": "Náhled nenalezen",
   "noPreviewFoundFor": "Náhled nenalezen pro {{cameraName}}",
-  "submitFrigatePlus": {
-    "title": "Odeslat tento snímek do služby Frigate+?",
-    "submit": "Odeslat",
-    "previewError": "Nepodařilo se načíst náhled snímku. Záznam nemusí být v tuto chvíli dostupný."
-  },
   "livePlayerRequiredIOSVersion": "Pro tento typ živého přenosu je vyžadován systém iOS 17.1 nebo novější.",
   "streamOffline": {
     "title": "Přenos je offline",
@@ -35,11 +30,8 @@
     "streamAuto": "{{stream}} (automaticky)"
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Snímek byl úspěšně odeslán do Frigate+"
-    },
+    "success": {},
     "error": {
-      "submitFrigatePlusFailed": "Nepodařilo se odeslat snímek službě Frigate+",
       "playRecordingsFailed": "Nepodařilo se přehrát záznamy (chyba {{code}}): {{message}}"
     }
   },

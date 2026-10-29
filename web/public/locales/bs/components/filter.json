@@ -49,11 +49,7 @@
   "features": {
     "label": "Funkcije",
     "hasSnapshot": "Ima snimak",
-    "hasVideoClip": "Ima video zapis",
-    "submittedToFrigatePlus": {
-      "label": "Predano Frigate+",
-      "tips": "Prvo morate filtrirati prateće objekte koji imaju snimak.<br /><br />Prateći objekti bez snimka ne mogu se poslati na Frigate+."
-    }
+    "hasVideoClip": "Ima video zapis"
   },
   "sort": {
     "label": "Sortiraj",

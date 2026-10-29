@@ -1,11 +1,6 @@
 {
   "noPreviewFound": "Pratinjau Tidak Ditemukan",
   "noPreviewFoundFor": "Tidak ada Pratinjau untuk {{cameraName}}",
-  "submitFrigatePlus": {
-    "submit": "Kirim",
-    "title": "Kirim frame ini ke Frigate+?",
-    "previewError": "Gagal memuat pratinjau snapshot. Rekaman mungkin tidak tersedia saat ini."
-  },
   "noRecordingsFoundForThisTime": "Tidak ada rekaman ditemukan pada waktu ini",
   "livePlayerRequiredIOSVersion": "iOS 17.1 atau yang lebih tinggi diperlukan untuk tipe siaran langsung ini.",
   "streamOffline": {
@@ -33,11 +28,8 @@
     "droppedFrameRate": "Frame Rate Terbuang:"
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Berhasil mengirim frame ke Frigate+"
-    },
+    "success": {},
     "error": {
-      "submitFrigatePlusFailed": "Gagal mengirim frame ke Frigate+",
       "playRecordingsFailed": "Gagal memutar rekaman (galat {{code}}): {{message}}"
     }
   },

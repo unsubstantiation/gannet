@@ -10,26 +10,6 @@
     "description": "Layanan Gannet akan terhenti sejenak saat proses restart."
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "Kirim ke Frigate+",
-        "desc": "Objek di lokasi yang ingin Anda hindari bukanlah deteksi palsu. Mengirimnya sebagai deteksi palsu akan membingungkan model."
-      },
-      "review": {
-        "question": {
-          "label": "Konfirmasi label ini untuk Frigate Plus",
-          "ask_a": "Apakah objek ini adalah sebuah <code>{{label}}</code>?",
-          "ask_an": "Apakah objek ini <code>{{label}}</code>?",
-          "ask_full": "Apakah ini object <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?"
-        },
-        "state": {
-          "submitted": "Terkirim"
-        },
-        "toast": {
-          "error": "Gagal submit ke Frigate+. Harap periksa koneksi jaringan Anda dan coba lagi."
-        }
-      }
-    },
     "video": {
       "viewInHistory": "Lihat di Histori"
     }

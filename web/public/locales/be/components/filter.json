@@ -49,11 +49,7 @@
   "features": {
     "label": "Магчымасці",
     "hasSnapshot": "Мае здымак",
-    "hasVideoClip": "Мае відэакліп",
-    "submittedToFrigatePlus": {
-      "label": "Адпраўлена ў Frigate+",
-      "tips": "Спачатку трэба адфільтраваць аб'екты пад адсочваннем, якія маюць здымак.<br /><br />Аб'екты без здымка нельга адправіць у Frigate+."
-    }
+    "hasVideoClip": "Мае відэакліп"
   },
   "sort": {
     "label": "Сартаваць",

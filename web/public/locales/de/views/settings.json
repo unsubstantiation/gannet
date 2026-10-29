@@ -5,7 +5,6 @@
     "masksAndZones": "Masken- und Zoneneditor – Gannet",
     "object": "Debug - Gannet",
     "general": "Benutzeroberflächen-Einstellungen - Gannet",
-    "frigatePlus": "Frigate+ Einstellungen – Gannet",
     "motionTuner": "Bewegungserkennungs-Optimierer – Gannet",
     "notifications": "Benachrichtigungseinstellungen",
     "enrichments": "Erweiterte Statistiken - Gannet",
@@ -23,7 +22,6 @@
     "masksAndZones": "Maskierungen / Zonen",
     "motionTuner": "Bewegungserkennungs-Optimierer",
     "debug": "Debug",
-    "frigateplus": "Frigate+",
     "users": "Benutzer",
     "notifications": "Benachrichtigungen",
     "enrichments": "Erkennungsfunktionen",
@@ -620,64 +618,6 @@
     "suspended": "Benachrichtigungen für {{time}} pausiert",
     "unsavedChanges": "Nicht gespeicherte Änderungen an den Benachrichtigungen",
     "unsavedRegistrations": "Nicht gespeicherte Benachrichtigungsanmeldungen"
-  },
-  "frigatePlus": {
-    "title": "Frigate+ Einstellungen",
-    "apiKey": {
-      "title": "Frigate+ API Key",
-      "desc": "Der Frigate+ API Key aktiviert die Integration des Frigate+ Dienstes.",
-      "validated": "Frigate+ API Key erkannt und validiert",
-      "notValidated": "Frigate+ API Key nicht erkannt und validiert",
-      "plusLink": "Lese mehr zu Frigate+"
-    },
-    "snapshotConfig": {
-      "desc": "Für die Übermittlung an Frigate+ müssen Snapshots in Ihrer Konfiguration aktiviert sein.",
-      "cleanCopyWarning": "Bei einigen Kameras ist die Schnappschussfunktion deaktiviert",
-      "table": {
-        "camera": "Kamera",
-        "snapshots": "Snapshots"
-      },
-      "title": "Snapshot Einstellungen"
-    },
-    "modelInfo": {
-      "modelType": "Model Typ",
-      "trainDate": "Trainings Datum",
-      "supportedDetectors": "Unterstützte Detektoren",
-      "modelSelect": "Die verfügbaren Modelle auf Frigate+ können hier ausgewählt werden. Beachte, dass nur Modelle kompatibel mit deiner aktuellen Detektorkonfiguration zur Auswahl stehen.",
-      "plusModelType": {
-        "baseModel": "Basis Model",
-        "userModel": "Feinabgestimmt"
-      },
-      "cameras": "Kameras",
-      "loading": "Lade Model Informationen…",
-      "error": "Model Informationen laden fehlgeschlagen",
-      "availableModels": "Verfügbare Frigate+ Modelle",
-      "loadingAvailableModels": "Lade verfügbare Modelle…",
-      "baseModel": "Basis Model",
-      "title": "Model Informationen",
-      "noModelLoaded": "Derzeit ist kein „Frigate+“-Modell geladen.",
-      "selectModel": "Wählen Sie ein Modell aus",
-      "noModelsAvailable": "Keine Modelle verfügbar",
-      "filter": {
-        "ariaLabel": "Modelle nach Typ filtern",
-        "baseModels": "Basismodelle",
-        "fineTunedModels": "Optimierte Modelle"
-      }
-    },
-    "toast": {
-      "error": "Speichern der Konfigurationsänderungen fehlgeschlagen: {{errorMessage}}",
-      "success": "Frigate+ Einstellungen wurden gespeichert. Starte Gannet neu um Änderungen anzuwenden."
-    },
-    "restart_required": "Neustart erforderlich (Frigate+ Model geändert)",
-    "unsavedChanges": "Nicht gespeicherte Änderungen an den Frigate+-Einstellungen",
-    "description": "Frigate+ ist ein Abonnementdienst, der Ihnen Zugriff auf zusätzliche Funktionen und Möglichkeiten für Ihre Gannet-Instanz bietet, darunter die Möglichkeit, benutzerdefinierte Objekterkennungsmodelle zu verwenden, die auf Ihren eigenen Daten trainiert wurden. Hier können Sie Ihre Frigate+-Modelleinstellungen verwalten.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Aktuelles Modell",
-      "otherModels": "Anderes Modell",
-      "configuration": "Konfiguration"
-    },
-    "changeInDetectorsAndModel": "Modell wechseln"
   },
   "enrichments": {
     "birdClassification": {

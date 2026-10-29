@@ -4,7 +4,6 @@
     "authentication": "認證設定 - Gannet",
     "enrichments": "進階功能設定 - Gannet",
     "general": "使用者介面設定 - Gannet",
-    "frigatePlus": "Frigate+ 設定 - Gannet",
     "notifications": "通知設定 - Gannet",
     "masksAndZones": "遮罩與區域編輯器 - Gannet",
     "motionTuner": "移動偵測調教器 - Gannet",
@@ -26,7 +25,6 @@
     "debug": "除錯",
     "users": "使用者",
     "notifications": "通知",
-    "frigateplus": "Frigate+",
     "triggers": "觸發",
     "cameraManagement": "管理",
     "cameraReview": "預覽",
@@ -1302,64 +1300,6 @@
       "error": {
         "registerFailed": "通知註冊失敗。"
       }
-    }
-  },
-  "frigatePlus": {
-    "title": "Frigate+ 設定",
-    "description": "Frigate+ 是一項訂閱服務，可為你的 Gannet 例項提供額外的功能和能力，包括使用基於你自己的資料訓練的自訂目標偵測模型。你可以在此管理 Frigate+ 的模型設定。",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "目前模型",
-      "otherModels": "其他模型",
-      "configuration": "配置"
-    },
-    "apiKey": {
-      "title": "Frigate+ API 金鑰",
-      "validated": "Frigate+ API 金鑰已偵測並驗證透過",
-      "notValidated": "未偵測到 Frigate+ API 金鑰或驗證未透過",
-      "desc": "Frigate+ API 金鑰用於啟用與 Frigate+ 服務的整合。",
-      "plusLink": "瞭解更多關於 Frigate+"
-    },
-    "snapshotConfig": {
-      "title": "快照配置",
-      "desc": "提交到 Frigate+ 需要同時在配置中開啟快照功能。",
-      "cleanCopyWarning": "部分攝影機未開啟快照功能",
-      "table": {
-        "camera": "攝影機",
-        "snapshots": "快照"
-      }
-    },
-    "modelInfo": {
-      "title": "模型資訊",
-      "modelType": "模型型別",
-      "trainDate": "訓練日期",
-      "baseModel": "基礎模型",
-      "plusModelType": {
-        "baseModel": "基礎模型",
-        "userModel": "定向調優"
-      },
-      "supportedDetectors": "支援的偵測器",
-      "cameras": "攝影機",
-      "loading": "正在載入模型資訊…",
-      "error": "載入模型資訊失敗",
-      "noModelLoaded": "目前未載入 Frigate+ 模型。",
-      "availableModels": "可用模型",
-      "loadingAvailableModels": "正在載入可用模型…",
-      "selectModel": "選擇模型",
-      "noModelsAvailable": "無可用模型",
-      "filter": {
-        "ariaLabel": "依類型篩選模型",
-        "baseModels": "基礎模型",
-        "fineTunedModels": "微調模型"
-      },
-      "modelSelect": "您可以在 Frigate+ 上選擇可用的模型。請注意，只能選擇與目前偵測器配置相容的模型。"
-    },
-    "changeInDetectorsAndModel": "變更模型",
-    "unsavedChanges": "未儲存Frigate+變更設定",
-    "restart_required": "需要重啟（Frigate+模型已修改）",
-    "toast": {
-      "success": "Frigate+ 設定已儲存。請重啟 Gannet 以應用更改。",
-      "error": "配置更改儲存失敗：{{errorMessage}}"
     }
   },
   "maintenance": {

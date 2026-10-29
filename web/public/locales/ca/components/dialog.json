@@ -10,26 +10,6 @@
     "description": "Això aturarà breument Gannet mentre es reinicia."
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "Enviar a Frigate+",
-        "desc": "Els objectes a les ubicacions que voleu evitar no són falsos positius. Enviar-los com a falsos positius confondrà el model."
-      },
-      "review": {
-        "question": {
-          "label": "Confirmar aquesta etiqueta per a Frigate Plus",
-          "ask_a": "Aquest objecte és un <code>{{label}}</code>?",
-          "ask_an": "Aquest objecte és un <code>{{label}}</code>?",
-          "ask_full": "Aquest objecte és un <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?"
-        },
-        "state": {
-          "submitted": "Enviat"
-        },
-        "toast": {
-          "error": "No s'ha pogut enviar a Frigate+. Si us plau, comproveu la vostra connexió de xarxa i torneu-ho a provar."
-        }
-      }
-    },
     "video": {
       "viewInHistory": "Veure a l'historial"
     }

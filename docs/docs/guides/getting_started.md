@@ -65,7 +65,7 @@ The setup wizard probes native Windows runtimes and offers supported devices:
 - **ONNX Runtime DirectML** — GPU inference through `onnxruntime-directml`;
 - **ONNX Runtime CUDA** — NVIDIA inference when the CUDA provider is installed.
 
-ONNX requires a compatible model path. Upstream Frigate+ models can be selected from the UI when the account is linked. Do not select a provider that is not shown by <NavPath path="System > Hardware" />.
+ONNX and OpenVINO require a compatible local model path. Set it under <NavPath path="Settings > System > Detection models" />. Do not select a provider that is not shown by <NavPath path="System > Hardware" />.
 
 ## 4. Enable Windows video acceleration
 

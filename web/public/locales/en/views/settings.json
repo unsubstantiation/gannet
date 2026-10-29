@@ -11,7 +11,6 @@
     "general": "UI Settings - Gannet",
     "globalConfig": "Global Configuration - Gannet",
     "cameraConfig": "Camera Configuration - Gannet",
-    "frigatePlus": "upstream Frigate+ Settings - Gannet",
     "detectorsAndModel": "Detectors and model - Gannet",
     "notifications": "Notification Settings - Gannet",
     "maintenance": "Maintenance - Gannet",
@@ -116,7 +115,6 @@
     "notifications": "Notifications",
     "triggers": "Triggers",
     "debug": "Debug",
-    "frigateplus": "upstream Frigate+",
     "maintenance": "Maintenance",
     "mediaSync": "Media sync",
     "regionGrid": "Region grid"
@@ -1441,65 +1439,6 @@
       }
     }
   },
-  "frigatePlus": {
-    "title": "upstream Frigate+ Settings",
-    "description": "upstream Frigate+ is a subscription service that provides access to additional features and capabilities for your Gannet instance, including the ability to use custom object detection models trained on your own data. You can manage your upstream Frigate+ model settings here.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Current Model",
-      "otherModels": "Other Models",
-      "configuration": "Configuration"
-    },
-    "apiKey": {
-      "title": "upstream Frigate+ API Key",
-      "validated": "upstream Frigate+ API key is detected and validated",
-      "notValidated": "upstream Frigate+ API key is not detected or not validated",
-      "desc": "The upstream Frigate+ API key enables integration with the upstream Frigate+ service.",
-      "plusLink": "Read more about upstream Frigate+"
-    },
-    "snapshotConfig": {
-      "title": "Snapshot Configuration",
-      "desc": "Submitting to upstream Frigate+ requires snapshots to be enabled in your config.",
-      "cleanCopyWarning": "Some cameras have snapshots disabled",
-      "table": {
-        "camera": "Camera",
-        "snapshots": "Snapshots"
-      }
-    },
-    "modelInfo": {
-      "title": "Model Information",
-      "modelType": "Model Type",
-      "trainDate": "Train Date",
-      "baseModel": "Base Model",
-      "plusModelType": {
-        "baseModel": "Base Model",
-        "userModel": "Fine-Tuned"
-      },
-      "supportedDetectors": "Supported Detectors",
-      "cameras": "Cameras",
-      "loading": "Loading model information…",
-      "error": "Failed to load model information",
-      "noModelLoaded": "No upstream Frigate+ model is currently loaded.",
-      "availableModels": "Available upstream Frigate+ models",
-      "loadingAvailableModels": "Loading available models…",
-      "selectModel": "Select a model",
-      "noModelsAvailable": "No models available",
-      "filter": {
-        "ariaLabel": "Filter models by type",
-        "baseModels": "Base Models",
-        "fineTunedModels": "Fine-tuned Models"
-      },
-      "modelSelect": "Your available models on upstream Frigate+ can be selected here. Note that only models compatible with your current detector configuration can be selected.",
-      "showIncompatible": "Show incompatible models"
-    },
-    "changeInDetectorsAndModel": "Change model",
-    "unsavedChanges": "Unsaved upstream Frigate+ settings changes",
-    "restart_required": "Restart required (upstream Frigate+ model changed)",
-    "toast": {
-      "success": "upstream Frigate+ settings have been saved. Restart Gannet to apply changes.",
-      "error": "Failed to save config changes: {{errorMessage}}"
-    }
-  },
   "triggers": {
     "documentTitle": "Triggers",
     "semanticSearch": {
@@ -2279,13 +2218,6 @@
       "description": "The hardware this model runs its detection on.",
       "detectorCountDescription": "How many detection processes to run on this hardware. More detectors keep up with more cameras, at the cost of extra device memory.",
       "unitsDescription": "Each unit runs its own detection process. Shareable CPU, ONNX, and OpenVINO devices may be assigned according to the hardware shown by Gannet."
-    },
-    "tabs": {
-      "plus": "upstream Frigate+",
-      "custom": "Custom Model"
-    },
-    "plusModel": {
-      "noModelSelected": "Select a upstream Frigate+ model"
     }
   }
 }

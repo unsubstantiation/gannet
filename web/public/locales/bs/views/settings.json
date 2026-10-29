@@ -11,7 +11,6 @@
     "general": "Postavke korisničkog sučelja - Gannet",
     "globalConfig": "Globalna konfiguracija - Gannet",
     "cameraConfig": "Konfiguracija kamere - Gannet",
-    "frigatePlus": "Postavke Frigate+ - Gannet",
     "notifications": "Postavke obavijesti - Gannet",
     "maintenance": "Održavanje - Gannet",
     "profiles": "Profili - Gannet"
@@ -83,7 +82,6 @@
     "notifications": "Obavještenja",
     "triggers": "Pokretači",
     "debug": "Debug",
-    "frigateplus": "Frigate+",
     "maintenance": "Održavanje",
     "mediaSync": "Sinkronizacija medija",
     "regionGrid": "Mreža regija"
@@ -1080,55 +1078,6 @@
       "error": {
         "registerFailed": "Neuspješno sačuvana registracija obaveštenja."
       }
-    }
-  },
-  "frigatePlus": {
-    "title": "Postavke Frigate+",
-    "description": "Frigate+ je usluga pretplate koja pruža pristup dodatnim funkcijama i mogućnostima za vašu instancu Gannet, uključujući mogućnost korištenja prilagođenih modela detekcije objekata treniranih na vašim podacima. Ovdje možete upravljati postavkama modela Frigate+.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Trenutni model",
-      "otherModels": "Drugi modeli",
-      "configuration": "Konfiguracija"
-    },
-    "apiKey": {
-      "title": "Frigate+ API ključ",
-      "validated": "Frigate+ API ključ je detektovan i validiran",
-      "notValidated": "Frigate+ API ključ nije detektovan ili nije validiran",
-      "desc": "Frigate+ API ključ omogućava integraciju sa uslugom Frigate+.",
-      "plusLink": "Pročitajte više o Frigate+"
-    },
-    "snapshotConfig": {
-      "title": "Konfiguracija snimaka",
-      "desc": "Slanje na Frigate+ zahtijeva da su snimci omogućeni u vašoj konfiguraciji.",
-      "cleanCopyWarning": "Neki uređaji imaju isključene snimke",
-      "table": {
-        "camera": "Kamera",
-        "snapshots": "Snimci"
-      }
-    },
-    "modelInfo": {
-      "title": "Informacije o modelu",
-      "modelType": "Tip modela",
-      "trainDate": "Datum treniranja",
-      "baseModel": "Osnovni model",
-      "plusModelType": {
-        "baseModel": "Osnovni model",
-        "userModel": "Podeseno"
-      },
-      "supportedDetectors": "Podržani detektori",
-      "cameras": "Kamere",
-      "loading": "Učitavanje informacija o modelu…",
-      "error": "Neuspješno učitavanje informacija o modelu",
-      "availableModels": "Dostupni modeli",
-      "loadingAvailableModels": "Učitavanje dostupnih modela…",
-      "modelSelect": "Vaši dostupni modeli na Frigate+ mogu se odabrati ovdje. Napomena: samo modeli kompatibilni s vašom trenutnom konfiguracijom detektora mogu se odabrati."
-    },
-    "unsavedChanges": "Nespremljene promjene postavki Frigate+",
-    "restart_required": "Potrebno je ponovno pokretanje (model Frigate+ promijenjen)",
-    "toast": {
-      "success": "Postavke Frigate+ su spremljene. Ponovno pokrenite Gannet da biste primijenili promjene.",
-      "error": "Nije uspješno sačuvana promjena konfiguracije: {{errorMessage}}"
     }
   },
   "triggers": {

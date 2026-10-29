@@ -2,10 +2,6 @@
   "noRecordingsFoundForThisTime": "Ingen optagelser fundet i det angivne tidsrum",
   "noPreviewFound": "Ingen forhåndsvisning fundet",
   "noPreviewFoundFor": "Ingen forhåndsvisning fundet for {{cameraName}}",
-  "submitFrigatePlus": {
-    "title": "Indsend dette billede til Frigate+?",
-    "submit": "Indsend"
-  },
   "livePlayerRequiredIOSVersion": "iOS 17.1 eller nyere kræves for denne type livestream.",
   "streamOffline": {
     "title": "Stream offline",
@@ -32,11 +28,7 @@
     "droppedFrameRate": "Rate for tabte billeder:"
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Billede sendt til Frigate+"
-    },
-    "error": {
-      "submitFrigatePlusFailed": "Kunne ikke sende billede til Frigate+"
-    }
+    "success": {},
+    "error": {}
   }
 }

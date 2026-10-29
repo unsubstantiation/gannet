@@ -150,10 +150,6 @@
       "label": "Descarcă video-ul",
       "aria": "Descarcă video-ul"
     },
-    "submitToPlus": {
-      "label": "Trimite către Frigate+",
-      "aria": "Trimite către Frigate Plus"
-    },
     "addTrigger": {
       "label": "Adaugă declanșator",
       "aria": "Adaugă un declanșator pentru acest obiect urmărit"

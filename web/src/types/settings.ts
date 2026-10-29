@@ -93,10 +93,6 @@ export const settingsViewGroups = [
     views: ["notifications"],
   },
   {
-    label: "frigateplus",
-    views: ["frigateplus"],
-  },
-  {
     label: "maintenance",
     views: ["mediaSync", "regionGrid"],
   },

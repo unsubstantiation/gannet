@@ -346,7 +346,6 @@ class TestExportResolution(unittest.TestCase):
             area=0,
             retain_indefinitely=False,
             ratio=1.0,
-            plus_id=None,
             model_hash="",
             detector_type="cpu",
             model_type="ssd",

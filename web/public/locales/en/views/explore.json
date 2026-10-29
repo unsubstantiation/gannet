@@ -204,10 +204,6 @@
       "label": "Transcribe",
       "aria": "Request audio transcription"
     },
-    "submitToPlus": {
-      "label": "Submit to upstream Frigate+",
-      "aria": "Submit to upstream Frigate Plus"
-    },
     "viewInHistory": {
       "label": "View in History",
       "aria": "View in History"

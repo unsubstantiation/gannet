@@ -24,7 +24,6 @@ import { useDetailStream } from "@/context/detail-stream-context";
 import { TimeRange } from "@/types/timeline";
 import ActivityIndicator from "@/components/indicators/activity-indicator";
 import { VideoResolutionType } from "@/types/live";
-import axios from "axios";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
@@ -364,33 +363,6 @@ export default function DynamicVideoPlayer({
       isScrubbing,
       sourceTimeRange,
     ],
-  );
-
-  const onUploadFrameToPlus = useCallback(
-    (playTime: number) => {
-      if (!controller) {
-        return;
-      }
-
-      const time = controller.getProgress(playTime);
-      return axios.post(`/${camera}/plus/${time}`);
-    },
-    [camera, controller],
-  );
-
-  const getSnapshotUrlForPlus = useCallback(
-    (playTime: number) => {
-      if (!controller) {
-        return undefined;
-      }
-
-      const time = controller.getProgress(playTime);
-      if (!time) {
-        return undefined;
-      }
-      return `${apiHost}api/${camera}/recordings/${time}/snapshot.jpg?height=500`;
-    },
-    [apiHost, camera, controller],
   );
 
   const onDownloadSnapshot = useCallback(
@@ -878,8 +850,6 @@ export default function DynamicVideoPlayer({
             setNoRecording(false);
           }}
           setFullResolution={setFullResolution}
-          onUploadFrame={onUploadFrameToPlus}
-          getSnapshotUrl={getSnapshotUrlForPlus}
           onSnapshot={onDownloadSnapshot}
           toggleFullscreen={toggleFullscreen}
           onError={(error) => {

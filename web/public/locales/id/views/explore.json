@@ -203,10 +203,6 @@
       "label": "Transkripsikan",
       "aria": "Minta transkripsi audio"
     },
-    "submitToPlus": {
-      "label": "Kirim ke Frigate+",
-      "aria": "Kirim ke Frigate Plus"
-    },
     "viewInHistory": {
       "label": "Lihat di Riwayat",
       "aria": "Lihat di Riwayat"

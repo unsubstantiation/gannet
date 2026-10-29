@@ -10,26 +10,6 @@
     "description": "Gannet 在重啟期間將短暫停止執行。"
   },
   "explore": {
-    "plus": {
-      "review": {
-        "question": {
-          "label": "確認此 Frigate Plus 標籤",
-          "ask_a": "此物件是 <code>{{label}}</code> 嗎？",
-          "ask_an": "此物件是 <code>{{label}}</code> 嗎？",
-          "ask_full": "此物件是 <code>{{untranslatedLabel}}</code> ({{translatedLabel}}) 嗎？"
-        },
-        "state": {
-          "submitted": "已提交"
-        },
-        "toast": {
-          "error": "無法提交至 Frigate+，請檢查您的網路連線並再試一次。"
-        }
-      },
-      "submitToPlus": {
-        "label": "提交到 Frigate+",
-        "desc": "在你欲遮蓋範圍內的物件並不是誤判。將他們標示為誤判並提交會使模型混淆。"
-      }
-    },
     "video": {
       "viewInHistory": "在歷史記錄中查看"
     }

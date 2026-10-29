@@ -21,7 +21,6 @@ import { REVIEW_PADDING, ReviewSegment } from "@/types/review";
 import { LuChevronDown, LuCircle, LuChevronRight } from "react-icons/lu";
 import { getTranslatedLabel } from "@/utils/i18n";
 import EventMenu from "@/components/timeline/EventMenu";
-import { FrigatePlusDialog } from "@/components/overlay/dialog/FrigatePlusDialog";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Link } from "react-router-dom";
@@ -63,7 +62,6 @@ export default function DetailStream({
   });
 
   const effectiveTime = currentTime - annotationOffset / 1000;
-  const [upload, setUpload] = useState<Event | undefined>(undefined);
   const [controlsExpanded, setControlsExpanded] = useState(false);
   const [alwaysExpandActive, setAlwaysExpandActive] = useUserPersistence(
     "detailStreamActiveExpanded",
@@ -273,16 +271,6 @@ export default function DetailStream({
 
   return (
     <>
-      <FrigatePlusDialog
-        upload={upload}
-        onClose={() => setUpload(undefined)}
-        onEventUploaded={() => {
-          if (upload) {
-            upload.plus_id = "new_upload";
-          }
-        }}
-      />
-
       <div className="relative flex h-full flex-col">
         {controlsExpanded && (
           <div
@@ -313,7 +301,6 @@ export default function DetailStream({
                     annotationOffset={annotationOffset}
                     isActive={activeReviewId == id}
                     onActivate={() => setActiveReviewId(id)}
-                    onOpenUpload={(e) => setUpload(e)}
                     alwaysExpandActive={alwaysExpandActive}
                   />
                 );
@@ -375,7 +362,6 @@ type ReviewGroupProps = {
   onSeek: (timestamp: number, play?: boolean) => void;
   isActive?: boolean;
   onActivate?: () => void;
-  onOpenUpload?: (e: Event) => void;
   effectiveTime?: number;
   annotationOffset: number;
   alwaysExpandActive?: boolean;
@@ -388,7 +374,6 @@ function ReviewGroup({
   onSeek,
   isActive = false,
   onActivate,
-  onOpenUpload,
   effectiveTime,
   annotationOffset,
   alwaysExpandActive = false,
@@ -586,7 +571,6 @@ function ReviewGroup({
                     effectiveTime={effectiveTime}
                     annotationOffset={annotationOffset}
                     onSeek={onSeek}
-                    onOpenUpload={onOpenUpload}
                   />
                 </div>
               );
@@ -625,7 +609,6 @@ type EventListProps = {
   effectiveTime?: number;
   annotationOffset: number;
   onSeek: (ts: number, play?: boolean) => void;
-  onOpenUpload?: (e: Event) => void;
 };
 function EventList({
   event,
@@ -633,7 +616,6 @@ function EventList({
   effectiveTime,
   annotationOffset,
   onSeek,
-  onOpenUpload,
 }: EventListProps) {
   const { data: config } = useSWR<FrigateConfig>("config");
 
@@ -742,7 +724,6 @@ function EventList({
             <EventMenu
               event={event}
               config={config}
-              onOpenUpload={(e) => onOpenUpload?.(e)}
               isSelected={isSelected}
               onToggleSelection={handleObjectSelect}
             />

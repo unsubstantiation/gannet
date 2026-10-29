@@ -33,8 +33,6 @@ CACHE_DIR = get_cache_dir()
 BIRDSEYE_PIPE = birdseye_pipe_path()
 REPLAY_CAMERA_PREFIX = "_replay_"
 REPLAY_DIR = os.path.join(CLIPS_DIR, "replay")
-PLUS_ENV_VAR = "PLUS_API_KEY"
-PLUS_API_HOST = "https://api.frigate.video"
 
 FULL_SYSTEM_CPU_KEY = "frigate.full_system"
 

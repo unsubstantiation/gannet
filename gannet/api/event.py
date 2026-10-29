@@ -1,6 +1,5 @@
 """Event apis."""
 
-import asyncio
 import base64
 import datetime
 import json
@@ -42,14 +41,12 @@ from gannet.api.defs.request.events_body import (
     EventsEndBody,
     EventsLPRBody,
     EventsSubLabelBody,
-    SubmitPlusBody,
     TriggerEmbeddingBody,
 )
 from gannet.api.defs.response.event_response import (
     EventCreateResponse,
     EventMultiDeleteResponse,
     EventResponse,
-    EventUploadPlusResponse,
 )
 from gannet.api.defs.response.generic_response import GenericResponse
 from gannet.api.defs.tags import Tags
@@ -61,7 +58,6 @@ from gannet.models import Event, ReviewSegment, Timeline, Trigger
 from gannet.track.object_processing import TrackedObject
 from gannet.util.file import (
     get_event_thumbnail_bytes,
-    load_event_snapshot_image,
     robust_remove,
 )
 from gannet.util.path import get_trigger_thumbnail_path, safe_join
@@ -146,7 +142,6 @@ def events(
     max_score = params.max_score
     min_speed = params.min_speed
     max_speed = params.max_speed
-    is_submitted = params.is_submitted
     min_length = params.min_length
     max_length = params.max_length
     event_id = params.event_id
@@ -165,7 +160,6 @@ def events(
         Event.end_time,
         Event.has_clip,
         Event.has_snapshot,
-        Event.plus_id,
         Event.retain_indefinitely,
         Event.sub_label,
         Event.top_score,
@@ -336,12 +330,6 @@ def events(
     if max_length is not None:
         clauses.append((Event.end_time - Event.start_time) <= max_length)
 
-    if is_submitted is not None:
-        if is_submitted == 0:
-            clauses.append(Event.plus_id.is_null())
-        elif is_submitted > 0:
-            clauses.append(Event.plus_id != "")
-
     if event_id is not None:
         clauses.append(Event.id == event_id)
 
@@ -417,7 +405,6 @@ def events_explore(
         Event.end_time,
         Event.has_clip,
         Event.has_snapshot,
-        Event.plus_id,
         Event.retain_indefinitely,
         Event.top_score,
         Event.false_positive,
@@ -458,7 +445,6 @@ def events_explore(
                 "end_time": event.end_time,
                 "has_clip": event.has_clip,
                 "has_snapshot": event.has_snapshot,
-                "plus_id": event.plus_id,
                 "retain_indefinitely": event.retain_indefinitely,
                 "sub_label": event.sub_label,
                 "top_score": event.top_score,
@@ -561,7 +547,6 @@ def events_search(
     time_range = params.time_range
     has_clip = params.has_clip
     has_snapshot = params.has_snapshot
-    is_submitted = params.is_submitted
     recognized_license_plate = params.recognized_license_plate
 
     # for similarity search
@@ -603,7 +588,6 @@ def events_search(
         Event.has_snapshot,
         Event.top_score,
         Event.data,
-        Event.plus_id,
         ReviewSegment.thumb_path,
     ]
 
@@ -710,12 +694,6 @@ def events_search(
 
     if has_snapshot is not None:
         event_filters.append(Event.has_snapshot == has_snapshot)
-
-    if is_submitted is not None:
-        if is_submitted == 0:
-            event_filters.append(Event.plus_id.is_null())
-        elif is_submitted > 0:
-            event_filters.append(Event.plus_id != "")
 
     if min_score is not None and max_score is not None:
         event_filters.append(Event.data["score"].between(min_score, max_score))
@@ -1063,230 +1041,6 @@ def set_retain(event_id: str):
     return JSONResponse(
         content=({"success": True, "message": "Event " + event_id + " retained"}),
         status_code=200,
-    )
-
-
-@router.post(
-    "/events/{event_id}/plus",
-    response_model=EventUploadPlusResponse,
-    dependencies=[Depends(require_role(["admin"]))],
-    summary="Send event to upstream Frigate+",
-    description="""Sends an event to upstream Frigate+.
-    Returns a success message or an error if the event is not found.
-    """,
-)
-async def send_to_plus(request: Request, event_id: str, body: SubmitPlusBody = None):
-    if not request.app.frigate_config.plus_api.is_active():
-        message = "PLUS_API_KEY environment variable is not set"
-        logger.error(message)
-        return JSONResponse(
-            content=(
-                {
-                    "success": False,
-                    "message": message,
-                }
-            ),
-            status_code=400,
-        )
-
-    include_annotation = body.include_annotation if body is not None else None
-
-    try:
-        event = Event.get(Event.id == event_id)
-        await require_camera_access(event.camera, request=request)
-    except DoesNotExist:
-        message = f"Event {event_id} not found"
-        logger.error(message)
-        return JSONResponse(
-            content=({"success": False, "message": message}), status_code=404
-        )
-
-    # events from before the conversion to relative dimensions cant include annotations
-    if event.data.get("box") is None:
-        include_annotation = None
-
-    if event.end_time is None:
-        logger.error(f"Unable to load clean snapshot for in-progress event: {event.id}")
-        return JSONResponse(
-            content=(
-                {
-                    "success": False,
-                    "message": "Unable to load clean snapshot for in-progress event",
-                }
-            ),
-            status_code=400,
-        )
-
-    if event.plus_id:
-        message = "Already submitted to plus"
-        logger.error(message)
-        return JSONResponse(
-            content=({"success": False, "message": message}), status_code=400
-        )
-
-    try:
-        image, is_clean_snapshot = load_event_snapshot_image(event, clean_only=True)
-    except Exception:
-        logger.error(f"Unable to load clean snapshot for event: {event.id}")
-        return JSONResponse(
-            content=(
-                {"success": False, "message": "Unable to load clean snapshot for event"}
-            ),
-            status_code=400,
-        )
-
-    if not is_clean_snapshot or image is None or image.size == 0:
-        logger.error(f"Unable to find clean snapshot for event: {event.id}")
-        return JSONResponse(
-            content=(
-                {
-                    "success": False,
-                    "message": "Unable to find clean snapshot for event",
-                }
-            ),
-            status_code=400,
-        )
-
-    try:
-        plus_id = await asyncio.to_thread(
-            request.app.frigate_config.plus_api.upload_image, image, event.camera
-        )
-    except Exception as ex:
-        logger.exception(ex)
-        return JSONResponse(
-            content=({"success": False, "message": "Error uploading image"}),
-            status_code=400,
-        )
-
-    # store image id in the database
-    event.plus_id = plus_id
-    event.save()
-
-    if include_annotation is not None:
-        box = event.data["box"]
-
-        try:
-            await asyncio.to_thread(
-                request.app.frigate_config.plus_api.add_annotation,
-                event.plus_id,
-                box,
-                event.label,
-            )
-        except ValueError:
-            message = "Error uploading annotation, unsupported label provided."
-            logger.error(message)
-            return JSONResponse(
-                content=({"success": False, "message": message}),
-                status_code=400,
-            )
-        except Exception as ex:
-            logger.exception(ex)
-            return JSONResponse(
-                content=({"success": False, "message": "Error uploading annotation"}),
-                status_code=400,
-            )
-
-    return JSONResponse(
-        content=({"success": True, "plus_id": plus_id}), status_code=200
-    )
-
-
-@router.put(
-    "/events/{event_id}/false_positive",
-    response_model=EventUploadPlusResponse,
-    dependencies=[Depends(require_role(["admin"]))],
-    summary="Submit false positive to upstream Frigate+",
-    description="""Submit an event as a false positive to upstream Frigate+.
-    This endpoint is the same as the standard upstream Frigate+ submission endpoint,
-    but is specifically for marking an event as a false positive.""",
-)
-async def false_positive(request: Request, event_id: str):
-    if not request.app.frigate_config.plus_api.is_active():
-        message = "PLUS_API_KEY environment variable is not set"
-        logger.error(message)
-        return JSONResponse(
-            content=(
-                {
-                    "success": False,
-                    "message": message,
-                }
-            ),
-            status_code=400,
-        )
-
-    try:
-        event = Event.get(Event.id == event_id)
-        await require_camera_access(event.camera, request=request)
-    except DoesNotExist:
-        message = f"Event {event_id} not found"
-        logger.error(message)
-        return JSONResponse(
-            content=({"success": False, "message": message}), status_code=404
-        )
-
-    # events from before the conversion to relative dimensions cant include annotations
-    if event.data.get("box") is None:
-        message = "Events prior to 0.13 cannot be submitted as false positives"
-        logger.error(message)
-        return JSONResponse(
-            content=({"success": False, "message": message}), status_code=400
-        )
-
-    if event.false_positive:
-        message = "False positive already submitted to upstream Frigate+"
-        logger.error(message)
-        return JSONResponse(
-            content=({"success": False, "message": message}), status_code=400
-        )
-
-    if not event.plus_id:
-        plus_response = await send_to_plus(request, event_id)
-        if plus_response.status_code != 200:
-            return plus_response
-        # need to refetch the event now that it has a plus_id
-        event = Event.get(Event.id == event_id)
-
-    region = event.data["region"]
-    box = event.data["box"]
-
-    # provide top score if score is unavailable
-    score = (
-        (event.data["top_score"] if event.data["top_score"] else event.top_score)
-        if event.data["score"] is None
-        else event.data["score"]
-    )
-
-    try:
-        await asyncio.to_thread(
-            request.app.frigate_config.plus_api.add_false_positive,
-            event.plus_id,
-            region,
-            box,
-            score,
-            event.label,
-            event.model_hash,
-            event.model_type,
-            event.detector_type,
-        )
-    except ValueError:
-        message = "Error uploading false positive, unsupported label provided."
-        logger.error(message)
-        return JSONResponse(
-            content=({"success": False, "message": message}),
-            status_code=400,
-        )
-    except Exception as ex:
-        logger.exception(ex)
-        return JSONResponse(
-            content=({"success": False, "message": "Error uploading false positive"}),
-            status_code=400,
-        )
-
-    event.false_positive = True
-    event.save()
-
-    return JSONResponse(
-        content=({"success": True, "plus_id": event.plus_id}), status_code=200
     )
 
 

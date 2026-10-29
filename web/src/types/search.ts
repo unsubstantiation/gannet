@@ -38,7 +38,6 @@ export type SearchResult = {
   label: string;
   sub_label?: string;
   thumb_path?: string;
-  plus_id?: string;
   has_snapshot: boolean;
   has_clip: boolean;
   zones: string[];
@@ -80,7 +79,6 @@ export type SearchFilter = {
   max_speed?: number;
   has_snapshot?: number;
   has_clip?: number;
-  is_submitted?: number;
   time_range?: string;
   search_type?: SearchSource[];
   event_id?: string;

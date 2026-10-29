@@ -20,7 +20,7 @@ Face recognition requires a one-time internet connection to download detection a
 
 ### Face Detection
 
-When running an upstream Frigate+ model (or any custom model that natively detects faces) should ensure that `face` is added to the [list of objects to track](../plus/index.md#available-label-types) either globally or for a specific camera. This will allow face detection to run at the same time as object detection and be more efficient.
+When running a custom model that natively detects faces, add `face` to the list of objects to track either globally or for a specific camera. This will allow face detection to run at the same time as object detection and be more efficient.
 
 When running a default COCO model or another model that does not include `face` as a detectable label, face detection will run via CV2 using a lightweight DNN model that runs on the CPU. In this case, you should _not_ define `face` in your list of objects to track.
 
@@ -248,11 +248,11 @@ Start with the [Usage](#usage) section and re-read the [Model Requirements](#mod
 
 2. Ensure `person` is being _detected_. A `person` will automatically be scanned by Gannet for a face. Any detected faces will appear in the Recent Recognitions tab in the Gannet UI's Face Library.
 
-   If you are using an upstream Frigate+ or `face` detecting model:
+   If you are using a `face`-detecting model:
    - Watch the [debug view](/usage/live#the-single-camera-view) to ensure that `face` is being detected along with `person`.
    - You may need to adjust the `min_score` for the `face` object if faces are not being detected.
 
-   If you are **not** using an upstream Frigate+ or `face` detecting model:
+   If you are **not** using a `face`-detecting model:
    - Check your `detect` stream resolution and ensure it is sufficiently high enough to capture face details on `person` objects.
    - You may need to lower your `detection_threshold` if faces are not being detected.
 

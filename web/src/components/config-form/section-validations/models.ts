@@ -21,13 +21,17 @@ const DETECTOR_MODEL_FORMATS: Record<string, string[]> = {
 /**
  * Detectors load one model format, and rejecting the wrong one here says so
  * before a save that the backend would refuse at startup. A path with no
- * suffix is left alone: an upstream Frigate+ model is cached under its id.
+ * suffix is left to the detector to identify.
  */
 function modelFormatError(
   detector: string,
   path: string,
   t: TFunction,
 ): string | undefined {
+  if (path.toLowerCase().startsWith("plus://")) {
+    return t("models.unsupportedCloudPath", { ns: "config/validation" });
+  }
+
   // Only the file name carries the suffix; a directory can contain a dot.
   const fileName = path.split(/[\\/]/).pop() ?? "";
   const dot = fileName.lastIndexOf(".");
@@ -56,7 +60,7 @@ function modelFormatError(
  * them at startup.
  */
 function normalizeModelPath(path: string): string {
-  // plus://<id> and other URLs are compared as written
+  // URLs are compared as written
   if (path.includes("://")) {
     return path;
   }
@@ -131,7 +135,7 @@ export function validateModelScenes(
       if (formatError) {
         errors.addError?.(formatError);
       }
-    } else if (detector === "openvino") {
+    } else if (detector && detector !== "cpu") {
       // The built-in default is a TFLite model, so only cpu can run pathless.
       errors.addError?.(
         t("models.pathRequired", { ns: "config/validation", detector }),

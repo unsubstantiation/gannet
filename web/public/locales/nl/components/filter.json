@@ -25,11 +25,7 @@
   "features": {
     "hasVideoClip": "Heeft een videoclip",
     "label": "Functies",
-    "hasSnapshot": "Heeft een snapshot",
-    "submittedToFrigatePlus": {
-      "label": "Ingediend bij Frigate+",
-      "tips": "Je moet eerst filteren op gevolgde objecten met een snapshot.<br /><br />Gevolgde objecten zonder snapshot kunnen niet worden verzonden naar Frigate+."
-    }
+    "hasSnapshot": "Heeft een snapshot"
   },
   "review": {
     "showReviewed": "Toon beoordeelde items"

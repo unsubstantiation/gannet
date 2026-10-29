@@ -9,7 +9,6 @@
     "cameraManagement": "Управљање камерама - Gannet",
     "cameraReview": "Преглед подешавања камере - Gannet",
     "object": "Дебаговање - Gannet",
-    "frigatePlus": "Подешавања за Frigate+ - Gannet",
     "notifications": "Подешавања обавештавања - Gannet",
     "globalConfig": "Глобална конфигурација - Gannet",
     "cameraConfig": "Конфигурација камере - Gannet",
@@ -29,7 +28,6 @@
     "users": "Корисници",
     "roles": "Улоге",
     "notifications": "Обавештења",
-    "frigateplus": "Frigate+",
     "general": "Опште",
     "globalConfig": "Глобална конфигурација",
     "system": "Систем",
@@ -1148,64 +1146,6 @@
       "error": {
         "registerFailed": "Неуспешно чување регистрације обавештења."
       }
-    }
-  },
-  "frigatePlus": {
-    "title": "Подешавања Frigate+",
-    "description": "Frigate+ је претплатнички сервис који пружа приступ додатним функцијама и могућностима за вашу Gannet инстанцу, укључујући могућност коришћења прилагођених модела детекције објеката обучених на вашим сопственим подацима. Овде можете управљати подешавањима Frigate+ модела.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Тренутни модел",
-      "otherModels": "Остали модели",
-      "configuration": "Конфигурација"
-    },
-    "apiKey": {
-      "title": "Frigate+ API кључ",
-      "validated": "Frigate+ API кључ је детектован и валидиран",
-      "notValidated": "Frigate+ API кључ није детектован или није валидиран",
-      "desc": "Frigate+ API кључ омогућава интеграцију са Frigate+ сервисом.",
-      "plusLink": "Прочитајте више о Frigate+"
-    },
-    "snapshotConfig": {
-      "title": "Конфигурација снимака",
-      "desc": "Слање на Frigate+ захтева да снимци буду омогућени у конфигурацији.",
-      "cleanCopyWarning": "Неке камере имају онемогућене снимке",
-      "table": {
-        "camera": "Камера",
-        "snapshots": "Снимци екрана"
-      }
-    },
-    "modelInfo": {
-      "title": "Информације о моделу",
-      "modelType": "Тип модела",
-      "trainDate": "Датум обуке",
-      "baseModel": "Основни модел",
-      "plusModelType": {
-        "baseModel": "Основни модел",
-        "userModel": "Фино подешен"
-      },
-      "supportedDetectors": "Подржани детектори",
-      "cameras": "Камере",
-      "loading": "Учитавање информација о моделу…",
-      "error": "Неуспешно учитавање информација о моделу",
-      "noModelLoaded": "Ниједан Frigate+ модел тренутно није учитан.",
-      "availableModels": "Доступни Frigate+ модели",
-      "loadingAvailableModels": "Учитавање доступних модела…",
-      "selectModel": "Изаберите модел",
-      "noModelsAvailable": "Нема доступних модела",
-      "filter": {
-        "ariaLabel": "Филтрирај моделе по типу",
-        "baseModels": "Основни модели",
-        "fineTunedModels": "Фино подешени модели"
-      },
-      "modelSelect": "Овде можете одабрати доступне моделе на Frigate+. Имајте на уму да се могу одабрати само модели компатибилни са тренутном конфигурацијом детектора."
-    },
-    "changeInDetectorsAndModel": "Промени модел",
-    "unsavedChanges": "Несачуване измене подешавања Frigate+",
-    "restart_required": "Потребно је рестартовање (промењен Frigate+ модел)",
-    "toast": {
-      "success": "Подешавања Frigate+ су сачувана. Рестартујте Gannet за примену измена.",
-      "error": "Неуспешно чување измена конфигурације: {{errorMessage}}"
     }
   },
   "triggers": {

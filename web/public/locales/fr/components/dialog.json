@@ -10,26 +10,6 @@
     "description": "Gannet s'arrêtera momentanément pour redémarrer."
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "Soumettre à Frigate+",
-        "desc": "Les objets situés dans des zones à ignorer ne doivent pas être signalés comme de faux positifs, car cela nuirait à la précision du modèle."
-      },
-      "review": {
-        "state": {
-          "submitted": "Soumis"
-        },
-        "question": {
-          "label": "Confirmez cette étiquette pour Frigate+.",
-          "ask_an": "Cet objet est-il un(e) <code>{{label}}</code> ?",
-          "ask_a": "Cet objet est-il un(e) <code>{{label}}</code> ?",
-          "ask_full": "Cet objet est-il un(e) <code>{{translatedLabel}}</code>  ?"
-        },
-        "toast": {
-          "error": "Impossible d'envoyer à Frigate+. Merci de vérifier votre réseau puis de réessayer."
-        }
-      }
-    },
     "video": {
       "viewInHistory": "Afficher dans la chronologie"
     }

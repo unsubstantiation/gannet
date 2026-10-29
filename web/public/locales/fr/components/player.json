@@ -2,11 +2,6 @@
   "noRecordingsFoundForThisTime": "Aucun enregistrement trouvé pour cette période",
   "noPreviewFoundFor": "Aucun aperçu trouvé pour {{cameraName}}",
   "noPreviewFound": "Aucun aperçu trouvé",
-  "submitFrigatePlus": {
-    "title": "Soumettre cette image à Frigate+ ?",
-    "submit": "Soumettre",
-    "previewError": "Impossible de télécharger le snapshot. L'enregistrement ne pas disponible sur cette période."
-  },
   "streamOffline": {
     "title": "Flux hors ligne",
     "desc": "Aucune image n'a été reçue sur le flux de <code>détection</code> de la caméra {{cameraName}}. Vérifiez le journal d'erreurs."
@@ -36,12 +31,9 @@
   },
   "toast": {
     "error": {
-      "submitFrigatePlusFailed": "Échec de la soumission de l'image à Frigate+",
       "playRecordingsFailed": "Échec de la lecture des enregistrements (erreur {{code}}) : {{message}}"
     },
-    "success": {
-      "submittedFrigatePlus": "Image soumise avec succès à Frigate+"
-    }
+    "success": {}
   },
   "cameraOff": "La camera est éteinte",
   "quality": {

@@ -152,10 +152,6 @@
       "aria": "Najít podobný sledovaný objekt",
       "label": "Najít podobné"
     },
-    "submitToPlus": {
-      "aria": "Odeslat do Frigate Plus",
-      "label": "Odeslat do Frigate+"
-    },
     "addTrigger": {
       "label": "Přidat spouštěč",
       "aria": "Přidat spouštěč pro tento sledovaný objekt"

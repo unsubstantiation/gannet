@@ -10,26 +10,6 @@
     "description": "Dit zal Gannet kort stoppen terwijl het opnieuw opstart."
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "Verzenden naar Frigate+",
-        "desc": "Objecten op locaties die je wilt vermijden, zijn geen vals-positieven. Als je ze als vals-positieven indient, brengt dit het model in verwarring."
-      },
-      "review": {
-        "state": {
-          "submitted": "Ingediend"
-        },
-        "question": {
-          "ask_an": "Is dit object een <code>{{label}}</code>?",
-          "label": "Bevestig dit label voor Frigate Plus",
-          "ask_a": "Is dit object een <code>{{label}}</code>?",
-          "ask_full": "Is dit object een <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?"
-        },
-        "toast": {
-          "error": "Gefaald bij Frigate+ in te dienen. Controleer je netwerkverbinding en probeer opnieuw."
-        }
-      }
-    },
     "video": {
       "viewInHistory": "Bekijk in Geschiedenis"
     }

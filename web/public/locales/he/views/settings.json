@@ -235,7 +235,6 @@
     "masksAndZones": "עריכת מיסוך אזור - Gannet",
     "motionTuner": "כיול תנועה - Gannet",
     "object": "ניפוי שגיאות - Gannet",
-    "frigatePlus": "הגדרות +Gannet - Gannet",
     "notifications": "הגדרת התראות - Gannet",
     "authentication": "הגדרות אימות - Gannet",
     "default": "הגדרות - Gannet",
@@ -251,7 +250,6 @@
     "debug": "ניפוי שגיאות",
     "users": "משתמשים",
     "notifications": "התראות",
-    "frigateplus": "+Gannet",
     "enrichments": "תוספות",
     "triggers": "הפעלות",
     "cameraManagement": "ניהול",
@@ -574,48 +572,6 @@
       "error": {
         "registerFailed": "שמירת רישום ההתראות נכשלה."
       }
-    }
-  },
-  "frigatePlus": {
-    "title": "הגדרות +Gannet",
-    "apiKey": {
-      "title": "Frigate+ API מפתח",
-      "validated": "מפתח ה-API של Frigate+ זוהה ואושר",
-      "notValidated": "מפתח ה-API של Frigate+ לא זוהה או לא אומת",
-      "desc": "מפתח ה-API של Frigate+ מאפשר אינטגרציה עם שירות Frigate+.",
-      "plusLink": "קרא עוד על Frigate+"
-    },
-    "snapshotConfig": {
-      "title": "תצורת לכידת תמונה",
-      "desc": "שליחה ל-Frigate+ דורשת הפעלה של לכידת תמונה וגם של תמונות בזק <code>clean_copy</code> בהגדרות שלך.",
-      "cleanCopyWarning": "בחלק מהמצלמות יש אפשרות לתמונות בזק, אך העתקה נקייה מושבתת. עליך להפעיל את <code>clean_copy</code> בתצורת הצילום שלך כדי שתוכל לשלוח תמונות מהמצלמות הללו ל-Frigate+.",
-      "table": {
-        "snapshots": "לכידת תמונה",
-        "camera": "מצלמה"
-      }
-    },
-    "modelInfo": {
-      "title": "מידע על המודל",
-      "modelType": "סוג מודל",
-      "trainDate": "תאריך אימון",
-      "baseModel": "דגם בסיסי",
-      "plusModelType": {
-        "userModel": "כיוונון עדין",
-        "baseModel": "מודל בסיסי"
-      },
-      "supportedDetectors": "גלאים נתמכים",
-      "cameras": "מצלמות",
-      "loading": "טוען מידע על המודל…",
-      "error": "טעינת פרטי המודל נכשלה",
-      "availableModels": "מודלים זמינים",
-      "loadingAvailableModels": "טוען מודלים זמינים…",
-      "modelSelect": "ניתן לבחור כאן את הדגמים הזמינים ב-Frigate+. שים לב שניתן לבחור רק דגמים התואמים לתצורת הגלאי הנוכחית שלך."
-    },
-    "unsavedChanges": "שינויים בהגדרות של frigate+ שלא נשמרו",
-    "restart_required": "נדרש הפעלה מחדש (דגם Frigate+ שונה)",
-    "toast": {
-      "success": "הגדרות Frigate+ נשמרו. הפעל מחדש את Gannet כדי להחיל את השינויים.",
-      "error": "שמירת שינויי התצורה נכשלה: {{errorMessage}}"
     }
   },
   "cameraWizard": {

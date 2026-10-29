@@ -1344,8 +1344,7 @@
             "label": "Hardware pro detekci"
         },
         "path": {
-            "label": "Cesta k vlastnímu modelu detekce objektů",
-            "description": "Cesta k souboru vlastního modelu detekce (nebo plus://<model_id> pro modely Frigate+)."
+            "label": "Cesta k vlastnímu modelu detekce objektů"
         },
         "labelmap_path": {
             "label": "Mapa štítků pro vlastní detektor objektů",

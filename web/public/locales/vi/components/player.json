@@ -23,16 +23,8 @@
     }
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Đã gửi thành công khung hình tới Frigate+"
-    },
-    "error": {
-      "submitFrigatePlusFailed": "Không gửi được khung hình tới Frigate+"
-    }
-  },
-  "submitFrigatePlus": {
-    "title": "Gửi khung hình này tới Frigate+?",
-    "submit": "Gửi"
+    "success": {},
+    "error": {}
   },
   "livePlayerRequiredIOSVersion": "Yêu cầu iOS 17.1 trở lên cho loại luồng trực tiếp này.",
   "streamOffline": {

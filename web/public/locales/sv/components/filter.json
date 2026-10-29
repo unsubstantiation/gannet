@@ -19,10 +19,6 @@
   "features": {
     "hasSnapshot": "Har ögonblicksbild",
     "hasVideoClip": "Har videoklipp",
-    "submittedToFrigatePlus": {
-      "label": "Skickat till Frigate+",
-      "tips": "Du måste först filtrera på spårade objekt som har en ögonblicksbild. <br /><br />Spårade objekt utan ögonblicksbild kan inte skickas till Frigate+."
-    },
     "label": "Detaljer"
   },
   "sort": {

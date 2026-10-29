@@ -209,18 +209,14 @@ export default function SearchView({
       recognized_license_plate: allRecognizedLicensePlates,
       has_clip: ["yes", "no"],
       has_snapshot: ["yes", "no"],
-      ...(config?.plus?.enabled &&
-        searchFilter?.has_snapshot && { is_submitted: ["yes", "no"] }),
     }),
     [
-      config,
       is24Hour,
       allLabels,
       allZones,
       allSubLabels,
       allAttributes,
       allRecognizedLicensePlates,
-      searchFilter,
       allowedCameras,
       hasCustomClassificationModels,
     ],

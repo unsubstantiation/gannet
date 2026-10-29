@@ -1508,8 +1508,7 @@
             "label": "Hardware de detecție"
         },
         "path": {
-            "label": "Calea către modelul personalizat al detectorului de obiecte",
-            "description": "Calea către un fișier de model de detecție personalizat (sau plus://<model_id> pentru modele Frigate+)."
+            "label": "Calea către modelul personalizat al detectorului de obiecte"
         },
         "labelmap_path": {
             "label": "Mapare de etichete pentru detectorul de obiecte personalizat",

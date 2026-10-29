@@ -137,10 +137,6 @@
       "label": "Prepisovať",
       "aria": "Požiadajte o prepis zvuku"
     },
-    "submitToPlus": {
-      "label": "Odoslať na Frigate+",
-      "aria": "Odoslať na Frigate Plus"
-    },
     "viewInHistory": {
       "label": "Zobraziť v histórii",
       "aria": "Zobraziť v histórii"

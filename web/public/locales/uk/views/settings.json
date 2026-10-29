@@ -283,48 +283,6 @@
     },
     "openCameraWebUI": "Відкрийте веб-інтерфейс {{camera}}"
   },
-  "frigatePlus": {
-    "modelInfo": {
-      "loading": "Завантаження інформації про модель…",
-      "loadingAvailableModels": "Завантаження доступних моделей…",
-      "plusModelType": {
-        "baseModel": "Базова модель",
-        "userModel": "Точно налаштований"
-      },
-      "supportedDetectors": "Підтримувані детектори",
-      "error": "Не вдалося завантажити інформацію про модель",
-      "availableModels": "Доступні моделі",
-      "trainDate": "Дата тренування",
-      "baseModel": "Базова модель",
-      "modelSelect": "Тут можна вибрати доступні моделі на Frigate+. Зверніть увагу, що можна вибрати лише моделі, сумісні з вашою поточною конфігурацією детектора.",
-      "title": "Інформація про модель",
-      "modelType": "Тип моделі",
-      "cameras": "Камери"
-    },
-    "snapshotConfig": {
-      "title": "Конфігурація знімків",
-      "desc": "Для надсилання до Frigate+ потрібно ввімкнути як знімки, так і знімки <code>clean_copy</code> у вашій конфігурації.",
-      "table": {
-        "camera": "Камера",
-        "snapshots": "Знімки"
-      },
-      "cleanCopyWarning": "На деяких камерах знімки екрана вимкнені"
-    },
-    "apiKey": {
-      "desc": "Ключ API Frigate+ забезпечує інтеграцію з сервісом Frigate+.",
-      "notValidated": "Ключ API Frigate+ не виявлено або не перевірено",
-      "title": "Ключ API Фрегат+",
-      "validated": "Ключ API Frigate+ виявлено та перевірено",
-      "plusLink": "Дізнайтеся більше про Фрегат+"
-    },
-    "restart_required": "Потрібно перезавантаження (модель Frigate+ змінена)",
-    "toast": {
-      "success": "Налаштування Frigate+ збережено. Перезапустіть Gannet, щоб застосувати зміни.",
-      "error": "Не вдалося зберегти зміни конфігурації: {{errorMessage}}"
-    },
-    "title": "Налаштування Фрегат+",
-    "unsavedChanges": "Незбережені зміни налаштувань Frigate+"
-  },
   "general": {
     "calendar": {
       "title": "Календар",
@@ -414,7 +372,6 @@
     "masksAndZones": "Редактор масок та зон – Фрегат",
     "motionTuner": "Тюнер руху - Фрегат",
     "general": "Основна Статус – Gannet",
-    "frigatePlus": "Налаштування Frigate+ – Gannet",
     "enrichments": "Налаштуваннях збагачення – Gannet",
     "cameraManagement": "Керування камерами - Gannet",
     "cameraReview": "Налаштування перегляду камери - Gannet"
@@ -427,7 +384,6 @@
     "motionTuner": "Тюнер руху",
     "debug": "Налагодження",
     "notifications": "Сповіщення",
-    "frigateplus": "Frigate+",
     "enrichments": "Збагаченням",
     "triggers": "Тригери",
     "roles": "Ролі",

@@ -127,7 +127,6 @@
     "motionTuner": "움직임 튜너 - Gannet",
     "object": "디버그 - Gannet",
     "general": "UI 설정 - Gannet",
-    "frigatePlus": "Frigate+ 설정 - Gannet",
     "notifications": "알림 설정 - Gannet",
     "cameraManagement": "카메라 관리 - Gannet",
     "cameraReview": "카메라 다시보기 설정 - Gannet",
@@ -261,7 +260,6 @@
     "users": "사용자",
     "roles": "역할",
     "notifications": "알림",
-    "frigateplus": "Frigate+",
     "cameraManagement": "카메라 관리",
     "cameraReview": "다시보기",
     "general": "일반",
@@ -1367,64 +1365,6 @@
       }
     }
   },
-  "frigatePlus": {
-    "title": "Frigate+ 설정",
-    "description": "Frigate+는 사용자의 데이터를 기반으로 학습된 맞춤형 객체 감지 모델을 비롯하여 Gannet 인스턴스를 위한 추가 기능과 역량을 제공하는 구독 서비스입니다. 여기에서 Frigate+ 모델 설정을 관리할 수 있습니다.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "현재 모델",
-      "otherModels": "기타 모델",
-      "configuration": "구성"
-    },
-    "apiKey": {
-      "title": "Frigate+ API 키",
-      "validated": "Frigate+ API 키가 확인 및 검증되었습니다",
-      "notValidated": "Frigate+ API 키가 감지되지 않았거나 유효하지 않습니다",
-      "desc": "Frigate+ API 키를 통해 Frigate+ 서비스와의 연동을 활성화합니다.",
-      "plusLink": "Frigate+ 자세히 알아보기"
-    },
-    "snapshotConfig": {
-      "title": "스냅샷 구성",
-      "desc": "Frigate+에 데이터를 제출하려면 설정에서 스냅샷이 활성화되어 있어야 합니다.",
-      "cleanCopyWarning": "일부 카메라에서 스냅샷이 비활성화되어 있습니다",
-      "table": {
-        "camera": "카메라",
-        "snapshots": "스냅샷"
-      }
-    },
-    "modelInfo": {
-      "title": "모델 정보",
-      "modelType": "모델 유형",
-      "trainDate": "학습 날짜",
-      "baseModel": "기본 모델",
-      "plusModelType": {
-        "baseModel": "기본 모델",
-        "userModel": "파인 튜닝 모델"
-      },
-      "supportedDetectors": "지원되는 감지기",
-      "cameras": "카메라",
-      "loading": "모델 정보 불러오는 중…",
-      "error": "모델 정보를 불러오지 못했습니다",
-      "noModelLoaded": "현재 로드된 Frigate+ 모델이 없습니다.",
-      "availableModels": "사용 가능한 Frigate+ 모델",
-      "loadingAvailableModels": "사용 가능한 모델 불러오는 중…",
-      "selectModel": "모델 선택",
-      "noModelsAvailable": "사용 가능한 모델 없음",
-      "filter": {
-        "ariaLabel": "유형별 모델 필터링",
-        "baseModels": "기본 모델",
-        "fineTunedModels": "파인 튜닝 모델"
-      },
-      "modelSelect": "Frigate+에서 사용 가능한 모델을 여기에서 선택할 수 있습니다. 현재 감지기 구성과 호환되는 모델만 선택할 수 있습니다."
-    },
-    "changeInDetectorsAndModel": "모델 변경",
-    "unsavedChanges": "저장되지 않은 Frigate+ 설정 변경 사항",
-    "restart_required": "재시작 필요 (Frigate+ 모델 변경됨)",
-    "toast": {
-      "success": "Frigate+ 설정이 저장되었습니다. 변경 사항을 적용하려면 Gannet를 재시작하세요.",
-      "error": "설정 변경 사항 저장 실패: {{errorMessage}}"
-    }
-  },
   "maintenance": {
     "title": "유지 관리",
     "sync": {
@@ -2048,13 +1988,6 @@
       "unrecognized": "이 모델은 시스템에서 찾을 수 없는 하드웨어로 구성되어 있습니다: {{devices}}",
       "description": "이 모델이 감지를 실행할 하드웨어입니다.",
       "detectorCountDescription": "이 하드웨어에서 실행할 감지 프로세스 수입니다. 감지기 수가 많을수록 더 많은 카메라를 처리할 수 있지만 추가 장치 메모리가 소모됩니다."
-    },
-    "tabs": {
-      "plus": "Frigate+",
-      "custom": "사용자 지정 모델"
-    },
-    "plusModel": {
-      "noModelSelected": "Frigate+ 모델을 선택하세요"
     },
     "scenes": {
       "default": "기본값"

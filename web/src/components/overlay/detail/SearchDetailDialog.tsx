@@ -33,7 +33,6 @@ import { cn } from "@/lib/utils";
 import ActivityIndicator from "@/components/indicators/activity-indicator";
 import {
   FaArrowRight,
-  FaCheckCircle,
   FaChevronLeft,
   FaChevronRight,
   FaMicrophone,
@@ -85,7 +84,7 @@ import { TooltipPortal } from "@radix-ui/react-tooltip";
 import { FaPencilAlt } from "react-icons/fa";
 import TextEntryDialog from "@/components/overlay/dialog/TextEntryDialog";
 import AttributeSelectDialog from "@/components/overlay/dialog/AttributeSelectDialog";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { getTranslatedLabel } from "@/utils/i18n";
 import { CameraNameLabel } from "@/components/camera/FriendlyNameLabel";
@@ -347,12 +346,7 @@ function DialogContentComponent({
   const snapshotElement = search.has_snapshot ? (
     <ObjectSnapshotTab
       className={isDesktop ? undefined : "mb-4"}
-      search={
-        {
-          ...search,
-          plus_id: config?.plus?.enabled ? search.plus_id : "not_enabled",
-        } as unknown as Event
-      }
+      search={search as unknown as Event}
     />
   ) : (
     <div
@@ -694,7 +688,7 @@ function ObjectDetailsTab({
   setInputFocused,
   setShowNavigationButtons,
 }: ObjectDetailsTabProps) {
-  const { t, i18n } = useTranslation([
+  const { t } = useTranslation([
     "views/explore",
     "views/faceLibrary",
     "components/dialog",
@@ -1233,75 +1227,6 @@ function ObjectDetailsTab({
   const { payload: audioTranscriptionProcessState } =
     useAudioTranscriptionProcessState();
 
-  // frigate+ submission
-
-  type SubmissionState = "reviewing" | "uploading" | "submitted";
-  const [state, setState] = useState<SubmissionState>(
-    search?.plus_id ? "submitted" : "reviewing",
-  );
-
-  // a submission request outlives the object it was made for, so the
-  // response handler needs to know which object is on screen now
-  const displayedIdRef = useRef(search?.id);
-
-  useEffect(() => {
-    displayedIdRef.current = search?.id;
-    setState(search?.plus_id ? "submitted" : "reviewing");
-  }, [search]);
-
-  const onSubmitToPlus = useCallback(
-    async (falsePositive: boolean) => {
-      if (!search) {
-        return;
-      }
-
-      const eventId = search.id;
-
-      try {
-        const resp = falsePositive
-          ? await axios.put(`events/${eventId}/false_positive`)
-          : await axios.post(`events/${eventId}/plus`, {
-              include_annotation: 1,
-            });
-
-        if (resp.status !== 200 || !resp.data?.success) {
-          throw new Error();
-        }
-
-        if (displayedIdRef.current === eventId) {
-          setState("submitted");
-        }
-
-        mutate(
-          (key) => isEventsKey(key),
-          (currentData: SearchResult[][] | SearchResult[] | undefined) =>
-            mapSearchResults(currentData, (event) =>
-              event.id === eventId
-                ? { ...event, plus_id: "new_upload" }
-                : event,
-            ),
-          {
-            optimisticData: true,
-            rollbackOnError: true,
-            revalidate: false,
-          },
-        );
-      } catch {
-        if (displayedIdRef.current === eventId) {
-          setState("reviewing");
-        }
-
-        // the toast is not object specific, so it is always shown to avoid
-        // silently dropping a failed submission
-        toast.error(
-          t("explore.plus.review.toast.error", { ns: "components/dialog" }),
-          { position: "top-center" },
-        );
-      }
-    },
-    [search, mutate, mapSearchResults, isEventsKey, t],
-  );
-
   const popoverContainerRef = useRef<HTMLDivElement | null>(null);
   const canRegenerate = !!(
     config?.cameras[search.camera].objects.genai.enabled && search.end_time
@@ -1511,114 +1436,6 @@ function ObjectDetailsTab({
         </div>
       </div>
 
-      {isAdmin &&
-        search.data.type === "object" &&
-        config?.plus?.enabled &&
-        search.end_time != undefined &&
-        search.has_snapshot && (
-          <div
-            className={cn(
-              "my-2 flex w-full flex-col justify-between gap-1.5",
-              state == "submitted" && "flex-row",
-            )}
-          >
-            <div className="text-sm text-primary/40">
-              <div className="flex flex-row items-center gap-1">
-                {t("explore.plus.submitToPlus.label", {
-                  ns: "components/dialog",
-                })}
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <div className="cursor-pointer p-0">
-                      <LuInfo className="size-4" />
-                      <span className="sr-only">Info</span>
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    container={popoverContainerRef.current}
-                    className="w-80 text-xs"
-                  >
-                    {t("explore.plus.submitToPlus.desc", {
-                      ns: "components/dialog",
-                    })}
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-
-            <div className="flex flex-row items-center justify-between gap-2 text-sm">
-              {state == "reviewing" && (
-                <>
-                  <div>
-                    {i18n.language === "en" ? (
-                      // English with a/an logic plus label
-                      <>
-                        {/^[aeiou]/i.test(search?.label || "") ? (
-                          <Trans
-                            ns="components/dialog"
-                            values={{ label: search?.label }}
-                          >
-                            explore.plus.review.question.ask_an
-                          </Trans>
-                        ) : (
-                          <Trans
-                            ns="components/dialog"
-                            values={{ label: search?.label }}
-                          >
-                            explore.plus.review.question.ask_a
-                          </Trans>
-                        )}
-                      </>
-                    ) : (
-                      // For other languages
-                      <Trans
-                        ns="components/dialog"
-                        values={{
-                          untranslatedLabel: search?.label,
-                          translatedLabel: getTranslatedLabel(search?.label),
-                        }}
-                      >
-                        explore.plus.review.question.ask_full
-                      </Trans>
-                    )}
-                  </div>
-                  <div className="flex max-w-xl flex-row gap-2">
-                    <Button
-                      className="flex-1 bg-success"
-                      aria-label={t("button.yes", { ns: "common" })}
-                      onClick={() => {
-                        setState("uploading");
-                        onSubmitToPlus(false);
-                      }}
-                    >
-                      {t("button.yes", { ns: "common" })}
-                    </Button>
-                    <Button
-                      className="flex-1"
-                      aria-label={t("button.no", { ns: "common" })}
-                      variant="destructive"
-                      onClick={() => {
-                        setState("uploading");
-                        onSubmitToPlus(true);
-                      }}
-                    >
-                      {t("button.no", { ns: "common" })}
-                    </Button>
-                  </div>
-                </>
-              )}
-              {state == "uploading" && <ActivityIndicator />}
-              {state == "submitted" && (
-                <div className="flex flex-row items-center justify-center gap-2">
-                  <FaCheckCircle className="size-4 text-success" />
-                  {t("explore.plus.review.state.submitted", {
-                    ns: "components/dialog",
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-start gap-3">
           <div className="text-sm text-primary/40">
@@ -1828,7 +1645,6 @@ function ObjectDetailsTab({
 type ObjectSnapshotTabProps = {
   search: Event;
   className?: string;
-  onEventUploaded?: () => void;
 };
 export function ObjectSnapshotTab({
   search,

@@ -49,11 +49,7 @@
   "features": {
     "label": "Особине",
     "hasSnapshot": "Постоји снимак",
-    "hasVideoClip": "Постоји видео клип",
-    "submittedToFrigatePlus": {
-      "label": "Послато у Frigate+",
-      "tips": "Прво морате филтрирати праћене објекте који имају снимак. <br /><br />Праћени објекти без снимка не могу бити послати у Frigate+."
-    }
+    "hasVideoClip": "Постоји видео клип"
   },
   "sort": {
     "label": "Сортирање",

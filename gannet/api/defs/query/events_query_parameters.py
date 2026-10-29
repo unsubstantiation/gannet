@@ -35,7 +35,6 @@ class EventsQueryParams(BaseModel):
     min_speed: float | None = None
     max_speed: float | None = None
     recognized_license_plate: str | None = "all"
-    is_submitted: int | None = None
     min_length: float | None = None
     max_length: float | None = None
     event_id: str | None = None
@@ -67,7 +66,6 @@ class EventsSearchQueryParams(BaseModel):
     time_range: str | None = DEFAULT_TIME_RANGE
     has_clip: bool | None = None
     has_snapshot: bool | None = None
-    is_submitted: bool | None = None
     timezone: str | None = "UTC"
     min_score: float | None = None
     max_score: float | None = None

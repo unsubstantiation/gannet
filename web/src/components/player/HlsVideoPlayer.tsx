@@ -11,9 +11,6 @@ import { isDesktop, isMobile } from "react-device-detect";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import VideoControls from "./VideoControls";
 import { VideoResolutionType } from "@/types/live";
-import useSWR from "swr";
-import { FrigateConfig } from "@/types/frigateConfig";
-import { AxiosResponse } from "axios";
 import { toast } from "sonner";
 import { useOverlayState } from "@/hooks/use-overlay-state";
 import { useUserPersistence } from "@/hooks/use-user-persistence";
@@ -21,7 +18,6 @@ import { cn } from "@/lib/utils";
 import { ASPECT_VERTICAL_LAYOUT, RecordingPlayerError } from "@/types/record";
 import { useTranslation } from "react-i18next";
 import ObjectTrackOverlay from "@/components/overlay/ObjectTrackOverlay";
-import { useIsAdmin } from "@/hooks/use-is-admin";
 
 // Android native hls does not seek correctly
 const USE_NATIVE_HLS = false;
@@ -54,8 +50,6 @@ type HlsVideoPlayerProps = {
   onPlaying?: () => void;
   onSeekToTime?: (timestamp: number, play?: boolean) => void;
   setFullResolution?: React.Dispatch<React.SetStateAction<VideoResolutionType>>;
-  onUploadFrame?: (playTime: number) => Promise<AxiosResponse> | undefined;
-  getSnapshotUrl?: (playTime: number) => string | undefined;
   onSnapshot?: (playTime: number) => Promise<void> | void;
   toggleFullscreen?: () => void;
   onError?: (error: RecordingPlayerError) => void;
@@ -90,8 +84,6 @@ export default function HlsVideoPlayer({
   onPlaying,
   onSeekToTime,
   setFullResolution,
-  onUploadFrame,
-  getSnapshotUrl,
   onSnapshot,
   toggleFullscreen,
   onError,
@@ -109,8 +101,6 @@ export default function HlsVideoPlayer({
   transformedOverlay,
 }: HlsVideoPlayerProps) {
   const { t } = useTranslation("components/player");
-  const { data: config } = useSWR<FrigateConfig>("config");
-  const isAdmin = useIsAdmin();
 
   // for detail stream context in History
   const currentTime = currentTimeOverride;
@@ -484,7 +474,6 @@ export default function HlsVideoPlayer({
             volume: true,
             seek: true,
             playbackRate: true,
-            plusUpload: isAdmin && config?.plus?.enabled == true,
             snapshot: !!onSnapshot,
             fullscreen: supportsFullscreen,
           }}
@@ -513,30 +502,6 @@ export default function HlsVideoPlayer({
 
             if (videoRef.current) {
               videoRef.current.playbackRate = rate;
-            }
-          }}
-          getSnapshotUrl={() => {
-            const frameTime = getVideoTime();
-            if (!frameTime || !getSnapshotUrl) {
-              return undefined;
-            }
-            return getSnapshotUrl(frameTime);
-          }}
-          onUploadFrame={async () => {
-            const frameTime = getVideoTime();
-
-            if (frameTime && onUploadFrame) {
-              const resp = await onUploadFrame(frameTime);
-
-              if (resp && resp.status == 200) {
-                toast.success(t("toast.success.submittedFrigatePlus"), {
-                  position: "top-center",
-                });
-              } else {
-                toast.success(t("toast.error.submitFrigatePlusFailed"), {
-                  position: "top-center",
-                });
-              }
             }
           }}
           onSnapshot={onSnapshot ? handleSnapshot : undefined}

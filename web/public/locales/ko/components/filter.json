@@ -49,11 +49,7 @@
   "features": {
     "label": "특징",
     "hasSnapshot": "스냅샷 있음",
-    "hasVideoClip": "비디오 클립 있음",
-    "submittedToFrigatePlus": {
-      "label": "Frigate+에 제출됨",
-      "tips": "먼저 스냅샷이 있는 추적 객체로 필터링해야 합니다.<br /><br />스냅샷이 없는 추적 객체는 Frigate+에 제출할 수 없습니다."
-    }
+    "hasVideoClip": "비디오 클립 있음"
   },
   "sort": {
     "label": "정렬",

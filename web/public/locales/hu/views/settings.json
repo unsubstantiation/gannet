@@ -5,7 +5,6 @@
     "masksAndZones": "Maszk és zónaszerkesztő - Gannet",
     "object": "Hibakeresés - Gannet",
     "general": "Felhasználói felület beállításai - Gannet",
-    "frigatePlus": "Frigate+ beállítások - Gannet",
     "notifications": "Értesítések beállítása - Gannet",
     "motionTuner": "Mozgás Hangoló - Gannet",
     "enrichments": "Kiegészítés Beállítások - Gannet",
@@ -24,7 +23,6 @@
     "debug": "Hibakeresés",
     "users": "Felhasználók",
     "notifications": "Értesítések",
-    "frigateplus": "Frigate+",
     "enrichments": "Extra funkciók",
     "triggers": "Triggerek",
     "roles": "Szerepkörök",
@@ -224,48 +222,6 @@
     "registerDevice": "Regisztráld ezt az eszközt",
     "unregisterDevice": "Eszköz regisztrációjának törlése",
     "unsavedRegistrations": "Nem mentett értesítési regisztrációk"
-  },
-  "frigatePlus": {
-    "modelInfo": {
-      "error": "Modell információ betöltése sikertelen",
-      "plusModelType": {
-        "baseModel": "Alap modell",
-        "userModel": "Finomhangolt"
-      },
-      "supportedDetectors": "Támogatott Érzékelők",
-      "baseModel": "Alap modell",
-      "loadingAvailableModels": "Elérhető modellek betöltése…",
-      "loading": "Modell információ betöltése…",
-      "availableModels": "Elérhető modellek",
-      "modelType": "Modell típus",
-      "title": "Modell Információ",
-      "cameras": "Kamerák",
-      "trainDate": "Tanítás dátum",
-      "modelSelect": "A Frigate+-on elérhető modelljeit itt választhatja ki. Figyelem: csak az aktuális érzékelő konfigurációval kompatibilis modellek választhatók."
-    },
-    "apiKey": {
-      "plusLink": "Tudjon meg többet a Frigate+-ról",
-      "title": "Frigate+ API kulcs",
-      "validated": "Frigate+ API kulcs észlelve és ellenőrizve",
-      "notValidated": "Frigate+ API kulcs nem található vagy nem ellenőrzött",
-      "desc": "A Frigate+ API kulcs lehetővé teszi az integrációt a Frigate+ szolgáltatással."
-    },
-    "snapshotConfig": {
-      "title": "Pillanatkép Konfiguráció",
-      "table": {
-        "snapshots": "Pillanatképek",
-        "camera": "Kamera"
-      },
-      "desc": "A Frigate+ szolgáltatásba történő beküldéshez a konfigurációban engedélyezni kell a pillanatképeket és a <code>clean_copy</code> pillanatképeket is.",
-      "cleanCopyWarning": "Néhány kamerán engedélyezve vannak a pillanatképek, de a tiszta másolat ki van kapcsolva. Ahhoz, hogy ezekről a kamerákról képeket tudjon beküldeni a Frigate+ szolgáltatásba, engedélyeznie kell a <code>clean_copy</code> beállítást a pillanatkép konfigurációban."
-    },
-    "restart_required": "Újraindítás szükséges ( Frigate+ modell megváltozott)",
-    "toast": {
-      "success": "Frigate+ beállítások elmentve. Indítsa újra a Gannet-et a változtatások érvényrejutásához.",
-      "error": "Konfigurációs módosítások mentése sikertelen: {{errorMessage}}"
-    },
-    "title": "Frigate+ Beállítások",
-    "unsavedChanges": "Mentetlen Frigate+ beállítás változtatások"
   },
   "users": {
     "dialog": {

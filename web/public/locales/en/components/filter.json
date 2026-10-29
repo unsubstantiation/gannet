@@ -49,11 +49,7 @@
   "features": {
     "label": "Features",
     "hasSnapshot": "Has a snapshot",
-    "hasVideoClip": "Has a video clip",
-    "submittedToFrigatePlus": {
-      "label": "Submitted to upstream Frigate+",
-      "tips": "You must first filter on tracked objects that have a snapshot.<br /><br />Tracked objects without a snapshot cannot be submitted to upstream Frigate+."
-    }
+    "hasVideoClip": "Has a video clip"
   },
   "sort": {
     "label": "Sort",

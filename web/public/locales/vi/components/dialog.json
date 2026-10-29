@@ -10,23 +10,6 @@
     "description": "Thao tác này sẽ tạm dừng hoạt động của Gannet trong thời gian ngắn để khởi động lại."
   },
   "explore": {
-    "plus": {
-      "review": {
-        "question": {
-          "ask_a": "Đối tượng này có phải là một <code>{{label}}</code> không?",
-          "ask_an": "Đối tượng này có phải là một <code>{{label}}</code> không?",
-          "label": "Xác nhận nhãn này cho Frigate Plus",
-          "ask_full": "Đối tượng này có phải là một <code>{{untranslatedLabel}}</code> ({{translatedLabel}}) không?"
-        },
-        "state": {
-          "submitted": "Đã gửi"
-        }
-      },
-      "submitToPlus": {
-        "label": "Gửi lên Frigate+",
-        "desc": "Đối tượng xuất hiện ở các khu vực bạn muốn tránh không được xem là phát hiện sai. Gửi chúng lên dưới dạng phát hiện sai có thể làm mô hình bị nhầm lẫn."
-      }
-    },
     "video": {
       "viewInHistory": "Xem lại trong Lịch sử"
     }

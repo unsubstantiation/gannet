@@ -1,16 +1,13 @@
 import hashlib
-import json
 import logging
 import os
 from enum import Enum
 from typing import ClassVar
 
-import requests
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic.fields import PrivateAttr
 
-from gannet.const import DEFAULT_ATTRIBUTE_LABEL_MAP, MODEL_CACHE_DIR
-from gannet.plus import PlusApi, load_plus_model_info
+from gannet.const import DEFAULT_ATTRIBUTE_LABEL_MAP
 from gannet.util.builtin import generate_color_palette, load_labels
 from gannet.util.platform import get_default_labelmap_path
 
@@ -68,7 +65,7 @@ class ModelConfig(BaseModel):
     path: str | None = Field(
         None,
         title="Custom object detector model path",
-        description="Path to a custom detection model file (or plus://<model_id> for upstream Frigate+ models).",
+        description="Path to a local custom detection model file.",
     )
     labelmap_path: str | None = Field(
         None,
@@ -120,7 +117,6 @@ class ModelConfig(BaseModel):
     _all_attributes: list[str] = PrivateAttr()
     _all_attribute_logos: list[str] = PrivateAttr()
     _model_hash: str = PrivateAttr()
-    _plus_id: str | None = PrivateAttr(default=None)
 
     @property
     def merged_labelmap(self) -> dict[int, str]:
@@ -146,10 +142,14 @@ class ModelConfig(BaseModel):
     def model_hash(self) -> str:
         return self._model_hash
 
-    @property
-    def plus_id(self) -> str | None:
-        """The upstream Frigate+ model id, once a plus:// path has been resolved."""
-        return self._plus_id
+    @field_validator("path")
+    @classmethod
+    def reject_removed_cloud_model(cls, path: str | None) -> str | None:
+        if path and path.lower().startswith("plus://"):
+            raise ValueError(
+                "Frigate+ model paths are no longer supported; configure a local model file."
+            )
+        return path
 
     def __init__(self, **config):
         super().__init__(**config)
@@ -174,80 +174,6 @@ class ModelConfig(BaseModel):
         self._all_attribute_logos = list(
             unique_attributes - set(self.non_logo_attributes)
         )
-
-    def check_and_load_plus_model(
-        self, plus_api: PlusApi, detector: str = None
-    ) -> None:
-        if not self.path or not self.path.startswith("plus://"):
-            return
-
-        # ensure that model cache dir exists
-        os.makedirs(MODEL_CACHE_DIR, exist_ok=True)
-
-        model_id = self.path[7:]
-        self._plus_id = model_id
-        self.path = os.path.join(MODEL_CACHE_DIR, model_id)
-        model_info_path = f"{self.path}.json"
-
-        # download the model if it doesn't exist
-        if not os.path.isfile(self.path):
-            try:
-                download_url = plus_api.get_model_download_url(model_id)
-                r = requests.get(download_url)
-            except requests.exceptions.ConnectionError as e:
-                raise ValueError(
-                    f"Unable to connect to upstream Frigate+ to download model {model_id}"
-                ) from e
-
-            with open(self.path, "wb") as f:
-                f.write(r.content)
-
-        # download the model info if it doesn't exist
-        if not os.path.isfile(model_info_path):
-            try:
-                model_info = plus_api.get_model_info(model_id)
-            except requests.exceptions.ConnectionError as e:
-                raise ValueError(
-                    f"Unable to connect to upstream Frigate+ to download model info for {model_id}"
-                ) from e
-
-            with open(model_info_path, "w", encoding="utf-8") as f:
-                json.dump(model_info, f)
-
-        model_info = load_plus_model_info(model_id)
-
-        if model_info is None:
-            raise ValueError(f"Unable to read the model info for {model_id}")
-
-        if detector and detector not in model_info["supportedDetectors"]:
-            raise ValueError(f"Model does not support detector type of {detector}")
-
-        self.width = model_info["width"]
-        self.height = model_info["height"]
-        self.input_tensor = InputTensorEnum(model_info["inputShape"])
-        self.input_pixel_format = PixelFormatEnum(model_info["pixelFormat"])
-        self.model_type = ModelTypeEnum(model_info["type"])
-
-        if model_info.get("inputDataType"):
-            self.input_dtype = InputDTypeEnum(model_info["inputDataType"])
-
-        # generate list of attribute labels
-        self.attributes_map = {
-            **model_info.get("attributes", DEFAULT_ATTRIBUTE_LABEL_MAP),
-            **self.attributes_map,
-        }
-        unique_attributes = set()
-
-        for attributes in self.attributes_map.values():
-            unique_attributes.update(attributes)
-
-        self._all_attributes = list(unique_attributes)
-        self._all_attribute_logos = list(unique_attributes - set(NON_LOGO_ATTRIBUTES))
-
-        self._merged_labelmap = {
-            **{int(key): val for key, val in model_info["labelMap"].items()},
-            **self.labelmap,
-        }
 
     def compute_model_hash(self) -> None:
         if not self.path or not os.path.exists(self.path):

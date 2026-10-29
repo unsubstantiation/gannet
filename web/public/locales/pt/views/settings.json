@@ -5,7 +5,6 @@
     "object": "Depuração - Gannet",
     "authentication": "Configurações de autenticação - Gannet",
     "general": "Configurações gerais - Gannet",
-    "frigatePlus": "Configurações do Frigate+ - Gannet",
     "default": "Configurações - Gannet",
     "notifications": "Configuração de Notificações - Gannet",
     "enrichments": "Configurações Avançadas - Gannet",
@@ -20,7 +19,6 @@
     "debug": "Depuração",
     "users": "Utilizadores",
     "notifications": "Notificações",
-    "frigateplus": "Frigate+",
     "enrichments": "Avançado",
     "triggers": "Gatilhos",
     "cameraManagement": "Gestão",
@@ -139,48 +137,6 @@
     "suspended": "Notificações suspensas {{time}}",
     "unsavedRegistrations": "Registros de notificação não salvos",
     "unsavedChanges": "Registros de notificação não salvos"
-  },
-  "frigatePlus": {
-    "snapshotConfig": {
-      "table": {
-        "snapshots": "Snapshots",
-        "camera": "Câmara"
-      },
-      "title": "Configuração de snapshots",
-      "desc": "O envio para o Frigate+ requer que tanto os snapshots quanto os snapshots <code>clean_copy</code> estejam habilitados na sua configuração.",
-      "cleanCopyWarning": "Algumas câmaras têm snapshots habilitados, mas a cópia limpa está desabilitada. É necessário habilitar <code>clean_copy</code> na sua configuração de snapshot para poder enviar imagens dessas câmaras para o Frigate+."
-    },
-    "toast": {
-      "success": "As definições do Frigate+ foram guardadas. Reinicie o Gannet para aplicar as alterações.",
-      "error": "Falha ao guardar alterações de configuração: {{errorMessage}}"
-    },
-    "modelInfo": {
-      "modelType": "Tipo de modelo",
-      "trainDate": "Data do treino",
-      "title": "Informações do modelo",
-      "error": "Falha ao carregar informações do modelo",
-      "availableModels": "Modelos Disponíveis",
-      "baseModel": "Modelo Básico",
-      "plusModelType": {
-        "userModel": "Ajuste-Fino",
-        "baseModel": "Modelo Básico"
-      },
-      "supportedDetectors": "Detectores Suportados",
-      "loading": "Carregando informações do modelo…",
-      "cameras": "Câmaras",
-      "loadingAvailableModels": "Carregando modelos disponíveis…",
-      "modelSelect": "Os modelos disponíveis no Frigate+ podem ser selecionados aqui. Observe que apenas modelos compatíveis com a configuração atual do seu detector podem ser selecionados."
-    },
-    "title": "Configurações Frigate+",
-    "apiKey": {
-      "validated": "A chave da API do Frigate+ foi detectada e validada",
-      "notValidated": "A chave da API do Frigate+ não foi detectada ou não foi validada",
-      "desc": "A chave de API do Frigate+ permite a integração com o serviço Frigate+.",
-      "plusLink": "Saiba mais sobre o Frigate+",
-      "title": "Chave de API do Frigate+"
-    },
-    "restart_required": "Reinicialização necessária (modelo Frigate+ alterado)",
-    "unsavedChanges": "Alterações nas configurações do Frigate+ não salvas"
   },
   "masksAndZones": {
     "motionMasks": {

@@ -111,7 +111,6 @@ def require_admin_by_default():
         "/labels",
         "/sub_labels",
         "/categorized_object_names",
-        "/plus/models",
         "/recognized_license_plates",
         "/classification/attributes",
         "/timeline",

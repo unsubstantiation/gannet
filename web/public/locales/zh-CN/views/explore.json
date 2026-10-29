@@ -137,10 +137,6 @@
       "label": "查找相似项",
       "aria": "查看相似的目标/物体"
     },
-    "submitToPlus": {
-      "label": "提交至 Frigate+",
-      "aria": "提交至 Frigate Plus"
-    },
     "viewInHistory": {
       "label": "在历史记录中查看",
       "aria": "在历史记录中查看"

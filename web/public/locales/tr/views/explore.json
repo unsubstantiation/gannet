@@ -134,10 +134,6 @@
       "aria": "Benzer takip edilen nesneleri bul",
       "label": "Benzerlerini bul"
     },
-    "submitToPlus": {
-      "label": "Frigate+'ya gönder",
-      "aria": "Gannet Artı'ya gönder"
-    },
     "viewInHistory": {
       "label": "Geçmiş'te Görüntüle",
       "aria": "Geçmiş'te Görüntüle"

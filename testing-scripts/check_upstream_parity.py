@@ -3,8 +3,8 @@
 
 Gannet tracks upstream Frigate feature for feature. The only differences
 allowed are Windows implementations of the same feature and the deliberate
-exclusions recorded below, each with the reason it cannot ship in a native
-Windows application. This tool makes that claim checkable instead of
+exclusions recorded below, including optional integrations the fork does not
+ship. This tool makes that claim checkable instead of
 rhetorical: it compares the two trees and fails when upstream carries a
 surface the fork does not have and no exclusion covers.
 
@@ -76,6 +76,10 @@ class Exclusion:
 #: Upstream modules the fork does not carry.
 EXCLUDED_MODULES: tuple[Exclusion, ...] = (
     Exclusion(
+        "frigate/plus.py",
+        "the optional upstream cloud-model and image-submission service is not supported; local models remain available",
+    ),
+    Exclusion(
         "frigate/detectors/plugins/axelera.py",
         "Axelera Metis SDK is a Linux runtime; Windows supports cpu, onnx, openvino and zmq detectors",
     ),
@@ -133,6 +137,43 @@ EXCLUDED_MODULES: tuple[Exclusion, ...] = (
 #: `module:qualname` first, then `Class.method` and bare names for public
 #: top-level definitions that moved modules.
 EXCLUDED_DEFS: tuple[Exclusion, ...] = (
+    # Cloud model access and training-image submission were intentionally removed.
+    Exclusion("api.app:plusModels", "cloud model listing is not supported"),
+    Exclusion(
+        "api.defs.request.events_body:SubmitPlusBody",
+        "cloud submission request schema is not used",
+    ),
+    Exclusion(
+        "api.defs.response.event_response:EventUploadPlusResponse",
+        "cloud submission response schema is not used",
+    ),
+    Exclusion(
+        "api.event:send_to_plus", "event images are not uploaded to the upstream cloud"
+    ),
+    Exclusion(
+        "api.event:false_positive",
+        "cloud false-positive submission was removed; local object filtering remains",
+    ),
+    Exclusion(
+        "api.media:submit_recording_snapshot_to_plus",
+        "recording frames are not uploaded to the upstream cloud",
+    ),
+    Exclusion(
+        "config.config:FrigateConfig.plus_api",
+        "the config no longer owns a cloud client",
+    ),
+    Exclusion(
+        "detectors.detector_config:ModelConfig.check_and_load_plus_model",
+        "detector models are loaded locally",
+    ),
+    Exclusion(
+        "detectors.detector_config:ModelConfig.plus_id",
+        "cloud model identifiers are not supported",
+    ),
+    Exclusion(
+        "stats.emitter:StatsEmitter.stats_init",
+        "the equivalent initializer lives in stats.util on this fork",
+    ),
     # Detector frameworks whose only consumers are the excluded Linux plugins.
     Exclusion(
         "*ensure_detector_dependencies",
@@ -316,6 +357,14 @@ EXCLUDED_DEFS: tuple[Exclusion, ...] = (
 
 #: Upstream API routes the fork serves differently.
 EXCLUDED_ROUTES: tuple[Exclusion, ...] = (
+    Exclusion("/plus/models", "cloud model listing was removed"),
+    Exclusion("/events/{event_id}/plus", "cloud event upload was removed"),
+    Exclusion(
+        "/events/{event_id}/false_positive", "cloud false-positive upload was removed"
+    ),
+    Exclusion(
+        "/{camera_name}/plus/{frame_time}", "cloud recording-frame upload was removed"
+    ),
     Exclusion(
         "/vainfo",
         "replaced by /api/gpuinfo: display adapters, ffmpeg -hwaccels, go2rtc accelerators",
@@ -324,6 +373,7 @@ EXCLUDED_ROUTES: tuple[Exclusion, ...] = (
 
 #: Upstream config fields the fork replaces with Windows equivalents.
 EXCLUDED_CONFIG_FIELDS: tuple[Exclusion, ...] = (
+    Exclusion("FrigateConfig._plus_api", "the config no longer owns a cloud client"),
     Exclusion(
         "*.intel_gpu_device",
         "Intel DRM device pinning; no Intel utilization counter exists in the Windows runtimes",
@@ -333,13 +383,84 @@ EXCLUDED_CONFIG_FIELDS: tuple[Exclusion, ...] = (
 #: Upstream English locale keys that belong to the exclusions above.
 EXCLUDED_LOCALE_KEYS: tuple[Exclusion, ...] = (
     Exclusion(
+        "components/dialog:explore.plus.*", "cloud submission dialog was removed"
+    ),
+    Exclusion(
+        "components/filter:features.submittedToFrigatePlus.*",
+        "cloud submission filter was removed",
+    ),
+    Exclusion(
+        "components/player:submitFrigatePlus.*", "cloud frame upload was removed"
+    ),
+    Exclusion(
+        "components/player:toast.error.submitFrigatePlusFailed",
+        "cloud frame upload was removed",
+    ),
+    Exclusion(
+        "components/player:toast.success.submittedFrigatePlus",
+        "cloud frame upload was removed",
+    ),
+    Exclusion(
+        "views/explore:itemMenu.submitToPlus.*", "cloud submission menu was removed"
+    ),
+    Exclusion(
+        "views/settings:documentTitle.frigatePlus", "cloud settings page was removed"
+    ),
+    Exclusion("views/settings:menu.frigateplus", "cloud settings page was removed"),
+    Exclusion("views/settings:frigatePlus.*", "cloud settings page was removed"),
+    Exclusion(
+        "views/settings:detectionModels.tabs.*",
+        "models now use the local form without a source tab",
+    ),
+    Exclusion(
+        "views/settings:detectionModels.plusModel.*", "cloud model picker was removed"
+    ),
+    Exclusion(
+        "views/setup:setupWizard.detector.modelRequired",
+        "setup now describes the local model requirement",
+    ),
+    Exclusion(
+        "views/setup:setupWizard.detector.continueWithout",
+        "setup offers to configure a local model later without implying existing detection is disabled",
+    ),
+    Exclusion(
+        "views/setup:setupWizard.detector.plusModelPlaceholder",
+        "cloud model picker was removed",
+    ),
+    Exclusion(
+        "views/system:documentTitle.logs.frigate",
+        "the app logs service is named gannet in the fork",
+    ),
+    Exclusion(
         "telemetry.stats.intel_gpu_device.*",
         "strings for the excluded Intel GPU device field",
     ),
 )
 
-#: Upstream web files the fork serves differently. Empty is the goal state.
-EXCLUDED_WEB_FILES: tuple[Exclusion, ...] = ()
+#: Upstream web files for the deliberately unsupported cloud integration.
+EXCLUDED_WEB_FILES: tuple[Exclusion, ...] = (
+    Exclusion(
+        "web/src/components/config-form/theme/fields/ModelSourcePicker.tsx",
+        "models use the local form",
+    ),
+    Exclusion(
+        "web/src/components/icons/FrigatePlusIcon.tsx",
+        "cloud integration branding was removed",
+    ),
+    Exclusion(
+        "web/src/components/overlay/dialog/FrigatePlusDialog.tsx",
+        "cloud submission dialog was removed",
+    ),
+    Exclusion("web/src/utils/plusModels.ts", "cloud model helpers were removed"),
+    Exclusion(
+        "web/src/views/settings/FrigatePlusSettingsView.tsx",
+        "cloud settings page was removed",
+    ),
+    Exclusion(
+        "web/src/views/settings/components/FrigatePlusCurrentModelSummary.tsx",
+        "cloud model summary was removed",
+    ),
+)
 
 ALL_EXCLUSIONS = (
     EXCLUDED_MODULES,

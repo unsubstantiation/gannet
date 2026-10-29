@@ -10,26 +10,6 @@
     "description": "Počas reštartu bude Gannet nakrátko zastavený."
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "Odoslať do Frigate+",
-        "desc": "Objekty na miestach, ktorým sa chcete vyhnúť, nie sú falošne pozitívne. Ich odoslanie ako falošne pozitívnych výsledkov spôsobí zmätok v modeli."
-      },
-      "review": {
-        "question": {
-          "label": "Potvrďte tento štítok pre Frigate Plus",
-          "ask_a": "Je tento objekt typom <code>{{label}}</code>?",
-          "ask_an": "Tento objekt je <code>{{label}}</code>?",
-          "ask_full": "Je tento objekt typom <code>{{untranslatedLabel}}</code>{{translatedLabel}}?"
-        },
-        "state": {
-          "submitted": "Predložené"
-        },
-        "toast": {
-          "error": "Odoslanie do Frigate+ zlyhalo. Skontrolujte sieťové pripojenie a skúste znova."
-        }
-      }
-    },
     "video": {
       "viewInHistory": "Zobraziť v histórii"
     }

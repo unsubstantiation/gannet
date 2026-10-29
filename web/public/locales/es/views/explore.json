@@ -139,10 +139,6 @@
       "label": "Buscar similares",
       "aria": "Buscar objetos rastreados similares"
     },
-    "submitToPlus": {
-      "label": "Enviar a Frigate+",
-      "aria": "Enviar a Frigate Plus"
-    },
     "viewInHistory": {
       "aria": "Ver en Historial",
       "label": "Ver en Historial"

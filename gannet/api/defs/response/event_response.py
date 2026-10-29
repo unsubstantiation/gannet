@@ -16,7 +16,6 @@ class EventResponse(BaseModel):
     has_clip: bool
     has_snapshot: bool
     retain_indefinitely: bool
-    plus_id: str | None
     model_hash: str | None
     detector_type: str | None
     model_type: str | None
@@ -35,8 +34,3 @@ class EventMultiDeleteResponse(BaseModel):
     success: bool
     deleted_events: list[str]
     not_found_events: list[str]
-
-
-class EventUploadPlusResponse(BaseModel):
-    success: bool
-    plus_id: str

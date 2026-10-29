@@ -130,10 +130,6 @@
       "label": "Encontrar similar",
       "aria": "Encontrar objetos rastreados similares"
     },
-    "submitToPlus": {
-      "label": "Enviar para o Frigate+",
-      "aria": "Enviar para o Frigate Plus"
-    },
     "deleteTrackedObject": {
       "label": "Excluir este objeto rastreado"
     },

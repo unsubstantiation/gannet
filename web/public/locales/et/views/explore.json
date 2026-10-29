@@ -32,10 +32,6 @@
       "label": "Kirjuta üles",
       "aria": "Palu heli üleskirjutust tekstina"
     },
-    "submitToPlus": {
-      "label": "Edasta Frigate+ teenusesse",
-      "aria": "Edasta Frigate Plus teenusesse"
-    },
     "viewInHistory": {
       "label": "Vaata ajaloos",
       "aria": "Vaata ajaloos"

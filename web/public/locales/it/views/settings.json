@@ -6,7 +6,6 @@
     "motionTuner": "Regolatore di movimento - Gannet",
     "object": "Correzioni - Gannet",
     "general": "Impostazioni interfaccia - Gannet",
-    "frigatePlus": "Impostazioni Frigate+ - Gannet",
     "notifications": "Impostazioni di notifica - Gannet",
     "enrichments": "Impostazioni di miglioramento - Gannet",
     "cameraManagement": "Gestisci telecamere - Gannet",
@@ -16,64 +15,6 @@
     "maintenance": "Manutenzione - Gannet",
     "profiles": "Profili - Gannet",
     "detectorsAndModel": "Rilevatori e modelli - Gannet"
-  },
-  "frigatePlus": {
-    "snapshotConfig": {
-      "cleanCopyWarning": "Alcune telecamere hanno la funzione di istantanea disabilitata",
-      "table": {
-        "snapshots": "Istantanee",
-        "camera": "Telecamera"
-      },
-      "desc": "Per inviare i dati a Frigate+ è necessario abilitare le istantanee nella configurazione.",
-      "title": "Configurazione istantanee"
-    },
-    "apiKey": {
-      "title": "Chiave API Frigate+",
-      "validated": "La chiave API Frigate+ è stata rilevata e convalidata",
-      "notValidated": "La chiave API Frigate+ non è stata rilevata o non è stata convalidata",
-      "desc": "La chiave API Frigate+ consente l'integrazione con il servizio Frigate+.",
-      "plusLink": "Scopri di più su Frigate+"
-    },
-    "modelInfo": {
-      "trainDate": "Data addestramento",
-      "baseModel": "Modello base",
-      "cameras": "Telecamere",
-      "plusModelType": {
-        "userModel": "Messa a punto fine",
-        "baseModel": "Modello base"
-      },
-      "availableModels": "Modelli Frigate+ disponibili",
-      "loadingAvailableModels": "Caricamento dei modelli disponibili…",
-      "supportedDetectors": "Rilevatori supportati",
-      "error": "Impossibile caricare le informazioni sul modello",
-      "modelType": "Tipo di modello",
-      "modelSelect": "Qui puoi selezionare i modelli disponibili su Frigate+. Nota: puoi selezionare solo i modelli compatibili con la configurazione attuale del tuo rilevatore.",
-      "title": "Informazioni sul modello",
-      "loading": "Caricamento informazioni sul modello…",
-      "noModelsAvailable": "Nessun modello disponibile",
-      "noModelLoaded": "Al momento non è caricato alcun modello di Frigate+.",
-      "selectModel": "Seleziona un modello",
-      "filter": {
-        "ariaLabel": "Filtra i modelli per tipo",
-        "baseModels": "Modelli base",
-        "fineTunedModels": "Modelli ottimizzati"
-      }
-    },
-    "toast": {
-      "error": "Impossibile salvare le modifiche alla configurazione: {{errorMessage}}",
-      "success": "Le impostazioni di Frigate+ sono state salvate. Riavvia Gannet per applicare le modifiche."
-    },
-    "title": "Impostazioni Frigate+",
-    "restart_required": "Riavvio richiesto (modello Frigate+ modificato)",
-    "unsavedChanges": "Modifiche alle impostazioni di Frigate+ non salvate",
-    "description": "Frigate+ è un servizio in abbonamento che offre accesso a funzionalità e capacità aggiuntive per la tua istanza di Gannet, tra cui la possibilità di utilizzare modelli di rilevamento oggetti personalizzati addestrati sui tuoi dati. Puoi gestire le impostazioni del tuo modello Frigate+ qui.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Modello attuale",
-      "otherModels": "Altri modelli",
-      "configuration": "Configurazione"
-    },
-    "changeInDetectorsAndModel": "Cambia modello"
   },
   "debug": {
     "timestamp": {
@@ -364,7 +305,6 @@
     "masksAndZones": "Maschere / Zone",
     "debug": "Correzioni",
     "users": "Utenti",
-    "frigateplus": "Frigate+",
     "enrichments": "Miglioramenti",
     "triggers": "Attivatori",
     "roles": "Ruoli",

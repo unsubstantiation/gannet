@@ -6,7 +6,6 @@
     "motionTuner": "画面变动调整 - Gannet",
     "object": "调试 - Gannet",
     "general": "界面设置 - Gannet",
-    "frigatePlus": "Frigate+ 设置 - Gannet",
     "notifications": "通知设置 - Gannet",
     "enrichments": "增强功能设置 - Gannet",
     "cameraManagement": "管理摄像头 - Gannet",
@@ -25,7 +24,6 @@
     "debug": "调试",
     "users": "用户",
     "notifications": "通知",
-    "frigateplus": "Frigate+",
     "enrichments": "增强功能",
     "triggers": "触发器",
     "roles": "权限组",
@@ -617,64 +615,6 @@
     },
     "unsavedRegistrations": "未保存通知注册",
     "unsavedChanges": "未保存通知设置更改"
-  },
-  "frigatePlus": {
-    "title": "Frigate+ 设置",
-    "apiKey": {
-      "title": "Frigate+ API 密钥",
-      "validated": "Frigate+ API 密钥已检测并验证通过",
-      "notValidated": "未检测到 Frigate+ API 密钥或验证未通过",
-      "desc": "Frigate+ API 密钥用于启用与 Frigate+ 服务的集成。",
-      "plusLink": "了解更多关于 Frigate+"
-    },
-    "snapshotConfig": {
-      "title": "快照配置",
-      "desc": "提交到 Frigate+ 需要同时在配置中开启快照功能。",
-      "cleanCopyWarning": "部分摄像头未开启快照功能",
-      "table": {
-        "camera": "摄像头",
-        "snapshots": "快照"
-      }
-    },
-    "modelInfo": {
-      "title": "模型信息",
-      "modelType": "模型类型",
-      "trainDate": "训练日期",
-      "baseModel": "基础模型",
-      "supportedDetectors": "支持的检测器",
-      "cameras": "摄像头",
-      "loading": "正在加载模型信息…",
-      "error": "加载模型信息失败",
-      "availableModels": "可用 Frigate+ 模型",
-      "loadingAvailableModels": "正在加载可用模型…",
-      "modelSelect": "您可以在Frigate+上选择可用的模型。请注意，只能选择与当前检测器配置兼容的模型。",
-      "plusModelType": {
-        "baseModel": "基础模型",
-        "userModel": "定向调优"
-      },
-      "noModelLoaded": "当前未加载任何Frigate+模型。",
-      "selectModel": "选择一个模型",
-      "noModelsAvailable": "无可用模型",
-      "filter": {
-        "ariaLabel": "按类型筛选模型",
-        "baseModels": "基础模型",
-        "fineTunedModels": "微调过的模型"
-      }
-    },
-    "toast": {
-      "success": "Frigate+ 设置已保存。请重启 Gannet 以应用更改。",
-      "error": "配置更改保存失败：{{errorMessage}}"
-    },
-    "restart_required": "需要重启（Frigate+模型已修改）",
-    "unsavedChanges": "未保存Frigate+变更设置",
-    "description": "Frigate+ 是一项订阅服务，可为你的 Gannet 实例提供额外的功能和能力，包括使用基于你自己的数据训练的自定义目标检测模型。你可以在此管理 Frigate+ 的模型设置。",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "当前模型",
-      "otherModels": "其他模型",
-      "configuration": "配置"
-    },
-    "changeInDetectorsAndModel": "改变模型"
   },
   "enrichments": {
     "title": "增强功能设置",

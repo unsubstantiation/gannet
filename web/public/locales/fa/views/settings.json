@@ -9,7 +9,6 @@
     "motionTuner": "تنظیم‌کنندهٔ حرکت - Gannet",
     "object": "اشکال‌زدایی - Gannet",
     "general": "تنظیمات رابط کاربری - فریگیت",
-    "frigatePlus": "تنظیمات Frigate+ - Gannet",
     "notifications": "تنظیمات اعلان‌ها - Gannet",
     "globalConfig": "پیکربندی سراسری - فریگیت",
     "cameraConfig": "پیکربندی دوربین - فریگیت",
@@ -29,7 +28,6 @@
     "users": "کاربران",
     "roles": "نقش‌ها",
     "notifications": "اعلان‌ها",
-    "frigateplus": "فریگیت+",
     "profiles": "پروفایل‌ها",
     "general": "عمومی",
     "globalConfig": "پیکربندی سراسری",
@@ -1147,64 +1145,6 @@
     "deviceSpecific": "تنظیمات خاص دستگاه",
     "registerDevice": "ثبت این دستگاه",
     "unregisterDevice": "لغو ثبت این دستگاه"
-  },
-  "frigatePlus": {
-    "apiKey": {
-      "notValidated": "کلید API ‏Frigate+ شناسایی نشده یا معتبرسازی نشده است",
-      "desc": "کلید API ‏Frigate+ امکان یکپارچه‌سازی با سرویس Frigate+ را فراهم می‌کند.",
-      "plusLink": "دربارهٔ Frigate+ بیشتر بخوانید",
-      "title": "کلید API فرigate+",
-      "validated": "کلید API فرigate+ شناسایی و تأیید شد"
-    },
-    "snapshotConfig": {
-      "title": "پیکربندی عکس فوری",
-      "desc": "ارسال به Frigate+ نیازمند فعال بودنِ هم «عکس‌های فوری» و هم عکس‌های فوریِ <code>clean_copy </code> در پیکربندی شماست.",
-      "cleanCopyWarning": "برخی دوربین‌ها عکس فوری غیرفعال دارند",
-      "table": {
-        "camera": "دوربین",
-        "snapshots": "عکس‌های فوری"
-      }
-    },
-    "modelInfo": {
-      "title": "اطلاعات مدل",
-      "loadingAvailableModels": "در حال بارگذاری مدل‌های موجود…",
-      "modelSelect": "مدل‌های موجود شما در Frigate+ را می‌توان از اینجا انتخاب کرد. توجه داشته باشید که فقط مدل‌های سازگار با پیکربندی فعلی آشکارساز شما قابل انتخاب هستند.",
-      "modelType": "نوع مدل",
-      "cameras": "دوربین‌ها",
-      "loading": "در حال بارگذاری اطلاعات مدل…",
-      "error": "بارگذاری اطلاعات مدل ناموفق بود",
-      "availableModels": "مدل‌های موجود",
-      "trainDate": "تاریخ آموزش",
-      "baseModel": "مدل پایه",
-      "plusModelType": {
-        "baseModel": "مدل پایه",
-        "userModel": "بهینه‌شده"
-      },
-      "supportedDetectors": "تشخیص‌دهنده‌های پشتیبانی‌شده",
-      "noModelLoaded": "در حال حاضر هیچ مدل Frigate+ بارگذاری نشده است.",
-      "selectModel": "انتخاب یک مدل",
-      "noModelsAvailable": "مدلی در دسترس نیست",
-      "filter": {
-        "ariaLabel": "فیلتر مدل‌ها بر اساس نوع",
-        "baseModels": "مدل‌های پایه",
-        "fineTunedModels": "مدل‌های تنظیم‌شده"
-      }
-    },
-    "unsavedChanges": "تغییرات تنظیمات Frigate+ ذخیره‌نشده",
-    "restart_required": "نیاز به راه‌اندازی مجدد (مدل Frigate+ تغییر کرد)",
-    "toast": {
-      "success": "تنظیمات Frigate+ ذخیره شد. برای اعمال تغییرات، Gannet را راه‌اندازی مجدد کنید.",
-      "error": "ذخیرهٔ تغییرات پیکربندی ناموفق بود: {{errorMessage}}"
-    },
-    "title": "تنظیمات Frigate+",
-    "description": "Frigate+ یک سرویس اشتراکی است که دسترسی به ویژگی‌ها و قابلیت‌های اضافی برای نمونه فریگیت شما فراهم می‌کند، از جمله امکان استفاده از مدل‌های تشخیص اشیاء سفارشی آموزش‌دیده با داده‌های خودتان. می‌توانید تنظیمات مدل Frigate+ خود را اینجا مدیریت کنید.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "مدل فعلی",
-      "otherModels": "سایر مدل‌ها",
-      "configuration": "پیکربندی"
-    },
-    "changeInDetectorsAndModel": "تغییر مدل"
   },
   "triggers": {
     "documentTitle": "تریگرها",

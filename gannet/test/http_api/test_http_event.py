@@ -50,6 +50,34 @@ class TestHttpApp(BaseTestHttp):
             events = client.get("/events").json()
             assert len(events) == 0
 
+    def test_legacy_cloud_data_is_not_exposed_and_endpoints_are_removed(self):
+        event_id = "123456.legacy"
+        self.insert_mock_event(event_id, data={"type": "object"})
+        self.db.execute_sql(
+            "UPDATE event SET plus_id = ? WHERE id = ?", ("legacy-image", event_id)
+        )
+        with AuthTestClient(self.app) as client:
+            for path in ("/events", "/events/explore", f"/event_ids?ids={event_id}"):
+                response = client.get(path)
+                self.assertEqual(response.status_code, 200)
+                self.assertNotIn("plus_id", response.json()[0])
+            response = client.get(f"/events/{event_id}")
+            self.assertEqual(response.status_code, 200)
+            self.assertNotIn("plus_id", response.json())
+            self.assertEqual(client.post(f"/events/{event_id}/plus").status_code, 404)
+            self.assertEqual(
+                client.put(f"/events/{event_id}/false_positive").status_code, 404
+            )
+            self.assertEqual(client.post("/front_door/plus/1005").status_code, 404)
+
+        # Removing the integration must not destroy historical user data.
+        self.assertEqual(
+            self.db.execute_sql(
+                "SELECT plus_id FROM event WHERE id = ?", (event_id,)
+            ).fetchone()[0],
+            "legacy-image",
+        )
+
     def test_get_event_list_no_match_event_id(self):
         id = "123456.random"
         with AuthTestClient(self.app) as client:

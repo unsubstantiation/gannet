@@ -60,7 +60,6 @@ Set `HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1` in the Windows service envir
 
 ## Optional internet services
 
-- **upstream Frigate+** communicates with the upstream Frigate+ API to authenticate, list/download models, and upload explicitly submitted images.
 - **Generative AI** communicates with each configured provider's endpoint. A local Ollama or llama.cpp provider needs only LAN access.
 - **Push notifications** use browser-vendor push endpoints.
 - **WebRTC STUN** uses the configured STUN service for candidate discovery.

@@ -145,10 +145,6 @@
       "label": "Trova simili",
       "aria": "Trova oggetti tracciati simili"
     },
-    "submitToPlus": {
-      "label": "Invia a Frigate+",
-      "aria": "Invia a Frigate Plus"
-    },
     "addTrigger": {
       "label": "Aggiungi attivatore",
       "aria": "Aggiungi un attivatore per questo oggetto tracciato"

@@ -132,10 +132,6 @@
       "aria": "Encontrar objetos rastreados similares",
       "label": "Encontrar similar"
     },
-    "submitToPlus": {
-      "label": "Enviar ao Frigate+",
-      "aria": "Enviar ao Frigate Plus"
-    },
     "downloadVideo": {
       "label": "Baixar vídeo",
       "aria": "Baixar vídeo"

@@ -21,7 +21,7 @@
         config and the recordings in the service profile. This resolves the
         directory once, creates it, gives the service account access to it, and
         pins it in the service's own environment as GANNET_BASE_DIR (along
-        with other GANNET_* variables, `PLUS_API_KEY`, and the explicit go2rtc
+        with other GANNET_* variables and the explicit go2rtc
         exec opt-in from this session, so startup settings carry over).
 
     Recovery
@@ -256,7 +256,7 @@ function Set-ServiceEnvironment {
     )
     $configured = Get-ChildItem Env: |
         Where-Object {
-            ($_.Name -like "GANNET_*" -or $_.Name -like "FRIGATE_*" -or $_.Name -in @("PLUS_API_KEY", "GO2RTC_ALLOW_ARBITRARY_EXEC")) -and
+            ($_.Name -like "GANNET_*" -or $_.Name -like "FRIGATE_*" -or $_.Name -in @("GO2RTC_ALLOW_ARBITRARY_EXEC")) -and
             $skip -notcontains $_.Name
         } |
         Sort-Object Name

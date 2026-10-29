@@ -1508,8 +1508,7 @@
             "label": "hardware de detecció"
         },
         "path": {
-            "label": "Ruta del model de detector d'objectes personalitzat",
-            "description": "Ruta a un fitxer de model de detecció personalitzat (o plus://<model_id> per a models Frigate+)."
+            "label": "Ruta del model de detector d'objectes personalitzat"
         },
         "labelmap_path": {
             "label": "Mapa d'etiquetes per al detector d'objectes personalitzat",

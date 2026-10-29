@@ -10,23 +10,6 @@
     "description": "重新啟動期間將會短暫停止 Gannet。"
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "提交到 Frigate+",
-        "desc": "位於你想避免的區域的物件並不是誤判。提交這些作為誤判會令模型混淆。"
-      },
-      "review": {
-        "question": {
-          "label": "確認此標籤給 Frigate Plus",
-          "ask_a": "此物件是 <code>{{label}}</code> 嗎？",
-          "ask_an": "此物件是 <code>{{label}}</code> 嗎？",
-          "ask_full": "此物件是 <code>{{untranslatedLabel}}</code>（{{translatedLabel}}）嗎？"
-        },
-        "state": {
-          "submitted": "已提交"
-        }
-      }
-    },
     "video": {
       "viewInHistory": "在歷史記錄中查看"
     }
