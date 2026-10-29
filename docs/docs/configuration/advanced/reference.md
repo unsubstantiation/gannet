@@ -30,15 +30,12 @@ cameras:
 
 ## Native paths
 
-Interactive installs default to `%LOCALAPPDATA%\Gannet`; services default to `%ProgramData%\Gannet`. Set `GANNET_BASE_DIR` before startup to change the root. Config, media, cache, temporary files, logs, model cache, and installed tools each have dedicated subdirectories.
+Interactive installs default to `%LOCALAPPDATA%\Gannet`; services default to `%ProgramData%\Gannet`; the portable bundle defaults to `data\` inside its extracted folder. Set `GANNET_BASE_DIR` before startup to change the root. Config, media, cache, temporary files, logs, model cache, and installed tools each have dedicated subdirectories.
 
 `GANNET_*` is the preferred prefix for path overrides, runtime switches, and
 config substitutions; the older `FRIGATE_*` spelling is still accepted as a
 legacy alias. If both are set, `GANNET_*` wins. Placeholders may be written as
-either `{GANNET_NAME}` or `{FRIGATE_NAME}` and resolve to the same value. An
-install made before this change must set `GANNET_BASE_DIR` (or
-`FRIGATE_BASE_DIR`) to its old `%LOCALAPPDATA%\Gannet` path, because the old
-folder is not adopted automatically.
+either `{GANNET_NAME}` or `{FRIGATE_NAME}` and resolve to the same value.
 
 Omit path fields to use that layout. When an explicit path is needed, quote it:
 

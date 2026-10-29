@@ -27,7 +27,7 @@ Start Gannet interactively for the first setup:
 .\run_gannet.ps1
 ```
 
-Open `https://localhost:8971`. The generated certificate is self-signed, so the first browser visit displays a certificate warning. Retrieve the generated administrator password from `%LOCALAPPDATA%\Gannet\tmp\logs\gannet\current` and change it during setup.
+Open `https://localhost:8971`. The generated certificate is self-signed, so the first browser visit displays a certificate warning. Retrieve the generated administrator password from `data\tmp\logs\gannet\current` below the portable bundle root (or `%LOCALAPPDATA%\Gannet\tmp\logs\gannet\current` for a default interactive install) and change it during setup.
 
 ## 2. Add a camera
 
@@ -99,7 +99,7 @@ cameras:
           roles: [record]
 ```
 
-Media defaults to `%LOCALAPPDATA%\Gannet\media`. Set `GANNET_MEDIA_DIR` before installation to place it on another local NTFS volume. The Windows service account needs Modify access.
+Media defaults to `data\media` in the portable bundle or `%LOCALAPPDATA%\Gannet\media` for a default interactive install. Set `GANNET_MEDIA_DIR` before startup to place it on another local NTFS volume. The Windows service account needs Modify access.
 
 ## 6. Tune motion and objects
 

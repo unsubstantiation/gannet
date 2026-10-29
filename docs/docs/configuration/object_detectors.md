@@ -29,7 +29,7 @@ models:
       - cpu
 ```
 
-On first use Gannet downloads its default TFLite model into `%LOCALAPPDATA%\Gannet\config\model_cache`. Set `path` to use another compatible model.
+On first use Gannet downloads its default TFLite model into `data\config\model_cache` in the portable bundle (or `%LOCALAPPDATA%\Gannet\config\model_cache` for a default interactive install). Set `path` to use another compatible model.
 
 ## ONNX Runtime
 

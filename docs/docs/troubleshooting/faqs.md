@@ -7,7 +7,7 @@ title: Frequently Asked Questions
 
 ## Where are Gannet's files?
 
-Interactive installs default to `%LOCALAPPDATA%\Gannet`. The Windows service installer defaults to `%ProgramData%\Gannet`. `GANNET_BASE_DIR` can select another root before installation. Subdirectories contain config, media, cache, temporary files, logs, models, and tools.
+The portable bundle defaults to `data\` inside its own folder. Interactive installs default to `%LOCALAPPDATA%\Gannet`, and the Windows service installer defaults to `%ProgramData%\Gannet`. `GANNET_BASE_DIR` can select another root before startup. Subdirectories contain config, media, cache, temporary files, logs, models, and tools.
 
 ## Where are the logs?
 

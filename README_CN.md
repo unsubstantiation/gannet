@@ -47,7 +47,7 @@ Windows 相关特性：
 
 - 检测器：CPU（TFLite、ONNX Runtime、OpenVINO），通过 OpenVINO 使用 Intel 显卡/NPU，以及通过 DirectML（`onnxruntime-directml`，默认安装）在 AMD、Intel 和 Nvidia 显卡上推理。Coral、Hailo 等依赖 Linux 专用驱动的加速器不可用，配置中若指定这类设备会在启动校验阶段报错并列出 Windows 可用的检测器。
 - 视频：`preset-windows-d3d11va`、`preset-windows-dxva2`、`preset-windows-qsv`、`preset-windows-nvenc`，`ffmpeg.hwaccel_args: auto` 会自动选择合适的预设。
-- 文件：所有内容位于同一个基础目录，默认为 `%LOCALAPPDATA%\Gannet`，可用 `GANNET_BASE_DIR` 迁移。
+- 文件：交互式安装默认使用 `%LOCALAPPDATA%\Gannet`；便携包使用自身的 `data\` 目录，配置和录像可随整个文件夹一起移动。两者均可通过 `GANNET_BASE_DIR` 更改位置。
 - 可选的 Windows 服务（SCM）：`bootstrap_windows.py --install-service`。
 
 安装、端口与调优请阅读 [Windows 安装文档](docs/docs/frigate/installation.md#windows)，移植审计（改了什么、验证了什么、还缺什么）见 [WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md)。

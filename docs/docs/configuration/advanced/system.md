@@ -7,7 +7,9 @@ title: System
 
 ## Data directories
 
-Gannet defaults to `%LOCALAPPDATA%\Gannet` for an interactive install. The bootstrap creates:
+Gannet defaults to `%LOCALAPPDATA%\Gannet` for an interactive install. The
+portable bundle instead defaults to `data\` inside its own folder, making the
+configuration and database travel with the app. The selected data root contains:
 
 - `config` — configuration, secrets, models, and database;
 - `media` — recordings, clips, previews, and exports;

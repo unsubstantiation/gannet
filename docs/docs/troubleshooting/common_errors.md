@@ -5,7 +5,7 @@ title: Common Errors
 
 # Common Windows errors
 
-Start with `%LOCALAPPDATA%\Gannet\tmp\logs\gannet\current` for an interactive install or `%ProgramData%\Gannet\tmp\logs\gannet\current` for the default service install. If another base directory was selected, use the same `tmp\logs\gannet\current` path below that root.
+Start with `data\tmp\logs\gannet\current` below the portable bundle root, `%LOCALAPPDATA%\Gannet\tmp\logs\gannet\current` for an interactive install, or `%ProgramData%\Gannet\tmp\logs\gannet\current` for the default service install. If another base directory was selected, use the same `tmp\logs\gannet\current` path below that root.
 
 ## Gannet requires 64-bit Windows and CPython 3.12
 
@@ -59,7 +59,9 @@ the launcher then starts the whole application again. Current builds also record
 every restart — with the child's exit code and the reason from the marker — in
 `tmp\logs\launcher.log`, and back off briefly after five restarts in two minutes.
 The 0.19.0 bundle predates that log, so use the application log and the event
-log there:
+log there. For a portable bundle, replace the `$Data = ...` assignment below
+with `$Data = '<bundle-root>\data'`; the `%LOCALAPPDATA%` fallback is for
+interactive installs:
 
 ```powershell
 $Data = if ($env:GANNET_BASE_DIR) { $env:GANNET_BASE_DIR } `
@@ -69,13 +71,6 @@ Get-Content (Join-Path $Data 'tmp\logs\launcher.log') -Tail 50 -ErrorAction Sile
 Get-Content (Join-Path $Data 'tmp\logs\gannet\current') -Tail 200
 Get-Content (Join-Path $Data 'tmp\logs\gannet\current.1') -Tail 200 -ErrorAction SilentlyContinue
 ```
-
-New builds write the application log to `tmp\logs\gannet\current`; older
-builds used `tmp\logs\frigate\current`. If you upgraded from an older build
-without setting `GANNET_BASE_DIR`, the new process is reading the new
-`%LOCALAPPDATA%\Gannet` tree — set the variable to the legacy
-`%LOCALAPPDATA%\Gannet` path to see the logs from the install that has been
-running.
 
 The application log is a rotating 5 MiB file; `current.1` and `current.2` hold
 the previous runs, which is where the first failure of a fast restart loop ends

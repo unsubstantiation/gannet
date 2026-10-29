@@ -5,7 +5,7 @@ title: Updating
 
 # Updating Gannet on Windows
 
-Before updating, back up `%LOCALAPPDATA%\Gannet\config` and any media or database paths overridden through environment variables.
+Before updating, back up the portable bundle's `data\config` directory (or `%LOCALAPPDATA%\Gannet\config` for a default interactive install) and any media or database paths overridden through environment variables.
 
 ## Source checkout installation
 
@@ -32,7 +32,7 @@ Run those commands from an elevated PowerShell when changing the service registr
 
 ## Release bundle
 
-For a packaged release, stop Gannet, extract the new bundle over a new application directory, run its bootstrap or installer, and point the service at the new interpreter. Do not delete the data directory. Keep the old application directory until the new version has started and recordings play correctly.
+For a packaged release, stop Gannet and back up the old bundle's `data\` directory. Extract the new bundle into a new application directory and copy `data\` into it so the new launchers find the existing configuration, database, and media. Keep the old application directory and its data until the new version has started and recordings play correctly.
 
 ## Configuration migrations
 
@@ -50,4 +50,4 @@ Validate before restarting production:
 2. Restore the previous application directory and virtual environment.
 3. Restore the matching configuration/database backup if the newer version performed an incompatible migration.
 4. Reinstall or repoint the Windows service.
-5. Start Gannet and inspect the logs under `%LOCALAPPDATA%\Gannet\tmp\logs\gannet\current`.
+5. Start Gannet and inspect `tmp\logs\gannet\current` below its configured data root.

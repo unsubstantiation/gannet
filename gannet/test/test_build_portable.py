@@ -70,10 +70,21 @@ class TestLauncher(unittest.TestCase):
         self.assertIn('-Filter "*.tflite"', self.launcher)
         self.assertIn("if (-not (Test-Path $destination))", self.launcher)
 
-    def test_never_writes_into_the_bundle(self):
-        # Data belongs in %LOCALAPPDATA%\Gannet or -BaseDir; nothing may be
-        # copied to $Root or set as the working directory for writes.
-        self.assertNotIn("Copy-Item -Destination $Root", self.launcher)
+    def test_defaults_to_bundle_local_data(self):
+        # The app must inherit the same root used for models and restart logs;
+        # otherwise platform.py silently falls back to AppData in its children.
+        self.assertIn('Join-Path $Root "data"', self.launcher)
+        self.assertIn(
+            "$env:GANNET_BASE_DIR = [System.IO.Path]::GetFullPath($DataRoot)",
+            self.launcher,
+        )
+        self.assertNotIn("$env:LOCALAPPDATA", self.launcher)
+        self.assertNotIn("legacy data directory", self.launcher)
+
+    def test_explicit_base_dir_override_is_still_available(self):
+        self.assertIn("[string]$BaseDir", self.launcher)
+        self.assertIn("if ($BaseDir) { $BaseDir }", self.launcher)
+        self.assertIn("$env:FRIGATE_BASE_DIR", self.launcher)
 
     def test_cmd_shim_forwards_arguments_to_the_launcher(self):
         shim = self.builder.cmd_shim()
@@ -118,6 +129,8 @@ class TestExeLauncher(unittest.TestCase):
         self.assertIn(
             "SPDX-License-Identifier: LicenseRef-GNCL-1.0", self.module_source
         )
+        self.assertNotIn("LOCALAPPDATA", self.module_source)
+        self.assertNotIn("legacy data directory", self.module_source)
 
     def test_launcher_is_a_no_op_for_the_bundled_interpreter(self):
         self.assertFalse(self.module.is_launcher_process())
@@ -157,11 +170,31 @@ class TestExeLauncher(unittest.TestCase):
             "an unseparated flag never reaches this module: CPython rejects it",
         )
 
+    def test_data_root_ignores_appdata_and_honors_explicit_overrides(self):
+        import os
+
+        bundle = self.root / "bundle"
+        with (
+            mock.patch.object(self.module, "bundle_root", return_value=bundle),
+            mock.patch.dict(
+                os.environ, {"LOCALAPPDATA": str(self.root / "appdata")}, clear=True
+            ),
+        ):
+            self.assertEqual(self.module.data_root(), bundle / "data")
+
+        for variable in ("GANNET_BASE_DIR", "FRIGATE_BASE_DIR"):
+            with self.subTest(variable=variable):
+                with mock.patch.dict(
+                    os.environ, {variable: str(self.root / "custom")}, clear=True
+                ):
+                    self.assertEqual(self.module.data_root(), self.root / "custom")
+
     def test_module_carries_the_powershell_launcher_contract(self):
         for fragment in (
             '"-m", "gannet"',
             "cwd=str(app)",
             'RESTART_MARKER = "restart.requested"',
+            'env["GANNET_BASE_DIR"] = str(data)',
             'env.setdefault("PYTHONUTF8", "1")',
             'glob("*.tflite")',
             "os._exit",
@@ -187,11 +220,8 @@ class TestExeLauncher(unittest.TestCase):
         module = site_packages / "gannet_launcher.py"
         module.write_text(self.module_source, encoding="utf-8")
 
-        data = self.root / "data"
-        environ = {
-            "LOCALAPPDATA": str(self.root / "appdata"),
-            "FRIGATE_BASE_DIR": str(data),
-        }
+        data = root / "data"
+        environ = {"LOCALAPPDATA": str(self.root / "appdata")}
         popen = mock.MagicMock()
         popen.return_value.wait.return_value = 0
         exit_calls = []
@@ -218,10 +248,12 @@ class TestExeLauncher(unittest.TestCase):
         )
         self.assertEqual(kwargs["cwd"], str(root / "app"))
         self.assertEqual(kwargs["env"]["PYTHONUTF8"], "1")
+        self.assertEqual(kwargs["env"]["GANNET_BASE_DIR"], str(data))
         self.assertEqual(
             (data / "config" / "model_cache" / "cpu_model.tflite").read_bytes(),
             b"weights",
         )
+        self.assertFalse((self.root / "appdata").exists())
         self.assertEqual(exit_calls, [0])
 
     def test_exe_launcher_logs_restarts_and_backs_off_a_loop(self):
@@ -856,7 +888,10 @@ class TestManifestInputs(unittest.TestCase):
 
         self.assertIn("https://localhost:8971", notes)
         self.assertNotIn("http://localhost:8971", notes)
-        self.assertIn(r"tmp\logs\gannet\current", notes)
+        self.assertIn(r"data\tmp\logs\gannet\current", notes)
+        self.assertIn("Moving the bundle moves its data with it", notes)
+        self.assertNotIn("Migrating from Frigate", notes)
+        self.assertNotIn(r"%LOCALAPPDATA%\Frigate", notes)
 
     def test_release_notes_put_the_exe_first(self):
         notes = self.builder.release_notes(

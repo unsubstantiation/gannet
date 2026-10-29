@@ -25,7 +25,9 @@
 #   * `winget validate` is still a human step, and the manifest is a template
 #     until a real release with these bytes exists.
 #   * `winget install` must put the extracted folder somewhere writable: the
-#     application writes to %LOCALAPPDATA%\Gannet, never into its own tree.
+#     application writes configuration and other data to data\ in its own tree.
+#     Verify that winget upgrades preserve that untracked directory before
+#     submitting a manifest for a bundle with an existing data directory.
 #   * A tag that does not exist yet means the URL 404s. Publish the release
 #     first, then submit the manifest that points at it.
 PackageIdentifier: unsubstantiation.GannetNVR

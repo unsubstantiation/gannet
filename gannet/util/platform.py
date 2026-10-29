@@ -42,10 +42,8 @@ def require_windows() -> None:
 PREFERRED_ENV_PREFIX = "GANNET_"
 LEGACY_ENV_PREFIX = "FRIGATE_"
 
-#: The directory a new install writes to. Installs made before this rename used
-#: "Frigate"; see ``warn_about_legacy_base_dir`` and the migration notes.
+#: The directory a new install writes to.
 DATA_DIR_NAME = "Gannet"
-LEGACY_DATA_DIR_NAME = "Frigate"
 
 BASE_DIR_VAR = "GANNET_BASE_DIR"
 CONFIG_DIR_VAR = "GANNET_CONFIG_DIR"
@@ -131,31 +129,6 @@ def get_base_dir() -> str:
     return os.path.abspath(os.path.join(_default_root(), DATA_DIR_NAME))
 
 
-def get_legacy_default_base_dir() -> str:
-    """The default data root used by installs made before the rename."""
-    return os.path.abspath(os.path.join(_default_root(), LEGACY_DATA_DIR_NAME))
-
-
-def legacy_base_dir_warning() -> str | None:
-    """Warn, without silently switching, when a legacy data folder is present.
-
-    This is a clean cutover: the application never reads the old directory on
-    its own. An existing install has to point GANNET_BASE_DIR (or the legacy
-    FRIGATE_BASE_DIR alias) at it, so the operator cannot miss the change.
-    """
-    if base_dir_is_overridden():
-        return None
-    legacy = get_legacy_default_base_dir()
-    if legacy == get_base_dir() or not os.path.isdir(legacy):
-        return None
-    return (
-        f"A legacy data directory exists at {legacy}, but this version uses "
-        f"{get_base_dir()}. Set {BASE_DIR_VAR}={legacy} (or its legacy alias "
-        f"{legacy_env_name(BASE_DIR_VAR)}) to keep using the existing config, "
-        "database, and recordings."
-    )
-
-
 def _runtime_dir(variable: str, child: str) -> str:
     return _env_path(variable) or os.path.join(get_base_dir(), child)
 
@@ -220,10 +193,6 @@ def web_dir_has_build() -> bool:
 
 def ensure_runtime_dirs() -> None:
     """Create the Windows data layout before services start."""
-    warning = legacy_base_dir_warning()
-    if warning:
-        logger.warning("%s", warning)
-
     media_dir = get_media_dir()
     for path in (
         get_config_dir(),

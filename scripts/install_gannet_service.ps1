@@ -379,14 +379,6 @@ function Invoke-ServiceAction {
 
             if (-not $BaseDir -and -not $env:GANNET_BASE_DIR -and -not $env:FRIGATE_BASE_DIR) {
                 $userTree = Join-Path $env:LOCALAPPDATA "Gannet"
-                $legacyTree = Join-Path $env:LOCALAPPDATA "Gannet"
-                if (-not (Test-Path -LiteralPath $userTree) -and (Test-Path -LiteralPath $legacyTree)) {
-                    Write-Host ""
-                    Write-Host "Note: a legacy data directory exists at $legacyTree."
-                    Write-Host "      This version does not use it automatically; pass"
-                    Write-Host "      -BaseDir $legacyTree to keep the existing data."
-                    Write-Host ""
-                }
                 if ((Test-Path -LiteralPath $userTree) -and ($userTree -ne $base)) {
                     Write-Host ""
                     Write-Host "Note: this user's own Gannet install uses:"

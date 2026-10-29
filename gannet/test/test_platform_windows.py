@@ -28,7 +28,6 @@ from gannet.util.platform import (
     install_service_stop_watcher,
     ipc_endpoint,
     is_subpath,
-    legacy_base_dir_warning,
     legacy_env_name,
     long_path_warning,
     longest_recording_path,
@@ -515,35 +514,6 @@ class TestGannetPathAliases(unittest.TestCase):
             .replace("\\", "/")
             .endswith("logs/gannet/current")
         )
-
-    def test_legacy_directory_warns_without_being_adopted(self):
-        with tempfile.TemporaryDirectory() as appdata:
-            legacy = Path(appdata) / "Frigate"
-            legacy.mkdir()
-            with patch.dict(
-                os.environ,
-                {
-                    "LOCALAPPDATA": appdata,
-                    "GANNET_BASE_DIR": "",
-                    "FRIGATE_BASE_DIR": "",
-                },
-            ):
-                warning = legacy_base_dir_warning()
-                base = get_base_dir()
-
-        self.assertIsNotNone(warning)
-        self.assertIn(str(legacy), warning)
-        self.assertIn("GANNET_BASE_DIR", warning)
-        self.assertEqual(base, os.path.join(appdata, "Gannet"))
-
-    def test_no_warning_when_a_base_dir_is_pinned(self):
-        with tempfile.TemporaryDirectory() as appdata:
-            (Path(appdata) / "Frigate").mkdir()
-            with patch.dict(
-                os.environ,
-                {"LOCALAPPDATA": appdata, "FRIGATE_BASE_DIR": appdata},
-            ):
-                self.assertIsNone(legacy_base_dir_warning())
 
 
 if __name__ == "__main__":

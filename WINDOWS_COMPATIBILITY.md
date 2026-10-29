@@ -9,9 +9,11 @@ WSL, POSIX, or Unix-service runtime.
 - `gannet.__main__` rejects every platform other than Windows before runtime
   initialization.
 - Multiprocessing always uses `spawn`.
-- Writable data defaults to `%LOCALAPPDATA%\Gannet`. `GANNET_BASE_DIR`,
+- Interactive installs default writable data to `%LOCALAPPDATA%\Gannet`. The
+  portable launchers set `GANNET_BASE_DIR` to `<bundle>\data`, so a moved bundle
+  carries its configuration and recordings with it. `GANNET_BASE_DIR`,
   `GANNET_CONFIG_DIR`, `GANNET_MEDIA_DIR`, `GANNET_CACHE_DIR`, and
-  `GANNET_TMP_DIR` can relocate it, including to another drive.
+  `GANNET_TMP_DIR` can relocate data, including to another drive.
 - Executables are native `.exe` files. The bootstrap installs pinned FFmpeg
   8.1.2 and go2rtc 1.9.14 builds and verifies their SHA-256 digests.
 - Named shared-memory mappings, loopback TCP IPC, Windows process groups,
@@ -127,7 +129,7 @@ changed, how the result is verified, and what is deliberately still open.
 | --- | --- | --- |
 | Process model | An image with nginx, supervisord and a Gannet container | One process; `gannet/api/web.py` serves the UI, the API, media and live streams |
 | Multiprocessing | `fork` | `spawn` (`gannet.util.platform.get_mp_start_method`) |
-| Writable paths | `/config`, `/media`, `/cache` | `%LOCALAPPDATA%\Gannet`, relocatable with `GANNET_*_DIR` (legacy `FRIGATE_*_DIR` aliases still work) |
+| Writable paths | `/config`, `/media`, `/cache` | `%LOCALAPPDATA%\Gannet` for interactive installs; `<bundle>\data` for the portable bundle; relocatable with `GANNET_*_DIR` (legacy `FRIGATE_*_DIR` aliases still work) |
 | Executables | `ffmpeg` and `go2rtc` on `PATH` | `ffmpeg.exe` and `go2rtc.exe` installed by `bootstrap_windows.py` with verified SHA-256 digests |
 | Local IPC | Unix domain sockets and FIFOs | Loopback TCP (`gannet.util.platform.ipc_endpoint`) and named shared memory |
 | Child lifetime | The supervisor reaped orphans | A kill-on-close Job Object (`gannet/util/job_object.py`) |

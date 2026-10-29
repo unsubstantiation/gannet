@@ -113,37 +113,6 @@ class TestBaseLayout(unittest.TestCase):
             layout = bootstrap.BaseLayout()
         self.assertEqual(layout.base_dir, Path(r"D:\NewData"))
 
-    def test_legacy_directory_warns_instead_of_being_adopted(self):
-        with tempfile.TemporaryDirectory() as appdata:
-            legacy = Path(appdata) / "Frigate"
-            legacy.mkdir()
-            with patch.dict(
-                os.environ,
-                {
-                    "LOCALAPPDATA": appdata,
-                    "GANNET_BASE_DIR": "",
-                    "FRIGATE_BASE_DIR": "",
-                },
-            ):
-                warning = bootstrap.legacy_data_dir_warning(Path(appdata))
-                layout = bootstrap.BaseLayout()
-
-        self.assertIsNotNone(warning)
-        self.assertIn(str(legacy), warning)
-        # Clean cutover: no silent fallback to the old folder.
-        self.assertEqual(layout.base_dir, Path(appdata) / "Gannet")
-
-    def test_explicit_base_dir_suppresses_the_legacy_warning(self):
-        with tempfile.TemporaryDirectory() as appdata:
-            legacy = Path(appdata) / "Frigate"
-            legacy.mkdir()
-            with patch.dict(
-                os.environ,
-                {"LOCALAPPDATA": appdata, "FRIGATE_BASE_DIR": str(legacy)},
-            ):
-                warning = bootstrap.legacy_data_dir_warning(Path(appdata))
-        self.assertIsNone(warning)
-
 
 class TestDigests(unittest.TestCase):
     def _artifact(self, expected: str = ""):

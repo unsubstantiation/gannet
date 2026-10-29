@@ -47,16 +47,12 @@ Windows-specific behaviour:
 
 - Inference: CPU (TFLite and ONNX Runtime), Intel GPU/NPU through OpenVINO, and selectable ONNX Runtime DirectML, CUDA, or Windows ML catalog providers. DirectML is installed by default; bootstrap profiles are `--directml`, `--cuda`, `--windows-ml`, and `--no-directml` (CPU). CUDA targets NVIDIA and installs the official CUDA 13/cuDNN 9 runtime extras. Windows ML vendor providers (including MIGraphX, TensorRT-RTX, OpenVINO, QNN, and Vitis AI when the catalog reports them compatible) are installed explicitly with `python scripts/manage_windows_ml.py`; see the [acceleration guide](docs/docs/configuration/hardware_acceleration_enrichments.md). The Windows ML profile uses the ONNX Runtime version pinned by Microsoft's `windowsml` package; do not mix runtime profiles in one environment. Provider, model, driver, and hardware support varies. Coral, Hailo and accelerators requiring Linux-only drivers are unavailable.
 - Video: `preset-windows-d3d11va`, `preset-windows-dxva2`, `preset-windows-qsv` and `preset-windows-nvenc`, and `ffmpeg.hwaccel_args: auto` detects which one to use.
-- Files: everything lives under one base directory, `%LOCALAPPDATA%\Gannet` by default, relocatable with `GANNET_BASE_DIR`.
+- Files: interactive installs use `%LOCALAPPDATA%\Gannet`; the portable bundle uses its own `data\` directory so configuration and recordings move with it. Both are relocatable with `GANNET_BASE_DIR`.
 - Optional SCM service: `bootstrap_windows.py --install-service`.
 
 `GANNET_*` is the preferred environment-variable prefix; the older
-`FRIGATE_*` names are still accepted as aliases. New installs default to
-`%LOCALAPPDATA%\Gannet` and write logs to `tmp\logs\gannet\current`.
-**Upgrading from an older build:** the old `%LOCALAPPDATA%\Frigate` tree is
-not adopted automatically. Set `GANNET_BASE_DIR` (or `FRIGATE_BASE_DIR`) to
-that path before first launch to keep your existing config, database and
-recordings; startup and the launchers warn when a legacy folder is present.
+`FRIGATE_*` names are still accepted as aliases. Logs are written to
+`tmp\logs\gannet\current` below the selected data root.
 
 Read the [Windows installation guide](docs/docs/frigate/installation.md#windows) for setup, ports and tuning, and [WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md) for the port audit: what was changed, what is verified, and what is still open.
 
