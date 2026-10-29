@@ -80,14 +80,20 @@ def create_fastapi_app(
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         logger.info("FastAPI started")
-        asyncio.create_task(
+        # hold the task: the event loop keeps only a weak reference, so an
+        # unreferenced watchdog can be collected, and an exception nobody
+        # retrieves would be reported as "Task exception was never retrieved"
+        replay_watchdog = asyncio.create_task(
             debug_replay_auto_stop_watchdog(
                 replay_manager, frigate_config, config_publisher
-            )
+            ),
+            name="debug-replay-auto-stop-watchdog",
         )
         try:
             yield
         finally:
+            replay_watchdog.cancel()
+            await asyncio.gather(replay_watchdog, return_exceptions=True)
             await app.state.camera_discovery.close()
 
     logger.info("Starting FastAPI app")

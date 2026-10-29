@@ -7,6 +7,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, Mock, patch
 
 from joserfc import jwt
+from joserfc.jwk import OctKey
 
 from gannet.api.auth import create_encoded_jwt, hash_password
 from gannet.api.fastapi_app import create_fastapi_app
@@ -123,6 +124,59 @@ class TestAuthJwtRole(BaseTestHttp):
                 resp = self._auth(client, self._token(app, "bob", "garage"), source)
                 self.assertEqual(resp.status_code, 401)
                 self.assertNotIn("remote-role", resp.headers)
+
+    def test_a_foreign_token_is_rejected_and_its_cookie_cleared(self):
+        """A token this installation did not sign is a stale session.
+
+        The response has to drop the cookie. Without that the browser presents
+        the same unusable token on every request - each live-stream websocket
+        included - and every one of them logs another signature error instead
+        of the user being asked to sign in again.
+        """
+        app = self._create_app()
+        foreign_key = OctKey.import_key(bytes.fromhex("ab" * 64))
+        token = jwt.encode(
+            {"alg": "HS256"},
+            {
+                "sub": "bob",
+                "role": "garage",
+                "exp": int(time.time()) + 3600,
+                "iat": int(time.time()),
+            },
+            foreign_key,
+        )
+
+        with AuthTestClient(app) as client:
+            with self.assertLogs("gannet.api.auth", level="WARNING") as logs:
+                resp = self._auth(client, token, "cookie")
+
+        self.assertEqual(resp.status_code, 401)
+        self.assertEqual(resp.headers["location"], "/login")
+        self.assertNotIn("remote-role", resp.headers)
+        self.assertEqual(len(logs.output), 1)
+        self.assertIn("did not sign", logs.output[0])
+        cleared = resp.headers["set-cookie"]
+        self.assertTrue(cleared.startswith('frigate_token="";'))
+        self.assertIn("Max-Age=0", cleared)
+
+    def test_an_expired_token_is_cleared(self):
+        app = self._create_app()
+        expired = jwt.encode(
+            {"alg": "HS256"},
+            {
+                "sub": "bob",
+                "role": "garage",
+                "exp": int(time.time()) - 10,
+                "iat": int(time.time()) - 3600,
+            },
+            app.jwt_token,
+        )
+
+        with AuthTestClient(app) as client:
+            resp = self._auth(client, expired, "cookie")
+
+        self.assertEqual(resp.status_code, 401)
+        self.assertIn("Max-Age=0", resp.headers["set-cookie"])
 
     def test_login_refused_for_role_removed_from_config(self):
         User.update(role="removed_role").where(User.username == "bob").execute()

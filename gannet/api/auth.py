@@ -17,6 +17,7 @@ import requests
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import JSONResponse, RedirectResponse
 from joserfc import jwt
+from joserfc.errors import BadSignatureError
 from peewee import DoesNotExist
 from slowapi import Limiter
 
@@ -37,6 +38,7 @@ from gannet.api.media_auth import (
 from gannet.config import AuthConfig, ProxyConfig
 from gannet.const import (
     CONFIG_DIR,
+    JWT_SECRET_ENV_VAR,
     JWT_SECRET_ENV_VARS,
     PASSWORD_HASH_ALGORITHM,
 )
@@ -385,6 +387,66 @@ def _cleanup_first_load_seen() -> None:
         del _first_load_seen[k]
 
 
+#: The secret that signs session tokens. Every token a browser holds is only
+#: valid while this file keeps the same value: a replacement ends every session.
+JWT_SECRET_FILE_NAME = ".jwt_secret"
+
+
+def _read_jwt_secret(path: str) -> str | None:
+    """Return the stored signing secret, or None when there is no usable one."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            secret = f.readline().strip()
+    except OSError as err:
+        logger.warning(
+            "Unable to read the jwt secret from %s (%s). A new secret will be "
+            "created at each startup, which signs out every existing session.",
+            path,
+            err,
+        )
+        return None
+
+    if not secret:
+        logger.warning(
+            "%s is empty. A new jwt secret will be created at each startup, "
+            "which signs out every existing session.",
+            path,
+        )
+        return None
+
+    return secret
+
+
+def _generate_jwt_secret(path: str, replace: bool = False) -> str:
+    """Create the secret file and return the secret that won.
+
+    ``replace`` rewrites a file that holds no usable secret (empty or
+    unreadable) instead of creating a new one, so the next startup can read it
+    back instead of signing every session out again.
+    """
+    generated = secrets.token_hex(64)
+    try:
+        # "x" creates exclusively: a secret another startup generated is never
+        # overwritten
+        with open(path, "w" if replace else "x", encoding="utf-8") as f:
+            f.write(generated)
+        return generated
+    except FileExistsError:
+        # Another instance created the file between the check and the write.
+        # Adopt its secret: keeping the one generated here would make tokens
+        # signed by either instance fail as "bad_signature" in the other.
+        return _read_jwt_secret(path) or generated
+    except OSError as err:
+        logger.warning(
+            "Unable to write the jwt secret file to the config directory (%s). "
+            "A new secret will be created at each startup, which signs out every "
+            "existing session; make that directory writable or set %s.",
+            err,
+            JWT_SECRET_ENV_VAR,
+        )
+        return generated
+
+
 def get_jwt_secret() -> str:
     jwt_secret = None
     # Check the environment variables, preferred name first.
@@ -394,32 +456,17 @@ def get_jwt_secret() -> str:
             jwt_secret = os.environ[name]
             break
     if jwt_secret is None:
-        jwt_secret_file = os.path.join(CONFIG_DIR, ".jwt_secret")
-        # check .jwt_secrets file
-        if not os.path.isfile(jwt_secret_file):
+        jwt_secret_file = os.path.join(CONFIG_DIR, JWT_SECRET_FILE_NAME)
+        if os.path.isfile(jwt_secret_file):
+            logger.debug("Using jwt secret from .jwt_secret file in config directory.")
+            jwt_secret = _read_jwt_secret(jwt_secret_file)
+            if jwt_secret is None:
+                jwt_secret = _generate_jwt_secret(jwt_secret_file, replace=True)
+        else:
             logger.debug(
                 "No jwt secret found. Generating one and storing in .jwt_secret file in config directory."
             )
-            jwt_secret = secrets.token_hex(64)
-            try:
-                # "x" creates exclusively: a secret another startup generated
-                # is never overwritten
-                with open(jwt_secret_file, "x", encoding="utf-8") as f:
-                    f.write(str(jwt_secret))
-            except Exception:
-                logger.warning(
-                    "Unable to write jwt token file to config directory. A new jwt token will be created at each startup."
-                )
-        else:
-            logger.debug("Using jwt secret from .jwt_secret file in config directory.")
-            with open(jwt_secret_file, encoding="utf-8") as f:
-                try:
-                    jwt_secret = f.readline().strip()
-                except Exception:
-                    logger.warning(
-                        "Unable to read jwt token from .jwt_secret file in config directory. A new jwt token will be created at each startup."
-                    )
-                    jwt_secret = secrets.token_hex(64)
+            jwt_secret = _generate_jwt_secret(jwt_secret_file)
 
     if len(jwt_secret) < 64:
         logger.warning("JWT Secret is recommended to be 64 characters or more")
@@ -881,6 +928,9 @@ def auth(request: Request):
         )
         if expiration <= current_time:
             logger.debug("jwt token expired")
+            # drop the dead session, so the browser asks for a new one instead
+            # of presenting the same expired token on every request
+            fail_response.delete_cookie(JWT_COOKIE_NAME)
             return fail_response
 
         # if the jwt cookie is expiring soon
@@ -911,7 +961,23 @@ def auth(request: Request):
 
         return success_response
     except Exception as e:
-        logger.error(f"Error parsing jwt: {e}")
+        if isinstance(e, BadSignatureError):
+            # The token is well formed but was not signed with this
+            # installation's key: a session cookie from before .jwt_secret was
+            # regenerated (the config directory moved or was cleared), or one
+            # minted by another Gannet/Frigate instance on the same address.
+            logger.warning(
+                "Rejecting a session token that this installation did not sign "
+                "(%s). The session has been cleared and the client must sign in "
+                "again; if this happens after every restart, the .jwt_secret file "
+                "in the config directory cannot be written or read, or %s changed.",
+                e,
+                JWT_SECRET_ENV_VARS[0],
+            )
+            fail_response.delete_cookie(JWT_COOKIE_NAME)
+        else:
+            logger.error(f"Error parsing jwt: {e}")
+
         return fail_response
 
 

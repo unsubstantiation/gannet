@@ -110,7 +110,33 @@ Do not run two Gannet instances against one database. Stop the service before la
 
 If Gannet starts but a client rejects HTTPS, install a certificate with the hostname in its Subject Alternative Name and a chain trusted by that client.
 
-## Camera has no frames
+## Signed out on every restart, or `Error parsing jwt: bad_signature`
+
+The login cookie is signed with a server secret. Gannet uses, in order: the `GANNET_JWT_SECRET` (or legacy `FRIGATE_JWT_SECRET`) environment variable, the `.jwt_secret` file in the config directory, or a random secret generated at each start. A cookie signed with a different secret is rejected as `bad_signature` — that rejection is correct, but it means the secret is not staying the same.
+
+`bad_signature` after a restart therefore has one of two causes:
+
+1. `.jwt_secret` is missing, empty, or not readable/writable by the account running Gannet, so a fresh secret is generated on every start. The warning `Unable to write the jwt secret file to the config directory` in `tmp\logs\gannet\current` confirms it. Grant that account Modify permission on the config directory, or pin the secret.
+2. The secret is supplied in more than one place and the winning value changed. Gannet logs `is defined in more than one place` when that happens.
+
+To stop the sign-outs permanently, pin a long random value in the Windows process environment (do not keep it in `config.yml`):
+
+```powershell
+[Environment]::SetEnvironmentVariable(
+  "GANNET_JWT_SECRET",
+  -join ((48..57) + (97..102) | Get-Random -Count 128 | ForEach-Object { [char]$_ }),
+  "Machine"
+)
+```
+
+Restart Gannet after changing it. Every existing session is signed out once when the secret changes; that is expected. Rejected cookies are now discarded and logged once per rejected token, so the log does not repeat the error for every request and websocket the page opens.
+
+## Task exception was never retrieved
+
+This is a Python `asyncio` message: a background task failed and nobody read its result. The useful part is the traceback printed underneath it, which names the failing function. It is not by itself the cause of a broken camera, but it is never expected either.
+
+Check whether the failing coroutine is one of the live-view bridges (`live-browser-to-upstream` / `live-upstream-to-browser`) and whether the same moment shows a camera error in `tmp\logs\gannet\current`. A single message while a browser tab closes or a stream is restarted is harmless; a repeating one that lines up with a camera going black is not, and the traceback should be attached to a bug report.
+
 
 Test the exact stream from the Gannet host:
 

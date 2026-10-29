@@ -2,6 +2,7 @@
 """The native web server, which replaces nginx on Windows."""
 
 import asyncio
+import gc
 import ntpath
 import threading
 import unittest
@@ -469,6 +470,124 @@ class TestProxyHttp(unittest.IsolatedAsyncioTestCase):
             response = await proxy_http(Request(scope, receive))
 
         self.assertEqual(response.status_code, 502)
+
+
+class _FakeWebSocket:
+    """The parts of a Starlette websocket the proxy endpoint touches."""
+
+    def __init__(self, path: str, send, receive) -> None:
+        self.scope = {
+            "type": "websocket",
+            "path": path,
+            "raw_path": path.encode(),
+            "query_string": b"src=front_door",
+            "headers": [(b"host", b"frigate.local")],
+            "scheme": "http",
+            "server": ("127.0.0.1", 8971),
+            "client": ("10.0.0.2", 5555),
+        }
+        self.send = send
+        self.receive = receive
+
+
+class TestProxyWebsocket(unittest.IsolatedAsyncioTestCase):
+    """The websocket bridge in front of go2rtc."""
+
+    async def _serve_upstream(self, handler):
+        app = aiohttp_web.Application()
+        app.router.add_get("/{tail:.*}", handler)
+        runner = aiohttp_web.AppRunner(app)
+        await runner.setup()
+        site = aiohttp_web.TCPSite(runner, "127.0.0.1", 0)
+        await site.start()
+        port = site._server.sockets[0].getsockname()[1]
+        return f"http://127.0.0.1:{port}", runner
+
+    @staticmethod
+    async def _closing_upstream(request):
+        upstream = aiohttp_web.WebSocketResponse()
+        await upstream.prepare(request)
+        await upstream.send_str("a frame")
+        await upstream.close()
+        return upstream
+
+    def _capture_loop_errors(self) -> list:
+        """Collect what asyncio would otherwise print to the log."""
+        loop = asyncio.get_running_loop()
+        reported: list = []
+        previous = loop.get_exception_handler()
+        loop.set_exception_handler(lambda _loop, context: reported.append(context))
+        self.addCleanup(loop.set_exception_handler, previous)
+        return reported
+
+    async def test_a_closed_browser_is_not_reported_as_an_unretrieved_task(self):
+        """A pump that fails after the browser leaves is routine.
+
+        The pumps were cancelled without being awaited, so the exception a pump
+        ended with stayed on the task and the loop reported it later as
+        "Task exception was never retrieved" - the log a failing live view
+        leaves behind - instead of the bridge simply letting the socket close.
+        """
+        from gannet.api.web import websocket_endpoint
+
+        base, runner = await self._serve_upstream(self._closing_upstream)
+        self.addAsyncCleanup(runner.cleanup)
+
+        sent: list[dict] = []
+
+        async def send(message: dict) -> None:
+            if message["type"] == "websocket.send":
+                # the browser went away mid-frame
+                raise RuntimeError("client disconnected")
+            sent.append(message)
+
+        never = asyncio.Event()
+
+        async def receive() -> dict:
+            await never.wait()
+            return {"type": "websocket.disconnect"}
+
+        reported = self._capture_loop_errors()
+
+        with patch("gannet.api.web.GO2RTC_URL", base):
+            await websocket_endpoint(
+                _FakeWebSocket("/live/mse/api/ws", send=send, receive=receive)
+            )
+
+        # the loop only reports a task exception once the task is collected
+        gc.collect()
+        await asyncio.sleep(0)
+
+        self.assertEqual(reported, [])
+        self.assertEqual(sent[0], {"type": "websocket.accept"})
+        self.assertEqual(sent[-1], {"type": "websocket.close", "code": 1000})
+
+    async def test_upstream_frames_reach_the_browser(self):
+        """The bridge forwards go2rtc's frames and closes after them."""
+        from gannet.api.web import websocket_endpoint
+
+        base, runner = await self._serve_upstream(self._closing_upstream)
+        self.addAsyncCleanup(runner.cleanup)
+
+        sent: list[dict] = []
+
+        async def send(message: dict) -> None:
+            sent.append(message)
+
+        never = asyncio.Event()
+
+        async def receive() -> dict:
+            await never.wait()
+            return {"type": "websocket.disconnect"}
+
+        with patch("gannet.api.web.GO2RTC_URL", base):
+            await websocket_endpoint(
+                _FakeWebSocket("/live/mse/api/ws", send=send, receive=receive)
+            )
+
+        self.assertEqual(sent[0], {"type": "websocket.accept"})
+        self.assertIn({"type": "websocket.send", "text": "a frame"}, sent)
+        self.assertEqual(sent[-1], {"type": "websocket.close", "code": 1000})
 
 
 class TestNativeProxyIdentity(unittest.IsolatedAsyncioTestCase):

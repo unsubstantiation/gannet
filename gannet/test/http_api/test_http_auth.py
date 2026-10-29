@@ -1,6 +1,7 @@
 """Tests for authentication endpoints."""
 
 import os
+import tempfile
 import unittest
 from unittest.mock import ANY, patch
 
@@ -8,13 +9,15 @@ from starlette.testclient import TestClient
 
 from gannet.api.auth import (
     FAILED_LOGIN_BURST_GAP_S,
+    JWT_SECRET_FILE_NAME,
     MAX_NOTICE_USERNAME,
     MAX_OPEN_BURSTS,
     FailedLoginTracker,
+    get_jwt_secret,
     hash_password,
 )
 from gannet.api.web import create_native_web_app
-from gannet.const import JWT_SECRET_ENV_VAR
+from gannet.const import JWT_SECRET_ENV_VAR, JWT_SECRET_ENV_VARS
 from gannet.models import User
 from gannet.test.http_api.base_http_test import AuthTestClient, BaseTestHttp
 
@@ -234,3 +237,72 @@ class TestFailedLoginTracker(unittest.TestCase):
         self.tracker.record("late", 1000.0 + FAILED_LOGIN_BURST_GAP_S)
 
         self.assertEqual(self._scopes()[-1], "late:1300")
+
+
+class TestJwtSecretFile(unittest.TestCase):
+    """The signing secret has to outlive a restart, or every session ends.
+
+    A secret that is regenerated per start makes each browser's cookie fail as
+    "bad_signature" - and every request and live-view websocket it then opens
+    logs that failure - until the user signs in again.
+    """
+
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.config_dir = directory.name
+        self.path = os.path.join(self.config_dir, JWT_SECRET_FILE_NAME)
+
+        patched_dir = patch("gannet.api.auth.CONFIG_DIR", self.config_dir)
+        patched_dir.start()
+        self.addCleanup(patched_dir.stop)
+
+        patched_env = patch.dict(os.environ, {}, clear=False)
+        patched_env.start()
+        self.addCleanup(patched_env.stop)
+
+        for name in JWT_SECRET_ENV_VARS:
+            os.environ.pop(name, None)
+
+    def _stored(self) -> str:
+        with open(self.path, encoding="utf-8") as f:
+            return f.read().strip()
+
+    def test_the_secret_is_written_once_and_reused(self):
+        first = get_jwt_secret()
+
+        self.assertEqual(len(first), 128)
+        self.assertEqual(self._stored(), first)
+        self.assertEqual(get_jwt_secret(), first)
+
+    def test_a_secret_written_by_another_instance_is_adopted(self):
+        """The exclusive create can lose a race; losing it must not fork keys."""
+        with open(self.path, "w", encoding="utf-8") as f:
+            f.write("b" * 128)
+
+        # the file appears between the check for it and the exclusive create
+        with patch("gannet.api.auth.os.path.isfile", return_value=False):
+            secret = get_jwt_secret()
+
+        self.assertEqual(secret, "b" * 128)
+        self.assertEqual(self._stored(), "b" * 128)
+
+    def test_an_empty_secret_file_is_repaired_for_the_next_start(self):
+        open(self.path, "w", encoding="utf-8").close()
+
+        with self.assertLogs("gannet.api.auth", level="WARNING") as logs:
+            secret = get_jwt_secret()
+
+        self.assertEqual(len(secret), 128)
+        self.assertEqual(self._stored(), secret)
+        self.assertEqual(get_jwt_secret(), secret)
+        self.assertTrue(any("is empty" in message for message in logs.output))
+
+    def test_an_unwritable_config_directory_still_signs_in(self):
+        secret = get_jwt_secret()
+
+        with patch("gannet.api.auth.open", side_effect=OSError("denied")):
+            unwritable = get_jwt_secret()
+
+        self.assertNotEqual(secret, unwritable)
+        self.assertEqual(len(unwritable), 128)
