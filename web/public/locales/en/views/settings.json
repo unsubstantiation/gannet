@@ -654,6 +654,7 @@
         "title": "Stream Validation",
         "videoCodecGood": "Video codec is {{codec}}.",
         "audioCodecGood": "Audio codec is {{codec}}.",
+        "audioCodecTranscoded": "Audio codec is {{codec}}. Recordings will transcode it to AAC.",
         "resolutionHigh": "A resolution of {{resolution}} may cause increased resource usage.",
         "resolutionLow": "A resolution of {{resolution}} may be too low for reliable detection of small objects.",
         "resolutionUnknown": "The stream resolution could not be probed. Set a detect width and height for this camera.",

@@ -618,6 +618,9 @@ function StreamIssues({
         testResult: stream.testResult,
         manualDetectDimensions:
           dimensions?.source === "manual" ? dimensions : undefined,
+        // the wizard saves no record output args, so the camera records with
+        // the stock preset, which transcodes any source audio to AAC
+        recordAudioMode: "transcode",
       },
       t,
     );

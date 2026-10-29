@@ -106,7 +106,7 @@ export interface CameraConfig {
     }[];
     output_args: {
       detect: string[];
-      record: string;
+      record: string | string[];
       record_sub: string | string[];
       rtmp: string;
     };
@@ -512,7 +512,7 @@ export interface FrigateConfig {
     input_args: string;
     output_args: {
       detect: string[];
-      record: string;
+      record: string | string[];
       record_sub: string | string[];
       rtmp: string;
     };
