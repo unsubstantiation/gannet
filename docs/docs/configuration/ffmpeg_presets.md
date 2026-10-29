@@ -13,7 +13,7 @@ Presets expand to tested FFmpeg arguments. Set them under `ffmpeg.hwaccel_args`;
 | --- | --- | --- |
 | `preset-windows-d3d11va` | Direct3D 11 Video Acceleration | Broad Windows compatibility; decoded frames return to system memory |
 | `preset-windows-dxva2` | DXVA2 | Compatibility option for older Windows drivers |
-| `preset-windows-qsv` | Intel Quick Sync | Automatic codec selection |
+| `preset-windows-qsv` | Intel Quick Sync | Generic path; prefer the codec-specific presets |
 | `preset-windows-qsv-h264` | Intel Quick Sync H.264 | Use for H.264 streams |
 | `preset-windows-qsv-h265` | Intel Quick Sync HEVC | Use for H.265/HEVC streams |
 | `preset-windows-nvenc` | NVIDIA CUDA/NVDEC | Requires an FFmpeg build and driver exposing CUDA decode |
@@ -39,7 +39,7 @@ cameras:
           roles: [detect, record]
 ```
 
-Set `hwaccel_args: auto` to let Gannet inspect go2rtc and Windows display adapters. Explicit presets are preferable when a machine has several GPUs.
+Set `hwaccel_args: auto` to let Gannet inspect go2rtc and Windows display adapters. Automatic selection uses codec-independent decode paths; on Intel it selects D3D11VA because QSV decoding requires a codec-specific preset. Choose `preset-windows-qsv-h264` or `preset-windows-qsv-h265` explicitly when the camera codec is known. Explicit presets are also preferable when a machine has several GPUs.
 
 ## Input presets
 
