@@ -750,17 +750,34 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
             accepted = True
 
             browser_to_upstream = asyncio.create_task(
-                _pump_browser(receive, upstream_ws)
+                _pump_browser(receive, upstream_ws), name="live-browser-to-upstream"
             )
-            upstream_to_browser = asyncio.create_task(_pump_upstream(upstream_ws, send))
+            upstream_to_browser = asyncio.create_task(
+                _pump_upstream(upstream_ws, send), name="live-upstream-to-browser"
+            )
+            pumps = (browser_to_upstream, upstream_to_browser)
 
             done, pending = await asyncio.wait(
-                (browser_to_upstream, upstream_to_browser),
-                return_when=asyncio.FIRST_COMPLETED,
+                pumps, return_when=asyncio.FIRST_COMPLETED
             )
 
             for task in pending:
                 task.cancel()
+
+            # Retrieve both outcomes. A pump that ends with an exception - a
+            # browser that goes away mid-frame, a go2rtc that closes first - is
+            # routine for a live view and must not surface later as the loop's
+            # "Task exception was never retrieved"; a cancelled pump must also
+            # be awaited so it cannot outlive the socket it writes to.
+            for task, result in zip(
+                pumps, await asyncio.gather(*pumps, return_exceptions=True)
+            ):
+                if isinstance(result, BaseException) and not isinstance(
+                    result, asyncio.CancelledError
+                ):
+                    logger.debug(
+                        "Live stream pump %s ended: %s", task.get_name(), result
+                    )
     except Exception as err:
         logger.debug("Websocket proxy to %s failed: %s", url, err)
     finally:

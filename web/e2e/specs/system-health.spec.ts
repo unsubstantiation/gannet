@@ -1038,6 +1038,85 @@ test.describe("System — Health notices sources @medium", () => {
     ).toHaveCount(0);
   });
 
+  test("raw record args that copy audio are flagged", async ({
+    frigateApp,
+  }) => {
+    // the preset list is not the only way to copy: `-c copy` does too, and
+    // `-c:v copy` leaves audio to the muxer's AAC default
+    await frigateApp.installDefaults({
+      config: {
+        cameras: {
+          backyard: {
+            ffmpeg: {
+              output_args: { record: ["-f", "segment", "-c", "copy"] },
+            },
+          },
+          front_door: {
+            ffmpeg: {
+              output_args: { record: ["-f", "segment", "-c:v", "copy"] },
+            },
+          },
+        },
+      },
+      ffprobe: {
+        backyard: [
+          {
+            return_code: 0,
+            stderr: "",
+            stdout: {
+              streams: [
+                {
+                  codec_type: "video",
+                  codec_name: "h264",
+                  width: 1920,
+                  height: 1080,
+                },
+                { codec_type: "audio", codec_name: "pcm_alaw" },
+              ],
+            },
+          },
+        ],
+        front_door: [
+          {
+            return_code: 0,
+            stderr: "",
+            stdout: {
+              streams: [
+                {
+                  codec_type: "video",
+                  codec_name: "h264",
+                  width: 1920,
+                  height: 1080,
+                },
+                { codec_type: "audio", codec_name: "pcm_alaw" },
+              ],
+            },
+          },
+        ],
+      },
+      stats: QUIET_STATS,
+    });
+    await frigateApp.goto("/system#health");
+
+    await frigateApp.page
+      .getByRole("button", { name: "Run stream checks" })
+      .click();
+
+    await expect(frigateApp.page.getByText(/^Checked/)).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(
+      frigateApp.page.getByTestId(
+        "health-problem-stream:backyard:0:audio-codec-record",
+      ),
+    ).toBeVisible();
+    await expect(
+      frigateApp.page.getByTestId(
+        "health-problem-stream:front_door:0:audio-codec-record",
+      ),
+    ).toHaveCount(0);
+  });
+
   test("stream checks respect audio detection and saved detect dimensions", async ({
     frigateApp,
   }) => {

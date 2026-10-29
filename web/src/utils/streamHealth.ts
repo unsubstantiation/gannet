@@ -2,31 +2,18 @@ import type { TFunction } from "i18next";
 import type { StreamCheckResults } from "@/hooks/use-health-checks";
 import type { StreamRole } from "@/types/cameraWizard";
 import { inferCameraBrand } from "@/types/cameraWizard";
-import type { CameraConfig, FrigateConfig } from "@/types/frigateConfig";
+import type { FrigateConfig } from "@/types/frigateConfig";
 import type { HealthProblem } from "@/types/health";
 import {
   getStreamIssues,
   lastErrorLine,
+  recordAudioMode,
   resolveRestreamSource,
   type StreamIssue,
 } from "@/utils/streamIssues";
 
 // rules the add camera wizard shows that do not belong on the Health tab
 const WIZARD_ONLY_RULES = new Set(["restream", "reolink-rtsp", "reolink-http"]);
-
-/**
- * Whether the record output keeps the camera's audio codec. The default
- * preset transcodes to AAC, so a non-AAC source only matters when the args
- * copy audio through.
- */
-function recordCopiesAudio(camera: CameraConfig): boolean {
-  const args = camera.ffmpeg.output_args?.record;
-  const text = Array.isArray(args) ? args.join(" ") : (args ?? "");
-  return (
-    text === "preset-record-generic-audio-copy" ||
-    /(^|\s)-(c:a|acodec)\s+copy(\s|$)/.test(text)
-  );
-}
 
 export type StreamHealth = {
   problems: HealthProblem[];
@@ -57,7 +44,7 @@ export function streamHealth(
     }
     checked += 1;
     const link = `/settings?page=cameraFfmpeg&camera=${encodeURIComponent(name)}`;
-    const copiesAudio = recordCopiesAudio(camera);
+    const recordAudio = recordAudioMode(camera.ffmpeg.output_args?.record);
     let flagged = false;
 
     if (check.error) {
@@ -125,14 +112,13 @@ export function streamHealth(
             height: camera.detect.height,
           },
           audioDetectionEnabled: camera.audio.enabled,
+          recordAudioMode: recordAudio,
         },
         t,
       )
         .filter(
           (issue): issue is StreamIssue & { type: "warning" | "error" } =>
-            issue.type !== "good" &&
-            !WIZARD_ONLY_RULES.has(issue.rule) &&
-            (issue.rule !== "audio-codec-record" || copiesAudio),
+            issue.type !== "good" && !WIZARD_ONLY_RULES.has(issue.rule),
         )
         .forEach((issue) => {
           flagged = true;

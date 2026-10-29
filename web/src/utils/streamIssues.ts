@@ -22,7 +22,74 @@ export type StreamIssueInput = {
   manualDetectDimensions?: { width: number; height: number };
   /** Health checks can suppress audio-role advice when detection is off. */
   audioDetectionEnabled?: boolean;
+  /**
+   * How the camera's record output handles audio. Defaults to `"transcode"`,
+   * the stock `preset-record-generic-audio-aac`, which is also what the
+   * add-camera wizard ends up with when it omits output args.
+   */
+  recordAudioMode?: RecordAudioMode;
 };
+
+/**
+ * How a record output treats audio:
+ * `copy` keeps the source codec (mp4 then needs AAC),
+ * `transcode` re-encodes anything to AAC,
+ * `none` drops audio (`-an`).
+ */
+export type RecordAudioMode = "copy" | "transcode" | "none";
+
+/** The shipped record presets, so a bare preset name resolves without flags. */
+const PRESET_RECORD_AUDIO_MODES: Record<string, RecordAudioMode> = {
+  "preset-record-generic": "none",
+  "preset-record-generic-audio-aac": "transcode",
+  "preset-record-generic-audio-copy": "copy",
+  "preset-record-mjpeg": "none",
+  "preset-record-jpeg": "none",
+  "preset-record-ubiquiti": "transcode",
+};
+
+function flagValue(text: string, flags: string[]): string | undefined {
+  for (const flag of flags) {
+    const match = new RegExp(`(?:^|\\s)${flag}\\s+(\\S+)`).exec(text);
+    if (match) {
+      return match[1];
+    }
+  }
+
+  return undefined;
+}
+
+/** Resolve `ffmpeg.output_args.record` to the way it handles audio. */
+export function recordAudioMode(
+  outputArgs: string | string[] | undefined,
+): RecordAudioMode {
+  const text = (
+    Array.isArray(outputArgs) ? outputArgs.join(" ") : (outputArgs ?? "")
+  ).trim();
+
+  const presetMode = PRESET_RECORD_AUDIO_MODES[text];
+  if (presetMode) {
+    return presetMode;
+  }
+
+  // Custom args can name a codec directly; `-c:a copy` passes the source
+  // codec through, anything else re-encodes. A bare `-c copy` copies audio
+  // too, while `-c:v copy` leaves audio to the muxer's AAC default.
+  const audioCodec = flagValue(text, ["-c:a", "-codec:a", "-acodec"]);
+  if (audioCodec) {
+    return audioCodec === "copy" ? "copy" : "transcode";
+  }
+
+  if (/(^|\s)-an(\s|$)/.test(text)) {
+    return "none";
+  }
+
+  if (flagValue(text, ["-c", "-codec"]) === "copy") {
+    return "copy";
+  }
+
+  return "transcode";
+}
 
 type ProbeStream = {
   codec_type?: string;
@@ -142,32 +209,46 @@ export function getStreamIssues(
 
   // A failed or untested stream cannot tell us whether it carries audio.
   if (roles.includes("record") && testResult?.success) {
-    if (testResult.audioCodec) {
-      const audioCodec = testResult.audioCodec.toLowerCase();
-      if (audioCodec === "aac") {
-        result.push({
-          type: "good",
-          rule: "audio-codec",
-          message: t("cameraWizard.step4.issues.audioCodecGood", {
-            ns: "views/settings",
-            codec: testResult.audioCodec,
-          }),
-        });
-      } else {
-        result.push({
-          type: "error",
-          rule: "audio-codec-record",
-          message: t("cameraWizard.step4.issues.audioCodecRecordError", {
-            ns: "views/settings",
-          }),
-        });
-      }
-    } else {
+    const recordAudio = input.recordAudioMode ?? "transcode";
+    const audioCodec = testResult.audioCodec;
+    const isTranscoded = !!audioCodec && audioCodec.toLowerCase() !== "aac";
+
+    if (!audioCodec) {
       result.push({
         type: "warning",
         rule: "no-audio",
         message: t("cameraWizard.step4.issues.noAudioWarning", {
           ns: "views/settings",
+        }),
+      });
+    } else if (recordAudio === "none") {
+      // the record output drops audio, so the source codec cannot matter
+    } else if (recordAudio === "copy" && isTranscoded) {
+      // mp4 recordings cannot carry a non-AAC track, so copying it through
+      // is the only case where the source codec breaks audio playback
+      result.push({
+        type: "error",
+        rule: "audio-codec-record",
+        message: t("cameraWizard.step4.issues.audioCodecRecordError", {
+          ns: "views/settings",
+        }),
+      });
+    } else if (recordAudio === "transcode" && isTranscoded) {
+      result.push({
+        type: "good",
+        rule: "audio-codec",
+        message: t("cameraWizard.step4.issues.audioCodecTranscoded", {
+          ns: "views/settings",
+          codec: audioCodec,
+        }),
+      });
+    } else {
+      result.push({
+        type: "good",
+        rule: "audio-codec",
+        message: t("cameraWizard.step4.issues.audioCodecGood", {
+          ns: "views/settings",
+          codec: audioCodec,
         }),
       });
     }

@@ -44,6 +44,23 @@ Use H.264 video and AAC or Opus audio for broad compatibility. H.265 support var
 
 Enable a dedicated go2rtc FFmpeg transcode only when copying a compatible stream is not possible. Transcoding increases CPU/GPU use.
 
+## A tile is black on the dashboard but the camera plays when opened
+
+The two views do not necessarily use the same transport. The camera view follows the saved per-camera live-mode preference (MSE by default when the stream is restreamed by go2rtc), while the dashboard falls back to the low-bandwidth jsmpeg path when MSE is unavailable or the browser refused it. A camera that plays in the single-camera view can therefore still be black in the grid because a different pipeline is failing.
+
+Identify which one is failing before changing configuration:
+
+1. Open the browser developer tools **Network** tab on the dashboard. A go2rtc tile opens `live/mse/api/ws?src=<stream>` (or `live/webrtc/api/ws?src=<stream>`); a fallback tile opens `live/jsmpeg/<camera name>`.
+2. For a go2rtc transport, check `tmp\logs\go2rtc\current` and the go2rtc management view at `https://<host>:8971/go2rtc/`. A stream listed without consumers or with a producer that keeps reconnecting means the source, not the browser, is the problem.
+3. For a jsmpeg tile, the frames come from Gannet itself, not go2rtc. Check `tmp\logs\gannet\current` for `jsmpeg` and confirm the camera's capture process is running.
+4. Compare with `/api/stats`: when `cameras.<name>.camera_fps` is `0` after a minute of uptime, the capture process is not decoding frames at all and no live transport can show video.
+
+See [Camera has no frames](./common_errors.md#camera-has-no-frames) when the stats FPS is zero.
+
+## The dashboard says "No frames have been received"
+
+That overlay is driven by `camera_fps` in `/api/stats`, not by the player. It means the camera's capture process has not decoded a frame since it started; a black tile underneath it is then expected. Fix the capture side first: check the camera's FFmpeg log lines in `tmp\logs\gannet\current`, then test the URL as described in [Camera has no frames](./common_errors.md#camera-has-no-frames). While the overlay is shown the dashboard also stops its automatic live-mode switching, so clearing the capture problem is what restores playback.
+
 ## WebRTC does not connect
 
 1. Verify MSE works first.
