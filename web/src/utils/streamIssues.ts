@@ -20,6 +20,8 @@ export type StreamIssueInput = {
   restream?: boolean;
   testResult?: TestResult;
   manualDetectDimensions?: { width: number; height: number };
+  /** Health checks can suppress audio-role advice when detection is off. */
+  audioDetectionEnabled?: boolean;
 };
 
 type ProbeStream = {
@@ -173,6 +175,7 @@ export function getStreamIssues(
 
   if (
     roles.includes("audio") &&
+    (input.audioDetectionEnabled ?? true) &&
     testResult?.success &&
     !testResult.audioCodec
   ) {

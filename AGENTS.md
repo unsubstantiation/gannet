@@ -12,10 +12,11 @@ and review rules are in [CONTRIBUTING.md](CONTRIBUTING.md).
 - `gannet.__main__` rejects every platform other than Windows before
   runtime initialization (`gannet.util.platform.require_windows`).
 - Multiprocessing always uses `spawn`.
-- Writable data defaults to `%LOCALAPPDATA%\Gannet`, relocatable with
-  `GANNET_BASE_DIR` and the `FRIGATE_*_DIR` overrides. Build paths with
-  `pathlib` or `os.path`; never introduce Unix root paths, device nodes,
-  Unix sockets, UID/GID ownership, or Unix service managers.
+- Interactive installs default writable data to `%LOCALAPPDATA%\Gannet`;
+  portable bundle launchers instead pin it to `<bundle>\data`. Both are
+  relocatable with `GANNET_BASE_DIR` and the `FRIGATE_*_DIR` overrides. Build
+  paths with `pathlib` or `os.path`; never introduce Unix root paths, device
+  nodes, Unix sockets, UID/GID ownership, or Unix service managers.
 - Executables are native `.exe` files, located through
   `gannet.util.platform.find_executable`. The bootstrap installs pinned
   FFmpeg and go2rtc builds and verifies their SHA-256 digests.

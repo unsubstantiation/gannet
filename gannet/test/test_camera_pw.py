@@ -250,6 +250,21 @@ class TestFfprobeAuthentication(unittest.TestCase):
         self.ffmpeg = SimpleNamespace(ffprobe_path="ffprobe.exe")
         self.url = "rtsp://viewer:pa%40ss%20word@192.168.1.4:8554/profile0"
 
+    def test_detailed_probe_requests_stream_codec_types(self):
+        succeeded = subprocess.CompletedProcess([], 0, b"{}", b"")
+        with patch("gannet.util.services.sp.run", return_value=succeeded) as run:
+            ffprobe_stream(self.ffmpeg, self.url, detailed=True)
+
+        command = run.call_args.args[0]
+        stream_entries = next(
+            value
+            for index, value in enumerate(command)
+            if index > 0
+            and command[index - 1] == "-show_entries"
+            and value.startswith("stream=")
+        )
+        self.assertIn("codec_type", stream_entries.split("=", 1)[1].split(","))
+
     def test_authentication_failure_does_not_retry_credentials(self):
         for error in (
             b"method DESCRIBE failed: 401 (Unauthorized)",

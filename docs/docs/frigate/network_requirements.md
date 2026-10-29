@@ -38,13 +38,13 @@ Restrict Windows Firewall rules to the required subnets or integration hosts. Ne
 
 ## Runtime model downloads
 
-Models are cached below the configured data root, normally:
+Models are cached below the configured data root. A default interactive install uses:
 
 ```text
 %LOCALAPPDATA%\Gannet\config\model_cache
 ```
 
-A Windows service normally uses `%ProgramData%\Gannet` unless another base directory was selected. Features that may download model data on first use include:
+The portable bundle uses `data\config\model_cache` in its own folder. A Windows service normally uses `%ProgramData%\Gannet` unless another base directory was selected. Features that may download model data on first use include:
 
 - default CPU object detection;
 - semantic search;

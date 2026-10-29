@@ -118,6 +118,13 @@ export function streamHealth(
           useFfmpeg: restream?.useFfmpeg,
           restream: !!restream,
           testResult: result,
+          // Startup resolves omitted dimensions, so a later probe cannot make
+          // the saved detect size required again.
+          manualDetectDimensions: {
+            width: camera.detect.width,
+            height: camera.detect.height,
+          },
+          audioDetectionEnabled: camera.audio.enabled,
         },
         t,
       )

@@ -79,14 +79,26 @@ class TestAutoPreset(unittest.TestCase):
             hwaccel.windows_hwaccel_preset(sources), "preset-windows-nvenc"
         )
 
-    def test_go2rtc_qsv(self) -> None:
+    def test_go2rtc_qsv_uses_codec_independent_decode(self) -> None:
         sources = [{"name": "OK", "url": "ffmpeg:camera#hardware=qsv"}]
-        self.assertEqual(hwaccel.windows_hwaccel_preset(sources), "preset-windows-qsv")
+        self.assertEqual(
+            hwaccel.windows_hwaccel_preset(sources), "preset-windows-d3d11va"
+        )
 
     def test_display_adapter_fallback(self) -> None:
         with (
             patch.object(hwaccel, "get_display_adapters", return_value=["AMD Radeon"]),
             patch.object(hwaccel, "get_display_adapter_vendors", return_value={"amd"}),
+        ):
+            self.assertEqual(hwaccel.windows_hwaccel_preset(), "preset-windows-d3d11va")
+
+    def test_intel_auto_uses_codec_independent_decode(self) -> None:
+        """Automatic selection cannot choose a QSV decoder without a codec."""
+        with (
+            patch.object(hwaccel, "get_display_adapters", return_value=["Intel UHD"]),
+            patch.object(
+                hwaccel, "get_display_adapter_vendors", return_value={"intel"}
+            ),
         ):
             self.assertEqual(hwaccel.windows_hwaccel_preset(), "preset-windows-d3d11va")
 

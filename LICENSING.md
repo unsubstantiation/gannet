@@ -167,10 +167,10 @@ Not licensing questions, but they sit next to them and are easy to forget:
   manifest is `unsubstantiation.GannetNVR` instead of upstream's identifier.
   Startup output, API messages, repository prose, and the UI catalogs now say
   Gannet. `GANNET_*` is the preferred environment prefix with `FRIGATE_*`
-  retained as a working alias; new installs write to `%LOCALAPPDATA%\Gannet`
-  and `tmp\logs\gannet\current`, with an explicit cutover warning for the old
-  `%LOCALAPPDATA%\Frigate` tree (see the installation guide). What still
-  carries the inherited name is internal and load-bearing: the
+  retained as a working alias; interactive installs write to
+  `%LOCALAPPDATA%\Gannet`, the portable bundle uses its own `data` directory,
+  and the main log is `tmp\logs\gannet\current`. What still carries the
+  inherited name is internal and load-bearing: the
   `frigate-nvr` distribution name, the `frigate` MQTT topic prefix, the
   `frigate_token` cookie, `frigate_` Prometheus metrics, the SCM service key,
   internal Python/TypeScript identifiers, and the `docs/docs/frigate/`

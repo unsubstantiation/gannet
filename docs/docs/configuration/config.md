@@ -9,7 +9,8 @@ Gannet can be configured through the **Settings UI** or by editing YAML. The Set
 
 ## Configuration file
 
-The native Windows configuration directory defaults to:
+The native Windows configuration directory defaults to `data\config` inside
+the portable bundle. An interactive source installation instead uses:
 
 ```text
 %LOCALAPPDATA%\Gannet\config

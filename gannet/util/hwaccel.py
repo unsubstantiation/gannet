@@ -156,7 +156,11 @@ def windows_hwaccel_preset(
     if "cuda" in accelerators:
         return "preset-windows-nvenc"
     if "qsv" in accelerators:
-        return "preset-windows-qsv"
+        # The generic QSV decode preset cannot select between h264_qsv and
+        # hevc_qsv. Automatic selection has no codec context, so use the
+        # codec-independent Windows decode path instead. Explicit QSV presets
+        # remain available when the camera codec is known.
+        return "preset-windows-d3d11va"
     if "d3d11va" in accelerators:
         return "preset-windows-d3d11va"
     if "dxva2" in accelerators:
@@ -169,6 +173,7 @@ def windows_hwaccel_preset(
     vendors = get_display_adapter_vendors()
     if "nvidia" in vendors:
         return "preset-windows-nvenc"
-    if "intel" in vendors:
-        return "preset-windows-qsv"
+
+    # Intel's efficient QSV decoders are codec-specific. With no codec context
+    # D3D11VA is the safe automatic choice for Intel, AMD, and unknown vendors.
     return "preset-windows-d3d11va"

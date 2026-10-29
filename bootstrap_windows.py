@@ -52,28 +52,12 @@ RESTART_MARKER_NAME = "restart.requested"
 PREFERRED_ENV_PREFIX = "GANNET_"
 LEGACY_ENV_PREFIX = "FRIGATE_"
 DATA_DIR_NAME = "Gannet"
-LEGACY_DATA_DIR_NAME = "Frigate"
 
 
 def env_value(name: str) -> str | None:
     """Read one setting under its preferred name, then its legacy alias."""
     legacy = LEGACY_ENV_PREFIX + name[len(PREFERRED_ENV_PREFIX) :]
     return os.environ.get(name) or os.environ.get(legacy)
-
-
-def legacy_data_dir_warning(default_root: Path) -> str | None:
-    """A clean cutover: never adopt the old folder, but do not hide it."""
-    if env_value("GANNET_BASE_DIR"):
-        return None
-    legacy = default_root / LEGACY_DATA_DIR_NAME
-    if not legacy.is_dir():
-        return None
-    return (
-        f"A legacy data directory exists at {legacy}, but this version uses "
-        f"{default_root / DATA_DIR_NAME}. Set GANNET_BASE_DIR (or the legacy "
-        "FRIGATE_BASE_DIR) to the old path before installing to keep the "
-        "existing config, database, and recordings."
-    )
 
 
 # These packages all provide the onnxruntime import and must be installed as
@@ -1084,9 +1068,6 @@ def main(argv: list[str] | None = None) -> int:
     try:
         check_interpreter()
         layout = BaseLayout(service_mode=args.install_service)
-        warning = legacy_data_dir_warning(layout.default_root)
-        if warning:
-            logger.warning("%s", warning)
         layout.ensure_dirs()
         download_dir = layout.cache_dir / "downloads"
 

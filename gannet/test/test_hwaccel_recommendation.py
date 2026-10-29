@@ -160,9 +160,9 @@ class TestAutomaticPreset(unittest.TestCase):
         sources = [{"name": "OK", "url": "ffmpeg:camera#hardware=cuda"}]
         self.assertEqual(self._preset(sources), "preset-windows-nvenc")
 
-    def test_go2rtc_qsv_source_is_detected(self):
+    def test_go2rtc_qsv_uses_codec_independent_decode(self):
         sources = [{"name": "OK", "url": "ffmpeg:camera#hardware=qsv"}]
-        self.assertEqual(self._preset(sources), "preset-windows-qsv")
+        self.assertEqual(self._preset(sources), "preset-windows-d3d11va")
 
     def test_failed_go2rtc_sources_are_ignored(self):
         sources = [{"name": "ERROR", "url": "ffmpeg:camera#hardware=cuda"}]
@@ -174,10 +174,10 @@ class TestAutomaticPreset(unittest.TestCase):
             "preset-windows-nvenc",
         )
 
-    def test_intel_adapter_uses_qsv(self):
+    def test_intel_auto_uses_codec_independent_decode(self):
         self.assertEqual(
             self._preset(adapters=["Intel UHD"], vendors={"intel"}),
-            "preset-windows-qsv",
+            "preset-windows-d3d11va",
         )
 
     def test_other_adapter_uses_d3d11va(self):

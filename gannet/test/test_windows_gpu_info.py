@@ -86,7 +86,7 @@ class TestWindowsGpuInfo(unittest.TestCase):
         self.assertEqual(info["vendors"], ["intel"])
         self.assertEqual(info["cpu"], "Intel(R) Core(TM) i5-13500")
         self.assertEqual(info["ffmpeg_hwaccels"], ["d3d11va"])
-        self.assertEqual(info["recommended"], "preset-windows-qsv")
+        self.assertEqual(info["recommended"], "preset-windows-d3d11va")
         self.assertEqual(
             info["go2rtc_hardware"],
             [{"name": "OK", "url": "ffmpeg:...#hardware=qsv"}],

@@ -25,6 +25,8 @@ It **is** a portable application directory, archived:
 - a 64-bit CPython 3.12 embeddable interpreter,
 - every wheel from `requirements.txt`, installed for a Windows target,
 - FFmpeg, go2rtc, and the two pinned TFLite models,
+- a bundle-local `data\` directory created on first run for configuration, the
+  database, media, cache, logs, and writable models,
 - the licensing and provenance files that redistribution requires.
 
 It **is** launchable from a real executable. `python\GannetNVR.exe` is a native
@@ -35,7 +37,8 @@ hook (see [The .exe launcher](#the-exe-launcher)).
 
 It is **not** an installer, a service, or an auto-updating application. There is
 no `.exe` setup program, no Start Menu entry, no uninstaller, and no code signing
-of Gannet's own code. Extract it, run it, delete the folder to remove it.
+of Gannet's own code. Extract it, run it, and delete the folder to remove the app
+and its bundle-local data (back up anything you need first).
 `bootstrap_windows.py --install-service` remains the way to run as a Windows
 service, and it expects a checkout with a real Python install, not this bundle.
 The winget manifest is generated from the build but is a template until someone
@@ -234,11 +237,13 @@ one:
 .\python\GannetNVR.exe -- --validate-config   # the exe directly
 ```
 
-With no arguments, either entry point just starts Gannet. Use the
-`GANNET_BASE_DIR` environment variable to move the writable data directory
-(`run_gannet.ps1 -BaseDir <path>` is the PowerShell equivalent). The launcher
-recognises any renamed copy of the interpreter (winget installs the command as
-`GannetNVR`), so don't rename `python.exe` for other purposes inside the bundle.
+With no arguments, either entry point just starts Gannet. Both launchers default
+to `data\` inside the bundle and set `GANNET_BASE_DIR` for the application and
+all spawned children. Use the `GANNET_BASE_DIR` environment variable to move the
+writable data directory (`run_gannet.ps1 -BaseDir <path>` is the PowerShell
+equivalent). The launcher recognises any renamed copy of the interpreter
+(winget installs the command as `GannetNVR`), so don't rename `python.exe` for
+other purposes inside the bundle.
 The winget command runs through `PATH`, not a symlink, because Windows resolves
 an executable's private DLLs next to the symlink rather than its target; see
 [Releasing](#releasing).
@@ -250,15 +255,18 @@ differs only in where it finds Python:
 
 1. resolves the bundle root from its own location, so the archive can be extracted
    anywhere writable;
-2. seeds `model_cache/*.tflite` into `%LOCALAPPDATA%\Gannet\config\model_cache`
-   when a file is absent, so an upgraded model is never overwritten;
-3. sets `PYTHONUTF8=1`, because the application reads and writes UTF-8;
-4. runs `python.exe -m gannet` **with the working directory set to `app`**;
-5. restarts only when Gannet wrote `restart.requested` in the tmp directory, so
+2. sets `GANNET_BASE_DIR` to `data\` below that root unless an explicit override
+   is present, keeping application data out of `%LOCALAPPDATA%`;
+3. seeds `model_cache/*.tflite` into `data\config\model_cache` when a file is
+   absent, so an upgraded model is never overwritten;
+4. sets `PYTHONUTF8=1`, because the application reads and writes UTF-8;
+5. runs `python.exe -m gannet` **with the working directory set to `app`**;
+6. restarts only when Gannet wrote `restart.requested` in the tmp directory, so
    Ctrl+C and closing the window still stop it.
 
-`-BaseDir <path>` keeps the writable data somewhere other than
-`%LOCALAPPDATA%\Gannet`. The bundle itself is never written to.
+`-BaseDir <path>` keeps the writable data somewhere other than the bundle's
+`data\` directory. With the default layout, moving the bundle moves all of its
+configuration and recordings too.
 
 ## First run
 
@@ -270,24 +278,19 @@ differs only in where it finds Python:
 3. Open <https://localhost:8971> and accept the first-run warning for the
    generated self-signed certificate. The generated administrator password is
    printed on first start and recorded in
-   `%LOCALAPPDATA%\Gannet\tmp\logs\gannet\current`.
-4. Data appears in `%LOCALAPPDATA%\Gannet`: `config/`, `media/`, `cache/`, `tmp/`.
+   `data\tmp\logs\gannet\current` below the bundle root.
+4. Data appears in the bundle's `data\` directory: `config/`, `media/`, `cache/`,
+   and `tmp/`. Keep the whole folder together when moving it to another drive or
+   computer.
 
 The first launch is slower than later ones because CPython compiles the installed
 packages to bytecode as they are imported. Nothing is precompiled at build time:
 bytecode is tied to the interpreter's magic number, and a build host that is not
 3.12 would write files the bundled interpreter must ignore.
 
-**Existing installs.** The default data root changed from
-`%LOCALAPPDATA%\Frigate` to `%LOCALAPPDATA%\Gannet`, and the application log
-moved from `tmp\logs\frigate\current` to `tmp\logs\gannet\current`. This is a
-clean cutover: nothing is moved automatically. Set `GANNET_BASE_DIR` (the old
-`FRIGATE_BASE_DIR` still works) to the legacy folder before launching an
-upgraded bundle, or copy `config\`, `media\`, `cache\` and `tmp\` into the new
-tree. All three launchers print a warning when a legacy folder exists without
-an override. The `FRIGATE_*` environment names, MQTT `frigate` topic prefix,
-`frigate_token` cookie, `frigate_` Prometheus metrics, and the `frigate-nvr`
-distribution metadata remain as compatibility identifiers.
+The `FRIGATE_*` environment names, MQTT `frigate` topic prefix, `frigate_token`
+cookie, `frigate_` Prometheus metrics, and the `frigate-nvr` distribution
+metadata remain as compatibility identifiers.
 
 ## Supply chain and pinning
 
@@ -441,7 +444,7 @@ downstream packager needs to reconstruct the obligations.
 | `python312.dll was not found` when running the .exe | `GannetNVR.exe` was moved out of `python\` | keep the copy next to `python.exe` and the DLLs; the Windows loader looks beside the executable |
 | `win32service` / `pywintypes` import error | `pywintypes312.dll` is not next to `python.exe` | the builder copies it from `pywin32_system32`; a re-zipped tree that dropped it will fail |
 | `SyntaxWarning: invalid escape sequence '\S'` from `filterpy\common\helpers.py` on first launch | a bundle built before the post-install source fix; filterpy 1.4.5 ships LaTeX docstrings with unescaped backslashes, and the bundle has no `.pyc` | harmless, but rebuild: `install_wheels` now calls `fix_filterpy_escapes`, which doubles the invalid escapes in the installed sources and updates their `RECORD` hashes. For an existing extraction, see `DEPENDENCIES.md` §1.5 |
-| The app keeps restarting ("the process resets") | the watchdog saw a detector process die and asked the launcher for a whole-app restart, or an UI/automation kept requesting one | read `%LOCALAPPDATA%\Gannet\tmp\logs\launcher.log` (reason + exit code per restart) and `...\logs\gannet\current`; see [Common errors](docs/docs/troubleshooting/common_errors.md) |
+| The app keeps restarting ("the process resets") | the watchdog saw a detector process die and asked the launcher for a whole-app restart, or an UI/automation kept requesting one | read `data\tmp\logs\launcher.log` below the bundle root (reason + exit code per restart) and `data\tmp\logs\gannet\current`; see [Common errors](docs/docs/troubleshooting/common_errors.md) |
 | Antivirus quarantines the archive | unsigned executables in a ZIP | expected for unsigned builds; ship a signature or document the exclusion |
 
 ## Changing dependencies

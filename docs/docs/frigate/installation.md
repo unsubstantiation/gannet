@@ -74,7 +74,10 @@ that the performance trade-off is appropriate for the host.
 ## Data locations
 
 The default writable root is `%LOCALAPPDATA%\Gannet` for an interactive user.
-Service installs use `%ProgramData%\Gannet` unless `-BaseDir` is given. It contains:
+Service installs use `%ProgramData%\Gannet` unless `-BaseDir` is given. The
+portable ZIP instead uses `data\` inside its extracted folder; both portable
+launchers pass that root to the app and all child processes, so no AppData
+directory is needed. The selected data root contains:
 
 ```text
 Gannet\
@@ -95,23 +98,7 @@ Gannet\
     restart marker and other runtime temporary files
 ```
 
-### Upgrading from an older build
-
-This release changes the default data directory from `%LOCALAPPDATA%\Gannet`
-to `%LOCALAPPDATA%\Gannet`. **It does not move or adopt the old directory.**
-Startup warns when the legacy folder exists, and the bootstrap and portable
-launchers print the same warning. To keep an existing config, database, and
-recordings, set `GANNET_BASE_DIR` (or the still-supported `FRIGATE_BASE_DIR`)
-to the old path before launching, for example:
-
-```powershell
-$env:GANNET_BASE_DIR = "$env:LOCALAPPDATA\Gannet"
-```
-
-Set it persistently in the account or service environment — a variable in one
-PowerShell window does not reach a later launch. Alternatively copy `config\`,
-`media\`, `cache\` and `tmp\` from the old tree into the new one while the
-application is stopped.
+### Relocating the data directory
 
 Relocate the whole tree before running the bootstrap:
 

@@ -1038,6 +1038,84 @@ test.describe("System — Health notices sources @medium", () => {
     ).toHaveCount(0);
   });
 
+  test("stream checks respect audio detection and saved detect dimensions", async ({
+    frigateApp,
+  }) => {
+    await frigateApp.installDefaults({
+      config: {
+        cameras: {
+          front_door: {
+            audio: { enabled: false },
+            ffmpeg: {
+              inputs: [
+                {
+                  path: "rtsp://10.0.0.1:554/hevc",
+                  roles: ["detect", "audio"],
+                },
+              ],
+            },
+          },
+          backyard: {
+            audio: { enabled: true },
+            ffmpeg: {
+              inputs: [
+                {
+                  path: "rtsp://10.0.0.2:554/hevc",
+                  roles: ["detect", "audio"],
+                },
+              ],
+            },
+          },
+        },
+      },
+      ffprobe: {
+        front_door: [
+          {
+            return_code: 0,
+            stderr: "",
+            stdout: {
+              streams: [{ codec_type: "video", codec_name: "hevc" }],
+            },
+          },
+        ],
+        backyard: [
+          {
+            return_code: 0,
+            stderr: "",
+            stdout: {
+              streams: [{ codec_type: "video", codec_name: "hevc" }],
+            },
+          },
+        ],
+      },
+      stats: QUIET_STATS,
+    });
+    await frigateApp.goto("/system#health");
+
+    await frigateApp.page
+      .getByRole("button", { name: "Run stream checks" })
+      .click();
+
+    await expect(frigateApp.page.getByText(/^Checked/)).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(
+      frigateApp.page.getByTestId(
+        "health-problem-stream:backyard:0:audio-required",
+      ),
+    ).toBeVisible();
+    await expect(
+      frigateApp.page.getByTestId(
+        "health-problem-stream:front_door:0:audio-required",
+      ),
+    ).toHaveCount(0);
+    await expect(
+      frigateApp.page.locator(
+        "[data-testid^='health-problem-stream:'][data-testid$=':resolution-unknown']",
+      ),
+    ).toHaveCount(0);
+  });
+
   test("wizard-only Reolink advice stays off the tab", async ({
     frigateApp,
   }) => {
