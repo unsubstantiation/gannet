@@ -11,6 +11,14 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -22,23 +30,60 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTranslation } from "react-i18next";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import { LuEye, LuEyeOff } from "react-icons/lu";
+import { Check, ChevronsUpDown } from "lucide-react";
 import useSWR from "swr";
 import { FrigateConfig } from "@/types/frigateConfig";
 import {
   WizardFormData,
-  CameraBrand,
   CAMERA_BRANDS,
   CAMERA_BRAND_VALUES,
 } from "@/types/cameraWizard";
+import {
+  cameraProfileTemplate,
+  getCameraBrand,
+  getCameraStreamProfile,
+  type CameraBrandNote,
+  type CameraProfileLabel,
+} from "@/types/cameraBrands";
+import {
+  CAMERA_MODELS,
+  cameraModelPresetBrand,
+  getCameraModel,
+  type CameraModel,
+} from "@/types/cameraModels";
+import { formatCameraStreamTemplate } from "@/utils/cameraUtil";
+import { cn } from "@/lib/utils";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { LuInfo } from "react-icons/lu";
 import CameraDiscovery from "./CameraDiscovery";
+import CameraModelLoginGuidance from "./CameraModelLoginGuidance";
+
+function parsePort(value?: string): number | undefined {
+  if (!value || !/^\d{1,5}$/.test(value)) return undefined;
+  const port = Number(value);
+  return port >= 1 && port <= 65535 ? port : undefined;
+}
+
+function restorePickerFocus(event: Event, trigger: HTMLButtonElement | null) {
+  // A closing popover can finish its animation after the user has already
+  // moved to the next field. Don't steal focus or scroll the mobile dialog
+  // back to the previous picker in that case.
+  event.preventDefault();
+  const active = document.activeElement;
+  const content = event.currentTarget;
+  if (
+    !active ||
+    active === document.body ||
+    (content instanceof HTMLElement && content.contains(active))
+  ) {
+    trigger?.focus({ preventScroll: true });
+  }
+}
 
 type Step1NameCameraProps = {
   wizardData: Partial<WizardFormData>;
@@ -57,6 +102,10 @@ export default function Step1NameCamera({
   const { t } = useTranslation(["views/settings"]);
   const { data: config } = useSWR<FrigateConfig>("config");
   const [showPassword, setShowPassword] = useState(false);
+  const [brandOpen, setBrandOpen] = useState(false);
+  const [modelOpen, setModelOpen] = useState(false);
+  const modelTriggerRef = useRef<HTMLButtonElement>(null);
+  const brandTriggerRef = useRef<HTMLButtonElement>(null);
   const [probeMode, setProbeMode] = useState<boolean>(
     wizardData.probeMode ?? true,
   );
@@ -67,6 +116,15 @@ export default function Step1NameCamera({
     }
     return Object.keys(config.cameras);
   }, [config]);
+  const sortedModels = useMemo(
+    () =>
+      [...CAMERA_MODELS].sort((a, b) =>
+        `${a.manufacturer} ${a.name}`.localeCompare(
+          `${b.manufacturer} ${b.name}`,
+        ),
+      ),
+    [],
+  );
 
   const step1FormData = z
     .object({
@@ -81,43 +139,78 @@ export default function Step1NameCamera({
       host: z.string().optional(),
       username: z.string().optional(),
       password: z.string().optional(),
+      cameraModel: z.string().optional(),
       brandTemplate: z.enum(CAMERA_BRAND_VALUES).optional(),
-      onvifPort: z.coerce.number().int().min(1).max(65535).optional(),
-      rtspPort: z
-        .string()
-        .optional()
-        .refine(
-          (value) =>
-            !value ||
-            (/^\d{1,5}$/.test(value) &&
-              Number(value) >= 1 &&
-              Number(value) <= 65535),
-          t("cameraWizard.step1.errors.invalidPort"),
-        ),
+      brandStreamProfile: z.string().optional(),
+      brandChannel: z.string().optional(),
+      onvifPort: z.string().optional(),
+      rtspPort: z.string().optional(),
       useDigestAuth: z.boolean().optional(),
-      customUrl: z
-        .string()
-        .optional()
-        .refine(
-          (val) =>
-            !val || val.startsWith("rtsp://") || val.startsWith("rtsps://"),
-          t("cameraWizard.step1.errors.customUrlRtspRequired"),
-        ),
+      customUrl: z.string().optional(),
     })
-    .refine(
-      (data) => {
-        // If brand is "other", customUrl is required
-        if (!probeMode && data.brandTemplate === "other") {
-          return data.customUrl && data.customUrl.trim().length > 0;
+    .superRefine((data, ctx) => {
+      const brand = getCameraBrand(data.brandTemplate);
+      const custom = !probeMode && brand?.mode === "custom";
+      const validPort = (value: string) => parsePort(value) !== undefined;
+
+      if (custom) {
+        const url = data.customUrl?.trim() || "";
+        if (!url) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["customUrl"],
+            message: t("cameraWizard.step1.errors.brandOrCustomUrlRequired"),
+          });
+        } else if (!url.startsWith("rtsp://") && !url.startsWith("rtsps://")) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["customUrl"],
+            message: t("cameraWizard.step1.errors.customUrlRtspRequired"),
+          });
         }
-        // If brand is not "other", host is required
-        return data.host && data.host.trim().length > 0;
-      },
-      {
-        message: t("cameraWizard.step1.errors.brandOrCustomUrlRequired"),
-        path: ["customUrl"],
-      },
-    );
+      } else if (!data.host?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["host"],
+          message: t("cameraWizard.step1.errors.brandOrCustomUrlRequired"),
+        });
+      }
+
+      if (probeMode && !validPort(data.onvifPort || "")) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["onvifPort"],
+          message: t("cameraWizard.step1.errors.invalidPort"),
+        });
+      }
+      if (!probeMode && !custom && data.rtspPort && !validPort(data.rtspPort)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["rtspPort"],
+          message: t("cameraWizard.step1.errors.invalidPort"),
+        });
+      }
+      if (
+        !probeMode &&
+        brand?.mode === "template" &&
+        getCameraStreamProfile(brand, data.brandStreamProfile).path.includes(
+          "{channel}",
+        )
+      ) {
+        const channel = data.brandChannel || "";
+        if (
+          !/^\d{1,3}$/.test(channel) ||
+          Number(channel) < 1 ||
+          Number(channel) > 999
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["brandChannel"],
+            message: t("cameraWizard.step1.errors.invalidChannel"),
+          });
+        }
+      }
+    });
 
   const form = useForm<z.infer<typeof step1FormData>>({
     resolver: zodResolver(step1FormData),
@@ -126,39 +219,69 @@ export default function Step1NameCamera({
       host: wizardData.host || "",
       username: wizardData.username || "",
       password: wizardData.password || "",
+      cameraModel: getCameraModel(wizardData.cameraModel)?.id ?? "",
       brandTemplate:
         wizardData.brandTemplate &&
-        CAMERA_BRAND_VALUES.includes(wizardData.brandTemplate as CameraBrand)
-          ? (wizardData.brandTemplate as CameraBrand)
+        CAMERA_BRAND_VALUES.includes(wizardData.brandTemplate)
+          ? wizardData.brandTemplate
           : "dahua",
+      brandStreamProfile: wizardData.brandStreamProfile || "main",
+      brandChannel: wizardData.brandChannel || "1",
       customUrl: wizardData.customUrl || "",
-      onvifPort: wizardData.onvifPort ?? 80,
+      onvifPort: (wizardData.onvifPort ?? 80).toString(),
       rtspPort: wizardData.rtspPort?.toString() ?? "",
       useDigestAuth: wizardData.useDigestAuth ?? false,
     },
     mode: "onChange",
   });
 
+  const selectedModel = getCameraModel(form.watch("cameraModel"));
   const watchedBrand = form.watch("brandTemplate");
+  const watchedProfile = form.watch("brandStreamProfile");
+  const watchedChannel = form.watch("brandChannel");
+  const watchedName = form.watch("cameraName");
+  const selectedBrand = getCameraBrand(watchedBrand);
+  const selectedProfile =
+    selectedBrand?.mode === "template"
+      ? getCameraStreamProfile(selectedBrand, watchedProfile)
+      : undefined;
+  const usesCustomUrl = selectedBrand?.mode === "custom";
   const watchedHost = form.watch("host");
   const watchedCustomUrl = form.watch("customUrl");
 
   const hostPresent = !!(watchedHost && watchedHost.trim());
   const customPresent = !!(watchedCustomUrl && watchedCustomUrl.trim());
-  const cameraNamePresent = !!(form.getValues().cameraName || "").trim();
+  const cameraNamePresent = !!watchedName?.trim();
 
   const isContinueButtonEnabled =
     cameraNamePresent &&
-    (probeMode
-      ? hostPresent
-      : watchedBrand === "other"
-        ? customPresent
-        : hostPresent);
+    (probeMode ? hostPresent : usesCustomUrl ? customPresent : hostPresent);
+
+  const selectModel = (model: CameraModel) => {
+    form.setValue("cameraModel", model.id, { shouldDirty: true });
+    const presetValue = cameraModelPresetBrand(model);
+    const brand = getCameraBrand(presetValue);
+    if (brand && form.getValues("brandTemplate") !== presetValue) {
+      form.setValue("brandTemplate", presetValue, { shouldDirty: true });
+      form.setValue(
+        "brandStreamProfile",
+        brand.mode === "template"
+          ? getCameraStreamProfile(brand, model.presetProfile).value
+          : "",
+        { shouldDirty: true },
+      );
+      form.clearErrors(["customUrl", "brandChannel", "rtspPort", "host"]);
+    }
+    // The catalog is guidance only. In particular, don't touch entered
+    // credentials, a custom URL, ports, or attempt any camera connection.
+    setModelOpen(false);
+  };
 
   const onSubmit = (data: z.infer<typeof step1FormData>) => {
     onUpdate({
       ...data,
-      rtspPort: data.rtspPort ? Number(data.rtspPort) : undefined,
+      onvifPort: parsePort(data.onvifPort) ?? 80,
+      rtspPort: parsePort(data.rtspPort),
       probeMode,
     });
   };
@@ -169,11 +292,70 @@ export default function Step1NameCamera({
       const data = form.getValues();
       onNext({
         ...data,
-        rtspPort: data.rtspPort ? Number(data.rtspPort) : undefined,
+        onvifPort: parsePort(data.onvifPort) ?? 80,
+        rtspPort: parsePort(data.rtspPort),
         probeMode,
       });
     }
   }, [form, probeMode, onNext]);
+
+  // Keep the translated labels explicit so they are discovered by i18n extraction.
+  const profileLabels: Record<CameraProfileLabel, string> = {
+    main: t("cameraWizard.step1.profiles.main"),
+    sub: t("cameraWizard.step1.profiles.sub"),
+    third: t("cameraWizard.step1.profiles.third"),
+    stream1: t("cameraWizard.step1.profiles.stream1"),
+    stream2: t("cameraWizard.step1.profiles.stream2"),
+    profile2: t("cameraWizard.step1.profiles.profile2"),
+    profile3: t("cameraWizard.step1.profiles.profile3"),
+    nvrMain: t("cameraWizard.step1.profiles.nvrMain"),
+    nvrSub: t("cameraWizard.step1.profiles.nvrSub"),
+    vivotekLive: t("cameraWizard.step1.profiles.vivotekLive"),
+    vivotekLive1s1: t("cameraWizard.step1.profiles.vivotekLive1s1"),
+    mobotixMx: t("cameraWizard.step1.profiles.mobotixMx"),
+    mobotixMove: t("cameraWizard.step1.profiles.mobotixMove"),
+    mobotixMoveStream: t("cameraWizard.step1.profiles.mobotixMoveStream"),
+  };
+  const brandNotes: Record<CameraBrandNote, string> = {
+    dahua: t("cameraWizard.step1.brandNotes.dahua"),
+    hikvision: t("cameraWizard.step1.brandNotes.hikvision"),
+    uniview: t("cameraWizard.step1.brandNotes.uniview"),
+    ubiquitiLegacy: t("cameraWizard.step1.brandNotes.ubiquitiLegacy"),
+    unifiProtect: t("cameraWizard.step1.brandNotes.unifiProtect"),
+    reolink: t("cameraWizard.step1.brandNotes.reolink"),
+    axis: t("cameraWizard.step1.brandNotes.axis"),
+    tapo: t("cameraWizard.step1.brandNotes.tapo"),
+    foscam: t("cameraWizard.step1.brandNotes.foscam"),
+    hanwha: t("cameraWizard.step1.brandNotes.hanwha"),
+    vivotek: t("cameraWizard.step1.brandNotes.vivotek"),
+    sony: t("cameraWizard.step1.brandNotes.sony"),
+    ipro: t("cameraWizard.step1.brandNotes.ipro"),
+    avigilon: t("cameraWizard.step1.brandNotes.avigilon"),
+    bosch: t("cameraWizard.step1.brandNotes.bosch"),
+    milesight: t("cameraWizard.step1.brandNotes.milesight"),
+    mobotix: t("cameraWizard.step1.brandNotes.mobotix"),
+    grandstream: t("cameraWizard.step1.brandNotes.grandstream"),
+    dlink: t("cameraWizard.step1.brandNotes.dlink"),
+    ezviz: t("cameraWizard.step1.brandNotes.ezviz"),
+    geovision: t("cameraWizard.step1.brandNotes.geovision"),
+    acti: t("cameraWizard.step1.brandNotes.acti"),
+    aiphone: t("cameraWizard.step1.brandNotes.aiphone"),
+    swann: t("cameraWizard.step1.brandNotes.swann"),
+    xmeye: t("cameraWizard.step1.brandNotes.xmeye"),
+    eufy: t("cameraWizard.step1.brandNotes.eufy"),
+    wyze: t("cameraWizard.step1.brandNotes.wyze"),
+    cloud: t("cameraWizard.step1.brandNotes.cloud"),
+  };
+  const exampleUrl =
+    selectedBrand?.mode === "template" && selectedProfile
+      ? formatCameraStreamTemplate(
+          cameraProfileTemplate(selectedProfile, watchedChannel),
+          "192.168.1.100",
+          selectedBrand.defaultPort,
+          "user",
+          "password",
+        )
+      : undefined;
 
   return (
     <div className="space-y-6">
@@ -205,6 +387,9 @@ export default function Step1NameCamera({
 
           <CameraDiscovery
             onSelect={({ host, protocol, port }) => {
+              // Discovery may select a different physical camera. Do not keep
+              // model-specific login advice from the previous selection.
+              form.setValue("cameraModel", "", { shouldDirty: true });
               form.setValue("host", host, {
                 shouldDirty: true,
                 shouldValidate: true,
@@ -214,13 +399,14 @@ export default function Step1NameCamera({
                 // hidden RTSP URL or port (or their validation errors).
                 form.setValue("rtspPort", "", { shouldValidate: true });
                 form.setValue("customUrl", "", { shouldValidate: true });
-                form.setValue("onvifPort", port, {
+                form.setValue("onvifPort", String(port), {
                   shouldDirty: true,
                   shouldValidate: true,
                 });
                 setProbeMode(true);
                 onUpdate({
                   host,
+                  cameraModel: "",
                   onvifPort: port,
                   rtspPort: undefined,
                   customUrl: "",
@@ -233,7 +419,7 @@ export default function Step1NameCamera({
               } else {
                 // The manual RTSP flow does not use an ONVIF port; discard a
                 // stale invalid value before the hidden field is validated.
-                form.setValue("onvifPort", 80, { shouldValidate: true });
+                form.setValue("onvifPort", "80", { shouldValidate: true });
                 form.setValue("rtspPort", String(port), {
                   shouldDirty: true,
                   shouldValidate: true,
@@ -246,6 +432,7 @@ export default function Step1NameCamera({
                 setProbeMode(false);
                 onUpdate({
                   host,
+                  cameraModel: "",
                   onvifPort: 80,
                   rtspPort: port,
                   brandTemplate: "other",
@@ -276,6 +463,107 @@ export default function Step1NameCamera({
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="cameraModel"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-primary-variant">
+                    {t("cameraWizard.step1.cameraModel")}
+                  </FormLabel>
+                  <Popover open={modelOpen} onOpenChange={setModelOpen}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={modelOpen}
+                          ref={modelTriggerRef}
+                          className="h-8 w-full justify-between font-normal"
+                        >
+                          <span className="truncate">
+                            {selectedModel
+                              ? `${selectedModel.manufacturer} ${selectedModel.name}`
+                              : t("cameraWizard.step1.selectModel")}
+                          </span>
+                          <ChevronsUpDown
+                            className="ml-2 size-4 shrink-0 opacity-50"
+                            aria-hidden="true"
+                          />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      align="start"
+                      className="w-[--radix-popover-trigger-width] p-0"
+                      onCloseAutoFocus={(event) =>
+                        restorePickerFocus(event, modelTriggerRef.current)
+                      }
+                    >
+                      <Command>
+                        <CommandInput
+                          aria-label={t("cameraWizard.step1.searchModels")}
+                          placeholder={t("cameraWizard.step1.searchModels")}
+                        />
+                        <CommandList>
+                          <CommandEmpty>
+                            {t("cameraWizard.step1.noModelsFound")}
+                          </CommandEmpty>
+                          <CommandGroup>
+                            {sortedModels.map((model) => (
+                              <CommandItem
+                                key={model.id}
+                                value={`${model.manufacturer} ${model.name}`}
+                                keywords={[
+                                  model.brand,
+                                  getCameraBrand(model.brand)?.label ?? "",
+                                ]}
+                                onSelect={() => selectModel(model)}
+                              >
+                                <Check
+                                  aria-hidden="true"
+                                  className={cn(
+                                    "mr-2 size-4 shrink-0",
+                                    field.value === model.id
+                                      ? "opacity-100"
+                                      : "opacity-0",
+                                  )}
+                                />
+                                <span>
+                                  {model.manufacturer} {model.name}
+                                </span>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                      <div className="border-t p-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="h-8 w-full justify-start text-xs"
+                          onClick={() => {
+                            field.onChange("");
+                            setModelOpen(false);
+                          }}
+                        >
+                          {t("cameraWizard.step1.modelNotListed")}
+                        </Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                  <FormDescription>
+                    {t("cameraWizard.step1.modelDescription")}
+                  </FormDescription>
+                  {selectedModel && (
+                    <CameraModelLoginGuidance model={selectedModel} />
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
@@ -445,67 +733,187 @@ export default function Step1NameCamera({
                 name="brandTemplate"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex items-center gap-1 pb-1">
-                      <FormLabel className="text-primary-variant">
-                        {t("cameraWizard.step1.cameraBrand")}
-                      </FormLabel>
-                      {field.value &&
-                        (() => {
-                          const selectedBrand = CAMERA_BRANDS.find(
-                            (brand) => brand.value === field.value,
-                          );
-                          return selectedBrand &&
-                            selectedBrand.value != "other" ? (
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-4 w-4 p-0"
-                                >
-                                  <LuInfo className="size-3" />
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="pointer-events-auto w-80 text-primary-variant">
-                                <div className="space-y-2">
-                                  <h4 className="font-medium">
-                                    {selectedBrand.label}
-                                  </h4>
-                                  <p className="break-all text-sm text-muted-foreground">
-                                    {t("cameraWizard.step1.brandUrlFormat", {
-                                      exampleUrl: selectedBrand.exampleUrl,
-                                    })}
-                                  </p>
-                                </div>
-                              </PopoverContent>
-                            </Popover>
-                          ) : null;
-                        })()}
-                    </div>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="h-8">
-                          <SelectValue
-                            placeholder={t("cameraWizard.step1.selectBrand")}
+                    <FormLabel className="text-primary-variant">
+                      {t("cameraWizard.step1.cameraBrand")}
+                    </FormLabel>
+                    <Popover open={brandOpen} onOpenChange={setBrandOpen}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={brandOpen}
+                            ref={brandTriggerRef}
+                            className="h-8 w-full justify-between font-normal"
+                          >
+                            <span className="truncate">
+                              {selectedBrand?.value === "other"
+                                ? t("label.other", { ns: "common" })
+                                : selectedBrand?.label ||
+                                  t("cameraWizard.step1.selectBrand")}
+                            </span>
+                            <ChevronsUpDown
+                              className="ml-2 size-4 shrink-0 opacity-50"
+                              aria-hidden="true"
+                            />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        align="start"
+                        className="w-[--radix-popover-trigger-width] p-0"
+                        onCloseAutoFocus={(event) =>
+                          restorePickerFocus(event, brandTriggerRef.current)
+                        }
+                      >
+                        <Command>
+                          <CommandInput
+                            aria-label={t("cameraWizard.step1.searchBrands")}
+                            placeholder={t("cameraWizard.step1.searchBrands")}
                           />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {CAMERA_BRANDS.map((brand) => (
-                          <SelectItem key={brand.value} value={brand.value}>
-                            {brand.label.toLowerCase() === "other"
-                              ? t("label.other", { ns: "common" })
-                              : brand.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                          <CommandList>
+                            <CommandEmpty>
+                              {t("cameraWizard.step1.noBrandsFound")}
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {CAMERA_BRANDS.map((brand) => {
+                                const label =
+                                  brand.value === "other"
+                                    ? t("label.other", { ns: "common" })
+                                    : brand.label;
+                                return (
+                                  <CommandItem
+                                    key={brand.value}
+                                    value={label}
+                                    keywords={[brand.value, brand.label]}
+                                    onSelect={() => {
+                                      field.onChange(brand.value);
+                                      // Other is a fallback, not a conflicting
+                                      // manufacturer; keep the model advice.
+                                      if (
+                                        selectedModel &&
+                                        brand.value !== "other" &&
+                                        brand.value !== selectedModel.brand
+                                      ) {
+                                        form.setValue("cameraModel", "", {
+                                          shouldDirty: true,
+                                        });
+                                      }
+                                      form.setValue(
+                                        "brandStreamProfile",
+                                        brand.mode === "template"
+                                          ? brand.profiles[0].value
+                                          : "",
+                                        { shouldDirty: true },
+                                      );
+                                      form.clearErrors([
+                                        "customUrl",
+                                        "brandChannel",
+                                        "rtspPort",
+                                        "host",
+                                      ]);
+                                      setBrandOpen(false);
+                                    }}
+                                  >
+                                    <Check
+                                      aria-hidden="true"
+                                      className={cn(
+                                        "mr-2 size-4 shrink-0",
+                                        field.value === brand.value
+                                          ? "opacity-100"
+                                          : "opacity-0",
+                                      )}
+                                    />
+                                    {label}
+                                  </CommandItem>
+                                );
+                              })}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormDescription>
+                      {t("cameraWizard.step1.brandCompatibility")}
+                      {selectedBrand?.note && (
+                        <span className="mt-1 block">
+                          {brandNotes[selectedBrand.note]}
+                        </span>
+                      )}
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {watchedBrand !== "other" && (
+              {selectedBrand?.mode === "template" &&
+                selectedBrand.profiles.length > 1 && (
+                  <FormField
+                    control={form.control}
+                    name="brandStreamProfile"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-primary-variant">
+                          {t("cameraWizard.step1.streamProfile")}
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={selectedProfile?.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="h-8">
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {selectedBrand.profiles.map((profile) => (
+                              <SelectItem
+                                key={profile.value}
+                                value={profile.value}
+                              >
+                                {profileLabels[profile.label]}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          {t("cameraWizard.step1.streamProfileDescription")}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+              {selectedProfile?.path.includes("{channel}") && (
+                <FormField
+                  control={form.control}
+                  name="brandChannel"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-primary-variant">
+                        {t("cameraWizard.step1.channel")}
+                      </FormLabel>
+                      <FormControl>
+                        <Input className="h-8" inputMode="numeric" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        {t("cameraWizard.step1.channelDescription")}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {exampleUrl && (
+                <p className="break-all text-sm text-muted-foreground">
+                  {t("cameraWizard.step1.brandUrlFormat", { exampleUrl })}
+                </p>
+              )}
+
+              {!usesCustomUrl && selectedBrand && (
                 <FormField
                   control={form.control}
                   name="rtspPort"
@@ -525,7 +933,9 @@ export default function Step1NameCamera({
                         />
                       </FormControl>
                       <FormDescription>
-                        {t("cameraWizard.step1.rtspPortDescription")}
+                        {t("cameraWizard.step1.rtspPortWithDefault", {
+                          port: selectedBrand.defaultPort,
+                        })}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -533,7 +943,7 @@ export default function Step1NameCamera({
                 />
               )}
 
-              {watchedBrand == "other" && (
+              {usesCustomUrl && (
                 <FormField
                   control={form.control}
                   name="customUrl"
@@ -545,13 +955,25 @@ export default function Step1NameCamera({
                       <FormControl>
                         <Input
                           className="h-8"
-                          placeholder="rtsp://username:password@host:port/path"
+                          placeholder={t(
+                            "cameraWizard.step1.customUrlPlaceholder",
+                          )}
                           {...field}
                         />
                       </FormControl>
                       <FormDescription>
-                        {t("cameraWizard.step1.customUrlDescription")}{" "}
-                        {t("cameraWizard.step1.customUrlCredentialsHelp")}
+                        {selectedBrand?.mode === "custom" &&
+                        selectedBrand.credentials === "asProvided" ? (
+                          <>
+                            {t("cameraWizard.step1.copyUrlDescription")}{" "}
+                            {t("cameraWizard.step1.copyUrlCredentialsHelp")}
+                          </>
+                        ) : (
+                          <>
+                            {t("cameraWizard.step1.customUrlDescription")}{" "}
+                            {t("cameraWizard.step1.customUrlCredentialsHelp")}
+                          </>
+                        )}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>

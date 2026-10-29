@@ -1,6 +1,7 @@
 import type { TFunction } from "i18next";
 import { parseRestreamStreamName } from "@/components/config-form/theme/fields/streamSource";
 import type { CameraBrand, StreamRole, TestResult } from "@/types/cameraWizard";
+import { getCameraBrand } from "@/types/cameraBrands";
 import { parseStreamResolution } from "@/utils/cameraUtil";
 
 export type StreamIssue = {
@@ -234,8 +235,11 @@ export function getStreamIssues(
     }
   }
 
+  const brandDefinition = getCameraBrand(input.brand);
+  const family =
+    brandDefinition?.mode === "template" ? brandDefinition.family : undefined;
   if (
-    input.brand === "dahua" &&
+    family === "dahua" &&
     roles.includes("detect") &&
     input.url.includes("subtype=1")
   ) {
@@ -249,9 +253,9 @@ export function getStreamIssues(
   }
 
   if (
-    input.brand === "hikvision" &&
+    family === "hikvision" &&
     roles.includes("detect") &&
-    input.url.includes("/102")
+    /\/streaming\/channels\/\d+02(?:[/?#]|$)/i.test(input.url)
   ) {
     result.push({
       type: "warning",

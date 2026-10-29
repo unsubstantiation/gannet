@@ -632,6 +632,106 @@ class TestConfigSetWildcardPropagation(BaseTestHttp):
         finally:
             os.unlink(config_path)
 
+    @patch("gannet.api.app.find_config_file")
+    def test_protect_token_is_redacted_and_restored(self, mock_find_config):
+        token_url = "rtsps://protect:7441/private,token@secret?enableSrtp=1"
+        self._set_inputs([(token_url, "detect")])
+        self.minimal_config["go2rtc"] = {"streams": {"front_door": token_url}}
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        try:
+            app, _ = self._create_app_with_publisher()
+            with AuthTestClient(app) as client:
+                config = client.get("/config").json()
+                inputs = config["cameras"]["front_door"]["ffmpeg"]["inputs"]
+                self.assertEqual(
+                    inputs[0]["path"], "rtsps://protect:7441/*?enableSrtp=1"
+                )
+                self.assertNotIn("private,token@secret", str(config))
+                self.assertEqual(
+                    config["go2rtc"]["streams"]["front_door"],
+                    "rtsps://protect:7441/*?enableSrtp=1",
+                )
+                response = self._save(
+                    client,
+                    {"cameras": {"front_door": {"ffmpeg": {"inputs": inputs}}}},
+                )
+                self.assertEqual(response.status_code, 200)
+                # go2rtc editors use the admin-only raw paths endpoint. A
+                # masked stream cannot be saved as if it were the real token.
+                masked_stream = config["go2rtc"]["streams"]["front_door"]
+                response = self._save(
+                    client, {"go2rtc": {"streams": {"front_door": masked_stream}}}
+                )
+                self.assertEqual(response.status_code, 400)
+                response = self._save(
+                    client, {"go2rtc": {"streams": {"front_door": [token_url]}}}
+                )
+                self.assertEqual(response.status_code, 200)
+
+            _, saved = self._read_config_file(config_path)
+            self.assertEqual(
+                saved["cameras"]["front_door"]["ffmpeg"]["inputs"][0]["path"],
+                token_url,
+            )
+            self.assertEqual(saved["go2rtc"]["streams"]["front_door"], [token_url])
+        finally:
+            os.unlink(config_path)
+
+    @patch("gannet.api.app.find_config_file")
+    def test_xmeye_paths_are_redacted_and_restored_by_channel(self, mock_find_config):
+        main = (
+            "rtsp://cam:554/user=xmUserOne&password=xmPass%40%26word"
+            "&channel=1&stream=0.sdp?real_stream"
+        )
+        sub = "rtsp://cam:554/user=xmUserTwo_password=xmHiddenPass_channel=2_stream=1.sdp?real_stream"
+        self._set_inputs([(main, "detect"), (sub, "record")])
+        self.minimal_config["go2rtc"] = {"streams": {"front_door": [main, sub]}}
+        config_path = self._write_config_file()
+        mock_find_config.return_value = config_path
+
+        try:
+            app, _ = self._create_app_with_publisher()
+            with AuthTestClient(app) as client:
+                config = client.get("/config").json()
+                inputs = config["cameras"]["front_door"]["ffmpeg"]["inputs"]
+                masked = [item["path"] for item in inputs]
+                self.assertEqual(
+                    masked,
+                    [
+                        "rtsp://cam:554/user=*&channel=1&stream=0.sdp?real_stream",
+                        "rtsp://cam:554/user=*_channel=2_stream=1.sdp?real_stream",
+                    ],
+                )
+                self.assertEqual(config["go2rtc"]["streams"]["front_door"], masked)
+                for secret in ("xmUserOne", "xmPass", "xmUserTwo", "xmHiddenPass"):
+                    self.assertNotIn(secret, str(config))
+
+                # Reordering is safe: each masked channel matches its own
+                # saved input, rather than copying a different channel's login.
+                response = self._save(
+                    client,
+                    {"cameras": {"front_door": {"ffmpeg": {"inputs": inputs[::-1]}}}},
+                )
+                self.assertEqual(response.status_code, 200)
+                # Never accept masked go2rtc sources as real credentials.
+                response = self._save(
+                    client, {"go2rtc": {"streams": {"front_door": masked}}}
+                )
+                self.assertEqual(response.status_code, 400)
+                response = self._save(
+                    client, {"go2rtc": {"streams": {"front_door": [main, sub]}}}
+                )
+                self.assertEqual(response.status_code, 200)
+
+            _, saved = self._read_config_file(config_path)
+            saved_inputs = saved["cameras"]["front_door"]["ffmpeg"]["inputs"]
+            self.assertEqual([item["path"] for item in saved_inputs], [sub, main])
+            self.assertEqual(saved["go2rtc"]["streams"]["front_door"], [main, sub])
+        finally:
+            os.unlink(config_path)
+
     def _save(self, client, config_data):
         return client.put(
             "/config/set",

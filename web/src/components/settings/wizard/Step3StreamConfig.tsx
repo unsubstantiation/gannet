@@ -53,7 +53,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { hevcRecordingStreamId } from "@/utils/cameraUtil";
+import { hevcRecordingStreamId, maskUri } from "@/utils/cameraUtil";
 
 // Recording the sub stream from the same stream as record would just
 // re-record the main stream, so the two roles are mutually exclusive.
@@ -81,6 +81,7 @@ export default function Step3StreamConfig({
   const { getLocaleDocUrl } = useDocDomain();
   const [testingStreams, setTestingStreams] = useState<Set<string>>(new Set());
   const [openCombobox, setOpenCombobox] = useState<string | null>(null);
+  const [focusedStream, setFocusedStream] = useState<string | null>(null);
   const [showOnvifPassword, setShowOnvifPassword] = useState(false);
   const [onvifDetailsOpen, setOnvifDetailsOpen] = useState(false);
 
@@ -491,7 +492,7 @@ export default function Step3StreamConfig({
                               >
                                 <span className="truncate">
                                   {stream.url
-                                    ? stream.url
+                                    ? maskUri(stream.url)
                                     : t("cameraWizard.step3.selectStream")}
                                 </span>
                                 <LuChevronsUpDown className="ml-2 size-6 opacity-50" />
@@ -542,7 +543,7 @@ export default function Step3StreamConfig({
                                               : "opacity-0",
                                           )}
                                         />
-                                        {candidate}
+                                        {maskUri(candidate)}
                                       </CommandItem>
                                     ))}
                                 </CommandGroup>
@@ -567,7 +568,7 @@ export default function Step3StreamConfig({
                               >
                                 <span className="truncate">
                                   {stream.url
-                                    ? stream.url
+                                    ? maskUri(stream.url)
                                     : t("cameraWizard.step3.selectStream")}
                                 </span>
                                 <LuChevronsUpDown className="ml-2 size-6 opacity-50" />
@@ -619,7 +620,7 @@ export default function Step3StreamConfig({
                                                 : "opacity-0",
                                             )}
                                           />
-                                          {candidate}
+                                          {maskUri(candidate)}
                                         </CommandItem>
                                       ))}
                                   </CommandGroup>
@@ -631,7 +632,13 @@ export default function Step3StreamConfig({
                       )
                     ) : (
                       <Input
-                        value={stream.url}
+                        value={
+                          focusedStream === stream.id
+                            ? stream.url
+                            : maskUri(stream.url)
+                        }
+                        onFocus={() => setFocusedStream(stream.id)}
+                        onBlur={() => setFocusedStream(null)}
                         onChange={(e) =>
                           updateStream(stream.id, {
                             url: e.target.value,

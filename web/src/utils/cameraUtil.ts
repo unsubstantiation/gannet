@@ -2,6 +2,7 @@ import { baseUrl } from "@/api/baseUrl";
 import { generateFixedHash, isValidId } from "./stringUtil";
 import type { LiveStreamMetadata } from "@/types/live";
 import type { StreamConfig } from "@/types/cameraWizard";
+import { maskProtectStreamToken, maskXmeyePath } from "./credentialMask";
 
 /**
  * Processes a user-entered camera name and returns both the final camera name
@@ -103,7 +104,7 @@ export function withRtspCredentials(
   return `${match[1]}${userinfo}${match[2]}${match[3]}`;
 }
 
-/** Fill a brand template with escaped userinfo or query credentials. */
+/** Fill a brand template with escaped userinfo, path, or query credentials. */
 export function formatCameraStreamTemplate(
   template: string,
   host: string,
@@ -124,6 +125,9 @@ export function formatCameraStreamTemplate(
 
 /** Mask URL credentials for display without changing the stream URL. */
 export function maskUri(uri: string): string {
+  // Path credentials and tokens may contain @; hide them before parsing
+  // userinfo so no part of a secret is mistaken for a hostname.
+  uri = maskXmeyePath(maskProtectStreamToken(uri, "****"), "****");
   // Greedy for RTSP so even legacy unescaped /, ? or @ in a password cannot
   // expose part of it. This can hide extra path text in an ambiguous URL.
   const rtsp = uri.match(/^(rtsps?:\/\/)([^:]+):([\s\S]+)@([\s\S]+)$/i);
@@ -141,7 +145,10 @@ export function maskUri(uri: string): string {
       }
     }
   }
-  return uri.replace(/([?&](?:pass|password|passwd|pwd)=)[^&#]*/gi, "$1****");
+  return maskXmeyePath(maskProtectStreamToken(uri, "****"), "****").replace(
+    /([?&](?:pass|password|passwd|pwd|(?:[a-z_]*_)?token|(?:[a-z_]*_)?secret|api_?key)=)[^&#]*/gi,
+    "$1****",
+  );
 }
 
 /**

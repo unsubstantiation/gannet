@@ -127,6 +127,17 @@ class TestUserPassMasking(unittest.TestCase):
             "rtsp://host/live?user=admin&password=p@ss": (
                 "rtsp://host/live?user=*&password=*"
             ),
+            "rtsps://10.0.0.2:7441/private-token?enableSrtp=1": (
+                "rtsps://10.0.0.2:7441/*?enableSrtp=1"
+            ),
+            "rtsp://[::1]:7447/private-token": "rtsp://[::1]:7447/*",
+            "rtsps://protect:7441/token,with@specials": "rtsps://protect:7441/*",
+            "rtsps://protect:7441/token1,rtsp://protect:7447/token2": (
+                "rtsps://protect:7441/*,rtsp://protect:7447/*"
+            ),
+            "ffmpeg:rtsps://user:pw@protect:7441/abc_def-123?token=secret": (
+                "ffmpeg:rtsps://*:*@protect:7441/*?token=*"
+            ),
             "ring:?refresh_token=abc.def": "ring:?refresh_token=*",
             "nest:?client_id=1&client_secret=s&refresh_token=t&project_id=p": (
                 "nest:?client_id=1&client_secret=*&refresh_token=*&project_id=p"
@@ -149,9 +160,60 @@ class TestUserPassMasking(unittest.TestCase):
                 self.assertTrue(is_masked_camera_path(masked))
                 self.assertEqual(clean_camera_user_pass(masked), masked)
 
+    def test_xmeye_path_credentials_are_masked_conservatively(self):
+        cases = {
+            "rtsp://cam:554/user=alice&password=p%40ss%26word&channel=1&stream=0.sdp?real_stream": (
+                "rtsp://cam:554/user=*&channel=1&stream=0.sdp?real_stream"
+            ),
+            "rtsp://cam/user=admin&password=&channel=2&stream=1.sdp?": (
+                "rtsp://cam/user=*&channel=2&stream=1.sdp?"
+            ),
+            "rtsps://cam:8554/user=al_ice_password=p@ss,with_underscores_channel=9_stream=1.sdp?real_stream": (
+                "rtsps://cam:8554/user=*_channel=9_stream=1.sdp?real_stream"
+            ),
+            "rtsp://cam/live/user=admin_password=secret_channel=0_stream=0_onvif=0.sdp?real_stream": (
+                "rtsp://cam/live/user=*_channel=0_stream=0_onvif=0.sdp?real_stream"
+            ),
+            "ffmpeg:rtsp://name:pass@cam/user=alice_password=secret_channel=1_stream=0.sdp?real_stream": (
+                "ffmpeg:rtsp://*:*@cam/user=*_channel=1_stream=0.sdp?real_stream"
+            ),
+            # Unknown suffixes and raw whitespace are hidden rather than
+            # guessing which characters belong to the credentials.
+            "rtsp://cam/user=alice&password=has spaces&token=secret: failed": (
+                "rtsp://cam/user=*"
+            ),
+        }
+        for line, expected in cases.items():
+            with self.subTest(line=line):
+                masked = clean_camera_user_pass(line)
+                self.assertEqual(masked, expected)
+                self.assertTrue(is_masked_camera_path(masked))
+                self.assertEqual(clean_camera_user_pass(masked), masked)
+
+        encoded = (
+            "source=rtsp%3A%2F%2Fcam%3A554%2Fuser%3Dalice%26password%3Dsecret"
+            "%26channel%3D1%26stream%3D0.sdp%3Freal_stream: failed"
+        )
+        self.assertEqual(
+            clean_camera_user_pass(encoded),
+            "source=rtsp%3A%2F%2Fcam%3A554%2Fuser%3D*",
+        )
+
+        multiple = (
+            "rtsp://a/user=alice&password=p%2Cq&channel=1&stream=0.sdp?real_stream,"
+            "rtsp://b/user=bob_password=other_channel=2_stream=1.sdp?real_stream"
+        )
+        self.assertEqual(
+            clean_camera_user_pass(multiple),
+            "rtsp://a/user=*&channel=1&stream=0.sdp?real_stream,"
+            "rtsp://b/user=*_channel=2_stream=1.sdp?real_stream",
+        )
+
     def test_safe_strings_unchanged(self):
         for line in (
             "rtsp://10.0.0.2:554/live",
+            "rtsp://10.0.0.2:7447/",
+            "rtsp://10.0.0.2:7442/not-a-protect-stream",
             "ffmpeg:front_door#video=copy",
             "rtsp://127.0.0.1:8554/front_door?video=copy&audio=aac",
             "homekit://10.0.0.2:51827?device_id=d",
@@ -179,6 +241,7 @@ class TestUserPassMasking(unittest.TestCase):
         start = time.perf_counter()
         clean_camera_user_pass("rtsp://u:p" * 20000)
         clean_camera_user_pass("rtsp://" + "a." * 40000)
+        clean_camera_user_pass("rtsp%3A%2F%2Fcamera" * 20000)
         self.assertLess(time.perf_counter() - start, 1)
 
 

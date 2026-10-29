@@ -35,7 +35,9 @@ async function manualCamera(page: Page, name: string): Promise<Locator> {
   await dialog.getByLabel("Username").fill("viewer");
   await dialog.getByLabel("Password", { exact: true }).fill("new@pass");
   await dialog.getByText("Manual selection").click();
-  await dialog.getByRole("combobox").click();
+  await dialog
+    .getByRole("combobox", { name: "Camera Brand", exact: true })
+    .click();
   await page.getByRole("option", { name: "Other", exact: true }).click();
   await dialog.getByLabel("Custom Stream URL").fill("rtsp://192.168.1.55/live");
   await dialog.getByRole("button", { name: /^Continue$/i }).click();
@@ -82,9 +84,16 @@ test.describe("Offline cameras and credentials @medium @mobile", () => {
     await dialog
       .getByRole("button", { name: /Continue without connecting/i })
       .click();
-    await expect(
-      dialog.getByPlaceholder("rtsp://username:password@host:port/path"),
-    ).toHaveValue("rtsp://viewer:new%40pass@192.168.1.55/live");
+    const streamInput = dialog.getByPlaceholder(
+      "rtsp://username:password@host:port/path",
+    );
+    await expect(streamInput).toHaveValue(
+      "rtsp://viewer:****@192.168.1.55/live",
+    );
+    await streamInput.focus();
+    await expect(streamInput).toHaveValue(
+      "rtsp://viewer:new%40pass@192.168.1.55/live",
+    );
     await dialog.getByRole("button", { name: /^Next$/i }).click();
     await expect(
       dialog.getByText(/at least one stream has not connected/i),

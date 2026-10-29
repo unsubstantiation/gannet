@@ -72,7 +72,9 @@ async function gotoStep3(
   await dialog.getByPlaceholder("Optional").first().fill("admin");
   await dialog.getByPlaceholder("Optional").last().fill("pw");
   await dialog.getByText("Manual selection").click();
-  await dialog.getByRole("combobox").click();
+  await dialog
+    .getByRole("combobox", { name: "Camera Brand", exact: true })
+    .click();
   await page.getByRole("option", { name: "Reolink" }).click();
   await dialog.getByRole("button", { name: /^Continue$/i }).click();
 
@@ -123,7 +125,9 @@ test.describe("Camera wizard Reolink stream selection @medium @mobile", () => {
     await dialog.getByPlaceholder("Optional").first().fill("view&er");
     await dialog.getByPlaceholder("Optional").last().fill("pa+ss&=/");
     await dialog.getByText("Manual selection").click();
-    await dialog.getByRole("combobox").click();
+    await dialog
+      .getByRole("combobox", { name: "Camera Brand", exact: true })
+      .click();
     await page.getByRole("option", { name: "Reolink" }).click();
     await dialog.getByRole("button", { name: /^Continue$/i }).click();
     await expect(dialog.getByText("Connection test successful!")).toBeVisible();

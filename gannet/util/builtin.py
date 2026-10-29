@@ -24,7 +24,11 @@ from gannet.const import (
     REGEX_CREDENTIAL_QUERY_PARAM,
     REGEX_MASKED_CREDENTIAL,
     REGEX_RTSP_CAMERA_USER_PASS,
+    REGEX_UNIFI_PROTECT_TOKEN,
     REGEX_URL_USERINFO,
+    REGEX_XMEYE_AUTH_PATH,
+    REGEX_XMEYE_ENCODED_AUTH_PATH,
+    REGEX_XMEYE_SAFE_SUFFIX,
     STREAM_TYPE_MAIN,
     STREAM_TYPE_SUB,
 )
@@ -121,10 +125,25 @@ def deep_merge(dct1: dict, dct2: dict, override=False, merge_lists=False) -> dic
 
 
 def clean_camera_user_pass(line: str) -> str:
-    """Mask URL userinfo and credential query parameters in line."""
+    """Mask URL userinfo, credential parameters, and known secret paths."""
 
+    # Path credentials can contain @, which is not necessarily URL userinfo.
+    line = re.sub(REGEX_XMEYE_ENCODED_AUTH_PATH, r"\1*", line)
+    line = re.sub(REGEX_XMEYE_AUTH_PATH, _mask_xmeye_path, line)
+    line = re.sub(REGEX_UNIFI_PROTECT_TOKEN, r"\1*", line)
     line = re.sub(REGEX_URL_USERINFO, _mask_userinfo, line)
-    return re.sub(REGEX_CREDENTIAL_QUERY_PARAM, r"\1*", line)
+    # A legacy unescaped slash in userinfo may only become recognizable after
+    # userinfo is masked. Repeat path redaction before handling query fields.
+    line = re.sub(REGEX_XMEYE_AUTH_PATH, _mask_xmeye_path, line)
+    line = re.sub(REGEX_CREDENTIAL_QUERY_PARAM, r"\1*", line)
+    return re.sub(REGEX_UNIFI_PROTECT_TOKEN, r"\1*", line)
+
+
+def _mask_xmeye_path(match: re.Match[str]) -> str:
+    # Credential delimiters can appear inside legacy unescaped credentials.
+    # Never try to split them; retain only a recognized safe stream suffix.
+    suffix = re.search(REGEX_XMEYE_SAFE_SUFFIX, match.group(2))
+    return f"{match.group(1)}user=*{suffix.group(1) if suffix else ''}"
 
 
 def _mask_userinfo(match: re.Match[str]) -> str:

@@ -1,5 +1,7 @@
 import json
 import os
+import tempfile
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 import gannet.genai
@@ -17,6 +19,29 @@ class TestHttpApp(BaseTestHttp):
     def setUp(self):
         super().setUp([Event, Recordings, ReviewSegment])
         self.app = super().create_app()
+
+    @patch("gannet.api.app.get_service_log_path")
+    def test_native_logs_are_scrubbed_for_display_and_download(self, log_path):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "go2rtc.log"
+            path.write_text(
+                "2026-01-01  connection rtsp://cam/user=xmUser_password=xmPass"
+                "_channel=1_stream=0.sdp?real_stream\n"
+                "2026-01-01  connection rtsp://u:pw@camera/live\n"
+                "2026-01-01  source=rtsp%3A%2F%2Fcam%2Fuser%3DxmUser"
+                "%26password%3DxmPass\n",
+                encoding="utf-8",
+            )
+            log_path.return_value = str(path)
+            with AuthTestClient(self.app) as client:
+                for params in ({}, {"download": "true"}):
+                    response = client.get("/logs/go2rtc", params=params)
+                    self.assertEqual(response.status_code, 200)
+                    self.assertNotIn("xmUser", response.text)
+                    self.assertNotIn("xmPass", response.text)
+                    self.assertNotIn("u:pw", response.text)
+                    self.assertIn("user=*", response.text)
+                    self.assertIn("*:*@camera", response.text)
 
     ####################################################################################################################
     ###################################  GET /stats Endpoint   #########################################################

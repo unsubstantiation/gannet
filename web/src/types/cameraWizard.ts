@@ -1,80 +1,8 @@
 // Camera Wizard Types
-export const CAMERA_BRANDS = [
-  {
-    value: "dahua" as const,
-    label: "Dahua / Amcrest / EmpireTech",
-    template:
-      "rtsp://{username}:{password}@{host}:{port}/cam/realmonitor?channel=1&subtype=0",
-    exampleUrl:
-      "rtsp://admin:password@192.168.1.100:554/cam/realmonitor?channel=1&subtype=0",
-    dynamicTemplates: undefined,
-  },
-  {
-    value: "hikvision" as const,
-    label: "Hikvision / Uniview / Annke",
-    template:
-      "rtsp://{username}:{password}@{host}:{port}/Streaming/Channels/101",
-    exampleUrl:
-      "rtsp://admin:password@192.168.1.100:554/Streaming/Channels/101",
-    dynamicTemplates: undefined,
-  },
-  {
-    value: "ubiquiti" as const,
-    label: "Ubiquiti",
-    template: "rtsp://{username}:{password}@{host}:{port}/live/ch0",
-    exampleUrl: "rtsp://ubnt:password@192.168.1.100:554/live/ch0",
-    dynamicTemplates: undefined,
-  },
-  {
-    value: "reolink" as const,
-    label: "Reolink",
-    template: "dynamic",
-    dynamicTemplates: {
-      "http-flv":
-        "http://{host}/flv?port=1935&app=bcs&stream=channel0_main.bcs&user={username}&password={password}",
-      rtsp: "rtsp://{username}:{password}@{host}:{port}/Preview_01_main",
-    },
-    exampleUrl:
-      "http://192.168.1.100/flv?port=1935&app=bcs&stream=channel0_main.bcs&user=admin&password=password or rtsp://admin:password@192.168.1.100:554/Preview_01_main",
-  },
-  {
-    value: "axis" as const,
-    label: "Axis",
-    template: "rtsp://{username}:{password}@{host}:{port}/axis-media/media.amp",
-    exampleUrl: "rtsp://root:password@192.168.1.100:554/axis-media/media.amp",
-    dynamicTemplates: undefined,
-  },
-  {
-    value: "tplink" as const,
-    label: "TP-Link",
-    template: "rtsp://{username}:{password}@{host}:{port}/stream1",
-    exampleUrl: "rtsp://admin:password@192.168.1.100:554/stream1",
-    dynamicTemplates: undefined,
-  },
-  {
-    value: "foscam" as const,
-    label: "Foscam",
-    template: "rtsp://{username}:{password}@{host}:{port}/videoMain",
-    exampleUrl: "rtsp://admin:password@192.168.1.100:88/videoMain",
-    dynamicTemplates: undefined,
-  },
-  {
-    value: "other" as const,
-    label: "Other",
-    template: "",
-    exampleUrl: "rtsp://username:password@host:port/path",
-    dynamicTemplates: undefined,
-  },
-] as const;
+import type { CameraBrand } from "./cameraBrands";
 
-export const CAMERA_BRAND_VALUES = CAMERA_BRANDS.map(
-  (brand) => brand.value,
-) as unknown as [
-  (typeof CAMERA_BRANDS)[number]["value"],
-  ...(typeof CAMERA_BRANDS)[number]["value"][],
-];
-
-export type CameraBrand = (typeof CAMERA_BRANDS)[number]["value"];
+export type { CameraBrand } from "./cameraBrands";
+export { CAMERA_BRANDS, CAMERA_BRAND_VALUES } from "./cameraBrands";
 
 export type StreamRole = "detect" | "record" | "record_sub" | "audio";
 
@@ -110,7 +38,11 @@ export type WizardFormData = {
   host?: string;
   username?: string;
   password?: string;
+  /** Optional wizard-only model guidance; not written to camera configuration. */
+  cameraModel?: string;
   brandTemplate?: CameraBrand;
+  brandStreamProfile?: string;
+  brandChannel?: string;
   reolinkProtocol?: "http-flv" | "rtsp" | null; // null when detection failed
   customUrl?: string;
   streams?: StreamConfig[];
