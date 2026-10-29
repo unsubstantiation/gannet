@@ -146,10 +146,6 @@
       "label": "文字起こし",
       "aria": "音声文字起こしをリクエスト"
     },
-    "submitToPlus": {
-      "label": "Frigate+ に送信",
-      "aria": "Frigate Plus に送信"
-    },
     "viewInHistory": {
       "label": "履歴で表示",
       "aria": "履歴で表示"

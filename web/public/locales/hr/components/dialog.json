@@ -9,23 +9,6 @@
     }
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "Pošalji u Frigate+",
-        "desc": "Objekti u lokacijama koje želiš izbjeći nisu lažno pozitivni. Slanjem njih kao lažno pozitivnih će zbuniti model."
-      },
-      "review": {
-        "question": {
-          "label": "Potvrdi oznaku za Frigate Plus",
-          "ask_a": "Da li je ovaj objekt <code>{{label}}</code>?",
-          "ask_an": "Da li je ovaj objekt <code>{{label}}</code>?",
-          "ask_full": "Da li je ovaj objekt <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?"
-        },
-        "state": {
-          "submitted": "Poslano"
-        }
-      }
-    },
     "video": {
       "viewInHistory": "Pogledaj u povijesti"
     }

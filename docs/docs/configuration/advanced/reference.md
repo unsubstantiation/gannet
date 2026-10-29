@@ -61,7 +61,7 @@ mqtt:
   password: "{GANNET_MQTT_PASSWORD}"
 ```
 
-`FRIGATE_*` substitutions come from the process environment, `secrets.yaml`, then `environment_vars`. Security-sensitive startup controls such as `PLUS_API_KEY` and `GO2RTC_ALLOW_ARBITRARY_EXEC` must be in the process or Windows service environment.
+`FRIGATE_*` substitutions come from the process environment, `secrets.yaml`, then `environment_vars`. The security-sensitive `GO2RTC_ALLOW_ARBITRARY_EXEC` startup control must be in the process or Windows service environment.
 
 ## Web, TLS, and authentication
 
@@ -130,7 +130,7 @@ models:
     model_type: yolo-generic
 ```
 
-Each model needs at least one device, all devices for a model must use the same detector, and scene names must be unique. ONNX models require an explicit path. Upstream Frigate+ uses `path: plus://<model-id>` and fills model metadata automatically.
+Each model needs at least one device, all devices for a model must use the same detector, and scene names must be unique. ONNX and OpenVINO models require an explicit local path and compatible model settings.
 
 ## FFmpeg and cameras
 

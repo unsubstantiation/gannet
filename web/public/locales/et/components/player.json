@@ -2,11 +2,6 @@
   "noRecordingsFoundForThisTime": "Hetkel ei leidu ühtegi salvestust",
   "noPreviewFound": "Eelvaadet ei leidu",
   "noPreviewFoundFor": "{{cameraName}} kaamera eelvaadet ei leidu",
-  "submitFrigatePlus": {
-    "submit": "Saada",
-    "title": "Kas saadad selle kaadri Frigate+ teenusesse?",
-    "previewError": "Hetktõmmise eelvaate laadimine ei õnnestu. Salvestus ei pruugi olla hetkel saadaval."
-  },
   "stats": {
     "streamType": {
       "title": "Voogedastuse tüüp:",
@@ -35,11 +30,8 @@
     "desc": "„{{cameraName}}“ <code>detect</code>-tüüpi voogedastusest pole tulnud ühtegi kaadrit. Täpsemat teavet leiad vealogidest"
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Kaadri saatmine Frigate+ teenusesse õnnestus"
-    },
+    "success": {},
     "error": {
-      "submitFrigatePlusFailed": "Kaadri saatmine Frigate+ teenusesse ei õnnestunud",
       "playRecordingsFailed": "Salvestiste esitamine ei õnnestunud (viga {{code}}): {{message}}"
     }
   },

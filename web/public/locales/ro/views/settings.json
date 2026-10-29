@@ -7,7 +7,6 @@
     "motionTuner": "Reglaj Mișcare - Gannet",
     "object": "Depanare - Gannet",
     "general": "Setări interfață - Gannet",
-    "frigatePlus": "Setări Frigate+ - Gannet",
     "enrichments": "Setări Îmbunătățiri - Gannet",
     "cameraManagement": "Gestionare Camere - Gannet",
     "cameraReview": "Setări Review Cameră - Gannet",
@@ -26,7 +25,6 @@
     "debug": "Depanare",
     "users": "Utilizatori",
     "notifications": "Notificări",
-    "frigateplus": "Frigate+",
     "triggers": "Declanșatori",
     "roles": "Roluri",
     "cameraManagement": "Gestionare cameră",
@@ -709,64 +707,6 @@
     "unsavedChanges": "Modificări de notificări nesalvate",
     "title": "Notificări",
     "cancelSuspension": "Anulează Suspendarea"
-  },
-  "frigatePlus": {
-    "apiKey": {
-      "plusLink": "Citește mai multe despre Frigate+",
-      "desc": "Cheia API Frigate+ permite integrarea cu serviciul Frigate+.",
-      "validated": "Cheia API Frigate+ a fost detectată și validată",
-      "title": "Cheie API Frigate+",
-      "notValidated": "Cheia API Frigate+ nu este detectată sau validată"
-    },
-    "snapshotConfig": {
-      "title": "Configurare snapshot-uri",
-      "table": {
-        "snapshots": "Snapshot-uri",
-        "camera": "Cameră"
-      },
-      "cleanCopyWarning": "Unele camere au snapshot-urile dezactivate",
-      "desc": "Trimiterea către Frigate+ necesită ca snapshot-urile să fie activate în configurația ta."
-    },
-    "modelInfo": {
-      "title": "Informații Model",
-      "supportedDetectors": "Detectoare Suportate",
-      "plusModelType": {
-        "baseModel": "Model de Bază",
-        "userModel": "Reglat fin"
-      },
-      "loadingAvailableModels": "Se încarcă modelele disponibile…",
-      "modelSelect": "Poți selecta modelele tale disponibile pe Frigate+ aici. Reține că pot fi selectate doar modelele compatibile cu configurația actuală a detectorului.",
-      "baseModel": "Model de Bază",
-      "loading": "Se încarcă informațiile despre model…",
-      "error": "Eroare la încărcarea informațiilor despre model",
-      "availableModels": "Modele Frigate+ disponibile",
-      "modelType": "Tip Model",
-      "trainDate": "Data Antrenării",
-      "cameras": "Camere",
-      "noModelLoaded": "Niciun model Frigate+ nu este încărcat în prezent.",
-      "selectModel": "Selectează un model",
-      "noModelsAvailable": "Niciun model disponibil",
-      "filter": {
-        "ariaLabel": "Filtrează modelele după tip",
-        "baseModels": "Modele de bază",
-        "fineTunedModels": "Modele optimizate"
-      }
-    },
-    "toast": {
-      "error": "Eroare la salvarea modificărilor de config: {{errorMessage}}",
-      "success": "Setările Frigate+ au fost salvate. Repornește Gannet pentru a aplica modificările."
-    },
-    "restart_required": "Repornire necesară (modelul Frigate+ a fost schimbat)",
-    "unsavedChanges": "Modificări Frigate+ nesalvate",
-    "title": "Setări Frigate+",
-    "description": "Frigate+ este un serviciu pe bază de abonament care oferă funcții suplimentare, inclusiv posibilitatea de a folosi modele personalizate de detecție obiecte, antrenate pe propriile date. Poți gestiona setările modelului Frigate+ aici.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Model Actual",
-      "otherModels": "Alte Modele",
-      "configuration": "Configurație"
-    },
-    "changeInDetectorsAndModel": "Schimbă modelul"
   },
   "motionDetectionTuner": {
     "unsavedChanges": "Modificări nesalvate la reglajul de mișcare ({{camera}})",
@@ -2099,13 +2039,6 @@
       "unrecognized": "Acest model este configurat pentru hardware care nu a fost găsit pe acest sistem: {{devices}}",
       "description": "Hardware-ul pe care acest model își rulează detecția.",
       "detectorCountDescription": "Câte procese de detecție să ruleze pe acest hardware. Mai mulți detectori fac față mai multor camere, cu consum suplimentar de memorie."
-    },
-    "tabs": {
-      "plus": "Frigate+",
-      "custom": "Model personalizat"
-    },
-    "plusModel": {
-      "noModelSelected": "Selectează un model Frigate+"
     },
     "scenes": {
       "default": "Implicit"

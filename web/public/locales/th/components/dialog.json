@@ -56,22 +56,6 @@
     "description": "Gannet จะหยุดทำงานชั่วขณะในระหว่างรีสตาร์ท"
   },
   "explore": {
-    "plus": {
-      "review": {
-        "question": {
-          "ask_full": "วัตถุนี้คือ <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?",
-          "label": "ยืนยันหมวดหมู่นี้สําหรับ Frigate+",
-          "ask_a": "วัตถุนี้คือ <code>{{label}}</code>?",
-          "ask_an": "วัตถุนี้คือ <code>{{label}}</code>?"
-        },
-        "state": {
-          "submitted": "ส่งเรียบร้อย"
-        }
-      },
-      "submitToPlus": {
-        "label": "ส่งไปยัง Frigate+"
-      }
-    },
     "video": {
       "viewInHistory": "ดูประวัติ"
     }

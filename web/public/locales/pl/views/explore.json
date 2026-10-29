@@ -139,10 +139,6 @@
       "label": "Znajdź podobne",
       "aria": "Znajdź podobne śledzone obiekty"
     },
-    "submitToPlus": {
-      "label": "Prześlij do Frigate+",
-      "aria": "Prześlij do Frigate Plus"
-    },
     "viewInHistory": {
       "label": "Wyświetl w Historii",
       "aria": "Wyświetl w Historii"

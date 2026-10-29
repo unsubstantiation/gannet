@@ -53,7 +53,6 @@ from gannet.jobs.media_sync import (
     start_media_sync_job,
 )
 from gannet.models import Event, Timeline
-from gannet.plus import load_plus_model_info
 from gannet.stats.prometheus import get_metrics, update_metrics
 from gannet.types import JobStatusTypesEnum
 from gannet.util.builtin import (
@@ -406,28 +405,12 @@ def config(request: Request):
 
     _redact_go2rtc_credentials(config["go2rtc"])
 
-    config["plus"] = {"enabled": request.app.frigate_config.plus_api.is_active()}
-
     for index, model in enumerate(config_obj.models):
         model_dict = config["models"][index]
         model_dict["colormap"] = model.colormap
         model_dict["all_attributes"] = model.all_attributes
         model_dict["non_logo_attributes"] = model.non_logo_attributes
         model_dict["labelmap"] = model.merged_labelmap
-
-        # report the configured reference rather than the resolved cache path,
-        # so saving the config back doesn't lose the upstream Frigate+ model
-        if model.plus_id:
-            model_dict["path"] = f"plus://{model.plus_id}"
-
-        if not config["plus"]["enabled"]:
-            continue
-
-        # Add model plus data if plus is enabled
-        model_dict["plus"] = None
-
-        if model.path:
-            model_dict["plus"] = load_plus_model_info(os.path.basename(model.path))
 
     return JSONResponse(content=config)
 
@@ -1657,51 +1640,6 @@ def get_audio_labels(request: Request):
         labels.update(camera.audio.labelmap)
 
     return JSONResponse(content=labels)
-
-
-@router.get("/plus/models", dependencies=[Depends(allow_any_authenticated())])
-def plusModels(request: Request, filterByCurrentModelDetector: bool = False):
-    if not request.app.frigate_config.plus_api.is_active():
-        return JSONResponse(
-            content=({"success": False, "message": "upstream Frigate+ is not enabled"}),
-            status_code=400,
-        )
-
-    models: dict[Any, Any] = request.app.frigate_config.plus_api.get_models()
-
-    if not models["list"]:
-        return JSONResponse(
-            content=({"success": False, "message": "No models found"}),
-            status_code=400,
-        )
-
-    modelList = models["list"]
-
-    config: FrigateConfig = request.app.frigate_config
-    primary_model = config.primary_model
-
-    # current model type
-    modelType = primary_model.model_type
-
-    # current detectorType for comparing to supportedDetectors
-    detectorType = config.devices_for_model(primary_model)[0].detector
-
-    validModels = []
-
-    for model in sorted(
-        filter(
-            lambda m: (
-                not filterByCurrentModelDetector
-                or (detectorType in m["supportedDetectors"] and modelType in m["type"])
-            ),
-            modelList,
-        ),
-        key=(lambda m: m["trainDate"]),
-        reverse=True,
-    ):
-        validModels.append(model)
-
-    return JSONResponse(content=validModels)
 
 
 @router.get(

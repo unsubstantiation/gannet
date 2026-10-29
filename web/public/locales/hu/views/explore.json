@@ -5,10 +5,6 @@
       "label": "Video letöltése",
       "aria": "Video letöltése"
     },
-    "submitToPlus": {
-      "aria": "Küldés a Frigate Plus-nak",
-      "label": "Küldés a Frigate+-nak"
-    },
     "deleteTrackedObject": {
       "label": "Követett tárgy törlése"
     },

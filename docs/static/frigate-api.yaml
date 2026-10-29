@@ -3231,36 +3231,6 @@ paths:
         - frigateAdminAuth: []
       x-required-role: admin
       description: '**Access:** Admin role required.'
-  /plus/models:
-    get:
-      tags:
-        - App
-      summary: Plusmodels
-      operationId: plusModels_plus_models_get
-      parameters:
-        - name: filterByCurrentModelDetector
-          in: query
-          required: false
-          schema:
-            type: boolean
-            default: false
-            title: Filterbycurrentmodeldetector
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-      security:
-        - frigateUserAuth: []
-      x-required-role: any
-      description: '**Access:** Any authenticated user.'
   /recognized_license_plates:
     get:
       tags:
@@ -4751,14 +4721,6 @@ paths:
               - type: 'null'
             default: all
             title: Recognized License Plate
-        - name: is_submitted
-          in: query
-          required: false
-          schema:
-            anyOf:
-              - type: integer
-              - type: 'null'
-            title: Is Submitted
         - name: min_length
           in: query
           required: false
@@ -5045,14 +5007,6 @@ paths:
               - type: boolean
               - type: 'null'
             title: Has Snapshot
-        - name: is_submitted
-          in: query
-          required: false
-          schema:
-            anyOf:
-              - type: boolean
-              - type: 'null'
-            title: Is Submitted
         - name: timezone
           in: query
           required: false
@@ -5300,80 +5254,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenericResponse'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-      security:
-        - frigateAdminAuth: []
-      x-required-role: admin
-  /events/{event_id}/plus:
-    post:
-      tags:
-        - Events
-      summary: Send event to upstream Frigate+
-      description: |-
-        **Access:** Admin role required.
-
-        Sends an event to upstream Frigate+.
-            Returns a success message or an error if the event is not found.
-      operationId: send_to_plus_events__event_id__plus_post
-      parameters:
-        - name: event_id
-          in: path
-          required: true
-          schema:
-            type: string
-            title: Event Id
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SubmitPlusBody'
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EventUploadPlusResponse'
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-      security:
-        - frigateAdminAuth: []
-      x-required-role: admin
-  /events/{event_id}/false_positive:
-    put:
-      tags:
-        - Events
-      summary: Submit false positive to upstream Frigate+
-      description: |-
-        **Access:** Admin role required.
-
-        Submit an event as a false positive to upstream Frigate+.
-            This endpoint is the same as the standard upstream Frigate+ submission endpoint,
-            but is specifically for marking an event as a false positive.
-      operationId: false_positive_events__event_id__false_positive_put
-      parameters:
-        - name: event_id
-          in: path
-          required: true
-          schema:
-            type: string
-            title: Event Id
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EventUploadPlusResponse'
         '422':
           description: Validation Error
           content:
@@ -6215,44 +6095,6 @@ paths:
           schema:
             type: integer
             title: Height
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
-        '422':
-          description: Validation Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-      security:
-        - frigateUserAuth: []
-      x-required-role: camera
-      description: '**Access:** Authenticated user with access to the referenced camera.'
-  /{camera_name}/plus/{frame_time}:
-    post:
-      tags:
-        - Media
-      summary: Submit Recording Snapshot To Plus
-      operationId:
-        submit_recording_snapshot_to_plus__camera_name__plus__frame_time__post
-      parameters:
-        - name: camera_name
-          in: path
-          required: true
-          schema:
-            anyOf:
-              - type: string
-              - type: 'null'
-            title: Camera Name
-        - name: frame_time
-          in: path
-          required: true
-          schema:
-            type: string
-            title: Frame Time
       responses:
         '200':
           description: Successful Response
@@ -8661,11 +8503,6 @@ components:
         retain_indefinitely:
           type: boolean
           title: Retain Indefinitely
-        plus_id:
-          anyOf:
-            - type: string
-            - type: 'null'
-          title: Plus Id
         model_hash:
           anyOf:
             - type: string
@@ -8699,25 +8536,11 @@ components:
         - has_clip
         - has_snapshot
         - retain_indefinitely
-        - plus_id
         - model_hash
         - detector_type
         - model_type
         - data
       title: EventResponse
-    EventUploadPlusResponse:
-      properties:
-        success:
-          type: boolean
-          title: Success
-        plus_id:
-          type: string
-          title: Plus Id
-      type: object
-      required:
-        - success
-        - plus_id
-      title: EventUploadPlusResponse
     EventsAttributesBody:
       properties:
         attributes:
@@ -9770,14 +9593,6 @@ components:
         - message
       title: StartExportResponse
       description: Response model for starting an export.
-    SubmitPlusBody:
-      properties:
-        include_annotation:
-          type: integer
-          title: Include Annotation
-          default: 1
-      type: object
-      title: SubmitPlusBody
     ToolExecuteRequest:
       properties:
         tool_name:

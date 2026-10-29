@@ -5,7 +5,6 @@
     "cameraManagement": "Upravljaj kamerama - Gannet",
     "masksAndZones": "Uređivač maski i zona - Gannet",
     "general": "Postavke sučelja - Gannet",
-    "frigatePlus": "Frigate+ postavke - Gannet",
     "notifications": "Postavke notifikacija - Gannet",
     "enrichments": "Postavke obogaćivanja - Gannet",
     "cameraReview": "Postavke Pregleda Kamere - Gannet",
@@ -23,8 +22,7 @@
     "motionTuner": "Podešivač pokreta",
     "debug": "Debug",
     "roles": "Uloga",
-    "notifications": "Obavijesti",
-    "frigateplus": "Frigate+"
+    "notifications": "Obavijesti"
   },
   "dialog": {
     "unsavedChanges": {
@@ -898,48 +896,6 @@
       "error": {
         "registerFailed": "Neuspješno spremanje registracije obavijesti."
       }
-    }
-  },
-  "frigatePlus": {
-    "title": "Frigate+ postavke",
-    "apiKey": {
-      "title": "Frigate+ API ključ",
-      "validated": "Frigate+ API ključ je detektiran i validiran",
-      "notValidated": "Frigate+ API ključ nije detektiran ili nije validiran",
-      "desc": "Frigate+ API ključ omogućuje integraciju s Frigate+ uslugom.",
-      "plusLink": "Pročitajte više o Frigate+"
-    },
-    "snapshotConfig": {
-      "title": "Konfiguracija snimaka",
-      "desc": "Slanje na Frigate+ zahtijeva da su u tvojoj konfiguraciji omogućeni i snapshotovi i <code>clean_copy</code> snapshotovi.",
-      "cleanCopyWarning": "Neke kamere imaju omogućene snimke, ali je čista kopija onemogućena. Morate omogućiti <code>clean_copy</code> u konfiguraciji za snimke da biste mogli slati slike s tih kamera na Frigate+.",
-      "table": {
-        "camera": "Kamera",
-        "snapshots": "Snimke"
-      }
-    },
-    "modelInfo": {
-      "title": "Informacije o modelu",
-      "modelType": "Tip modela",
-      "trainDate": "Datum treniranja",
-      "baseModel": "Osnovni model",
-      "plusModelType": {
-        "baseModel": "Osnovni model",
-        "userModel": "Fino podešen"
-      },
-      "supportedDetectors": "Podržani detektori",
-      "cameras": "Kamere",
-      "loading": "Učitavanje informacija o modelu…",
-      "error": "Neuspješno učitavanje informacije o modelu",
-      "availableModels": "Dostupni modeli",
-      "loadingAvailableModels": "Učitavanje dostupnih modela…",
-      "modelSelect": "Dostupne modele na Frigate+ možete odabrati ovdje. Imajte na umu da se mogu odabrati samo modeli kompatibilni s vašom trenutnom konfiguracijom detektora."
-    },
-    "unsavedChanges": "Nespremljene promjene postavki Frigate+",
-    "restart_required": "Potreban je restart (promijenjen model Frigate+)",
-    "toast": {
-      "success": "Frigate+ postavke su spremljene. Ponovno pokrenite Gannet da primijenite promjene.",
-      "error": "Nije uspjelo spremiti promjene konfiguracije: {{errorMessage}}"
     }
   },
   "triggers": {

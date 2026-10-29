@@ -20,11 +20,6 @@
     },
     "decodedFrames": "Gedecodeerde frames:"
   },
-  "submitFrigatePlus": {
-    "title": "Dit frame indienen bij Frigate+?",
-    "submit": "Indienen",
-    "previewError": "Het was niet mogelijk om de snapshot preview te laden. De opname is mogelijk niet beschikbaar op dit moment."
-  },
   "streamOffline": {
     "title": "Stream is Offline",
     "desc": "Er zijn geen frames ontvangen in de <code>detect</code>-stream van {{cameraName}}, controleer de error logs"
@@ -33,11 +28,8 @@
   "noPreviewFoundFor": "Geen voorbeeld gevonden voor {{cameraName}}",
   "livePlayerRequiredIOSVersion": "Voor dit type livestream is iOS 17.1 of hoger vereist.",
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Frame succesvol ingediend bij Frigate+"
-    },
+    "success": {},
     "error": {
-      "submitFrigatePlusFailed": "Het is niet gelukt om een frame naar Frigate+ te sturen",
       "playRecordingsFailed": "Kan opnames niet afspelen (fout {{code}}): {{message}}"
     }
   },

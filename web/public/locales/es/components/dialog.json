@@ -10,26 +10,6 @@
     "description": "Esto detendrá brevemente Gannet mientras se reinicia."
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "Enviar a Frigate+",
-        "desc": "Los objetos en ubicaciones que deseas evitar no son falsos positivos. Enviarlos como falsos positivos confundirá al modelo."
-      },
-      "review": {
-        "state": {
-          "submitted": "Enviado"
-        },
-        "question": {
-          "label": "Confirmar esta etiqueta para Frigate Plus",
-          "ask_a": "¿Es este objeto un <code>{{label}}</code>?",
-          "ask_an": "¿Es este objeto un <code>{{label}}</code>?",
-          "ask_full": "¿Es este objeto un <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?"
-        },
-        "toast": {
-          "error": "No se pudo enviar a Frigate+. Verifique su conexión de red e inténtelo de nuevo."
-        }
-      }
-    },
     "video": {
       "viewInHistory": "Ver en el historial"
     }

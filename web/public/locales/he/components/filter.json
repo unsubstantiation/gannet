@@ -1,10 +1,6 @@
 {
   "filter": "מסנן",
   "features": {
-    "submittedToFrigatePlus": {
-      "tips": "עליך תחילה לסנן לפי אובייקטים במעקב שיש להם תמונת מצב.<br /><br />לא ניתן לשלוח ל-Frigate+ אובייקטים במעקב ללא תמונת מצב.",
-      "label": "העלאה ל- +Gannet"
-    },
     "label": "תכונות",
     "hasVideoClip": "קיים סרטון",
     "hasSnapshot": "קיימת לכידת תמונה"

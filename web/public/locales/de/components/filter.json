@@ -35,11 +35,7 @@
   "features": {
     "label": "Eigenschaften",
     "hasSnapshot": "Hat einen Schnappschuss",
-    "hasVideoClip": "Hat einen Video-Clip",
-    "submittedToFrigatePlus": {
-      "label": "Eingereicht bei Frigate+",
-      "tips": "Du musst zuerst nach deine erkannten Objekten, die einen Schnappschuss haben, filtern.<br /><br />Erkante Objekte ohne Schnappschuss können nicht zu Frigate+ übermittelt werden."
-    }
+    "hasVideoClip": "Hat einen Video-Clip"
   },
   "score": "Ergebnis",
   "estimatedSpeed": "Geschätzte Geschwindigkeit ({{unit}})",

@@ -9,7 +9,6 @@
     "enrichments": "Pengaturan Pengayaan - Gannet",
     "cameraManagement": "Kelola Kamera - Gannet",
     "cameraReview": "Pengaturan Tinjauan Kamera - Gannet",
-    "frigatePlus": "Pengaturan Frigate+ - Gannet",
     "notifications": "Pengaturan Notifikasi - Gannet",
     "globalConfig": "Konfigurasi Global - Gannet",
     "cameraConfig": "Konfigurasi Kamera - Gannet",
@@ -27,7 +26,6 @@
     "triggers": "Pemicu",
     "users": "Pengguna",
     "roles": "Peran",
-    "frigateplus": "Frigate+",
     "masksAndZones": "Masker / Zona",
     "debug": "Debug",
     "general": "Umum",
@@ -1306,64 +1304,6 @@
       }
     }
   },
-  "frigatePlus": {
-    "title": "Pengaturan Frigate+",
-    "description": "Frigate+ adalah layanan berlangganan yang menyediakan akses ke fitur dan kemampuan tambahan untuk instance Gannet Anda, termasuk kemampuan menggunakan model deteksi objek kustom yang dilatih dengan data Anda sendiri. Anda dapat mengelola pengaturan model Frigate+ Anda di sini.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Model Saat Ini",
-      "otherModels": "Model Lainnya",
-      "configuration": "Konfigurasi"
-    },
-    "apiKey": {
-      "title": "Kunci API Frigate+",
-      "validated": "Kunci API Frigate+ terdeteksi dan tervalidasi",
-      "notValidated": "Kunci API Frigate+ tidak terdeteksi atau tidak tervalidasi",
-      "desc": "Kunci API Frigate+ memungkinkan integrasi dengan layanan Frigate+.",
-      "plusLink": "Baca lebih lanjut tentang Frigate+"
-    },
-    "snapshotConfig": {
-      "title": "Konfigurasi Cuplikan",
-      "desc": "Mengirim ke Frigate+ mengharuskan cuplikan diaktifkan dalam konfigurasi Anda.",
-      "cleanCopyWarning": "Beberapa kamera menonaktifkan cuplikan",
-      "table": {
-        "camera": "Kamera",
-        "snapshots": "Cuplikan"
-      }
-    },
-    "modelInfo": {
-      "title": "Informasi Model",
-      "modelType": "Tipe Model",
-      "trainDate": "Tanggal Pelatihan",
-      "baseModel": "Model Dasar",
-      "plusModelType": {
-        "baseModel": "Model Dasar",
-        "userModel": "Disetel Halus"
-      },
-      "supportedDetectors": "Detektor yang Didukung",
-      "cameras": "Kamera",
-      "loading": "Memuat informasi model…",
-      "error": "Gagal memuat informasi model",
-      "noModelLoaded": "Saat ini tidak ada model Frigate+ yang dimuat.",
-      "availableModels": "Model Frigate+ yang tersedia",
-      "loadingAvailableModels": "Memuat model yang tersedia…",
-      "selectModel": "Pilih model",
-      "noModelsAvailable": "Tidak ada model tersedia",
-      "filter": {
-        "ariaLabel": "Filter model berdasarkan tipe",
-        "baseModels": "Model Dasar",
-        "fineTunedModels": "Model yang Disetel Halus"
-      },
-      "modelSelect": "Model Frigate+ Anda yang tersedia dapat dipilih di sini. Perlu dicatat bahwa hanya model yang kompatibel dengan konfigurasi detektor Anda saat ini yang dapat dipilih."
-    },
-    "changeInDetectorsAndModel": "Ubah model",
-    "unsavedChanges": "Perubahan pengaturan Frigate+ yang belum disimpan",
-    "restart_required": "Perlu mulai ulang (model Frigate+ berubah)",
-    "toast": {
-      "success": "Pengaturan Frigate+ telah disimpan. Mulai ulang Gannet untuk menerapkan perubahan.",
-      "error": "Gagal menyimpan perubahan konfigurasi: {{errorMessage}}"
-    }
-  },
   "triggers": {
     "documentTitle": "Pemicu",
     "semanticSearch": {
@@ -2009,13 +1949,6 @@
       "description": "Perangkat keras tempat model ini menjalankan proses deteksi.",
       "detectorCountDescription": "Jumlah proses deteksi yang dijalankan pada perangkat keras ini. Lebih banyak detektor dapat menangani lebih banyak kamera, dengan konsekuensi penggunaan memori perangkat tambahan.",
       "unitsDescription": "Setiap unit menjalankan proses deteksinya sendiri. Unit yang sudah digunakan oleh model lain tidak dapat dipilih."
-    },
-    "tabs": {
-      "plus": "Frigate+",
-      "custom": "Model Kustom"
-    },
-    "plusModel": {
-      "noModelSelected": "Pilih model Frigate+"
     }
   }
 }

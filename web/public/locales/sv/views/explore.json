@@ -146,10 +146,6 @@
       "label": "Transkribera",
       "aria": "Begär ljudtranskribering"
     },
-    "submitToPlus": {
-      "label": "Skicka till Frigate+",
-      "aria": "Skicka till Frigate+"
-    },
     "viewInHistory": {
       "label": "Visa i historik",
       "aria": "Visa i historik"

@@ -10,26 +10,6 @@
     "description": "Gannet stoppas tillfälligt under omstarten."
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "Skicka till Frigate+",
-        "desc": "Objekt på platser du vill undvika är inte falska positiva resultat. Att skicka in dem som falska positiva resultat kommer att förvirra modellen."
-      },
-      "review": {
-        "question": {
-          "ask_a": "Är detta objekt en/ett <code>{{label}}</code>?",
-          "ask_an": "Är detta objekt en/ett <code>{{label}}</code>?",
-          "ask_full": "Är detta objekt en/ett <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?",
-          "label": "Bekräfta etiketten för Frigate+"
-        },
-        "state": {
-          "submitted": "Inskickad"
-        },
-        "toast": {
-          "error": "Misslyckades att skicka till Frigate+. Kontrollera din nätverksanslutning och prova igen."
-        }
-      }
-    },
     "video": {
       "viewInHistory": "Visa i historiken"
     }

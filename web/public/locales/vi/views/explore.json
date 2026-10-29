@@ -89,10 +89,6 @@
       "label": "Tìm đối tượng tương tự",
       "aria": "Tìm các đối tượng được theo dõi tương tự"
     },
-    "submitToPlus": {
-      "aria": "Gửi đến Frigate Plus",
-      "label": "Gửi đến Frigate+"
-    },
     "viewInHistory": {
       "label": "Xem trong Lịch sử",
       "aria": "Xem trong Lịch sử"

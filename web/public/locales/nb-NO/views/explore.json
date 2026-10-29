@@ -137,10 +137,6 @@
     "deleteTrackedObject": {
       "label": "Slett dette sporede objektet"
     },
-    "submitToPlus": {
-      "label": "Send til Frigate+",
-      "aria": "Send til Frigate Plus"
-    },
     "addTrigger": {
       "label": "Legg til utløser",
       "aria": "Legg til en utløser for dette sporede objektet"

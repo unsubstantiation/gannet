@@ -2,10 +2,6 @@
   "noRecordingsFoundForThisTime": "V danom čase nenájdená žiadna nahrávka",
   "noPreviewFound": "Náhľad nenájdený",
   "noPreviewFoundFor": "Žiadný náhľad nájdený pre {{cameraName}}",
-  "submitFrigatePlus": {
-    "title": "Odoslať tento rám na Frigate+?",
-    "submit": "Odoslať"
-  },
   "livePlayerRequiredIOSVersion": "Pre tento typ živého vysielania je potrebný systém iOS 17.1 alebo novší.",
   "streamOffline": {
     "title": "Streamujte Offline",
@@ -32,11 +28,7 @@
     "droppedFrameRate": "Frekvencia stratených snímok:"
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Snímok bol úspešne odoslaný službe Frigate+"
-    },
-    "error": {
-      "submitFrigatePlusFailed": "Nepodarilo sa odoslať snímku službe Frigate+"
-    }
+    "success": {},
+    "error": {}
   }
 }

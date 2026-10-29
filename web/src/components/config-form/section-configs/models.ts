@@ -67,7 +67,6 @@ const models: SectionConfigOverrides = {
       "*.colormap",
       "*.all_attributes",
       "*.non_logo_attributes",
-      "*.plus",
     ],
     uiSchema: {
       "ui:field": "ModelsField",

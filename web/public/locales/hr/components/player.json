@@ -1,9 +1,5 @@
 {
   "noRecordingsFoundForThisTime": "Nisu pronađene snimke za ovo vrijeme",
-  "submitFrigatePlus": {
-    "title": "Pošalji ovaj kadar u Frigate+?",
-    "submit": "Pošalji"
-  },
   "stats": {
     "streamType": {
       "short": "Vrsta",
@@ -32,11 +28,7 @@
     "desc": "Slike nisu primljene sa {{cameraName}} <code>detect</code> stream-a, provjeri logove"
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Kadar je uspješno poslan u Frigate+"
-    },
-    "error": {
-      "submitFrigatePlusFailed": "Neuspješno slanje kadra u Frigate+"
-    }
+    "success": {},
+    "error": {}
   }
 }

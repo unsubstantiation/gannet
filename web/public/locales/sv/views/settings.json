@@ -5,7 +5,6 @@
     "authentication": "Autentiseringsinställningar - Gannet",
     "masksAndZones": "Maskerings- och zonverktyg - Gannet",
     "enrichments": "Berikningsinställningar - Gannet",
-    "frigatePlus": "Frigate+-inställningar - Gannet",
     "notifications": "Aviseringsinställningar - Gannet",
     "motionTuner": "Rörelsejustering - Gannet",
     "object": "Felsökning - Gannet",
@@ -140,7 +139,6 @@
     "masksAndZones": "Masker och zoner",
     "users": "Användare",
     "notifications": "Aviseringar",
-    "frigateplus": "Frigate+",
     "enrichments": "Berikningar",
     "motionTuner": "Rörelsemottagare",
     "debug": "Felsökning",
@@ -650,48 +648,6 @@
     "management": {
       "title": "Hantering av visningsroller",
       "desc": "Hantera anpassade visningsroller och deras behörigheter för kameraåtkomst i den här Gannet-instansen."
-    }
-  },
-  "frigatePlus": {
-    "title": "Frigate+-inställningar",
-    "apiKey": {
-      "notValidated": "Frigate+-API-nyckeln kunde inte identifieras eller valideras",
-      "desc": "Frigate+ API-nyckeln möjliggör integration med Frigate+-tjänsten.",
-      "plusLink": "Läs mer om Frigate+",
-      "title": "Frigate+ API-nyckel",
-      "validated": "Frigate+-API-nyckeln har identifierats och validerats"
-    },
-    "snapshotConfig": {
-      "title": "Konfiguration av ögonblicksbilder",
-      "desc": "För att skicka till Frigate+ måste ögonblicksbilder vara aktiverade i konfigurationen.",
-      "cleanCopyWarning": "Ögonblicksbilder är inaktiverade för vissa kameror",
-      "table": {
-        "camera": "Kamera",
-        "snapshots": "Ögonblicksbilder"
-      }
-    },
-    "modelInfo": {
-      "title": "Modellinformation",
-      "modelType": "Modelltyp",
-      "trainDate": "Träningsdatum",
-      "baseModel": "Basmodell",
-      "plusModelType": {
-        "baseModel": "Basmodell",
-        "userModel": "Finjusterad"
-      },
-      "supportedDetectors": "Detektorer som stöds",
-      "cameras": "Kameror",
-      "loading": "Laddar modellinformation…",
-      "error": "Misslyckades med att ladda modellinformationen",
-      "availableModels": "Tillgängliga modeller",
-      "loadingAvailableModels": "Laddar tillgängliga modeller…",
-      "modelSelect": "Dina tillgängliga modeller på Frigate+ kan väljas här. Observera att endast modeller som är kompatibla med din nuvarande detektorkonfiguration kan väljas."
-    },
-    "unsavedChanges": "Osparade ändringar av inställningar för Frigate+",
-    "restart_required": "Omstart krävs eftersom Frigate+-modellen har ändrats",
-    "toast": {
-      "success": "Inställningarna för Frigate+ har sparats. Starta om Gannet för att tillämpa ändringarna.",
-      "error": "Kunde inte spara konfigurationsändringarna: {{errorMessage}}"
     }
   },
   "triggers": {

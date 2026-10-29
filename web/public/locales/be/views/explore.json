@@ -205,10 +205,6 @@
       "label": "Транскрыбіраваць",
       "aria": "Запытаць транскрыпцыю гуку"
     },
-    "submitToPlus": {
-      "label": "Адправіць у Frigate+",
-      "aria": "Адправіць у Frigate Plus"
-    },
     "viewInHistory": {
       "label": "Паказаць у гісторыі",
       "aria": "Паказаць у гісторыі"

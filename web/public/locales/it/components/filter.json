@@ -28,10 +28,6 @@
     "label": "Ripristina i filtri ai valori predefiniti"
   },
   "features": {
-    "submittedToFrigatePlus": {
-      "label": "Inviato a Frigate+",
-      "tips": "Devi prima filtrare gli oggetti tracciati che hanno un'istantanea.<br /><br />Gli oggetti tracciati senza istantanee non possono essere inviati a Frigate+."
-    },
     "hasSnapshot": "Contiene una istantanea",
     "hasVideoClip": "Contiene un filmato video",
     "label": "Caratteristiche"

@@ -10,26 +10,6 @@
     "description": "Это перезагрузки перезагрузит Gannet."
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "Отправить в Frigate+",
-        "desc": "Объекты в местах, которых вы хотите избежать, не являются ложными срабатываниями. Отправка их как ложных срабатываний запутает модель."
-      },
-      "review": {
-        "state": {
-          "submitted": "Отправлено"
-        },
-        "question": {
-          "ask_an": "Это объект — <code>{{label}}</code> ?",
-          "label": "Подтвердить эту метку для Frigate Plus",
-          "ask_a": "Это объект — <code>{{label}}</code>?",
-          "ask_full": "Это объект — <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?"
-        },
-        "toast": {
-          "error": "Не удалось подключиться к Frigate+. Пожалуйста, проверьте настройки сети и попробуйте еще раз."
-        }
-      }
-    },
     "video": {
       "viewInHistory": "Посмотреть в истории"
     }

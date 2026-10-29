@@ -1,25 +1,5 @@
 {
   "explore": {
-    "plus": {
-      "review": {
-        "question": {
-          "ask_a": "Чи є цей об'єкт <code>{{label}}</code>?",
-          "ask_full": "Чи є цей об'єкт <code>{{untranslatedLabel}}</code>{{translatedLabel}}?",
-          "label": "Підтвердіть цей ярлик для Frigate Plus",
-          "ask_an": "Це об'єкт – <code>{{label}}</code>?"
-        },
-        "state": {
-          "submitted": "Поданi"
-        },
-        "toast": {
-          "error": "Не вдалося підключитися до Frigate+. Будь ласка, перевірте налаштування мережі та спробуйте ще раз."
-        }
-      },
-      "submitToPlus": {
-        "label": "Надіслати да Frigate+",
-        "desc": "Об'єкти в місцях, які ви хочете уникнути, не є помилковими спрацьовуваннями. Подання їх як помилкових спрацьовувань заплутає модель."
-      }
-    },
     "video": {
       "viewInHistory": "Перегляд у історії"
     }

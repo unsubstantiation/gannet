@@ -67,7 +67,6 @@
     "notifications": "Апавяшчэнні",
     "triggers": "Трыгеры",
     "debug": "Адладка",
-    "frigateplus": "Frigate+",
     "maintenance": "Абслугоўванне",
     "mediaSync": "Сінхранізацыя медыя",
     "regionGrid": "Сетка рэгіёнаў"
@@ -84,7 +83,6 @@
     "general": "Налады інтэрфейсу - Gannet",
     "globalConfig": "Глабальная канфігурацыя - Gannet",
     "cameraConfig": "Канфігурацыя камеры - Gannet",
-    "frigatePlus": "Налады Frigate+ - Gannet",
     "detectorsAndModel": "Дэтэктары і мадэль - Gannet",
     "notifications": "Налады апавяшчэнняў - Gannet",
     "maintenance": "Абслугоўванне - Gannet",
@@ -1285,64 +1283,6 @@
       }
     }
   },
-  "frigatePlus": {
-    "title": "Налады Frigate+",
-    "description": "Frigate+ - гэта падпіска, якая дае доступ да дадатковых магчымасцей вашага асобніка Gannet, у тым ліку да ўласных мадэляў дэтэктавання аб'ектаў, навучаных на вашых даных. Тут можна кіраваць наладамі мадэлі Frigate+.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Бягучая мадэль",
-      "otherModels": "Іншыя мадэлі",
-      "configuration": "Канфігурацыя"
-    },
-    "apiKey": {
-      "title": "Ключ API Frigate+",
-      "validated": "Ключ API Frigate+ выяўлены і правераны",
-      "notValidated": "Ключ API Frigate+ не выяўлены або не правераны",
-      "desc": "Ключ API Frigate+ уключае інтэграцыю з сэрвісам Frigate+.",
-      "plusLink": "Падрабязней пра Frigate+"
-    },
-    "snapshotConfig": {
-      "title": "Канфігурацыя здымкаў",
-      "desc": "Каб адпраўляць у Frigate+, у канфігурацыі мусяць быць уключаны здымкі.",
-      "cleanCopyWarning": "У некаторых камер здымкі адключаны",
-      "table": {
-        "camera": "Камера",
-        "snapshots": "Здымкі"
-      }
-    },
-    "modelInfo": {
-      "title": "Звесткі пра мадэль",
-      "modelType": "Тып мадэлі",
-      "trainDate": "Дата навучання",
-      "baseModel": "Базавая мадэль",
-      "plusModelType": {
-        "baseModel": "Базавая мадэль",
-        "userModel": "Дадаткова наладжаная"
-      },
-      "supportedDetectors": "Падтрыманыя дэтэктары",
-      "cameras": "Камеры",
-      "loading": "Загрузка звестак пра мадэль…",
-      "error": "Не ўдалося загрузіць звесткі пра мадэль",
-      "noModelLoaded": "Зараз мадэль Frigate+ не загружана.",
-      "availableModels": "Даступныя мадэлі Frigate+",
-      "loadingAvailableModels": "Загрузка даступных мадэляў…",
-      "selectModel": "Выберыце мадэль",
-      "noModelsAvailable": "Няма даступных мадэляў",
-      "filter": {
-        "ariaLabel": "Фільтраваць мадэлі па тыпе",
-        "baseModels": "Базавыя мадэлі",
-        "fineTunedModels": "Дадаткова наладжаныя мадэлі"
-      },
-      "modelSelect": "Тут можна выбраць вашы даступныя мадэлі на Frigate+. Улічыце, што выбраць можна толькі мадэлі, сумяшчальныя з бягучай канфігурацыяй дэтэктара."
-    },
-    "changeInDetectorsAndModel": "Змяніць мадэль",
-    "unsavedChanges": "Незахаваныя змены налад Frigate+",
-    "restart_required": "Патрабуецца перазапуск (зменена мадэль Frigate+)",
-    "toast": {
-      "success": "Налады Frigate+ захаваны. Перазапусціце Gannet, каб прымяніць змены.",
-      "error": "Не ўдалося захаваць змены канфігурацыі: {{errorMessage}}"
-    }
-  },
   "triggers": {
     "documentTitle": "Трыгеры",
     "semanticSearch": {
@@ -2098,13 +2038,6 @@
       "unrecognized": "Гэтая мадэль наладжана для абсталявання, якога няма ў сістэме: {{devices}}",
       "description": "Абсталяванне, на якім гэтая мадэль выконвае дэтэктаванне.",
       "detectorCountDescription": "Колькі працэсаў дэтэктавання запускаць на гэтым абсталяванні. Большая колькасць дэтэктараў спраўляецца з большай колькасцю камер, але займае больш памяці прылады."
-    },
-    "tabs": {
-      "plus": "Frigate+",
-      "custom": "Свая мадэль"
-    },
-    "plusModel": {
-      "noModelSelected": "Выберыце мадэль Frigate+"
     },
     "scenes": {
       "default": "Прадвызначаная"

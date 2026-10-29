@@ -1344,8 +1344,7 @@
             "label": "Algılama donanımı"
         },
         "path": {
-            "label": "Özelleştirilmiş nesne algılayıcı model yolu",
-            "description": "Özelleştirilmiş algılama modeli dosya yolu (veya Frigate+ modelleri için plus://<model_kimliği>)."
+            "label": "Özelleştirilmiş nesne algılayıcı model yolu"
         },
         "labelmap_path": {
             "label": "Özelleştirilmiş nesne algılayıcı için etiket haritası (labelmap)",

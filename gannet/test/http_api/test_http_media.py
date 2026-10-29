@@ -2101,27 +2101,3 @@ class TestHttpMedia(BaseTestHttp):
 
         self.assertEqual(absent.status_code, 404)
         self.assertEqual(rounded_miss.status_code, 404)
-
-    def test_plus_snapshot_miss_returns_404_without_image_lookup(self):
-        with (
-            AuthTestClient(self.app) as client,
-            patch("gannet.api.media.get_image_from_recording") as image,
-        ):
-            response = client.post("/front_door/plus/1005")
-
-        self.assertEqual(response.status_code, 404)
-        image.assert_not_called()
-
-    def test_plus_snapshot_hit_uploads_image(self):
-        self._insert_recording("snapshot", 1000, 1010)
-
-        with (
-            AuthTestClient(self.app) as client,
-            patch("gannet.api.media.get_image_from_recording", return_value=b"png"),
-            patch("gannet.api.media.cv2.imdecode", return_value="frame"),
-            patch.object(self.app.frigate_config.plus_api, "upload_image") as upload,
-        ):
-            response = client.post("/front_door/plus/1005")
-
-        self.assertEqual(response.status_code, 200)
-        upload.assert_called_once_with("frame", "front_door")

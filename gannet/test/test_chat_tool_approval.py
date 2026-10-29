@@ -244,7 +244,6 @@ class DatabaseTestCase(unittest.TestCase):
             area=1,
             retain_indefinitely=False,
             ratio=1.0,
-            plus_id="",
             model_hash="",
             detector_type="",
             model_type="",

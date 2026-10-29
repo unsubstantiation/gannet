@@ -4,7 +4,6 @@
     "masksAndZones": "Maske ve Alan Düzenleyici - Gannet",
     "authentication": "Kimlik Doğrulama Ayarları - Gannet",
     "motionTuner": "Hareket İnce Ayarları - Gannet",
-    "frigatePlus": "Frigate+ Ayarları - Gannet",
     "object": "Hata Ayıklama - Gannet",
     "general": "Kullanıcı Arayüzü Ayarları – Gannet",
     "notifications": "Bildirim Ayarları - Gannet",
@@ -20,7 +19,6 @@
   "menu": {
     "masksAndZones": "Maskeler / Alanlar",
     "users": "Kullanıcılar",
-    "frigateplus": "Frigate+",
     "ui": "Arayüz",
     "notifications": "Bildirimler",
     "motionTuner": "Hareket ince ayarları",
@@ -665,64 +663,6 @@
     "active": "Bildirimler Aktif",
     "unsavedChanges": "Kaydedilmemiş bildirim ayar değişiklikleri",
     "unsavedRegistrations": "Kaydedilmemiş bildirim cihaz kayıtları"
-  },
-  "frigatePlus": {
-    "title": "Frigate+ Ayarları",
-    "apiKey": {
-      "title": "Frigate+ API Anahtarı",
-      "validated": "Frigate+ API anahtarınız algılandı ve doğrulandı",
-      "plusLink": "Frigate+ hakkında daha fazla bilgi edinin",
-      "notValidated": "Frigate+ API anahtarı algılanmadı veya doğrulanmadı",
-      "desc": "Frigate+ API anahtarı, Frigate+ hizmetiyle entegrasyonu sağlar."
-    },
-    "snapshotConfig": {
-      "title": "Anlık Fotoğraf Yapılandırması",
-      "table": {
-        "camera": "Kamera",
-        "snapshots": "Anlık Fotoğraflar"
-      },
-      "desc": "Frigate+'ya göndermek için yapılandırmanızda anlık fotoğrafların etkinleştirilmiş olması gerekir.",
-      "cleanCopyWarning": "Bazı kameralarda anlık fotoğraflar etkinleştirilmemiş"
-    },
-    "modelInfo": {
-      "error": "Model bilgileri yüklenemedi",
-      "loadingAvailableModels": "Kullanılabilir modeller yükleniyor…",
-      "loading": "Model bilgileri yükleniyor…",
-      "modelType": "Model Türü",
-      "availableModels": "Kullanılabilir Frigate+ modelleri",
-      "modelSelect": "Frigate+'daki kullanılabilir modelleriniz buradan seçilebilir. Yalnızca mevcut algılayıcı yapılandırmanızla uyumlu modellerin seçilebileceğini unutmayın.",
-      "baseModel": "Temel Model",
-      "title": "Model Bilgileri",
-      "trainDate": "Eğitim Tarihi",
-      "supportedDetectors": "Desteklenen Algılayıcılar",
-      "cameras": "Kameralar",
-      "plusModelType": {
-        "userModel": "İnce Ayarlanmış",
-        "baseModel": "Temel Model"
-      },
-      "noModelLoaded": "Herhangi bir Frigate+ modeli yüklenmemiş.",
-      "selectModel": "Bir model seçin",
-      "noModelsAvailable": "Hiç model yok",
-      "filter": {
-        "ariaLabel": "Modelleri türe göre filtrele",
-        "baseModels": "Temel Modeller",
-        "fineTunedModels": "İnce Ayarlanmış Modeller"
-      }
-    },
-    "toast": {
-      "success": "Frigate+ ayarları kaydedildi. Değişiklikleri uygulamak için Gannet'i yeniden başlatın.",
-      "error": "Yapılandırma değişiklikleri kaydedilemedi: {{errorMessage}}"
-    },
-    "restart_required": "Yeniden başlatma gerekli (Frigate+ modeli değiştirildi)",
-    "unsavedChanges": "Kaydedilmemiş Frigate+ ayar değişiklikleri",
-    "description": "Frigate+, Gannet kurulumunuz için ek özellikler ve becerilere erişim sağlayan bir abonelik hizmetidir. Kendi verinizle eğitilmiş nesne algılama modellerini kullanabilmek bu özelliklere dahildir. Frigate+ model ayarlarını buradan yönetebilirsiniz.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Mevcut Model",
-      "otherModels": "Diğer Modeller",
-      "configuration": "Yapılandırma"
-    },
-    "changeInDetectorsAndModel": "Modeli değiştir"
   },
   "enrichments": {
     "birdClassification": {
@@ -2074,13 +2014,6 @@
       "unrecognized": "Bu model bu sistemde bulunmayan donanım(lar) için yapılandırılmış: {{devices}}",
       "description": "Bu modelin algılama işlemlerini çalıştırdığı donanım.",
       "detectorCountDescription": "Bu donanımda çalışan algılama işlemi (process) sayısı. Daha fazla algılayıcı daha fazla kameraya yetişir; karşılığında fazladan aygıt hafızası harcar."
-    },
-    "tabs": {
-      "plus": "Frigate+",
-      "custom": "Özelleştirilmiş Model"
-    },
-    "plusModel": {
-      "noModelSelected": "Bir Frigate+ modeli seçin"
     },
     "scenes": {
       "default": "Varsayılan"

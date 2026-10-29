@@ -19,10 +19,6 @@
       "label": "Atrast līdzīgus",
       "aria": "Atrast līdzīgus izsekotos priekšmetus"
     },
-    "submitToPlus": {
-      "label": "Iesniegt Frigate+",
-      "aria": "Iesniegt Frigate Plus"
-    },
     "viewInHistory": {
       "label": "Atrast vēsturē"
     },

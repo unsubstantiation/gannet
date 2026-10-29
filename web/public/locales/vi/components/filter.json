@@ -10,10 +10,6 @@
     "count_other": "{{count}} nhãn"
   },
   "features": {
-    "submittedToFrigatePlus": {
-      "tips": "Trước tiên, bạn phải lọc các đối tượng được theo dõi có ảnh chụp nhanh.<br /><br />Không thể gửi các đối tượng được theo dõi không có ảnh chụp nhanh tới Frigate+.",
-      "label": "Đã gửi tới Frigate+"
-    },
     "label": "Tính năng",
     "hasSnapshot": "Có ảnh chụp nhanh",
     "hasVideoClip": "Có video clip"

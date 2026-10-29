@@ -121,10 +121,6 @@
       "aria": "Najdi podobne sledene objekte",
       "label": "Najdi podobne"
     },
-    "submitToPlus": {
-      "label": "Pošlji v Frigate+",
-      "aria": "Pošlji v Frigate Plus"
-    },
     "viewInHistory": {
       "label": "Ogled v zgodovini",
       "aria": "Ogled v zgodovini"

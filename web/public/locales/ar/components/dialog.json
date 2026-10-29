@@ -10,23 +10,6 @@
     "description": "هذا سيؤدي لإيقاف Gannet مؤقتا أثناء إعادة تشغيلها"
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "التقديم إلى Frigate+",
-        "desc": "الكائنات الموجودة في الأماكن التي تريد تجنبها ليست ضمن النتائج الإيجابية الخاطئة. إرسالها كنتائج إيجابية خاطئة سيؤدي إلى إرباك النموذج."
-      },
-      "review": {
-        "state": {
-          "submitted": "تم تقديمه"
-        },
-        "question": {
-          "label": "تأكد من صحة هذه التسمية لـ Frigate Plus",
-          "ask_a": "هل هذا الكائن هو <code>{{label}}</code>؟",
-          "ask_an": "هل هذا الكائن هو <code>{{label}}</code>؟",
-          "ask_full": "هل هذا الكائن هو <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?"
-        }
-      }
-    },
     "video": {
       "viewInHistory": "عرض في التاريخ"
     }

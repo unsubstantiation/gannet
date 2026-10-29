@@ -6,7 +6,6 @@
     "masksAndZones": "Masker- en zone-editor - Gannet",
     "object": "Foutopsporing Gannet",
     "general": "UI Instellingen - Gannet",
-    "frigatePlus": "Frigate+ Instellingen - Gannet",
     "notifications": "Meldingsinstellingen - Gannet",
     "enrichments": "Verrijkingsinstellingen - Gannet",
     "cameraManagement": "Camera's beheren - Gannet",
@@ -25,7 +24,6 @@
     "users": "Gebruikers",
     "notifications": "Meldingen",
     "cameras": "Camera-instellingen",
-    "frigateplus": "Frigate+",
     "enrichments": "Verrijkingen",
     "triggers": "Triggers",
     "roles": "Rollen",
@@ -619,64 +617,6 @@
     "suspended": "Meldingen onderbroken {{time}}",
     "unsavedChanges": "Niet-opgeslagen wijzigingen in meldingen",
     "unsavedRegistrations": "Niet-opgeslagen notificatieregistraties"
-  },
-  "frigatePlus": {
-    "title": "Frigate+ Instellingen",
-    "apiKey": {
-      "title": "Frigate+ API-sleutel",
-      "plusLink": "Lees meer over Frigate+",
-      "validated": "Frigate+ API-sleutel is gedetecteerd en gevalideerd",
-      "desc": "Met de Frigate+ API-sleutel is integratie met de Frigate+ service mogelijk.",
-      "notValidated": "Frigate+ API-sleutel wordt niet gedetecteerd of niet gevalideerd"
-    },
-    "snapshotConfig": {
-      "title": "Snapshot-configuratie",
-      "desc": "Om te verzenden naar Frigate+ moeten snapshots ingeschakeld zijn in je configuratie.",
-      "table": {
-        "camera": "Camera",
-        "snapshots": "Snapshots"
-      },
-      "cleanCopyWarning": "Sommige camera's hebben snapshots uitgeschakeld"
-    },
-    "modelInfo": {
-      "title": "Modelinformatie",
-      "modelType": "Type model",
-      "trainDate": "Trainingsdatum",
-      "baseModel": "Basismodel",
-      "cameras": "Camera's",
-      "error": "Het laden van modelinformatie is mislukt",
-      "loadingAvailableModels": "Beschikbare modellen laden…",
-      "modelSelect": "Je beschikbare modellen op Frigate+ kunnen hier worden geselecteerd. Houd er rekening mee dat alleen modellen die compatibel zijn met je huidige detectorconfiguratie geselecteerd kunnen worden.",
-      "supportedDetectors": "Ondersteunde detectoren",
-      "availableModels": "Beschikbare modellen",
-      "loading": "Modelinformatie laden…",
-      "plusModelType": {
-        "baseModel": "Basismodel",
-        "userModel": "Verfijnd"
-      },
-      "noModelLoaded": "Er is momenteel geen Frigate+-model geladen.",
-      "selectModel": "Selecteren a model",
-      "noModelsAvailable": "Geen modellen beschikbaar",
-      "filter": {
-        "ariaLabel": "Modellen filteren op type",
-        "baseModels": "Basismodellen",
-        "fineTunedModels": "Verfijnde modellen"
-      }
-    },
-    "toast": {
-      "success": "Frigate+ instellingen zijn opgeslagen. Herstart Gannet om de wijzigingen toe te passen.",
-      "error": "Configuratiewijzigingen konden niet worden opgeslagen: {{errorMessage}}"
-    },
-    "restart_required": "Herstart vereist (Frigate+ model gewijzigd)",
-    "unsavedChanges": "Niet-opgeslagen wijzigingen in Frigate+ instellingen",
-    "description": "Frigate+ is een abonnementsdienst die toegang biedt tot extra functies en mogelijkheden voor je Gannet-installatie, waaronder het gebruik van aangepaste objectdetectiemodellen die op je eigen gegevens zijn getraind. Je kunt je Frigate+-modelinstellingen hier beheren.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Huidig model",
-      "otherModels": "Andere modellen",
-      "configuration": "Configuratie"
-    },
-    "changeInDetectorsAndModel": "Van model wisselen"
   },
   "enrichments": {
     "semanticSearch": {

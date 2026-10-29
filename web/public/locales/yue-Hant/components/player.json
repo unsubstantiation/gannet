@@ -1,10 +1,6 @@
 {
   "noRecordingsFoundForThisTime": "此時間段內沒有錄影",
   "noPreviewFound": "找不到預覽",
-  "submitFrigatePlus": {
-    "submit": "提交",
-    "title": "提交此畫面至 Frigate+？"
-  },
   "streamOffline": {
     "desc": "{{cameraName}} 的 <code>detect</code> 串流未接收到任何畫面，請檢查錯誤日誌",
     "title": "串流已離線"
@@ -30,12 +26,8 @@
     }
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "成功提交畫面至 Frigate+"
-    },
-    "error": {
-      "submitFrigatePlusFailed": "提交畫面至 Frigate+ 失敗"
-    }
+    "success": {},
+    "error": {}
   },
   "noPreviewFoundFor": "找不到 {{cameraName}} 的預覽",
   "livePlayerRequiredIOSVersion": "此串流類型需要 iOS 17.1 或以上版本。"

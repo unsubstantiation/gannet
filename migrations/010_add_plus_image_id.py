@@ -23,7 +23,15 @@ Some examples (model - class or model name)::
 
 import peewee as pw
 
-from gannet.models import Event
+
+# Historical schema only: do not mutate the current Event model on a fresh
+# installation. Existing rows and their legacy column remain untouched.
+class Event(pw.Model):
+    plus_id = pw.CharField(max_length=30, null=True)
+
+    class Meta:
+        table_name = "event"
+
 
 SQL = pw.SQL
 
@@ -36,4 +44,4 @@ def migrate(migrator, database, fake=False, **kwargs):
 
 
 def rollback(migrator, database, fake=False, **kwargs):
-    migrator.remove_fields(Event, ["plus_id"])
+    migrator.remove_fields(Event, "plus_id")

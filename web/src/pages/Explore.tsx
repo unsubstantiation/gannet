@@ -28,6 +28,38 @@ import { useDateLocale } from "@/hooks/use-date-locale";
 
 const API_LIMIT = 25;
 
+// URLs and saved searches can outlive the filters that created them. Ignore
+// unsupported keys rather than showing a filter that no longer affects results.
+const SEARCH_FILTER_KEYS: Record<keyof SearchFilter, true> = {
+  query: true,
+  cameras: true,
+  labels: true,
+  sub_labels: true,
+  attributes: true,
+  recognized_license_plate: true,
+  zones: true,
+  before: true,
+  after: true,
+  min_score: true,
+  max_score: true,
+  min_speed: true,
+  max_speed: true,
+  has_snapshot: true,
+  has_clip: true,
+  time_range: true,
+  search_type: true,
+  event_id: true,
+  sort: true,
+};
+
+function supportedSearchEntries(value: object) {
+  return Object.fromEntries(
+    Object.entries(value).filter(([key]) =>
+      Object.hasOwn(SEARCH_FILTER_KEYS, key),
+    ),
+  );
+}
+
 // always parse these as string arrays
 const SEARCH_FILTER_ARRAY_KEYS = [
   "cameras",
@@ -74,8 +106,16 @@ export default function Explore() {
 
   const [search, setSearch] = useState("");
 
-  const [searchFilter, setSearchFilter, searchSearchParams] =
+  const [rawSearchFilter, setSearchFilter, rawSearchParams] =
     useApiFilterArgs<SearchFilter>(SEARCH_FILTER_ARRAY_KEYS);
+  const searchFilter = useMemo(
+    () => supportedSearchEntries(rawSearchFilter ?? {}) as SearchFilter,
+    [rawSearchFilter],
+  );
+  const searchSearchParams = useMemo(
+    () => supportedSearchEntries(rawSearchParams),
+    [rawSearchParams],
+  );
 
   const searchTerm = useMemo(
     () => searchSearchParams?.["query"] || "",
@@ -140,7 +180,6 @@ export default function Explore() {
           min_speed: searchSearchParams["min_speed"],
           max_speed: searchSearchParams["max_speed"],
           has_snapshot: searchSearchParams["has_snapshot"],
-          is_submitted: searchSearchParams["is_submitted"],
           has_clip: searchSearchParams["has_clip"],
           event_id: searchSearchParams["event_id"],
           sort: searchSearchParams["sort"],
@@ -177,7 +216,6 @@ export default function Explore() {
         min_speed: searchSearchParams["min_speed"],
         max_speed: searchSearchParams["max_speed"],
         has_snapshot: searchSearchParams["has_snapshot"],
-        is_submitted: searchSearchParams["is_submitted"],
         has_clip: searchSearchParams["has_clip"],
         event_id: searchSearchParams["event_id"],
         sort: searchSearchParams["sort"],

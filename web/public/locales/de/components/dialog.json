@@ -10,26 +10,6 @@
     "description": "Dies wird Gannet kurz stoppen, während es neu startet."
   },
   "explore": {
-    "plus": {
-      "review": {
-        "state": {
-          "submitted": "Übermittelt"
-        },
-        "question": {
-          "label": "Bestätige diese Beschriftung für Frigate Plus",
-          "ask_a": "Ist dieses Objekt ein <code>{{label}}</code>?",
-          "ask_an": "Ist dieses Objekt ein <code>{{label}}</code>?",
-          "ask_full": "Ist dieses Objekt ein <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?"
-        },
-        "toast": {
-          "error": "Übermittlung an Frigate+ fehlgeschlagen. Bitte überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut."
-        }
-      },
-      "submitToPlus": {
-        "label": "An Frigate+ übermitteln",
-        "desc": "Objekte an Orten die du vermeiden möchtest, sind keine Fehlalarme. Wenn du sie als Fehlalarme meldest, verwirrst du das Modell."
-      }
-    },
     "video": {
       "viewInHistory": "Im Verlauf ansehen"
     }

@@ -37,10 +37,6 @@
     "label": "Filtreleri varsayılanlara sıfırla"
   },
   "features": {
-    "submittedToFrigatePlus": {
-      "tips": "Öncelikle anlık fotoğrafı olan takipli nesneleri filtrelemelisiniz.<br /><br />Anlık fotoğrafı olmayan takipli nesneler Frigate+'ya gönderilemez.",
-      "label": "Frigate+'ya Gönderildi"
-    },
     "hasVideoClip": "Video klibi var",
     "hasSnapshot": "Anlık fotoğrafı var",
     "label": "Özellikler"

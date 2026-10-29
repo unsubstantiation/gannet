@@ -22,23 +22,14 @@
   },
   "noPreviewFound": "Ingen forhåndsvisning funnet",
   "noPreviewFoundFor": "Ingen forhåndsvisning funnet for {{cameraName}}",
-  "submitFrigatePlus": {
-    "title": "Send dette bildet til Frigate+?",
-    "submit": "Send",
-    "previewError": "Kunne ikke laste forhåndsvisning av stillbilde. Opptaket er kanskje ikke tilgjengelig for øyeblikket."
-  },
   "livePlayerRequiredIOSVersion": "iOS 17.1 eller høyere kreves for denne typen direkte-strømming.",
   "streamOffline": {
     "title": "Strømmen er frakoblet",
     "desc": "Ingen bilder er mottatt på {{cameraName}} <code>detekt</code>-strømmen, sjekk feilloggene"
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Bildet ble sendt til Frigate+"
-    },
-    "error": {
-      "submitFrigatePlusFailed": "Kunne ikke sende bildet til Frigate+"
-    }
+    "success": {},
+    "error": {}
   },
   "cameraOff": "Kameraet er av"
 }

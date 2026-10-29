@@ -138,10 +138,6 @@
       "label": "Ähnliches finden",
       "aria": "Ähnliche verfolgte Objekte finden"
     },
-    "submitToPlus": {
-      "label": "Bei Frigate+ einreichen",
-      "aria": "Bei Frigate+ einreichen"
-    },
     "viewInHistory": {
       "label": "Ansicht im Verlauf",
       "aria": "Ansicht im Verlauf"

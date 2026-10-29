@@ -10,26 +10,6 @@
     "description": "Acest lucru va opri temporar Gannet în timpul repornirii."
   },
   "explore": {
-    "plus": {
-      "review": {
-        "state": {
-          "submitted": "Trimis"
-        },
-        "question": {
-          "label": "Confirmă această etichetă pentru Frigate Plus",
-          "ask_a": "Este acest obiect un <code>{{label}}</code>?",
-          "ask_an": "Este acest obiect un <code>{{label}}</code>?",
-          "ask_full": "Este acest obiect un <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?"
-        },
-        "toast": {
-          "error": "Trimiterea către Frigate+ a eșuat. Te rog să verifici conexiunea la rețea și să încerci din nou."
-        }
-      },
-      "submitToPlus": {
-        "label": "Trimite catre Frigate+",
-        "desc": "Obiectele din locațiile pe care dorești să le eviți nu sunt false-pozitive. Marcarea lor ca false-pozitive va induce confuzie modelul."
-      }
-    },
     "video": {
       "viewInHistory": "Vezi în istoric"
     }

@@ -7,7 +7,6 @@
     "motionTuner": "Ladění detekce pohybu - Gannet",
     "object": "Ladění - Gannet",
     "general": "Nastavení rozhraní - Gannet",
-    "frigatePlus": "Frigate+ nastavení - Gannet",
     "enrichments": "Nastavení obohacení – Gannet",
     "cameraManagement": "Správa kamer - Gannet",
     "cameraReview": "Nastavení revize kamery – Gannet",
@@ -16,64 +15,6 @@
     "detectorsAndModel": "Detektory a model – Gannet",
     "maintenance": "Údržba – Gannet",
     "profiles": "Profily – Gannet"
-  },
-  "frigatePlus": {
-    "toast": {
-      "error": "Chyba při ukládání změn konfigurace: {{errorMessage}}",
-      "success": "Nastavení Frigate+ bylo uloženo. Pro aplikování změn restartujte Gannet."
-    },
-    "modelInfo": {
-      "cameras": "Kamery",
-      "modelSelect": "Zde můžete vybrat dostupné modely ze služby Frigate+. Upozorňujeme, že lze zvolit pouze modely kompatibilní s aktuální konfigurací detektoru.",
-      "loadingAvailableModels": "Načítám dostupné modely…",
-      "plusModelType": {
-        "baseModel": "Základní Model",
-        "userModel": "Doladěno"
-      },
-      "loading": "Načítám informace o modelu…",
-      "error": "Chyba načítání informací o modelu",
-      "availableModels": "Dostupné modely Frigate+",
-      "supportedDetectors": "Podporované Detektory",
-      "title": "Informace o Modelu",
-      "modelType": "Typ Modelu",
-      "trainDate": "Datum Tréninku",
-      "baseModel": "Základní Model",
-      "noModelLoaded": "Aktuálně není načten žádný model Frigate+.",
-      "selectModel": "Vyberte model",
-      "noModelsAvailable": "Nejsou dostupné žádné modely",
-      "filter": {
-        "ariaLabel": "Filtrovat modely podle typu",
-        "baseModels": "Základní modely",
-        "fineTunedModels": "Doladěné modely"
-      }
-    },
-    "snapshotConfig": {
-      "desc": "Odesílání do Frigate+ vyžaduje povolené snímky v konfiguraci.",
-      "title": "Nastavení Snímku",
-      "table": {
-        "snapshots": "Snímky",
-        "camera": "Kamera"
-      },
-      "cleanCopyWarning": "Některé kamery mají snímky zakázané"
-    },
-    "apiKey": {
-      "notValidated": "API klíč Frigate+ nebyl rozpoznán nebo nebyl ověřen",
-      "plusLink": "Přečtěte si více o Frigate+",
-      "validated": "API klíč Frigate+ byl rozpoznán a ověřen",
-      "desc": "API klíč Frigate+ umožňuje integraci se službou Frigate+.",
-      "title": "Frigate+ API Klíč"
-    },
-    "unsavedChanges": "Neuložené změny nastavení Frigate+",
-    "title": "Nastavení Frigate+",
-    "restart_required": "Vyžadován restart (model Frigate+ změněn)",
-    "description": "Frigate+ je předplacená služba poskytující další funkce pro vaši instanci Gannet, včetně vlastních modelů detekce objektů trénovaných na vašich datech. Zde můžete spravovat nastavení modelů Frigate+.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Aktuální model",
-      "otherModels": "Další modely",
-      "configuration": "Konfigurace"
-    },
-    "changeInDetectorsAndModel": "Změnit model"
   },
   "masksAndZones": {
     "zones": {
@@ -301,7 +242,6 @@
     "debug": "Ladění",
     "users": "Uživatelé",
     "notifications": "Oznámení",
-    "frigateplus": "Frigate+",
     "enrichments": "Obohacení",
     "triggers": "Spouštěče",
     "cameraManagement": "Správa",
@@ -2102,13 +2042,6 @@
       "unrecognized": "Tento model je nastaven pro hardware, který nebyl v systému nalezen: {{devices}}",
       "description": "Hardware, na kterém tento model provádí detekci.",
       "detectorCountDescription": "Počet procesů detekce na tomto hardwaru. Více detektorů zvládne více kamer, ale vyžaduje více paměti zařízení."
-    },
-    "tabs": {
-      "plus": "Frigate+",
-      "custom": "Vlastní model"
-    },
-    "plusModel": {
-      "noModelSelected": "Vyberte model Frigate+"
     }
   }
 }

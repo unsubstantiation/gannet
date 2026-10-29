@@ -4,7 +4,6 @@
     "notifications": "Powiadomienia",
     "ui": "Interfejs Użytkownika",
     "cameras": "Ustawienia Kamery",
-    "frigateplus": "Frigate+",
     "masksAndZones": "Maski / Strefy",
     "motionTuner": "Konfigurator ruchu",
     "debug": "Debugowanie",
@@ -143,7 +142,6 @@
   "documentTitle": {
     "default": "Ustawienia - Gannet",
     "masksAndZones": "Edytor Masek i Stref - Gannet",
-    "frigatePlus": "Ustawienia Frigate+ - Gannet",
     "general": "Ustawienia Interfejsu - Gannet",
     "authentication": "Ustawienia Uwierzytelniania - Gannet",
     "motionTuner": "Konfigurator Ruchu - Gannet",
@@ -623,64 +621,6 @@
     "sendTestNotification": "Wyślij testowe powiadomienie",
     "unsavedRegistrations": "Niezapisane ustawienia rejestracji powiadomień",
     "unsavedChanges": "Niezapisane zmiany ustawień powiadomień"
-  },
-  "frigatePlus": {
-    "title": "Ustawienia Frigate+",
-    "apiKey": {
-      "title": "Klucz API Frigate+",
-      "validated": "Klucz API Frigate+ został wykryty i zweryfikowany",
-      "plusLink": "Dowiedz się więcej o Frigate+",
-      "notValidated": "Klucz API Frigate+ nie został wykryty lub nie został zweryfikowany",
-      "desc": "Klucz API Frigate+ umożliwia integrację z usługą Frigate+."
-    },
-    "snapshotConfig": {
-      "title": "Konfiguracja zrzutów ekranu",
-      "desc": "Aby wysyłać dane do Frigate+, w konfiguracji muszą być włączone zarówno zwykłe zrzuty ekranu, jak i zrzuty typu <code>clean_copy</code>.",
-      "table": {
-        "snapshots": "Zrzuty ekranu",
-        "camera": "Kamera"
-      },
-      "cleanCopyWarning": "Niektóre kamery mają wyłączone migawki"
-    },
-    "modelInfo": {
-      "title": "Informacje o modelu",
-      "modelType": "Typ modelu",
-      "trainDate": "Data treningu",
-      "supportedDetectors": "Wspierane detektory",
-      "cameras": "Kamery",
-      "loading": "Ładowanie informacji o modelu…",
-      "error": "Nie udało się załadować informacji o modelu",
-      "availableModels": "Dostępne modele",
-      "loadingAvailableModels": "Ładowanie dostępnych modeli…",
-      "baseModel": "Model bazowy",
-      "modelSelect": "Tutaj możesz wybrać swoje dostępne modele w Frigate+. Pamiętaj, że można wybrać tylko modele kompatybilne z Twoją aktualną konfiguracją detektora.",
-      "plusModelType": {
-        "baseModel": "Model bazowy",
-        "userModel": "Dostrojony"
-      },
-      "noModelLoaded": "Żaden model Frigate+ nie jest obecnie załadowany.",
-      "selectModel": "Wybierz model",
-      "noModelsAvailable": "Brak dostępnych modeli",
-      "filter": {
-        "ariaLabel": "Filtruj modele według typu",
-        "baseModels": "Modele bazowe",
-        "fineTunedModels": "Modele dostrojone (Fine-tuned)"
-      }
-    },
-    "toast": {
-      "success": "Ustawienia Frigate+ zostały zapisane. Uruchom ponownie Gannet, aby zastosować zmiany.",
-      "error": "Nie udało się zapisać zmian konfiguracji: {{errorMessage}}"
-    },
-    "restart_required": "Wymagane ponowne uruchomienie (Zmieniony model Frigate+)",
-    "unsavedChanges": "Niezapisane zmiany ustawień Frigate+",
-    "description": "Frigate+ to usługa subskrypcyjna dająca dostęp do dodatkowych funkcji Gannet, w tym możliwość używania niestandardowych modeli detekcji obiektów wytrenowanych na Twoich danych. Tutaj możesz zarządzać ustawieniami modelu Frigate+.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Bieżący model",
-      "otherModels": "Inne modele",
-      "configuration": "Konfiguracja"
-    },
-    "changeInDetectorsAndModel": "Zmień model"
   },
   "enrichments": {
     "faceRecognition": {

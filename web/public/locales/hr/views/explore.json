@@ -204,10 +204,6 @@
       "label": "Prepisivanje",
       "aria": "Zatražite audio transkripciju"
     },
-    "submitToPlus": {
-      "label": "Pošalji na Frigate+",
-      "aria": "Pošalji na Frigate Plus"
-    },
     "viewInHistory": {
       "label": "Pogled u povijest",
       "aria": "Pogled u povijest"

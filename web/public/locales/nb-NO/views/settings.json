@@ -6,7 +6,6 @@
     "motionTuner": "Bevegelsesjustering - Gannet",
     "object": "Test og feilsøk - Gannet",
     "general": "Innstillinger for brukergrensesnitt - Gannet",
-    "frigatePlus": "Frigate+ innstillinger - Gannet",
     "notifications": "Innstillinger for meldingsvarsler - Gannet",
     "enrichments": "Innstillinger for utvidelser - Gannet",
     "cameraManagement": "Administrer kameraer - Gannet",
@@ -23,7 +22,6 @@
     "motionTuner": "Finjustering av bevegelse",
     "debug": "Test og feilsøk",
     "users": "Brukere",
-    "frigateplus": "Frigate+",
     "ui": "Brukergrensesnitt",
     "notifications": "Meldingsvarsler",
     "enrichments": "Utvidelser",
@@ -620,64 +618,6 @@
     "active": "Meldingsvarsler aktivert",
     "unsavedChanges": "Ulagrede endringer for meldingsvarsler",
     "unsavedRegistrations": "Ulagrede registreringer for meldingsvarsler"
-  },
-  "frigatePlus": {
-    "apiKey": {
-      "notValidated": "Frigate+ API-nøkkel er ikke detektert eller validert",
-      "title": "Frigate+ API-nøkkel",
-      "validated": "Frigate+ API-nøkkel er detektert og validert",
-      "desc": "Frigate+ API-nøkkelen muliggjør integrasjon med Frigate+ tjenesten.",
-      "plusLink": "Les mer om Frigate+"
-    },
-    "modelInfo": {
-      "trainDate": "Treningsdato",
-      "baseModel": "Basismodell",
-      "loading": "Laster modellinformasjon…",
-      "error": "Kunne ikke laste modellinformasjon",
-      "loadingAvailableModels": "Laster tilgjengelige modeller…",
-      "title": "Modellinformasjon",
-      "modelType": "Modelltype",
-      "supportedDetectors": "Støttede detektorer",
-      "cameras": "Kameraer",
-      "availableModels": "Tilgjengelige Frigate+ modeller",
-      "modelSelect": "Dine tilgjengelige modeller på Frigate+ kan velges her. Merk at bare modeller som er kompatible med din nåværende detektorkonfigurasjon kan velges.",
-      "plusModelType": {
-        "userModel": "Finjustert",
-        "baseModel": "Basismodell"
-      },
-      "noModelLoaded": "Ingen Frigate+-modell er lastet inn for øyeblikket.",
-      "selectModel": "Velg en modell",
-      "noModelsAvailable": "Ingen modeller tilgjengelig",
-      "filter": {
-        "ariaLabel": "Filtrer modeller etter type",
-        "baseModels": "Basismodeller",
-        "fineTunedModels": "Finjusterte modeller"
-      }
-    },
-    "title": "Frigate+ Innstillinger",
-    "snapshotConfig": {
-      "title": "Konfigurasjon av stillbilde",
-      "desc": "Innsending til Frigate+ krever at både stillbilder og <code>clean_copy</code>-stillbilder er aktivert i konfigurasjonen din.",
-      "table": {
-        "camera": "Kamera",
-        "snapshots": "Stillbilder"
-      },
-      "cleanCopyWarning": "Noen kameraer har stillbilder deaktivert"
-    },
-    "toast": {
-      "success": "Frigate+ innstillingene er lagret. Start Gannet på nytt for å aktivere endringene.",
-      "error": "Kunne ikke lagre konfigurasjonsendringer: {{errorMessage}}"
-    },
-    "restart_required": "Omstart påkrevd (Frigate+ modell endret)",
-    "unsavedChanges": "Ulagrede endringer for Frigate+ innstillinger",
-    "cardTitles": {
-      "otherModels": "Andre modeller",
-      "api": "API",
-      "currentModel": "Gjeldende modell",
-      "configuration": "Konfigurasjon"
-    },
-    "description": "Frigate+ er en abonnementstjeneste som gir tilgang til tilleggsfunksjoner og kapasiteter for Gannet-instansen din, inkludert muligheten til å bruke egendefinerte objektdeteksjonsmodeller trent på dine egne data. Du kan administrere innstillingene for Frigate+-modellen din her.",
-    "changeInDetectorsAndModel": "Endre modell"
   },
   "enrichments": {
     "title": "Innstillinger for utvidelser",

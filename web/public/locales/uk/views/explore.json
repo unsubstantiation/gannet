@@ -149,10 +149,6 @@
       "aria": "Завантажити Відео",
       "label": "Завантажити Відео"
     },
-    "submitToPlus": {
-      "aria": "Надіслати до Frigate Plus",
-      "label": "Надіслати до Frigate+"
-    },
     "downloadSnapshot": {
       "label": "Завантажити знімок",
       "aria": "Завантажити знімок"

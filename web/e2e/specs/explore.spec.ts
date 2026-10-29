@@ -61,6 +61,29 @@ test.describe("Explore — search @high", () => {
     await expect(searchInput).toHaveValue("");
   });
 
+  test("obsolete filters in search links are ignored while supported filters remain", async ({
+    frigateApp,
+  }) => {
+    await frigateApp.installDefaults({ config: SEMANTIC_SEARCH_CONFIG });
+    const eventsRequests: string[] = [];
+    frigateApp.page.on("request", (request) => {
+      if (/\/api\/events/.test(request.url()))
+        eventsRequests.push(request.url());
+    });
+    await frigateApp.goto("/explore?labels=person&is_submitted=1");
+    await frigateApp.page.getByRole("combobox").first().focus();
+    await expect(
+      frigateApp.page.getByLabel("Remove labels:person filter"),
+    ).toBeVisible();
+    await expect(
+      frigateApp.page.getByLabel(/Remove is_submitted/i),
+    ).toHaveCount(0);
+    await expect.poll(() => eventsRequests.length).toBeGreaterThan(0);
+    expect(eventsRequests.every((url) => !url.includes("is_submitted"))).toBe(
+      true,
+    );
+  });
+
   test("Enter submission does not crash the page", async ({ frigateApp }) => {
     await frigateApp.installDefaults({ config: SEMANTIC_SEARCH_CONFIG });
     await frigateApp.goto("/explore");
@@ -137,6 +160,18 @@ test.describe("Explore — filters (desktop) @high", () => {
       frigateApp.page.getByText(/sub.?label/i).first(),
     ).toBeVisible();
     await frigateApp.page.keyboard.press("Escape");
+  });
+
+  test("snapshot and clip filters remain without cloud submission controls", async ({
+    frigateApp,
+  }) => {
+    await frigateApp.goto("/explore?labels=person");
+    await frigateApp.page.getByLabel("More Filters").first().click();
+    await expect(frigateApp.page.getByText("Has a snapshot")).toBeVisible();
+    await expect(frigateApp.page.getByText("Has a video clip")).toBeVisible();
+    await expect(
+      frigateApp.page.getByText(/submitted to frigate\s*\+/i),
+    ).toHaveCount(0);
   });
 
   test("Zones filter lists configured zones inside More Filters dialog", async ({
@@ -273,73 +308,5 @@ test.describe("Explore — mobile @high @mobile", () => {
     await expect(searchInput).toBeVisible({ timeout: 10_000 });
     await searchInput.focus();
     await expect(searchInput).toBeFocused();
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Frigate+ submission — desktop only
-// The detail dialog's previous/next arrows only render on desktop.
-// ---------------------------------------------------------------------------
-
-test.describe("Explore — Frigate+ submission (desktop) @high", () => {
-  test.skip(
-    ({ frigateApp }) => frigateApp.isMobile,
-    "Detail dialog navigation arrows are desktop-only",
-  );
-
-  test("in-flight submission does not mark the next tracked object as submitted", async ({
-    frigateApp,
-  }) => {
-    await frigateApp.installDefaults({ config: { plus: { enabled: true } } });
-    const page = frigateApp.page;
-
-    // Hold the submission open so it is still in flight while the user moves
-    // on to the next tracked object.
-    let releaseSubmission: () => void = () => {};
-    const submissionHeld = new Promise<void>((resolve) => {
-      releaseSubmission = resolve;
-    });
-    let submissions = 0;
-    await page.route("**/api/events/*/plus", async (route) => {
-      submissions += 1;
-      await submissionHeld;
-      await route.fulfill({ json: { success: true } });
-    });
-
-    await frigateApp.goto("/explore?labels=person");
-
-    const firstResult = page.locator("[data-start]").first();
-    await expect(firstResult).toBeVisible({ timeout: 10_000 });
-    await firstResult.click();
-
-    // The label being confirmed is rendered in a <code> tag inside the
-    // "Is this object a <label>?" question.
-    const dialog = page.getByRole("dialog");
-    await expect(dialog.locator("code")).toHaveText("person");
-
-    await dialog.getByRole("button", { name: "Yes", exact: true }).click();
-    await expect.poll(() => submissions, { timeout: 5_000 }).toBe(1);
-
-    await page.getByRole("button", { name: "Next tracked object" }).click();
-    await expect(dialog.locator("code")).toHaveText("car");
-
-    const submissionLanded = page.waitForResponse(/\/api\/events\/.*\/plus/);
-    releaseSubmission();
-    await submissionLanded;
-    // two frames is enough for React to flush the response handler's state
-    // updates, so the assertions below can't pass by racing ahead of them
-    await page.evaluate(
-      () =>
-        new Promise((resolve) =>
-          requestAnimationFrame(() => requestAnimationFrame(resolve)),
-        ),
-    );
-
-    // The car was never submitted, so its question must be untouched.
-    expect(submissions).toBe(1);
-    await expect(dialog.getByText("Submitted")).toHaveCount(0);
-    await expect(
-      dialog.getByRole("button", { name: "Yes", exact: true }),
-    ).toBeVisible();
   });
 });

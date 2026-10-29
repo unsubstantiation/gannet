@@ -37,11 +37,7 @@
   "features": {
     "label": "特性",
     "hasSnapshot": "包含快照",
-    "hasVideoClip": "包含视频片段",
-    "submittedToFrigatePlus": {
-      "label": "提交至 Frigate+",
-      "tips": "你必须要先筛选有快照的追踪目标。<br /><br />没有快照的追踪目标无法提交至 Frigate+。"
-    }
+    "hasVideoClip": "包含视频片段"
   },
   "sort": {
     "label": "排序",

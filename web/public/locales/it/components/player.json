@@ -2,11 +2,6 @@
   "noPreviewFound": "Nessuna anteprima trovata",
   "noRecordingsFoundForThisTime": "Nessuna registrazione trovata per questo intervallo",
   "noPreviewFoundFor": "Nessuna anteprima trovata per {{cameraName}}",
-  "submitFrigatePlus": {
-    "title": "Vuoi inviare questo fotogramma a Frigate+?",
-    "submit": "Invia",
-    "previewError": "Impossibile caricare l'anteprima dell'istantanea. La registrazione potrebbe non essere disponibile al momento."
-  },
   "livePlayerRequiredIOSVersion": "Per questo tipo di trasmissione dal vivo è richiesto iOS 17.1 o versione successiva.",
   "stats": {
     "streamType": {
@@ -33,12 +28,8 @@
     "title": "Trasmissione disconnessa"
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Fotogramma inviato correttamente a Frigate+"
-    },
-    "error": {
-      "submitFrigatePlusFailed": "Impossibile inviare il fotogramma a Frigate+"
-    }
+    "success": {},
+    "error": {}
   },
   "cameraOff": "La telecamera è spenta"
 }

@@ -49,11 +49,7 @@
   "features": {
     "label": "Fitur",
     "hasSnapshot": "Memiliki Cuplikan",
-    "hasVideoClip": "Memiliki Klip Video",
-    "submittedToFrigatePlus": {
-      "label": "Dikirim ke Frigate+",
-      "tips": "Anda harus menyaring objek terlacak yang memiliki cuplikan (snapshot) terlebih dahulu.<br /><br />Objek terlacak tanpa cuplikan tidak dapat dikirimkan ke Frigate+."
-    }
+    "hasVideoClip": "Memiliki Klip Video"
   },
   "cameras": {
     "all": {

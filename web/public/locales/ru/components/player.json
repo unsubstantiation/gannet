@@ -1,11 +1,6 @@
 {
   "noRecordingsFoundForThisTime": "Не найдено ни одной записи",
   "noPreviewFound": "Предпросмотр не найден",
-  "submitFrigatePlus": {
-    "title": "Отправить этот кадр в Frigate+?",
-    "submit": "Отправить",
-    "previewError": "Не удалось загрузить предварительный просмотр снимка. Возможно, запись в данный момент недоступна."
-  },
   "noPreviewFoundFor": "Не найдено предпросмотра для {{cameraName}}",
   "livePlayerRequiredIOSVersion": "iOS 17.1 или выше требуется для этого типа стрима.",
   "streamOffline": {
@@ -33,12 +28,8 @@
     "droppedFrameRate": "Частота пропущенных кадров:"
   },
   "toast": {
-    "error": {
-      "submitFrigatePlusFailed": "Не удалось отправить кадр в Frigate+"
-    },
-    "success": {
-      "submittedFrigatePlus": "Кадр успешно загружен в Frigate+"
-    }
+    "error": {},
+    "success": {}
   },
   "cameraOff": "Камера выключена",
   "quality": {

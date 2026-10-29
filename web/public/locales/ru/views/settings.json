@@ -4,7 +4,6 @@
     "masksAndZones": "Маски и Зоны - Gannet",
     "motionTuner": "Детекции движения - Gannet",
     "general": "Настройки интерфейса - Gannet",
-    "frigatePlus": "Настройки Frigate+ - Gannet",
     "authentication": "Настройки аутентификации - Gannet",
     "object": "Отладка - Gannet",
     "notifications": "Настройки уведомлений - Gannet",
@@ -24,7 +23,6 @@
     "debug": "Отладка",
     "users": "Пользователи",
     "notifications": "Уведомления",
-    "frigateplus": "Frigate+",
     "ui": "Интерфейс",
     "enrichments": "Обогащения",
     "triggers": "Триггеры",
@@ -623,64 +621,6 @@
       "currentRMS": "Текущий RMS",
       "currentdbFS": "Текущий dbFS"
     }
-  },
-  "frigatePlus": {
-    "snapshotConfig": {
-      "title": "Настройки снимков",
-      "cleanCopyWarning": "У некоторых камер снимки отключены",
-      "table": {
-        "camera": "Камера",
-        "snapshots": "Снимки"
-      },
-      "desc": "Отправка в Frigate+ требует, чтобы в вашей конфигурации были включены снимки."
-    },
-    "title": "Настройки Frigate+",
-    "apiKey": {
-      "title": "Ключ API Frigate+",
-      "validated": "Ключ API Frigate+ найден и проверен",
-      "notValidated": "Ключ API Frigate+ не найден или не проверен",
-      "desc": "Ключ API Frigate+ включает интеграцию с сервисом Frigate+.",
-      "plusLink": "Подробнее про Frigate+"
-    },
-    "modelInfo": {
-      "title": "Информация о модели",
-      "modelType": "Тип модели",
-      "trainDate": "Дата обучения",
-      "error": "Не удалось загрузить информацию о модели",
-      "availableModels": "Доступные Frigate+ модели",
-      "loadingAvailableModels": "Загрузка доступных моделей…",
-      "modelSelect": "Здесь можно выбрать ваши доступные модели на Frigate+. Обратите внимание, что могут быть выбраны только модели, совместимые с текущей конфигурацией детектора.",
-      "baseModel": "Базовая модель",
-      "supportedDetectors": "Поддерживаемые детекторы",
-      "loading": "Загрузка информации о модели…",
-      "cameras": "Камеры",
-      "plusModelType": {
-        "baseModel": "Базовая модель",
-        "userModel": "Дообученная"
-      },
-      "noModelLoaded": "Ни одна модель Frigate+ в настоящее время не загружена.",
-      "selectModel": "Выберите модель",
-      "noModelsAvailable": "Нет доступных моделей",
-      "filter": {
-        "ariaLabel": "Фильтровать модели по типу",
-        "baseModels": "Базовые модели",
-        "fineTunedModels": "Настроенные модели"
-      }
-    },
-    "toast": {
-      "success": "Настройки Frigate+ были сохранены. Перезапустите Gannet, чтобы применить изменения.",
-      "error": "Не удалось сохранить изменения конфигурации: {{errorMessage}}"
-    },
-    "restart_required": "Требуется перезапуск (изменена модель Frigate+)",
-    "unsavedChanges": "Настройки Frigate+ не сохранены",
-    "description": "Frigate+ — это служба подписки, которая предоставляет доступ к дополнительным функциям и возможностям вашего экземпляра Gannet, включая возможность использовать пользовательские модели обнаружения объектов, обученные на ваших собственных данных. Здесь вы можете управлять настройками модели Frigate+.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Текущая модель",
-      "otherModels": "Другие модели",
-      "configuration": "Конфигурация"
-    },
-    "changeInDetectorsAndModel": "Изменить модель"
   },
   "enrichments": {
     "title": "Настройки обогащения",

@@ -96,7 +96,6 @@
     "authentication": "การตั้งค่าการตรวจสอบสิทธิ์ - Gannet",
     "masksAndZones": "ตัวแก้ไขแมสและโซน - Gannet",
     "general": "การตั้งค่าทั่วไป - Gannet",
-    "frigatePlus": "การตั้งค่า Frigate+ - Gannet",
     "notifications": "การตั้งค่าการแจ้งเตือน - Gannet",
     "cameraManagement": "จัดการกล้อง - Gannet",
     "enrichments": "การตั้งค่าของเพิ่มเติม - Gannet",
@@ -106,7 +105,6 @@
   },
   "menu": {
     "notifications": "การแจ้งเตือน",
-    "frigateplus": "Frigate+",
     "cameras": "ตั้งค่ากล้อง",
     "users": "ผู้ใช้",
     "masksAndZones": "แมส / โซน",
@@ -165,15 +163,6 @@
     },
     "objectMasks": {
       "point_other": "{{count}} จุด"
-    }
-  },
-  "frigatePlus": {
-    "title": "การตั้งค่า Frigate+",
-    "modelInfo": {
-      "cameras": "กล้อง"
-    },
-    "toast": {
-      "error": "ผิดพลาดในการบันทึกการกำหนดค่า: {{errorMessage}}"
     }
   }
 }

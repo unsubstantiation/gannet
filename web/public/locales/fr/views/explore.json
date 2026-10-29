@@ -143,10 +143,6 @@
       "label": "Télécharger la vidéo",
       "aria": "Télécharger la vidéo"
     },
-    "submitToPlus": {
-      "label": "Soumettre à Frigate+",
-      "aria": "Soumettre à Frigate+"
-    },
     "deleteTrackedObject": {
       "label": "Supprimer cet objet suivi"
     },

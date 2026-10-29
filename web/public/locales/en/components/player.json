@@ -2,11 +2,6 @@
   "noRecordingsFoundForThisTime": "No recordings found for this time",
   "noPreviewFound": "No Preview Found",
   "noPreviewFoundFor": "No Preview Found for {{cameraName}}",
-  "submitFrigatePlus": {
-    "title": "Submit this frame to upstream Frigate+?",
-    "submit": "Submit",
-    "previewError": "Could not load snapshot preview. The recording may not be available at this time."
-  },
   "livePlayerRequiredIOSVersion": "iOS 17.1 or greater is required for this live stream type.",
   "streamOffline": {
     "title": "Stream Offline",
@@ -56,11 +51,8 @@
     "streamAuto": "{{stream}} (auto)"
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Successfully submitted frame to upstream Frigate+"
-    },
+    "success": {},
     "error": {
-      "submitFrigatePlusFailed": "Failed to submit frame to upstream Frigate+",
       "playRecordingsFailed": "Failed to play recordings (error {{code}}): {{message}}"
     }
   }

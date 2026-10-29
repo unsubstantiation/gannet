@@ -7,7 +7,6 @@
     "masksAndZones": "Trình chỉnh sửa Mặt nạ và Vùng - Gannet",
     "object": "Gỡ lỗi - Gannet",
     "general": "Cài đặt giao diện – Gannet",
-    "frigatePlus": "Cài đặt Frigate+ - Gannet",
     "motionTuner": "Bộ tinh chỉnh Chuyển động - Gannet",
     "cameraManagement": "Quản Lý Camera - Gannet",
     "cameraReview": "Cài Đặt Xem Lại Camera - Gannet"
@@ -63,48 +62,6 @@
       "title": "Cài đặt Chung"
     },
     "title": "Thông báo"
-  },
-  "frigatePlus": {
-    "title": "Cài đặt Frigate+",
-    "apiKey": {
-      "title": "Khóa API Frigate+",
-      "validated": "Khóa API Frigate+ đã được phát hiện và xác thực",
-      "notValidated": "Khóa API Frigate+ không được phát hiện hoặc chưa được xác thực",
-      "desc": "Khóa API Frigate+ cho phép tích hợp với dịch vụ Frigate+.",
-      "plusLink": "Đọc thêm về Frigate+"
-    },
-    "snapshotConfig": {
-      "table": {
-        "camera": "Máy quay",
-        "snapshots": "Ảnh chụp nhanh"
-      },
-      "desc": "Việc gửi đến Frigate+ yêu cầu cả ảnh chụp nhanh và ảnh chụp nhanh <code>clean_copy</code> phải được bật trong cấu hình của bạn.",
-      "cleanCopyWarning": "Một số camera đã bật ảnh chụp nhanh nhưng đã tắt bản sao sạch. Bạn cần bật <code>clean_copy</code> trong cấu hình ảnh chụp nhanh của mình để có thể gửi hình ảnh từ các camera này đến Frigate+.",
-      "title": "Cấu hình Ảnh chụp nhanh"
-    },
-    "modelInfo": {
-      "error": "Không thể tải thông tin mô hình",
-      "plusModelType": {
-        "userModel": "Đã tinh chỉnh",
-        "baseModel": "Mô hình Cơ sở"
-      },
-      "supportedDetectors": "Các bộ phát hiện được hỗ trợ",
-      "title": "Thông tin Mô hình",
-      "baseModel": "Mô hình Cơ sở",
-      "availableModels": "Các mô hình có sẵn",
-      "loadingAvailableModels": "Đang tải các mô hình có sẵn…",
-      "modelSelect": "Các mô hình có sẵn của bạn trên Frigate+ có thể được chọn ở đây. Lưu ý rằng chỉ những mô hình tương thích với cấu hình bộ phát hiện hiện tại của bạn mới có thể được chọn.",
-      "cameras": "Camera",
-      "loading": "Đang tải thông tin mô hình…",
-      "modelType": "Loại Mô hình",
-      "trainDate": "Ngày Huấn luyện"
-    },
-    "unsavedChanges": "Các thay đổi cài đặt Frigate+ chưa được lưu",
-    "toast": {
-      "success": "Cài đặt Frigate+ đã được lưu. Khởi động lại Gannet để áp dụng các thay đổi.",
-      "error": "Không thể lưu các thay đổi cấu hình: {{errorMessage}}"
-    },
-    "restart_required": "Yêu cầu khởi động lại (mô hình Frigate+ đã thay đổi)"
   },
   "masksAndZones": {
     "form": {
@@ -575,7 +532,6 @@
     }
   },
   "menu": {
-    "frigateplus": "Frigate+",
     "ui": "Giao diện người dùng",
     "masksAndZones": "Mặt nạ / Vùng",
     "debug": "Gỡ lỗi",

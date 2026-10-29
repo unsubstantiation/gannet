@@ -21,19 +21,11 @@
     "totalFrames": "סך כל המסגרות:"
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "הפריים נשלח בהצלחה ל-Frigate+"
-    },
-    "error": {
-      "submitFrigatePlusFailed": "שליחת הפריים ל-Frigate+ נכשלה"
-    }
+    "success": {},
+    "error": {}
   },
   "noPreviewFound": "לא נמצאה תצוגה מקדימה",
   "noPreviewFoundFor": "לא נמצאה תצוגה מקדימה עבור {{cameraName}}",
-  "submitFrigatePlus": {
-    "title": "לשלוח את הפריים הזה ל-Frigate+?",
-    "submit": "אישור"
-  },
   "livePlayerRequiredIOSVersion": "נדרשת iOS 17.1 ומעלה עבור סוג השידור החי הזה.",
   "streamOffline": {
     "title": "זרם מצלמה לא זמין",

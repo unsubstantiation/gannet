@@ -444,7 +444,7 @@ class OpenVINOModelRunner(BaseModelRunner):
         # Fail with the real reason before OpenVINO's C++ frontend produces a
         # stack of source locations. Config validation rejects this combination
         # first; this covers callers that load a model directly (enrichment
-        # models, tests, a plus:// file resolved after validation).
+        # models and tests).
         suffix = os.path.splitext(model_path)[1].lower()
         if suffix == ".tflite" and OpenVINOModelRunner.is_detection_model(model_type):
             raise OpenVINOModelError(

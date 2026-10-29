@@ -48,10 +48,6 @@ class EventsDeleteBody(BaseModel):
     event_ids: list[str] = Field(title="The event IDs to delete")
 
 
-class SubmitPlusBody(BaseModel):
-    include_annotation: int = Field(default=1)
-
-
 class TriggerEmbeddingBody(BaseModel):
     type: TriggerType
     data: str

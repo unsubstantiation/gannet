@@ -27,8 +27,8 @@ import { processCameraName } from "@/utils/cameraUtil";
 /**
  * Sections whose `filters` dict is auto-populated by the backend at parse
  * time. `attributeBump` reflects the global-level `min_score=0.7` override
- * the backend applies to attribute labels (face, license_plate, Frigate+
- * couriers) — see `gannet/config/config.py`.
+ * the backend applies to attribute labels (face, license_plate, courier
+ * logos) — see `gannet/config/config.py`.
  */
 const FILTER_SECTION_DEFS: Record<
   string,

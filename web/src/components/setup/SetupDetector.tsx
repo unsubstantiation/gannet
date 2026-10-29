@@ -1,16 +1,7 @@
 import ActivityIndicator from "@/components/indicators/activity-indicator";
-import type { FrigatePlusModel } from "@/components/config-form/theme/fields/ModelSourcePicker";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useDocDomain } from "@/hooks/use-doc-domain";
-import type { FrigateConfig } from "@/types/frigateConfig";
 import type { DetectionHardware } from "@/types/hardware";
 import { recommendedDetectorCount } from "@/utils/detectionHardware";
 import axios from "axios";
@@ -22,7 +13,7 @@ import useSWR from "swr";
 
 // these ship no default model, so configuring one without a model leaves the
 // detector unable to start
-const MODEL_REQUIRED_DETECTORS = ["onnx"];
+const MODEL_REQUIRED_DETECTORS = ["onnx", "openvino"];
 
 const CPU_FALLBACK: DetectionHardware[] = [
   {
@@ -59,11 +50,6 @@ export default function SetupDetector({
     revalidateOnFocus: false,
   });
 
-  const { data: config } = useSWR<FrigateConfig>("config", {
-    revalidateOnFocus: false,
-  });
-  const plusEnabled = Boolean(config?.plus?.enabled);
-
   // the cpu is always probed, so an empty list means the probe failed
   const options = useMemo(
     () => (hardware && hardware.length > 0 ? hardware : CPU_FALLBACK),
@@ -78,25 +64,6 @@ export default function SetupDetector({
     options[0];
 
   const needsModel = MODEL_REQUIRED_DETECTORS.includes(selected.detector);
-
-  const { data: plusModels } = useSWR<FrigatePlusModel[]>(
-    plusEnabled && needsModel ? "/plus/models" : null,
-    {
-      fetcher: async (url) => {
-        const res = await axios.get(url, { withCredentials: true });
-        return res.data;
-      },
-    },
-  );
-  const [plusModelId, setPlusModelId] = useState("");
-
-  const compatiblePlusModels = useMemo(
-    () =>
-      (plusModels ?? []).filter((model) =>
-        model.supportedDetectors.includes(selected.detector),
-      ),
-    [plusModels, selected.detector],
-  );
 
   const [saving, setSaving] = useState(false);
 
@@ -120,7 +87,7 @@ export default function SetupDetector({
   );
 
   const handleSave = useCallback(async () => {
-    if (needsModel && !plusModelId) {
+    if (needsModel) {
       onSkip(selected.key);
       return;
     }
@@ -130,10 +97,6 @@ export default function SetupDetector({
       const model: Record<string, unknown> = {
         devices: buildDevices(selected),
       };
-
-      if (needsModel) {
-        model.path = `plus://${plusModelId}`;
-      }
 
       await axios.put("config/set", {
         config_data: {
@@ -148,7 +111,7 @@ export default function SetupDetector({
     } finally {
       setSaving(false);
     }
-  }, [needsModel, plusModelId, selected, buildDevices, onNext, onSkip, t]);
+  }, [needsModel, selected, buildDevices, onNext, onSkip, t]);
 
   if (isLoading) {
     return (
@@ -178,13 +141,7 @@ export default function SetupDetector({
         </p>
       )}
 
-      <RadioGroup
-        value={selected.key}
-        onValueChange={(value) => {
-          setSelectedKey(value);
-          setPlusModelId("");
-        }}
-      >
+      <RadioGroup value={selected.key} onValueChange={setSelectedKey}>
         {options.map((entry) => (
           <div key={entry.key} className="flex items-center space-x-2">
             <RadioGroupItem
@@ -215,34 +172,19 @@ export default function SetupDetector({
       {needsModel && (
         <div className="flex flex-col gap-3 rounded-md bg-muted p-3 text-sm">
           <p>
-            {t("setupWizard.detector.modelRequired", { name: selected.name })}
+            {t("setupWizard.detector.localModelRequired", {
+              name: selected.name,
+            })}
           </p>
-          {plusEnabled ? (
-            <Select value={plusModelId} onValueChange={setPlusModelId}>
-              <SelectTrigger className="max-w-xs">
-                <SelectValue
-                  placeholder={t("setupWizard.detector.plusModelPlaceholder")}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {compatiblePlusModels.map((model) => (
-                  <SelectItem key={model.id} value={model.id}>
-                    {`${model.name} (${model.width}x${model.height})`}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          ) : (
-            <a
-              href={getLocaleDocUrl("configuration/object_detectors")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center text-primary"
-            >
-              {t("readTheDocumentation", { ns: "common" })}
-              <LuExternalLink className="ml-2 size-3" />
-            </a>
-          )}
+          <a
+            href={getLocaleDocUrl("configuration/object_detectors")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center text-primary"
+          >
+            {t("readTheDocumentation", { ns: "common" })}
+            <LuExternalLink className="ml-2 size-3" />
+          </a>
         </div>
       )}
 
@@ -262,8 +204,8 @@ export default function SetupDetector({
           >
             {saving
               ? t("setupWizard.actions.saving")
-              : needsModel && !plusModelId
-                ? t("setupWizard.detector.continueWithout")
+              : needsModel
+                ? t("setupWizard.detector.configureLater")
                 : t("setupWizard.actions.next")}
           </Button>
         </div>

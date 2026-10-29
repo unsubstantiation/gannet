@@ -46,8 +46,6 @@ import { getTranslatedLabel } from "@/utils/i18n";
 import { resolveZoneName } from "@/hooks/use-zone-friendly-name";
 import { Badge } from "@/components/ui/badge";
 import { HiDotsHorizontal } from "react-icons/hi";
-import axios from "axios";
-import { toast } from "sonner";
 import { useDetailStream } from "@/context/detail-stream-context";
 import { isDesktop, isIOS, isMobileOnly, isSafari } from "react-device-detect";
 import { useApiHost } from "@/api";
@@ -651,17 +649,6 @@ export function TrackingDetails({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayedRecordTime]);
 
-  const onUploadFrameToPlus = useCallback(() => {
-    return axios.post(`/${event.camera}/plus/${currentTime}`);
-  }, [event.camera, currentTime]);
-
-  const getSnapshotUrlForPlus = useCallback(() => {
-    if (!currentTime) {
-      return undefined;
-    }
-    return `${apiHost}api/${event.camera}/recordings/${currentTime}/snapshot.jpg?height=500`;
-  }, [apiHost, event.camera, currentTime]);
-
   if (!config) {
     return <ActivityIndicator />;
   }
@@ -708,8 +695,6 @@ export function TrackingDetails({
                 frigateControls={true}
                 onTimeUpdate={handleTimeUpdate}
                 onSeekToTime={handleSeekToTime}
-                onUploadFrame={onUploadFrameToPlus}
-                getSnapshotUrl={getSnapshotUrlForPlus}
                 onPlaying={() => setIsVideoLoading(false)}
                 setFullResolution={setFullResolution}
                 toggleFullscreen={toggleFullscreen}
@@ -895,7 +880,6 @@ export function TrackingDetails({
                             getZoneColor={getZoneColor}
                             effectiveTime={effectiveTime}
                             isTimelineActive={isWithinEventRange}
-                            annotationOffset={annotationOffset}
                           />
                         </div>
                       );
@@ -919,7 +903,6 @@ type LifecycleIconRowProps = {
   getZoneColor: (zoneName: string) => number[] | undefined;
   effectiveTime?: number;
   isTimelineActive?: boolean;
-  annotationOffset: number;
 };
 
 function LifecycleIconRow({
@@ -930,7 +913,6 @@ function LifecycleIconRow({
   getZoneColor,
   effectiveTime,
   isTimelineActive,
-  annotationOffset,
 }: LifecycleIconRowProps) {
   const { t } = useTranslation(["views/explore", "components/player"]);
   const { data: config } = useSWR<FrigateConfig>("config");
@@ -1216,7 +1198,7 @@ function LifecycleIconRow({
         <div className="ml-3 flex-shrink-0 px-1 text-right text-xs text-primary-variant">
           <div className="flex flex-row items-center gap-3">
             <div className="whitespace-nowrap">{formattedEventTimestamp}</div>
-            {isAdmin && (config?.plus?.enabled || item.data.box) && (
+            {isAdmin && item.data.box && (
               <DropdownMenu
                 modal={false}
                 open={isOpen}
@@ -1229,42 +1211,6 @@ function LifecycleIconRow({
                 </DropdownMenuTrigger>
                 <DropdownMenuPortal>
                   <DropdownMenuContent>
-                    {isAdmin && config?.plus?.enabled && (
-                      <DropdownMenuItem
-                        className="cursor-pointer"
-                        onSelect={async () => {
-                          try {
-                            const resp = await axios.post(
-                              `/${item.camera}/plus/${item.timestamp + annotationOffset / 1000}`,
-                            );
-
-                            if (resp.status !== 200) {
-                              throw new Error();
-                            }
-
-                            toast.success(
-                              t("toast.success.submittedFrigatePlus", {
-                                ns: "components/player",
-                              }),
-                              {
-                                position: "top-center",
-                              },
-                            );
-                          } catch {
-                            toast.error(
-                              t("toast.error.submitFrigatePlusFailed", {
-                                ns: "components/player",
-                              }),
-                              {
-                                position: "top-center",
-                              },
-                            );
-                          }
-                        }}
-                      >
-                        {t("itemMenu.submitToPlus.label")}
-                      </DropdownMenuItem>
-                    )}
                     {item.data.box && (
                       <DropdownMenuItem
                         className="cursor-pointer"

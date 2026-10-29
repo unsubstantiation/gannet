@@ -6,7 +6,6 @@
     "masksAndZones": "Urejevalnik mask in območij - Gannet",
     "object": "Razhroščevanje - Gannet",
     "general": "Nastavitve profila - Gannet",
-    "frigatePlus": "Nastavitve Frigate+ - Gannet",
     "enrichments": "Nastavitve obogatenih podatkov - Gannet",
     "motionTuner": "Prilagajanje zaznavanja gibanja - Gannet",
     "cameraManagement": "Upravljanje kamer - Gannet",
@@ -23,7 +22,6 @@
     "debug": "Razhroščevanje",
     "users": "Uporabniki",
     "notifications": "Obvestila",
-    "frigateplus": "Frigate+",
     "motionTuner": "Nastavljalnik gibanja",
     "triggers": "Sprožilci",
     "cameraManagement": "Upravljanje",
@@ -1136,55 +1134,6 @@
       "error": {
         "registerFailed": "Registracija obvestil ni uspela."
       }
-    }
-  },
-  "frigatePlus": {
-    "title": "Nastavitve Frigate+",
-    "description": "Frigate+ je naročniška storitev, ki omogoča dostop do dodatnih funkcij, vključno z modeli za zaznavanje objektov po meri, ki so naučeni na tvojih lastnih podatkih. Tukaj lahko upravljaš s svojimi Frigate+ modeli.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Trenutni model",
-      "otherModels": "Ostali modeli",
-      "configuration": "Konfiguracija"
-    },
-    "apiKey": {
-      "title": "Frigate+ API ključ",
-      "validated": "API ključ je zaznan in potrjen",
-      "notValidated": "API ključ ni zaznan ali ni veljaven",
-      "desc": "API ključ omogoča integracijo s storitvijo Frigate+.",
-      "plusLink": "Preberi več o Frigate+"
-    },
-    "snapshotConfig": {
-      "title": "Konfiguracija slik (Snapshots)",
-      "desc": "Pošiljanje v Frigate+ zahteva, da sta v tvoji konfiguraciji omogočena tako <code>snapshots</code> kot <code>clean_copy</code>.",
-      "cleanCopyWarning": "Nekatere kamere imajo omogočene slike, vendar onemogočeno možnost 'clean copy'. Da bi lahko pošiljal slike v Frigate+, moraš v nastavitvah omogočiti <code>clean_copy</code>.",
-      "table": {
-        "camera": "Kamera",
-        "snapshots": "Slike (Snapshots)"
-      }
-    },
-    "modelInfo": {
-      "title": "Informacije o modelu",
-      "modelType": "Tip modela",
-      "trainDate": "Datum učenja",
-      "baseModel": "Osnovni model",
-      "plusModelType": {
-        "baseModel": "Osnovni model",
-        "userModel": "Prilagojen model (Fine-Tuned)"
-      },
-      "supportedDetectors": "Podprti detektorji",
-      "cameras": "Kamere",
-      "loading": "Nalaganje informacij o modelu…",
-      "error": "Nalaganje informacij o modelu ni uspelo",
-      "availableModels": "Razpoložljivi modeli",
-      "loadingAvailableModels": "Nalaganje razpoložljivih modelov…",
-      "modelSelect": "Tukaj lahko izbereš svoje modele, ki so na voljo v Frigate+. Izbereš lahko le modele, ki so združljivi s tvojo trenutno konfiguracijo detektorja."
-    },
-    "unsavedChanges": "Neshranjene spremembe Frigate+ nastavitev",
-    "restart_required": "Potreben ponovni zagon (sprememba Frigate+ modela)",
-    "toast": {
-      "success": "Nastavitve Frigate+ so bile shranjene. Ponovno zaženi Gannet za uveljavitev sprememb.",
-      "error": "Napaka pri shranjevanju konfiguracije: {{errorMessage}}"
     }
   },
   "maintenance": {

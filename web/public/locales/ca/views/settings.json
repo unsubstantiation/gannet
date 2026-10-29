@@ -7,7 +7,6 @@
     "authentication": "Configuració d'autenticació - Gannet",
     "masksAndZones": "Editor de màscares i zones - Gannet",
     "general": "Configuració del perfil - Gannet",
-    "frigatePlus": "Paràmetres de Frigate+ - Gannet",
     "notifications": "Paràmetres de notificació - Gannet",
     "cameraManagement": "Gestionar càmeres - Gannet",
     "cameraReview": "Configuració Revisió de Càmeres - Gannet",
@@ -25,7 +24,6 @@
     "users": "Usuaris",
     "notifications": "Notificacions",
     "debug": "Depuració",
-    "frigateplus": "Frigate+",
     "enrichments": "Anàlisi avançada",
     "triggers": "Disparadors",
     "cameraManagement": "Gestió de la càmera",
@@ -672,64 +670,6 @@
       "desc": "Gestioneu els comptes d'usuari d'aquesta instància de Gannet."
     },
     "updatePassword": "Restableix la contrasenya"
-  },
-  "frigatePlus": {
-    "snapshotConfig": {
-      "table": {
-        "camera": "Càmera",
-        "snapshots": "Instantànies"
-      },
-      "title": "Configuració d'instantànies",
-      "desc": "Per a enviar a Frigate+ fa falta que la instantània estigui habilitada a la configuració.",
-      "cleanCopyWarning": "Algunes càmeres tenen la captura desactivada"
-    },
-    "modelInfo": {
-      "baseModel": "Model base",
-      "modelType": "Tipus de model",
-      "trainDate": "Data d'entrenament",
-      "title": "Informació del model",
-      "supportedDetectors": "Detectors compatibles",
-      "availableModels": "Models Frigate+ disponibles",
-      "cameras": "Càmeres",
-      "plusModelType": {
-        "userModel": "Afinat",
-        "baseModel": "Model base"
-      },
-      "loadingAvailableModels": "Carregant models disponibles…",
-      "loading": "Carregant informació del model…",
-      "error": "No s'ha pogut carregar la informació del model",
-      "modelSelect": "Els models disponibles a Frigate+ es poden seleccionar aquí. Tingues en compte que només es poden triar els models compatibles amb la configuració actual del detector.",
-      "noModelLoaded": "Actualment no s'ha carregat cap model Frigate+.",
-      "selectModel": "Selecciona un model",
-      "noModelsAvailable": "No hi ha models disponibles",
-      "filter": {
-        "ariaLabel": "Filtra els models per tipus",
-        "baseModels": "Models de base",
-        "fineTunedModels": "Models ajustats"
-      }
-    },
-    "apiKey": {
-      "plusLink": "Llegeix més sobre Frigate+",
-      "title": "Clau API de Frigate+",
-      "validated": "La clau API de Frigate+ ha estat detectada i validada",
-      "notValidated": "La clau API de Frigate+ no ha estat detectada o no ha estat validada",
-      "desc": "La clau API de Frigate+ habilita la integració amb el servei Frigate+."
-    },
-    "unsavedChanges": "Canvis dels paràmetres de Frigate+ sense desar",
-    "title": "Paràmetres de Frigate+",
-    "toast": {
-      "error": "No s'han pogut guardar els canvis de configuració: {{errorMessage}}",
-      "success": "Els paràmetres de Frigate+ han estat desats. Reincia Gannet per aplicar els canvis."
-    },
-    "restart_required": "Es necessari un reinici (El model de Frigate+ ha cambiat)",
-    "description": "Frigate+ és un servei de subscripció que proporciona accés a funcions i capacitats addicionals per a la vostra instància de Gannet, inclosa la capacitat d'utilitzar models de detecció d'objectes personalitzats entrenats en les vostres pròpies dades. Podeu gestionar la configuració del model Frigate+ aquí.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Model actual",
-      "otherModels": "Altres models",
-      "configuration": "Configuració"
-    },
-    "changeInDetectorsAndModel": "Canviar model"
   },
   "enrichments": {
     "semanticSearch": {
@@ -2098,13 +2038,6 @@
       "unrecognized": "Aquest model està configurat per al maquinari que no s'ha trobat en aquest sistema: {{devices}}",
       "description": "El maquinari en el qual aquest model executa la seva detecció.",
       "detectorCountDescription": "Quants processos de detecció s'han d'executar en aquest maquinari. Més detectors es mantenen al dia amb més càmeres, a costa de la memòria extra del dispositiu."
-    },
-    "tabs": {
-      "plus": "Frigate+",
-      "custom": "Model personalitzat"
-    },
-    "plusModel": {
-      "noModelSelected": "Selecciona un model Frigate+"
     },
     "scenes": {
       "default": "Per defecte"

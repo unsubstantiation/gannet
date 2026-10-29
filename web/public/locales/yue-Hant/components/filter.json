@@ -10,11 +10,7 @@
   "features": {
     "label": "特徵",
     "hasSnapshot": "有快照",
-    "hasVideoClip": "有影片片段",
-    "submittedToFrigatePlus": {
-      "label": "已提交到 Frigate+",
-      "tips": "你必須先篩選出有快照的追蹤物件。<br /><br />沒有快照的追蹤物件無法提交到 Frigate+。"
-    }
+    "hasVideoClip": "有影片片段"
   },
   "sort": {
     "label": "排序",

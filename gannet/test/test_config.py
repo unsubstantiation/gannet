@@ -1,6 +1,5 @@
 import hashlib
 import io
-import json
 import os
 import tempfile
 import unittest
@@ -8,7 +7,6 @@ from copy import deepcopy
 from unittest.mock import patch
 
 import numpy as np
-import requests
 from pydantic import ValidationError
 from ruamel.yaml.constructor import DuplicateKeyError
 
@@ -40,32 +38,6 @@ class TestConfig(unittest.TestCase):
                         "fps": 5,
                     },
                 }
-            },
-        }
-
-        self.plus_model_info = {
-            "id": "e63b7345cc83a84ed79dedfc99c16616",
-            "name": "SSDLite Mobiledet",
-            "description": "Fine tuned model",
-            "trainDate": "2023-04-28T23:22:01.262Z",
-            "type": "ssd",
-            "supportedDetectors": ["cpu", "openvino", "onnx"],
-            "width": 320,
-            "height": 320,
-            "inputShape": "nhwc",
-            "pixelFormat": "rgb",
-            "labelMap": {
-                "0": "amazon",
-                "1": "car",
-                "2": "cat",
-                "3": "deer",
-                "4": "dog",
-                "5": "face",
-                "6": "fedex",
-                "7": "license_plate",
-                "8": "package",
-                "9": "person",
-                "10": "ups",
             },
         }
 
@@ -175,9 +147,7 @@ class TestConfig(unittest.TestCase):
         mock_labels.return_value = {}
 
         config = {
-            "models": [
-                {"path": r"C:\Models\detector.tflite", "devices": ["onnx:0"]}
-            ]
+            "models": [{"path": r"C:\Models\detector.tflite", "devices": ["onnx:0"]}]
         }
         with self.assertRaises(ValidationError) as raised:
             FrigateConfig(**(deep_merge(config, self.minimal)))
@@ -188,9 +158,7 @@ class TestConfig(unittest.TestCase):
     def test_cpu_detector_rejects_an_onnx_model(self, mock_labels):
         mock_labels.return_value = {}
 
-        config = {
-            "models": [{"path": r"C:\Models\detector.onnx", "devices": ["cpu"]}]
-        }
+        config = {"models": [{"path": r"C:\Models\detector.onnx", "devices": ["cpu"]}]}
         with self.assertRaises(ValidationError) as raised:
             FrigateConfig(**(deep_merge(config, self.minimal)))
 
@@ -198,7 +166,7 @@ class TestConfig(unittest.TestCase):
 
     @patch("gannet.detectors.detector_config.load_labels")
     def test_a_model_without_an_extension_is_left_to_the_detector(self, mock_labels):
-        """An upstream Frigate+ model is cached under its id, with no suffix."""
+        """A local model without an extension is left to the detector."""
         mock_labels.return_value = {}
 
         config = {
@@ -1789,63 +1757,48 @@ class TestConfig(unittest.TestCase):
         frigate_config = FrigateConfig(**config)
         assert frigate_config.primary_model.merged_labelmap[0] == "person"
 
-    def test_plus_labelmap(self):
-        with open(os.path.join(MODEL_CACHE_DIR, "test"), "w") as f:
-            json.dump(self.plus_model_info, f)
-        with open(os.path.join(MODEL_CACHE_DIR, "test.json"), "w") as f:
-            json.dump(self.plus_model_info, f)
+    def test_removed_cloud_model_path_is_a_validation_error(self):
+        for path in ("plus://example", "PLUS://example"):
+            config = deepcopy(self.minimal)
+            config["models"] = [{"path": path, "devices": ["cpu"]}]
+            with self.subTest(path=path), patch("requests.get") as get:
+                with self.assertRaisesRegex(
+                    ValidationError, "model paths are no longer supported.*local model"
+                ):
+                    FrigateConfig(**config)
+                get.assert_not_called()
 
-        config = {
-            "mqtt": {"host": "mqtt"},
-            "models": [{"path": "plus://test", "devices": ["cpu"]}],
-            "cameras": {
-                "back": {
-                    "ffmpeg": {
-                        "inputs": [
-                            {
-                                "path": "rtsp://10.0.0.1:554/video",
-                                "roles": ["detect"],
-                            },
-                        ]
-                    },
-                    "detect": {
-                        "height": 1080,
-                        "width": 1920,
-                        "fps": 5,
-                    },
-                }
-            },
-        }
-
-        frigate_config = FrigateConfig(**config)
-        assert frigate_config.primary_model.merged_labelmap[0] == "amazon"
-
-    @patch(
-        "gannet.plus.PlusApi.get_model_download_url",
-        side_effect=requests.exceptions.ConnectionError,
-    )
-    def test_plus_unreachable_is_validation_error(self, _):
-        config = {
-            "mqtt": {"host": "mqtt"},
-            "models": [{"path": "plus://unreachable", "devices": ["cpu"]}],
-            "cameras": {
-                "back": {
-                    "ffmpeg": {
-                        "inputs": [
-                            {
-                                "path": "rtsp://10.0.0.1:554/video",
-                                "roles": ["detect"],
-                            },
-                        ]
+    def test_local_model_metadata_and_attributes_are_preserved(self):
+        with tempfile.TemporaryDirectory() as directory:
+            model_path = os.path.join(directory, "detector.onnx")
+            with open(model_path, "wb") as model_file:
+                model_file.write(b"local model")
+            config = deepcopy(self.minimal)
+            config["models"] = [
+                {
+                    "path": model_path,
+                    "devices": ["onnx:CPU"],
+                    "width": 640,
+                    "height": 480,
+                    "input_tensor": "nchw",
+                    "model_type": "yolo-generic",
+                    "labelmap": {0: "person", 1: "license_plate", 2: "face"},
+                    "attributes_map": {
+                        "car": ["license_plate"],
+                        "person": ["face"],
                     },
                 }
-            },
-        }
-
-        with self.assertRaisesRegex(
-            ValidationError, "Unable to connect to upstream Frigate+"
-        ):
-            FrigateConfig(**config)
+            ]
+            model = FrigateConfig(**config).primary_model
+            self.assertEqual(model.path, model_path)
+            self.assertEqual((model.width, model.height), (640, 480))
+            self.assertEqual(model.input_tensor, "nchw")
+            self.assertEqual(model.model_type, "yolo-generic")
+            self.assertEqual(model.merged_labelmap[1], "license_plate")
+            self.assertEqual(model.merged_labelmap[2], "face")
+            self.assertIn("license_plate", model.all_attributes)
+            self.assertIn("face", model.all_attributes)
+            self.assertEqual(model.model_hash, hashlib.md5(b"local model").hexdigest())
 
     def test_fails_on_invalid_role(self):
         config = {

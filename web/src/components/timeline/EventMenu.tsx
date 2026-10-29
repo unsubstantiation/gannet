@@ -23,7 +23,6 @@ import { Button } from "../ui/button";
 type EventMenuProps = {
   event: Event;
   config?: FrigateConfig;
-  onOpenUpload?: (e: Event) => void;
   onOpenSimilarity?: (e: Event) => void;
   isSelected?: boolean;
   onToggleSelection?: (event: Event | undefined) => void;
@@ -32,7 +31,6 @@ type EventMenuProps = {
 export default function EventMenu({
   event,
   config,
-  onOpenUpload,
   onOpenSimilarity,
   isSelected = false,
   onToggleSelection,
@@ -154,22 +152,6 @@ export default function EventMenu({
                 {t("itemMenu.downloadSnapshot.label")}
               </a>
             </DropdownMenuItem>
-
-            {isAdmin &&
-              event.has_snapshot &&
-              event.plus_id == undefined &&
-              event.data.type == "object" &&
-              config?.plus?.enabled && (
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onSelect={() => {
-                    setIsOpen(false);
-                    onOpenUpload?.(event);
-                  }}
-                >
-                  {t("itemMenu.submitToPlus.label")}
-                </DropdownMenuItem>
-              )}
 
             {event.has_snapshot && config?.semantic_search?.enabled && (
               <DropdownMenuItem

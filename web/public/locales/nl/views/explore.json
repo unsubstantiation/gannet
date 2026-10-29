@@ -130,10 +130,6 @@
       "label": "Download video",
       "aria": "Download video"
     },
-    "submitToPlus": {
-      "label": "Verzenden naar Frigate+",
-      "aria": "Verzenden naar Frigate Plus"
-    },
     "viewInHistory": {
       "aria": "Bekijk in Geschiedenis",
       "label": "Bekijk in Geschiedenis"

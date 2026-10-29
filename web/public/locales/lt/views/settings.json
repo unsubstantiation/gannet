@@ -4,7 +4,6 @@
     "authentication": "Autentifikavimo Nustatymai - Gannet",
     "object": "Debug - Gannet",
     "general": "Išvaizdos Parametrai - Gannet",
-    "frigatePlus": "Frigate+ Nustatymai - Gannet",
     "notifications": "Pranešimų Nustatymai - Gannet",
     "motionTuner": "Judesio Derinimas - Gannet",
     "enrichments": "Patobulinimų Nustatymai - Gannet",
@@ -23,7 +22,6 @@
     "debug": "Debug",
     "users": "Vartotojai",
     "notifications": "Pranešimai",
-    "frigateplus": "Frigate+",
     "triggers": "Trigeriai",
     "roles": "Rolės",
     "cameraManagement": "Valdymas",
@@ -658,48 +656,6 @@
       "error": {
         "registerFailed": "Nepavyko išsaugoti pranešimų registravimo."
       }
-    }
-  },
-  "frigatePlus": {
-    "title": "Frigate+ Nustatymai",
-    "apiKey": {
-      "title": "Frigate+ API raktas",
-      "validated": "Frigate+ API raktas aptiktas ir patvirtintas",
-      "notValidated": "Frigate+ API raktas neaptiktas ir nepatvirtintas",
-      "desc": "Frigate+ API raktas įgalina integraciją su Frigate+ paslauga.",
-      "plusLink": "Skaityti daugiau apie Frigate+"
-    },
-    "snapshotConfig": {
-      "title": "Momentinių kadrų Konfiguravimas",
-      "desc": "Pateikti į Frigate+ reikalauja abiejų, momentinių kadrų ir <code>švarios_kopijos</code>momentinių kadrų įjungimo jūsų konfiguracijoje.",
-      "cleanCopyWarning": "Kai kurios kameros turi momentinius kadrus išjungtus",
-      "table": {
-        "camera": "Kamera",
-        "snapshots": "Momentiniai Kadrai"
-      }
-    },
-    "modelInfo": {
-      "title": "Modelio Informacija",
-      "modelType": "Modelio Tipas",
-      "trainDate": "Apmokymo Data",
-      "baseModel": "Bazinis Modelis",
-      "plusModelType": {
-        "baseModel": "Bazinis Modelis",
-        "userModel": "Priderinta"
-      },
-      "supportedDetectors": "Palaikomi Detektoriai",
-      "cameras": "Kameros",
-      "loading": "Užkraunama modelio informacija…",
-      "error": "Nepavyko užkrauti modelio informacijos",
-      "availableModels": "Pireinami Modeliai",
-      "loadingAvailableModels": "Kraunami prieinami modeliai…",
-      "modelSelect": "Jūsų prieinami modeliai iš Frigate+ gali būti pasirinkti čia. Pastaba, pasirinkiti galite modelius tik tuos kurie suderinami su esamu detektoriumi."
-    },
-    "unsavedChanges": "Neišsaugoti Frigate+ nustatymų pokyčiai",
-    "restart_required": "Perkrovimas privalomas (Frigate+ modeliai pakeisti)",
-    "toast": {
-      "success": "Frigate+ nustatymai buvo išsaugoti. Perkraukite Gannet kad pritaikytumėte pokyčius.",
-      "error": "Nepavyko išsaugoti konfiguraijos pokyčių: {{errorMessage}}"
     }
   },
   "roles": {

@@ -104,11 +104,7 @@
   "features": {
     "label": "Funkcije",
     "hasSnapshot": "Ima posnetek (snapshot)",
-    "hasVideoClip": "Ima video posnetek",
-    "submittedToFrigatePlus": {
-      "label": "Poslano v Frigate+",
-      "tips": "Najprej moraš filtrirati sledene objekte, ki imajo posnetek.<br /><br />Sledenih objektov brez posnetka ni mogoče poslati v Frigate+."
-    }
+    "hasVideoClip": "Ima video posnetek"
   },
   "cameras": {
     "label": "Filter kamer",

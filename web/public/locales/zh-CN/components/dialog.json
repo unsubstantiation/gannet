@@ -10,26 +10,6 @@
     "description": "Gannet 在重启期间将短暂停止运行。"
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "提交至 Frigate+",
-        "desc": "你不希望检测指定地点中的目标或物体不应被视为误报。若将其作为误报提交，可能会导致 AI 模型容易混淆相关目标或物体的识别。"
-      },
-      "review": {
-        "state": {
-          "submitted": "已提交"
-        },
-        "question": {
-          "label": "为 Frigate Plus 确认此标签",
-          "ask_a": "这个目标/物体是 <code>{{label}}</code> 吗？",
-          "ask_an": "这个目标/物体是 <code>{{label}}</code> 吗？",
-          "ask_full": "这个目标/物体是 <code>{{untranslatedLabel}}</code> ({{translatedLabel}}) 吗？"
-        },
-        "toast": {
-          "error": "提交至 Frigate+ 失败，请检查您的网络连接并重试。"
-        }
-      }
-    },
     "video": {
       "viewInHistory": "在历史中查看"
     }

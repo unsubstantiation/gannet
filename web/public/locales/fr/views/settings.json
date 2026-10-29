@@ -6,7 +6,6 @@
     "general": "Paramètres de l'interface - Gannet",
     "masksAndZones": "Éditeur de masques et de zones - Gannet",
     "object": "Débogage - Gannet",
-    "frigatePlus": "Paramètres Frigate+ - Gannet",
     "notifications": "Paramètres de notification - Gannet",
     "enrichments": "Paramètres d'enrichissements - Gannet",
     "cameraManagement": "Gestion des caméras - Gannet",
@@ -25,7 +24,6 @@
     "cameras": "Paramètres des caméras",
     "users": "Utilisateurs",
     "notifications": "Notifications",
-    "frigateplus": "Frigate+",
     "enrichments": "Enrichissements",
     "triggers": "Déclencheurs",
     "roles": "Rôles",
@@ -206,48 +204,6 @@
     "sendTestNotification": "Envoyer une notification de test",
     "unsavedChanges": "Modifications des notifications non enregistrées",
     "unsavedRegistrations": "Enregistrements des notifications non enregistrés"
-  },
-  "frigatePlus": {
-    "apiKey": {
-      "notValidated": "La clé API Frigate+ n'est pas détectée ou n'est pas validée.",
-      "title": "Clé API Frigate+",
-      "validated": "La clé API Frigate+ est détectée et validée",
-      "desc": "La clé API Frigate+ permet l'intégration avec le service Frigate+.",
-      "plusLink": "En savoir plus sur Frigate+"
-    },
-    "title": "Paramètres Frigate+",
-    "snapshotConfig": {
-      "desc": "La soumission à Frigate+ nécessite que les instantanés soient activés dans votre configuration.",
-      "title": "Configuration des instantanés",
-      "table": {
-        "snapshots": "Instantanés",
-        "camera": "Caméra"
-      },
-      "cleanCopyWarning": "Certaines caméras ont les instantanés désactivés"
-    },
-    "modelInfo": {
-      "baseModel": "Modèle de base",
-      "modelType": "Type de modèle",
-      "cameras": "Caméras",
-      "supportedDetectors": "Détecteurs pris en charge",
-      "loading": "Chargement des informations du modèle…",
-      "title": "Informations sur le modèle",
-      "trainDate": "Date d'entraînement",
-      "error": "Échec du chargement des informations du modèle",
-      "availableModels": "Modèles disponibles",
-      "loadingAvailableModels": "Chargement des modèles disponibles…",
-      "modelSelect": "Vous pouvez sélectionner ici vos modèles disponibles dans Frigate+. Notez que seuls les modèles compatibles avec votre configuration de détecteur actuelle peuvent être sélectionnés.",
-      "plusModelType": {
-        "baseModel": "Modèle de base",
-        "userModel": "Optimisé"
-      }
-    },
-    "toast": {
-      "success": "Les paramètres de Frigate+ ont été enregistrés. Redémarrez Gannet pour appliquer les modifications.",
-      "error": "Échec de l'enregistrement des modifications de configuration : {{errorMessage}}"
-    },
-    "restart_required": "Redémarrage requis (modèle Frigate+ changé)",
-    "unsavedChanges": "Modifications de paramètres de Frigate+ non enregistrées"
   },
   "masksAndZones": {
     "form": {

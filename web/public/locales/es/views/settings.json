@@ -6,7 +6,6 @@
     "authentication": "Configuración de autenticación - Gannet",
     "motionTuner": "Ajuste de movimiento - Gannet",
     "general": "Configuración de la interfaz - Gannet",
-    "frigatePlus": "Configuración de Frigate+ - Gannet",
     "notifications": "Configuración de Notificaciones - Gannet",
     "enrichments": "Configuración de Análisis Avanzado - Gannet",
     "cameraManagement": "Administrar Cámaras - Gannet",
@@ -23,7 +22,6 @@
     "ui": "Interfaz de Usuario",
     "motionTuner": "Ajuste de movimiento",
     "masksAndZones": "Máscaras / Zonas",
-    "frigateplus": "Frigate+",
     "users": "Usuarios",
     "notifications": "Notificaciones",
     "enrichments": "Análisis avanzado",
@@ -623,64 +621,6 @@
     "unregisterDevice": "Cancelar el registro de este dispositivo",
     "unsavedRegistrations": "Registros de notificaciones no guardados",
     "unsavedChanges": "Cambios de notificaciones no guardados"
-  },
-  "frigatePlus": {
-    "title": "Configuración de Frigate+",
-    "apiKey": {
-      "title": "Clave API de Frigate+",
-      "notValidated": "La clave API de Frigate+ no ha sido detectada o no ha sido validada",
-      "plusLink": "Lee más sobre Frigate+",
-      "desc": "La clave API de Frigate+ permite la integración con el servicio Frigate+.",
-      "validated": "La clave API de Frigate+ ha sido detectada y validada"
-    },
-    "snapshotConfig": {
-      "title": "Configuración de instantáneas",
-      "table": {
-        "camera": "Cámara",
-        "snapshots": "Instantáneas"
-      },
-      "desc": "Enviar a Frigate+ requiere que las instantáneas estén habilitadas en tu configuración.",
-      "cleanCopyWarning": "Algunas cámaras tienen las instantáneas deshabilitadas"
-    },
-    "modelInfo": {
-      "title": "Información del modelo",
-      "modelType": "Tipo de modelo",
-      "baseModel": "Modelo base",
-      "supportedDetectors": "Detectores compatibles",
-      "cameras": "Cámaras",
-      "loading": "Cargando información del modelo…",
-      "error": "No se pudo cargar la información del modelo",
-      "availableModels": "Modelos de Frigate+ disponibles",
-      "loadingAvailableModels": "Cargando modelos disponibles…",
-      "modelSelect": "Tus modelos disponibles en Frigate+ se pueden seleccionar aquí. Ten en cuenta que solo se pueden seleccionar modelos compatibles con tu configuración actual de detectores.",
-      "trainDate": "Fecha de entrenamiento",
-      "plusModelType": {
-        "baseModel": "Modelo Base",
-        "userModel": "Ajustado Finamente"
-      },
-      "noModelLoaded": "Actualmente no hay ningún modelo de Frigate+ cargado.",
-      "selectModel": "Selecciona un modelo",
-      "noModelsAvailable": "No hay modelos disponibles",
-      "filter": {
-        "ariaLabel": "Filtrar modelos por tipo",
-        "baseModels": "Modelos base",
-        "fineTunedModels": "Modelos ajustados"
-      }
-    },
-    "toast": {
-      "success": "La configuración de Frigate+ se ha guardado. Reinicia Gannet para aplicar los cambios.",
-      "error": "No se pudieron guardar los cambios en la configuración: {{errorMessage}}"
-    },
-    "restart_required": "Es necesario reiniciar (se ha cambiado el modelo Frigate+)",
-    "unsavedChanges": "Cambios en la configuración de Frigate+ no guardados",
-    "description": "Frigate+ es un servicio de suscripción que proporciona acceso a funciones y capacidades adicionales para su instancia de Gannet, incluida la posibilidad de utilizar modelos de detección de objetos personalizados entrenados con sus propios datos. Puede gestionar la configuración de sus modelos de Frigate+ aquí.",
-    "cardTitles": {
-      "api": "API",
-      "currentModel": "Modelo actual",
-      "otherModels": "Otros modelos",
-      "configuration": "Configuración"
-    },
-    "changeInDetectorsAndModel": "Cambiar modelo"
   },
   "enrichments": {
     "title": "Configuración de Enriquecimientos",

@@ -2,11 +2,6 @@
   "noRecordingsFoundForThisTime": "На гэты час запісаў не знойдзена",
   "noPreviewFound": "Перадпрагляд не знойдзены",
   "noPreviewFoundFor": "Перадпрагляд для {{cameraName}} не знойдзены",
-  "submitFrigatePlus": {
-    "title": "Адправіць гэты кадр у Frigate+?",
-    "submit": "Адправіць",
-    "previewError": "Не ўдалося загрузіць перадпрагляд здымка. Магчыма, запіс зараз недаступны."
-  },
   "livePlayerRequiredIOSVersion": "Для гэтага тыпу жывой плыні патрэбна iOS 17.1 або навейшая.",
   "streamOffline": {
     "title": "Плынь па-за сеткай",
@@ -36,11 +31,8 @@
     "streamAuto": "{{stream}} (аўта)"
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Кадр паспяхова адпраўлены ў Frigate+"
-    },
+    "success": {},
     "error": {
-      "submitFrigatePlusFailed": "Не ўдалося адправіць кадр у Frigate+",
       "playRecordingsFailed": "Не ўдалося прайграць запісы (памылка {{code}}): {{message}}"
     }
   },

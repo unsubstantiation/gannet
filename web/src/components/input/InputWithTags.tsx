@@ -241,7 +241,6 @@ export default function InputWithTags({
       } else if (filterType === "has_snapshot") {
         if (newFilters[filterType] === filterValue) {
           delete newFilters[filterType];
-          delete newFilters["is_submitted"];
         }
       } else {
         delete newFilters[filterType];
@@ -387,10 +386,6 @@ export default function InputWithTags({
             if (!newFilters.has_snapshot) newFilters.has_snapshot = undefined;
             newFilters.has_snapshot = value == "yes" ? 1 : 0;
             break;
-          case "is_submitted":
-            if (!newFilters.is_submitted) newFilters.is_submitted = undefined;
-            newFilters.is_submitted = value == "yes" ? 1 : 0;
-            break;
           case "has_clip":
             if (!newFilters.has_clip) newFilters.has_clip = undefined;
             newFilters.has_clip = value == "yes" ? 1 : 0;
@@ -447,11 +442,7 @@ export default function InputWithTags({
           ? t("unit.speed.kph", { ns: "common" })
           : t("unit.speed.mph", { ns: "common" }))
       );
-    } else if (
-      filterType === "has_clip" ||
-      filterType === "has_snapshot" ||
-      filterType === "is_submitted"
-    ) {
+    } else if (filterType === "has_clip" || filterType === "has_snapshot") {
       return filterValues
         ? t("button.yes", { ns: "common" })
         : t("button.no", { ns: "common" });
@@ -887,11 +878,7 @@ export default function InputWithTags({
                         >
                           {filterType === "event_id"
                             ? t("trackedObjectId")
-                            : filterType === "is_submitted"
-                              ? t("features.submittedToFrigatePlus.label", {
-                                  ns: "components/filter",
-                                })
-                              : t("filter.label." + filterType)}
+                            : t("filter.label." + filterType)}
                           : {formatFilterValues(filterType, filterValues)}
                           <button
                             onClick={() =>

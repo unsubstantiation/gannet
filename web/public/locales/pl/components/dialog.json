@@ -10,26 +10,6 @@
     "description": "Spowoduje to chwilowe zatrzymanie Gannet i ponowne uruchomienie."
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "Wyślij do Frigate+",
-        "desc": "Obiekty w miejscach, których chcesz unikać, nie są fałszywymi alarmami. Zgłaszanie ich jako fałszywe alarmy zdezorientuje model."
-      },
-      "review": {
-        "state": {
-          "submitted": "Przesłano"
-        },
-        "question": {
-          "ask_a": "Czy ten obiekt to <code>{{label}}</code>?",
-          "ask_an": "Czy ten obiekt to <code>{{label}}</code>?",
-          "ask_full": "Czy ten obiekt to <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?",
-          "label": "Potwierdź tę etykietę dla Frigate Plus"
-        },
-        "toast": {
-          "error": "Nie udało się przesłać do Frigate+. Sprawdź połączenie sieciowe i spróbuj ponownie."
-        }
-      }
-    },
     "video": {
       "viewInHistory": "Zobacz w Historii"
     }

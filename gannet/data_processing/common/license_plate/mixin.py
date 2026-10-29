@@ -1028,7 +1028,7 @@ class LicensePlateProcessingMixin:
         self, camera: str, input: np.ndarray
     ) -> tuple[int, int, int, int] | None:
         """
-        Use a lightweight YOLOv9 model to detect license plates for users without upstream Frigate+
+        Use a lightweight YOLOv9 model to detect license plates for models that do not detect plates
 
         Return the dimensions of the detected plate as [x1, y1, x2, y2].
         """
@@ -1229,7 +1229,7 @@ class LicensePlateProcessingMixin:
         if not self.config.cameras[camera].lpr.enabled:
             return
 
-        # dedicated LPR cam without frigate+
+        # dedicated LPR cam without native plate detection
         if dedicated_lpr:
             id = "dedicated-lpr"
 
@@ -1285,7 +1285,7 @@ class LicensePlateProcessingMixin:
         else:
             id = obj_data["id"]
 
-            # don't run for non car/motorcycle or non license plate (dedicated lpr with frigate+) objects
+            # don't run for non car/motorcycle or non license plate (dedicated lpr with native plate detection) objects
             if (
                 obj_data.get("label") not in self.lp_objects
                 and obj_data.get("label") != "license_plate"
@@ -1403,7 +1403,7 @@ class LicensePlateProcessingMixin:
                     license_plate[0] : license_plate[2],
                 ]
             else:
-                # don't run for object without attributes if this isn't dedicated lpr with frigate+
+                # don't run for object without attributes if this isn't dedicated lpr with native plate detection
                 if (
                     not obj_data.get("current_attributes")
                     and obj_data.get("label") != "license_plate"
@@ -1428,7 +1428,7 @@ class LicensePlateProcessingMixin:
                     if not license_plate:
                         return
 
-                # we are using dedicated lpr with frigate+
+                # we are using dedicated lpr with native plate detection
                 if obj_data.get("label") == "license_plate":
                     license_plate = obj_data  # type: ignore[assignment]
 
@@ -1674,7 +1674,7 @@ class LicensePlateProcessingMixin:
             EventMetadataTypeEnum.attribute.value,
         )
 
-        # save the best snapshot for dedicated lpr cams not using frigate+
+        # save the best snapshot for dedicated lpr cams not using native plate detection
         if (
             dedicated_lpr
             and "license_plate" not in self.config.cameras[camera].objects.track

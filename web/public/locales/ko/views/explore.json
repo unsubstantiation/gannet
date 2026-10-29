@@ -203,10 +203,6 @@
       "label": "음성 변환",
       "aria": "오디오 텍스트 변환 요청"
     },
-    "submitToPlus": {
-      "label": "Frigate+에 제출",
-      "aria": "Frigate Plus에 제출"
-    },
     "viewInHistory": {
       "label": "기록에서 보기",
       "aria": "기록에서 보기"

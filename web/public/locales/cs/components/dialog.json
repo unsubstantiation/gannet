@@ -10,26 +10,6 @@
     "description": "Gannet bude během restartu krátce nedostupný."
   },
   "explore": {
-    "plus": {
-      "review": {
-        "question": {
-          "label": "Potvrďte tento štítek pro Frigate Plus",
-          "ask_a": "Je tento objekt <code>{{label}}</code>?",
-          "ask_an": "Tento objekt je <code>{{label}}</code>?",
-          "ask_full": "Je tento objekt <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?"
-        },
-        "state": {
-          "submitted": "Odesláno"
-        },
-        "toast": {
-          "error": "Odeslání do Frigate+ se nezdařilo. Zkontrolujte své síťové připojení a zkuste to znovu."
-        }
-      },
-      "submitToPlus": {
-        "label": "Odeslat do Frigate+",
-        "desc": "Objekty na místech, kterým se chcete vyhnout, nejsou falešné poplachy. Označení takových objektů jako falešných pozitiv může model zmást."
-      }
-    },
     "video": {
       "viewInHistory": "Zobrazit v historii"
     }

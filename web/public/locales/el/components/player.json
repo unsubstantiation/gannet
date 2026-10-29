@@ -2,10 +2,6 @@
   "noRecordingsFoundForThisTime": "Δεν βρέθηκαν εγγραφές για αυτήν την ώρα",
   "noPreviewFound": "Δεν βρέθηκε προεπισκόπηση",
   "noPreviewFoundFor": "Δεν βρέθηκε προεπισκόπηση για {{cameraName}}",
-  "submitFrigatePlus": {
-    "title": "Να υποβληθεί αυτό το καρέ στο Frigate+;",
-    "submit": "Υποβολή"
-  },
   "livePlayerRequiredIOSVersion": "iOS 17.1 ή μεγαλύτερο χρειάζεται για αυτό τον τύπο του live stream.",
   "streamOffline": {
     "title": "Η μετάδοση είναι εκτός λειτουργίας",
@@ -32,11 +28,7 @@
     "droppedFrameRate": "Ρυθμός Απορριφθέντων Καρέ:"
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Επιτυχής αποστολή εικόνας στο Frigate+"
-    },
-    "error": {
-      "submitFrigatePlusFailed": "Αποτυχία αποστολής εικόνας στο Frigate+"
-    }
+    "success": {},
+    "error": {}
   }
 }

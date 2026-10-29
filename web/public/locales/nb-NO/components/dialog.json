@@ -10,26 +10,6 @@
     "description": "Dette vil stoppe Gannet et øyeblikk mens det starter på nytt."
   },
   "explore": {
-    "plus": {
-      "submitToPlus": {
-        "label": "Send til Frigate+",
-        "desc": "Objekter på steder du vil unngå er ikke falske positiver. Å sende dem som falske positiver vil forvirre modellen."
-      },
-      "review": {
-        "state": {
-          "submitted": "Sendt inn"
-        },
-        "question": {
-          "label": "Bekreft denne etiketten for Frigate Plus",
-          "ask_an": "Er dette objekt en <code>{{label}}</code>?",
-          "ask_a": "Er dette objektet en <code>{{label}}</code>?",
-          "ask_full": "Er dette objekt en <code>{{untranslatedLabel}}</code> ({{translatedLabel}})?"
-        },
-        "toast": {
-          "error": "Kunne ikke sende til Frigate+. Vennligst sjekk nettverksforbindelsen din og prøv igjen."
-        }
-      }
-    },
     "video": {
       "viewInHistory": "Vis i historikk"
     }

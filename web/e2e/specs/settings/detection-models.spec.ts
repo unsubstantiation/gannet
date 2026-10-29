@@ -33,38 +33,9 @@ type Model = {
   model_type?: string;
   labelmap?: Record<string, string>;
   attributes_map?: Record<string, string[]>;
-  plus?: { id: string; name: string } | null;
   width?: number;
   height?: number;
 };
-
-const PLUS_MODEL = {
-  id: "abc123",
-  name: "yolov9-s",
-  baseModel: "yolov9",
-  trainDate: "2026-01-02T03:04:05Z",
-  isBaseModel: true,
-  supportedDetectors: ["openvino"],
-  width: 320,
-  height: 320,
-};
-
-// Frigate+ builds a Hailo model per device and names the detector by its
-// pre-rename key; /api/plus/models adds the current one before serving it
-const HAILO_PLUS_MODELS = [
-  {
-    ...PLUS_MODEL,
-    id: "hailo8l1",
-    supportedDetectors: ["hailo8l", "hailo"],
-    hailoDevice: "hailo8l",
-  },
-  {
-    ...PLUS_MODEL,
-    id: "hailo8r1",
-    supportedDetectors: ["hailo8l", "hailo"],
-    hailoDevice: "hailo8r",
-  },
-];
 
 // a migrated `type: onnx` detector is the bare "onnx", and a Ryzen iGPU is
 // always probed alongside an NVIDIA card
@@ -87,30 +58,14 @@ const ONNX_GPU_HARDWARE = [
   },
 ];
 
-const HAILO_HARDWARE = [
-  {
-    key: "hailo",
-    detector: "hailo",
-    name: "Hailo",
-    units: [{ device: "hailo:PCIe", label: "hailo0" }],
-    count: 1,
-    unlimited: true,
-  },
-];
-
 type SavedConfig = { config_data?: { models?: Model[] } };
 
 async function installRoutes(
   page: Page,
   models: Model[],
-  plusEnabled = false,
-  plusModels: unknown[] = [PLUS_MODEL],
   hardware?: unknown[],
 ) {
-  const config = configFactory({
-    models,
-    plus: { enabled: plusEnabled },
-  } as never);
+  const config = configFactory({ models } as never);
   const saves: SavedConfig[] = [];
 
   await page.route("**/api/config/schema.json", (route) =>
@@ -123,9 +78,6 @@ async function installRoutes(
   );
   await page.route("**/api/config/raw_paths", (route) =>
     route.fulfill({ json: { models } }),
-  );
-  await page.route("**/api/plus/models", (route) =>
-    route.fulfill({ json: plusModels }),
   );
 
   if (hardware) {
@@ -245,8 +197,6 @@ test.describe("Detection models settings @high", () => {
     await installRoutes(
       frigateApp.page,
       [{ scene: "default", devices: ["onnx"] }],
-      false,
-      [PLUS_MODEL],
       ONNX_GPU_HARDWARE,
     );
     await openPage(frigateApp);
@@ -434,153 +384,78 @@ test.describe("Detection models settings @high", () => {
     );
   });
 
-  test("a saved Frigate+ model opens on the Frigate+ tab", async ({
+  test("local model settings remain editable and are saved", async ({
     frigateApp,
   }) => {
-    await installRoutes(
-      frigateApp.page,
-      [
-        {
-          scene: "default",
-          devices: ["openvino:GPU.0"],
-          path: "plus://abc123",
-          plus: PLUS_MODEL,
-        },
-      ],
-      true,
-    );
-    await openPage(frigateApp);
-
-    await expect(
-      frigateApp.page.getByRole("tab", { name: "Frigate+" }),
-    ).toHaveAttribute("data-state", "active");
-    await expect(frigateApp.page.locator("#pageRoot")).toContainText(
-      "yolov9-s",
-    );
-  });
-
-  test("picking a Frigate+ model stays on the tab and saves a plus path", async ({
-    frigateApp,
-  }) => {
-    const saves = await installRoutes(
-      frigateApp.page,
-      [
-        {
-          scene: "default",
-          devices: ["openvino:GPU.0"],
-          path: "/config/custom.onnx",
-        },
-      ],
-      true,
-    );
-    await openPage(frigateApp);
-
-    await frigateApp.page.getByRole("tab", { name: "Frigate+" }).click();
-    await frigateApp.page.getByRole("combobox").last().click();
-    await frigateApp.page.getByRole("option").first().click();
-
-    await expect(
-      frigateApp.page.getByRole("tab", { name: "Frigate+" }),
-    ).toHaveAttribute("data-state", "active");
-
-    await frigateApp.page.getByRole("button", { name: /^Save$/ }).click();
-    await expect.poll(() => saves.length).toBeGreaterThan(0);
-
-    expect(saves.at(-1)?.config_data?.models?.[0].path).toBe("plus://abc123");
-  });
-
-  test("saving a Frigate+ model keeps its reference without the Frigate+ fields", async ({
-    frigateApp,
-  }) => {
-    // the backend fills these in from the Frigate+ model info when it loads
-    const saves = await installRoutes(
-      frigateApp.page,
-      [
-        {
-          scene: "default",
-          devices: ["openvino:GPU.0"],
-          path: "plus://abc123",
-          plus: PLUS_MODEL,
-          width: 320,
-          height: 320,
-          input_tensor: "nchw",
-          input_dtype: "float",
-          model_type: "yolo-generic",
-        },
-      ],
-      true,
-    );
-    await openPage(frigateApp);
-
-    await frigateApp.page.locator("#models-0-openvino\\:GPU\\.1").click();
-    await frigateApp.page.getByRole("button", { name: /^Save$/ }).click();
-    await expect.poll(() => saves.length).toBeGreaterThan(0);
-
-    const model = saves.at(-1)?.config_data?.models?.[0];
-    expect(model?.path).toBe("plus://abc123");
-    expect(model?.devices).toEqual(["openvino:GPU.0", "openvino:GPU.1"]);
-    expect(model).not.toHaveProperty("width");
-    expect(model).not.toHaveProperty("input_tensor");
-    expect(model).not.toHaveProperty("model_type");
-    // a leftover dtype from a custom model must not override the int default
-    expect(model).not.toHaveProperty("input_dtype");
-  });
-
-  test("a Frigate+ model only shows its path without a Frigate+ API key", async ({
-    frigateApp,
-  }) => {
-    await installRoutes(frigateApp.page, [
+    const saves = await installRoutes(frigateApp.page, [
       {
         scene: "default",
         devices: ["openvino:GPU.0"],
-        path: "plus://abc123",
+        path: "C:\\Models\\detector.onnx",
         width: 320,
         height: 320,
+        input_tensor: "nchw",
+        input_dtype: "float",
+        model_type: "yolo-generic",
       },
     ]);
     await openPage(frigateApp);
 
     const root = frigateApp.page.locator("#pageRoot");
-    await expect(root).toContainText("Custom object detector model path");
-    await expect(root).not.toContainText("Object detection model input width");
-    await expect(root).not.toContainText(
-      "Label map for custom object detector",
-    );
+    await expect(root).toContainText("Object detection model input width");
+    await expect(root).toContainText("Label map for custom object detector");
+    await expect(frigateApp.page.getByText(/frigate\s*\+/i)).toHaveCount(0);
+    await frigateApp.page.locator("#models-0-openvino\\:GPU\\.1").click();
+    await frigateApp.page.getByRole("button", { name: /^Save$/ }).click();
+    await expect.poll(() => saves.length).toBeGreaterThan(0);
+
+    const model = saves.at(-1)?.config_data?.models?.[0];
+    expect(model?.path).toBe("C:\\Models\\detector.onnx");
+    expect(model?.devices).toEqual(["openvino:GPU.0", "openvino:GPU.1"]);
+    expect(model?.width).toBe(320);
+    expect(model?.input_tensor).toBe("nchw");
+    expect(model?.input_dtype).toBe("float");
+    expect(model?.model_type).toBe("yolo-generic");
   });
 
-  test("a Frigate+ Hailo model is listed by the device it was built for", async ({
+  test("non-CPU detectors require a local model path", async ({
     frigateApp,
   }) => {
-    // every Hailo model supports the one hailo detector, so the detector name
-    // says nothing; which device it was built for is what the user picks on
-    await installRoutes(
-      frigateApp.page,
-      [
-        {
-          scene: "default",
-          devices: ["hailo:PCIe"],
-          path: "/config/custom.hef",
-        },
-      ],
-      true,
-      HAILO_PLUS_MODELS,
-      HAILO_HARDWARE,
-    );
+    const saves = await installRoutes(frigateApp.page, [
+      {
+        scene: "default",
+        devices: ["openvino:GPU.0"],
+        path: "C:\\Models\\detector.onnx",
+      },
+    ]);
     await openPage(frigateApp);
+    await frigateApp.page.locator("#root_0_path").clear();
+    await expect(frigateApp.page.locator("#pageRoot")).toContainText(
+      "openvino detector needs a model file",
+    );
+    await expect(
+      frigateApp.page.getByRole("button", { name: /^Save$/ }),
+    ).toBeDisabled();
+    expect(saves).toHaveLength(0);
+  });
 
-    await frigateApp.page.getByRole("tab", { name: "Frigate+" }).click();
-    await frigateApp.page.getByRole("combobox").last().click();
-
-    const options = frigateApp.page.getByRole("option");
-
-    await expect(options).toHaveCount(2);
-    await expect(options.first()).toContainText("hailo8l");
-    await expect(options.last()).toContainText("hailo8r");
-
-    // knowing which device is attached is left to the user, so neither is
-    // ruled out here
-    await expect(options.first()).not.toHaveAttribute("aria-disabled", "true");
-    await expect(options.last()).not.toHaveAttribute("aria-disabled", "true");
+  test("old cloud model paths cannot be saved", async ({ frigateApp }) => {
+    const saves = await installRoutes(frigateApp.page, [
+      {
+        scene: "default",
+        devices: ["cpu"],
+        path: "C:\\Models\\detector.tflite",
+      },
+    ]);
+    await openPage(frigateApp);
+    await frigateApp.page.locator("#root_0_path").fill("plus://old-model");
+    await expect(frigateApp.page.locator("#pageRoot")).toContainText(
+      "model paths are no longer supported",
+    );
+    await expect(
+      frigateApp.page.getByRole("button", { name: /^Save$/ }),
+    ).toBeDisabled();
+    expect(saves).toHaveLength(0);
   });
 
   test("a freshly opened page is not reported as modified", async ({
@@ -670,7 +545,11 @@ test.describe("Detection models settings @high", () => {
     // shareable hardware can report several addressable units; every one of
     // them must be reachable, not just the first
     const saves = await installRoutes(frigateApp.page, [
-      { scene: "default", devices: ["openvino:GPU.0"] },
+      {
+        scene: "default",
+        devices: ["openvino:GPU.0"],
+        path: "C:\\Models\\detector.onnx",
+      },
     ]);
     await openPage(frigateApp);
 
@@ -688,7 +567,11 @@ test.describe("Detection models settings @high", () => {
     frigateApp,
   }) => {
     const saves = await installRoutes(frigateApp.page, [
-      { scene: "default", devices: ["openvino:GPU.0", "openvino:GPU.1"] },
+      {
+        scene: "default",
+        devices: ["openvino:GPU.0", "openvino:GPU.1"],
+        path: "C:\\Models\\detector.onnx",
+      },
     ]);
     await openPage(frigateApp);
 
@@ -711,17 +594,24 @@ test.describe("Detection models settings @high", () => {
     frigateApp,
   }) => {
     const saves = await installRoutes(frigateApp.page, [
-      { scene: "default", devices: ["edgetpu:pci:0"] },
+      {
+        scene: "default",
+        devices: ["openvino:GPU.0"],
+        path: "C:\\Models\\detector.onnx",
+      },
+      { scene: "outdoor", devices: ["cpu"] },
     ]);
     await openPage(frigateApp);
 
-    await frigateApp.page.locator("#models-0-edgetpu\\:pci\\:1").click();
+    await frigateApp.page.locator("#models-0-openvino\\:GPU\\.1").click();
     await frigateApp.page.getByRole("button", { name: /^Save$/ }).click();
 
     await expect.poll(() => saves.length).toBeGreaterThan(0);
 
     const models = saves.at(-1)?.config_data?.models;
-    expect(models).toHaveLength(1);
-    expect(models?.[0].devices).toEqual(["edgetpu:pci:0", "edgetpu:pci:1"]);
+    expect(models).toHaveLength(2);
+    expect(models?.[0].devices).toEqual(["openvino:GPU.0", "openvino:GPU.1"]);
+    expect(models?.[0].path).toBe("C:\\Models\\detector.onnx");
+    expect(models?.[1].devices).toEqual(["cpu"]);
   });
 });

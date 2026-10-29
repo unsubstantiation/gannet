@@ -27,22 +27,14 @@
   },
   "noPreviewFound": "Önizleme Bulunamadı",
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "Kare başarıyla Frigate+'ya gönderildi"
-    },
+    "success": {},
     "error": {
-      "submitFrigatePlusFailed": "Kare Frigate+'ya gönderilemedi",
       "playRecordingsFailed": "Kayıtlar oynatılamadı (hata {{code}}): {{message}}"
     }
   },
   "noRecordingsFoundForThisTime": "Bu zaman için kayıt bulunamadı",
   "noPreviewFoundFor": "{{cameraName}} için Önizleme Bulunamadı",
   "livePlayerRequiredIOSVersion": "Bu canlı yayın türü için iOS 17.1 veya daha yeni sürüm gereklidir.",
-  "submitFrigatePlus": {
-    "title": "Bu kare Frigate+'ya gönderilsin mi?",
-    "submit": "Gönder",
-    "previewError": "Anlık fotoğraf önizlemesi yüklenemedi. Kayıt şu an mevcut olmayabilir."
-  },
   "cameraOff": "Kamera kapalı",
   "quality": {
     "auto": "Otomatik",

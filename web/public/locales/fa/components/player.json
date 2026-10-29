@@ -2,11 +2,6 @@
   "noRecordingsFoundForThisTime": "ویدیویی برای این زمان وجود ندارد",
   "noPreviewFound": "پیش‌نمایش پیدا نشد",
   "noPreviewFoundFor": "هیچ پیش‌نمایشی برای {{cameraName}} پیدا نشد",
-  "submitFrigatePlus": {
-    "title": "این فریم به فریگیت+ ارسال شود؟",
-    "submit": "ارسال",
-    "previewError": "نمی توان پیش نمایش عکس فوری را بارگذاری کرد. ممکن است ضبط در این زمان در دسترس نباشد."
-  },
   "livePlayerRequiredIOSVersion": "برای این نوع پخش زنده، iOS 17.1 یا بالاتر لازم است.",
   "streamOffline": {
     "title": "جریان آفلاین",
@@ -33,12 +28,8 @@
     "droppedFrameRate": "نرخ فریم‌های از دست‌رفته:"
   },
   "toast": {
-    "success": {
-      "submittedFrigatePlus": "فریم با موفقیت به Frigate+ ارسال شد"
-    },
-    "error": {
-      "submitFrigatePlusFailed": "ارسال فریم به Frigate+ ناموفق بود"
-    }
+    "success": {},
+    "error": {}
   },
   "cameraOff": "دوربین خاموش است"
 }

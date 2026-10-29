@@ -95,9 +95,6 @@
       "label": "Lisää laukaisin",
       "aria": "Lisää laukaisin tälle seurattavalle kohteelle"
     },
-    "submitToPlus": {
-      "label": "Lähetä Frigate+:lle"
-    },
     "downloadVideo": {
       "label": "Lataa video",
       "aria": "Lataa video"
