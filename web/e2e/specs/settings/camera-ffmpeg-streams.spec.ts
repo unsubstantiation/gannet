@@ -236,6 +236,46 @@ test.describe("camera ffmpeg input source toggle @medium", () => {
     await expect(paths).toHaveValue(sub);
   });
 
+  test("Protect bearer tokens stay masked until explicitly revealed", async ({
+    frigateApp,
+  }) => {
+    const raw = "rtsps://protect:7441/private-token?enableSrtp=1";
+    const masked = "rtsps://protect:7441/*?enableSrtp=1";
+    await installRoutes(
+      frigateApp.page,
+      [{ path: masked, roles: ["detect"] }],
+      [{ path: raw, roles: ["detect"] }],
+    );
+    await frigateApp.goto("/settings?page=cameraFfmpeg&camera=front_door");
+
+    const path = frigateApp.page.getByRole("textbox", { name: "Input path" });
+    await expect(path).toHaveValue(masked);
+    await path.focus();
+    await expect(path).toHaveValue(raw);
+    await path.blur();
+    await expect(path).toHaveValue(masked);
+  });
+
+  test("XMEye paths stay masked and resolve to the correct saved input", async ({
+    frigateApp,
+  }) => {
+    const raw =
+      "rtsp://cam:554/user=localUser_password=localSecret_channel=2_stream=1.sdp?real_stream";
+    const masked = "rtsp://cam:554/user=*_channel=2_stream=1.sdp?real_stream";
+    await installRoutes(
+      frigateApp.page,
+      [{ path: masked, roles: ["detect"] }],
+      [{ path: raw, roles: ["detect"] }],
+    );
+    await frigateApp.goto("/settings?page=cameraFfmpeg&camera=front_door");
+    const path = frigateApp.page.getByRole("textbox", { name: "Input path" });
+    await expect(path).toHaveValue(masked);
+    await path.focus();
+    await expect(path).toHaveValue(raw);
+    await path.blur();
+    await expect(path).toHaveValue(masked);
+  });
+
   test("inputs with the same masked path each reveal their own path by role", async ({
     frigateApp,
   }) => {

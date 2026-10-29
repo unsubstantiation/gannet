@@ -43,6 +43,65 @@ async function expandStream(page: Page, streamName: string) {
 }
 
 test.describe("go2rtc streams settings — ffmpeg compat mode @medium", () => {
+  test("masks a Protect token and saves the real URL after editing", async ({
+    frigateApp,
+  }) => {
+    const raw = "rtsps://protect:7441/private-token?enableSrtp=1";
+    const capture = await installRawPathsRoute(frigateApp.page, raw);
+    await frigateApp.goto("/settings?page=systemGo2rtcStreams");
+    await expandStream(frigateApp.page, STREAM_NAME);
+
+    const urlInput = frigateApp.page.getByPlaceholder(
+      "e.g., rtsp://user:pass@192.168.1.100/stream",
+    );
+    await expect(urlInput).toHaveValue("rtsps://protect:7441/*?enableSrtp=1");
+    await urlInput.focus();
+    await expect(urlInput).toHaveValue(raw);
+    await urlInput.fill(`${raw}&backchannel=0`);
+    await urlInput.blur();
+    await expect(urlInput).toHaveValue(
+      "rtsps://protect:7441/*?enableSrtp=1&backchannel=0",
+    );
+    await frigateApp.page.getByRole("button", { name: "Save" }).click();
+    await expect
+      .poll(() => capture.capturedConfig())
+      .toMatchObject({
+        config_data: {
+          go2rtc: { streams: { [STREAM_NAME]: [`${raw}&backchannel=0`] } },
+        },
+      });
+  });
+
+  test("masks XMEye path credentials and saves the edited real URL", async ({
+    frigateApp,
+  }) => {
+    const raw =
+      "rtsp://camera:554/user=localUser_password=localSecret_channel=1_stream=0.sdp?real_stream";
+    const updated = raw.replace("channel=1", "channel=2");
+    const capture = await installRawPathsRoute(frigateApp.page, raw);
+    await frigateApp.goto("/settings?page=systemGo2rtcStreams");
+    await expandStream(frigateApp.page, STREAM_NAME);
+    const urlInput = frigateApp.page.getByPlaceholder(
+      "e.g., rtsp://user:pass@192.168.1.100/stream",
+    );
+    await expect(urlInput).toHaveValue(
+      "rtsp://camera:554/user=*_channel=1_stream=0.sdp?real_stream",
+    );
+    await urlInput.focus();
+    await expect(urlInput).toHaveValue(raw);
+    await urlInput.fill(updated);
+    await urlInput.blur();
+    await expect(urlInput).toHaveValue(
+      "rtsp://camera:554/user=*_channel=2_stream=0.sdp?real_stream",
+    );
+    await frigateApp.page.getByRole("button", { name: "Save" }).click();
+    await expect
+      .poll(() => capture.capturedConfig())
+      .toMatchObject({
+        config_data: { go2rtc: { streams: { [STREAM_NAME]: [updated] } } },
+      });
+  });
+
   test("preserves unknown fragments like #timeout= in the URL input", async ({
     frigateApp,
   }) => {

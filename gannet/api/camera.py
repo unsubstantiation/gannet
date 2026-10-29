@@ -228,18 +228,24 @@ def go2rtc_add_stream(request: Request, stream_name: str, src: str = ""):
             timeout=10,
         )
         if not r.ok:
-            logger.error(f"Failed to add go2rtc stream {stream_name}: {r.text}")
+            # go2rtc may echo the source as raw, escaped, or percent-encoded
+            # text. Avoid exposing an unrecognizable credential in its body.
+            logger.error(
+                "Failed to add go2rtc stream %s (HTTP %s)", stream_name, r.status_code
+            )
             return JSONResponse(
-                content=(
-                    {"success": False, "message": f"Failed to add stream: {r.text}"}
-                ),
+                content={
+                    "success": False,
+                    "message": f"Failed to add stream (go2rtc HTTP {r.status_code})",
+                },
                 status_code=r.status_code,
             )
         return JSONResponse(
             content={"success": True, "message": "Stream added successfully"}
         )
     except requests.RequestException as e:
-        logger.error(f"Error communicating with go2rtc: {e}")
+        # requests exceptions can include the entire URL-encoded src query.
+        logger.error("Error communicating with go2rtc (%s)", type(e).__name__)
         return JSONResponse(
             content=(
                 {
@@ -1116,9 +1122,13 @@ async def onvif_probe(
                                     "uri": uri,
                                 }
                             )
-                    except Exception:
+                    except Exception as e:
+                        # Some devices return credentials inside the URI or
+                        # exception text; do not log an unsanitized traceback.
                         logger.debug(
-                            f"GetStreamUri failed for token {token}", exc_info=True
+                            "GetStreamUri failed for token %s: %s",
+                            token,
+                            clean_camera_user_pass(str(e)),
                         )
                         continue
 
@@ -1169,7 +1179,9 @@ async def onvif_probe(
                             }
                         )
                     except Exception as e:
-                        logger.debug(f"Unable to probe stream: {e}")
+                        logger.debug(
+                            "Unable to probe stream: %s", clean_camera_user_pass(str(e))
+                        )
                         tested_candidates.append(
                             {
                                 "uri": test_uri,

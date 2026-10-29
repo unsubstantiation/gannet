@@ -971,7 +971,9 @@ def process_logs(
     repeat_count = 0
 
     for raw_line in contents.splitlines():
-        clean_line = raw_line.strip()
+        # go2rtc writes its own native logs directly to disk. Redact them (and
+        # older logs) before displaying or streaming them through the API.
+        clean_line = clean_camera_user_pass(raw_line.strip())
 
         if len(clean_line) < 10:
             continue

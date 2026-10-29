@@ -68,6 +68,10 @@ GANNET_NOTICE = "Copyright (c) 2026 unsubstantiation and the Gannet contributors
 # dual-licensed. Keep this list tiny; every entry is a claim, not a convenience.
 GANNET_ONLY_OVERRIDES = ("LICENSE",)
 
+# Preserve an existing mixed classification when the heuristic alone is not
+# enough to establish that the file is wholly original to this fork.
+DUAL_OVERRIDES = ("gannet/test/test_media_sync.py",)
+
 # Paths unsubstantiation makes no claim to, which therefore inherit the catch-all MIT
 # entry rather than becoming Gannet Material:
 #   - generated catalogs and specs, whose strings belong to the translators and to
@@ -238,6 +242,8 @@ def classify(
             continue
         if rel in GANNET_ONLY_OVERRIDES:
             only_here.append(rel)
+        elif rel in DUAL_OVERRIDES:
+            modified.append(rel)
         elif not there.exists():
             ratio = (
                 derivation_ratio(rel, index)

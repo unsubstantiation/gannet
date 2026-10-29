@@ -199,6 +199,19 @@ class TestReuseMapping(unittest.TestCase):
                 self.assertIn(rel, modified)
                 self.assertNotIn(rel, only_here)
 
+    def test_explicit_mixed_override_preserves_existing_classification(self):
+        spec = importlib.util.spec_from_file_location(
+            "generate_reuse_toml", REPO / "scripts" / "generate_reuse_toml.py"
+        )
+        generator = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(generator)
+        rel = "gannet/test/test_media_sync.py"
+        with tempfile.TemporaryDirectory() as directory:
+            with patch.object(generator, "tracked_files", return_value=[rel]):
+                modified, only_here, _, _ = generator.classify(Path(directory))
+        self.assertIn(rel, modified)
+        self.assertNotIn(rel, only_here)
+
     def test_mapping_is_current_against_the_upstream_pin(self):
         """Regenerate and compare, but only when an upstream checkout is at hand.
 

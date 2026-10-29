@@ -18,7 +18,11 @@ import type {
 import { FaCircleCheck } from "react-icons/fa6";
 import { Card, CardContent, CardTitle } from "../../ui/card";
 import OnvifProbeResults from "./OnvifProbeResults";
-import { CAMERA_BRANDS } from "@/types/cameraWizard";
+import {
+  cameraProfileTemplate,
+  getCameraBrand,
+  getCameraStreamProfile,
+} from "@/types/cameraBrands";
 import {
   detectReolinkCamera,
   formatCameraStreamTemplate,
@@ -302,9 +306,9 @@ export default function Step2ProbeOrSnapshot({
 
   const generateDynamicStreamUrls = useCallback(
     async (data: Partial<WizardFormData>): Promise<string[]> => {
-      const brand = CAMERA_BRANDS.find((b) => b.value === data.brandTemplate);
+      const brand = getCameraBrand(data.brandTemplate);
       const host = data.host;
-      if (!brand || !host) return [];
+      if (!brand || brand.mode !== "dynamic" || !host) return [];
 
       let protocol = undefined;
       if (data.brandTemplate === "reolink" && data.username && data.password) {
@@ -324,7 +328,7 @@ export default function Step2ProbeOrSnapshot({
       // fallback when the http-flv stream does not probe.
       const protocolKeys =
         protocol === "rtsp" ? ["http-flv", "rtsp"] : [protocol || "rtsp"];
-      const templates: Record<string, string> = brand.dynamicTemplates || {};
+      const templates: Record<string, string> = brand.dynamicTemplates;
 
       return protocolKeys
         .filter((key) => key in templates)
@@ -332,7 +336,7 @@ export default function Step2ProbeOrSnapshot({
           formatCameraStreamTemplate(
             templates[key],
             host,
-            data.rtspPort ?? (brand.value === "foscam" ? 88 : 554),
+            data.rtspPort ?? brand.defaultPort,
             data.username,
             data.password,
           ),
@@ -343,25 +347,29 @@ export default function Step2ProbeOrSnapshot({
 
   const generateStreamUrls = useCallback(
     async (data: Partial<WizardFormData>): Promise<string[]> => {
-      if (data.brandTemplate === "other") {
+      const brand = getCameraBrand(data.brandTemplate);
+      if (!brand) return [];
+      if (brand.mode === "custom") {
         const url = data.customUrl?.trim();
-        return url
-          ? [withRtspCredentials(url, data.username, data.password)]
-          : [];
+        if (!url) return [];
+        return [
+          brand.credentials === "asProvided"
+            ? url
+            : withRtspCredentials(url, data.username, data.password),
+        ];
       }
 
-      const brand = CAMERA_BRANDS.find((b) => b.value === data.brandTemplate);
-      if (!brand || !data.host) return [];
-
-      if (brand.template === "dynamic" && "dynamicTemplates" in brand) {
+      if (!data.host) return [];
+      if (brand.mode === "dynamic") {
         return generateDynamicStreamUrls(data);
       }
 
+      const profile = getCameraStreamProfile(brand, data.brandStreamProfile);
       return [
         formatCameraStreamTemplate(
-          brand.template,
+          cameraProfileTemplate(profile, data.brandChannel),
           data.host,
-          data.rtspPort ?? (brand.value === "foscam" ? 88 : 554),
+          data.rtspPort ?? brand.defaultPort,
           data.username,
           data.password,
         ),

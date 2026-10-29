@@ -213,7 +213,9 @@ test.describe("Network camera discovery @medium @mobile", () => {
     await expect(dialog.getByLabel("Custom Stream URL")).toHaveValue(
       "rtsp://192.168.1.41:24567/",
     );
-    await dialog.getByRole("combobox").click();
+    await dialog
+      .getByRole("combobox", { name: "Camera Brand", exact: true })
+      .click();
     await frigateApp.page
       .getByRole("option", { name: "Dahua / Amcrest / EmpireTech" })
       .click();
@@ -270,9 +272,12 @@ test.describe("Network camera discovery @medium @mobile", () => {
     expect(snapshots).toEqual([expected]);
 
     await dialog.getByRole("button", { name: /^Continue$/i }).click();
-    await expect(
-      dialog.getByPlaceholder("rtsp://username:password@host:port/path"),
-    ).toHaveValue(expected);
+    const streamInput = dialog.getByPlaceholder(
+      "rtsp://username:password@host:port/path",
+    );
+    await expect(streamInput).not.toHaveValue(expected);
+    await streamInput.focus();
+    await expect(streamInput).toHaveValue(expected);
     await dialog.getByRole("button", { name: /^Next$/i }).click();
     await expect(
       dialog.getByRole("button", { name: /Save New Camera/i }),
@@ -320,7 +325,9 @@ test.describe("Network camera discovery @medium @mobile", () => {
     await mockSuccessfulManualProbe(frigateApp.page, probed, []);
     const dialog = await selectRtspService(frigateApp.page);
     await dialog.getByPlaceholder(/front_door/i).fill("anonymous_brand");
-    await dialog.getByRole("combobox").click();
+    await dialog
+      .getByRole("combobox", { name: "Camera Brand", exact: true })
+      .click();
     await frigateApp.page
       .getByRole("option", { name: "Dahua / Amcrest / EmpireTech" })
       .click();
@@ -420,7 +427,9 @@ test.describe("Network camera discovery @medium @mobile", () => {
     await dialog
       .getByRole("button", { name: /Use RTSP at 192\.168\.1\.41 port 24567/i })
       .click();
-    await dialog.getByRole("combobox").click();
+    await dialog
+      .getByRole("combobox", { name: "Camera Brand", exact: true })
+      .click();
     await frigateApp.page
       .getByRole("option", { name: "Dahua / Amcrest / EmpireTech" })
       .click();
@@ -494,8 +503,14 @@ test.describe("Network camera discovery @medium @mobile", () => {
       route.fulfill({ status: 202, json: baseScan }),
     );
     await frigateApp.page.route("**/api/camera_discovery/*", (route) => {
-      methods.push(route.request().method());
-      return route.fulfill({ json: { ...baseScan, status: "cancelled" } });
+      const method = route.request().method();
+      methods.push(method);
+      return route.fulfill({
+        json: {
+          ...baseScan,
+          status: method === "DELETE" ? "cancelled" : "scanning",
+        },
+      });
     });
     const dialog = await openDiscovery(frigateApp.page);
     await dialog

@@ -1352,7 +1352,10 @@ async def logs(
             file = open(service_location, encoding="utf-8", errors="replace")
             contents = file.read()
             file.close()
-            return JSONResponse(jsonable_encoder(contents))
+            # Native go2rtc logs can contain source URLs before Gannet reads
+            # them. Downloads must receive the same credential scrubbing as
+            # displayed and streamed log lines.
+            return JSONResponse(jsonable_encoder(clean_camera_user_pass(contents)))
         except FileNotFoundError as e:
             logger.error(e)
             return JSONResponse(

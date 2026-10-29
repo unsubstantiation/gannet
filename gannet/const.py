@@ -148,7 +148,34 @@ _CREDENTIAL_QUERY_KEYS = (
 )
 REGEX_CREDENTIAL_QUERY_KEY = rf"(?i)[?&]{_CREDENTIAL_QUERY_KEYS}="
 REGEX_CREDENTIAL_QUERY_PARAM = rf"(?i)([?&]{_CREDENTIAL_QUERY_KEYS}=)[^&\s]*"
-REGEX_MASKED_CREDENTIAL = rf"(?i)://\*:\*@|[?&]{_CREDENTIAL_QUERY_KEYS}=\*(?![^&\s])"
+# UniFi Protect publishes a bearer token as the first path component on its
+# standard RTSPS (7441) and RTSP (7447) ports, rather than as userinfo.
+REGEX_UNIFI_PROTECT_TOKEN = (
+    r"(?i)(rtsps?://[^\s/?#]+:744[17]/)(?:(?!,rtsps?://)[^/?#\s])+"
+)
+# XMEye-style RTSP paths put both credentials after /user=. Mask the entire
+# credential portion, including underscore-separated ONVIF variants. Stop at
+# another comma-separated RTSP URL, not at an unescaped comma in a password.
+REGEX_XMEYE_AUTH_PATH = (
+    r"(?i)(rtsps?://[^\s/?#]+/(?:[^/\s?#]+/)*?)user="
+    r"((?:(?!,rtsps?://)[^\r\n])*)"
+)
+# Native services can log a stream as a percent-encoded query parameter.
+# Hide the remainder of that line instead of trying to decode and re-encode it.
+REGEX_XMEYE_ENCODED_AUTH_PATH = (
+    r"(?i)(rtsps?%3a%2f%2f(?:(?!rtsps?%3a%2f%2f)[^\s])*?%2fuser%3d)[^\r\n]*"
+)
+# Only preserve a well-known, non-secret channel/stream suffix. Everything
+# else, including unexpected parameters or unescaped whitespace, stays hidden.
+REGEX_XMEYE_SAFE_SUFFIX = (
+    r"(?i)([&_]channel=\d+[&_]stream=\d+(?:[&_]onvif=\d+)?"
+    r"\.sdp(?:\?real_stream|\?)?)$"
+)
+REGEX_MASKED_CREDENTIAL = (
+    rf"(?i)://\*:\*@|[?&]{_CREDENTIAL_QUERY_KEYS}=\*(?![^&\s])"
+    r"|rtsps?://[^\s/?#]+:744[17]/\*(?=[/?#\s,]|$)"
+    r"|rtsps?://[^\s/?#]+/(?:[^/\s?#]+/)*user=\*(?=[&_?]|$)"
+)
 REGEX_JSON = re.compile(r"^\s*\{")
 
 # Preview Values
