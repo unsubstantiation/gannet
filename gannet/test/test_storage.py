@@ -31,6 +31,12 @@ class TestHttp(unittest.TestCase):
         self.db.bind(models)
         self.test_dir = tempfile.mkdtemp()
 
+        # The maintainers are never stopped, so a real subscriber leaks a zmq
+        # context whose garbage collection can hang a later test in term()
+        subscriber_patch = patch("gannet.storage.CameraConfigUpdateSubscriber")
+        subscriber_patch.start()
+        self.addCleanup(subscriber_patch.stop)
+
         self.minimal_config = {
             "mqtt": {"host": "mqtt"},
             "cameras": {

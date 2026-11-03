@@ -65,6 +65,7 @@ from gannet.util.recording_coverage import (
     plan_clip,
     recording_overlap,
     resolve_coverage,
+    sequence_needs_audio,
 )
 from gannet.util.time import get_normalized_tz_name
 
@@ -564,14 +565,14 @@ async def recording_clip(
 
 
 def _build_vod_clip(
-    row: Any, start: float, end: float
+    row: Any, start: float, end: float, needs_audio: bool
 ) -> tuple[dict[str, Any], int] | None:
     """Build one nginx-vod clip dict + duration (ms) for a recording row trimmed to [start, end).
 
     Realization comes entirely from the shared plan_clip, so the coverage
     endpoint's realized timelines match this manifest by construction.
     """
-    plan = plan_clip(row, start, end)
+    plan = plan_clip(row, start, end, needs_audio)
 
     if plan.skipped:
         return None
@@ -630,6 +631,7 @@ async def _vod_response(
         null_audio_glitches(resolve_coverage(camera_name, start_ts, end_ts)),
         stream_preference,
     )
+    needs_audio = sequence_needs_audio(spans)
 
     durations: list[int] = []
     clips: list[dict[str, Any]] = []
@@ -647,7 +649,7 @@ async def _vod_response(
             row.end_time,
             row.duration,
         )
-        built = _build_vod_clip(row, span_start, span_end)
+        built = _build_vod_clip(row, span_start, span_end, needs_audio)
 
         if built is None:
             continue
@@ -797,7 +799,7 @@ async def vod_hour(
 async def vod_event(
     request: Request,
     event_id: str,
-    padding: int = Query(0, description="Padding to apply to the vod."),
+    padding: int = Query(0, ge=0, description="Padding to apply to the vod."),
 ):
     try:
         event: Event = Event.get(Event.id == event_id)
@@ -1456,6 +1458,7 @@ async def preview_gif(
                     | ((start_ts > Previews.start_time) & (end_ts < Previews.end_time))
                 )
                 .where(Previews.camera == camera_name)
+                .order_by(Previews.start_time.asc())
                 .limit(1)
                 .get()
             )
@@ -1465,7 +1468,8 @@ async def preview_gif(
                 status_code=404,
             )
 
-        diff = start_ts - preview.start_time
+        clip_start = max(start_ts, preview.start_time)
+        diff = clip_start - preview.start_time
         minutes = int(diff / 60)
         seconds = int(diff % 60)
         config: FrigateConfig = request.app.frigate_config
@@ -1477,7 +1481,7 @@ async def preview_gif(
             "-ss",
             f"00:{minutes}:{seconds}",
             "-t",
-            f"{end_ts - start_ts}",
+            f"{end_ts - clip_start}",
             "-i",
             preview.path,
             "-r",
@@ -1646,6 +1650,7 @@ async def preview_mp4(
                     | ((start_ts > Previews.start_time) & (end_ts < Previews.end_time))
                 )
                 .where(Previews.camera == camera_name)
+                .order_by(Previews.start_time.asc())
                 .limit(1)
                 .get()
             )
@@ -1658,7 +1663,8 @@ async def preview_mp4(
                 status_code=404,
             )
 
-        diff = start_ts - preview.start_time
+        clip_start = max(start_ts, preview.start_time)
+        diff = clip_start - preview.start_time
         minutes = int(diff / 60)
         seconds = int(diff % 60)
         config: FrigateConfig = request.app.frigate_config
@@ -1671,7 +1677,7 @@ async def preview_mp4(
             "-ss",
             f"00:{minutes}:{seconds}",
             "-t",
-            f"{end_ts - start_ts}",
+            f"{end_ts - clip_start}",
             "-i",
             preview.path,
             "-r",

@@ -125,6 +125,17 @@ class TestNativeGatewayLogin(BaseTestHttp):
 
         self.assertEqual(response.status_code, 401, response.text)
 
+    def test_logout_redirects_to_the_gateway_login_page(self):
+        # the login page is served by the gateway at /login, outside the
+        # /api mount the logout route lives under
+        client = self._client()
+        self.assertEqual(self._login(client, "admin", self.password).status_code, 200)
+
+        response = client.get("/api/logout", follow_redirects=False)
+
+        self.assertEqual(response.status_code, 303)
+        self.assertEqual(response.headers["location"], "/login")
+
 
 @patch.dict(os.environ, {JWT_SECRET_ENV_VAR: "test-secret"})
 class TestFailedLoginNotices(BaseTestHttp):

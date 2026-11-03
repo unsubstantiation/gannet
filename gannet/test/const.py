@@ -18,6 +18,11 @@ def test_db_path(directory: str) -> str:
     return os.path.join(directory, "test.db")
 
 
+# a helper, not a test: pytest would otherwise collect it as one when a test
+# module imports it
+test_db_path.__test__ = False
+
+
 def cleanup_test_db(db: SqliteQueueDatabase) -> None:
     """Stop a test queue database and delete its files.
 

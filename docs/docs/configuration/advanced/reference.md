@@ -269,6 +269,13 @@ mqtt:
   stats_interval: 60
   qos: 0
 
+notifications:
+  # Optional: Delivery of notifications sent while an alert is active
+  # (default: shown below). Options are immediate (deliver right away or
+  # drop) and reliable (retry for up to 30 seconds). The notification sent
+  # when an alert ends is always kept for up to an hour.
+  ttl: immediate
+
 telemetry:
   # Optional: Network interface name prefixes to monitor for bandwidth
   # stats (default: empty list, monitor every interface)
