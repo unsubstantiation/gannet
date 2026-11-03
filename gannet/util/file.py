@@ -455,8 +455,8 @@ class FileLock:
         try:
             self._fd = os.open(self.lock_path, os.O_CREAT | os.O_RDWR)
 
-            start_time = time.time()
-            while time.time() - start_time < timeout:
+            start_time = time.monotonic()
+            while time.monotonic() - start_time < timeout:
                 try:
                     _try_lock(self._fd)
                     self._acquired = True
@@ -464,7 +464,7 @@ class FileLock:
                     return True
                 except OSError:
                     # Lock is held by another process
-                    if time.time() - start_time >= timeout:
+                    if time.monotonic() - start_time >= timeout:
                         logger.warning(f"Timeout waiting for lock: {self.lock_path}")
                         os.close(self._fd)
                         self._fd = None

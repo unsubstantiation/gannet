@@ -1,4 +1,3 @@
-# SPDX-License-Identifier: LicenseRef-GNCL-1.0
 import json
 import unittest
 from unittest.mock import MagicMock, patch

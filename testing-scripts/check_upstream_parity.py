@@ -232,10 +232,6 @@ EXCLUDED_DEFS: tuple[Exclusion, ...] = (
         "sysfs helper for the excluded Linux detector discovery paths",
     ),
     Exclusion(
-        "*:add_hailo_alias",
-        "Frigate+ model aliasing for the excluded Hailo detector",
-    ),
-    Exclusion(
         "*:rename_hailo_detector",
         "config migration for the excluded Hailo detector name",
     ),
@@ -395,6 +391,10 @@ EXCLUDED_LOCALE_KEYS: tuple[Exclusion, ...] = (
     Exclusion(
         "components/player:toast.error.submitFrigatePlusFailed",
         "cloud frame upload was removed",
+    ),
+    Exclusion(
+        "views/settings:cameraWizard.step1.errors.onvifPortInvalid",
+        "the wizard validates the ONVIF port with its own string parser and shows cameraWizard.step1.errors.invalidPort",
     ),
     Exclusion(
         "components/player:toast.success.submittedFrigatePlus",

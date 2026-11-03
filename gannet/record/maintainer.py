@@ -43,7 +43,7 @@ from gannet.const import (
 from gannet.models import Recordings, ReviewSegment
 from gannet.review.types import SeverityEnum
 from gannet.util.file import async_robust_remove, robust_remove
-from gannet.util.media import get_keyframe_offsets
+from gannet.util.media import get_playback_index
 from gannet.util.platform import is_subpath
 from gannet.util.services import get_video_properties
 
@@ -229,7 +229,7 @@ class RecordingMaintainer(threading.Thread):
         self.object_recordings_info: dict[str, list] = defaultdict(list)
         self.audio_recordings_info: dict[str, list] = defaultdict(list)
         # cache_path -> (end_time, duration, has_audio, audio_rate,
-        # audio_codec, video_codec, keyframes)
+        # audio_codec, video_codec, keyframes, audio_duration)
         self.end_time_cache: dict[
             str,
             tuple[
@@ -240,6 +240,7 @@ class RecordingMaintainer(threading.Thread):
                 str | None,
                 str | None,
                 list[int] | None,
+                float | None,
             ],
         ] = {}
         # last known capture end per (camera, stream_type); 0.0 marks a key
@@ -658,6 +659,7 @@ class RecordingMaintainer(threading.Thread):
                 audio_codec,
                 video_codec,
                 keyframes,
+                audio_duration,
             ) = self.end_time_cache[cache_path]
             # recover the resolved start rather than reusing the truncated
             # filename timestamp
@@ -691,7 +693,7 @@ class RecordingMaintainer(threading.Thread):
                 # playback snaps mid-file entry points against these offsets
                 # instead of probing files on demand
                 async with self.probe_semaphore:
-                    keyframes = await get_keyframe_offsets(cache_path)
+                    keyframes, audio_duration = await get_playback_index(cache_path)
 
                 if previous_start is not None:
                     await previous_start.wait()
@@ -708,6 +710,7 @@ class RecordingMaintainer(threading.Thread):
                     audio_codec,
                     video_codec,
                     keyframes,
+                    audio_duration,
                 )
                 # segments later discarded by retention still advance the
                 # chain for the next kept segment
@@ -807,43 +810,45 @@ class RecordingMaintainer(threading.Thread):
                     audio_codec,
                     video_codec,
                     keyframes,
+                    audio_duration,
                 )
 
         # we fell through the continuous / motion check, so we need to check the review items
         # if the cached segment overlaps with the review items:
-        overlaps = False
+        modes: set[RetainModeEnum] = set()
         for review in reviews:
             severity = SeverityEnum[review.severity]
 
-            # if the review item starts in the future, stop checking review items
-            # and remove this segment
+            # stop once no later review item's pre capture can reach this segment
+            if (
+                review.start_time - record_config.event_pre_capture
+            ) > end_time.timestamp():
+                break
+
             if (
                 review.start_time - record_config.get_review_pre_capture(severity)
             ) > end_time.timestamp():
-                overlaps = False
-                break
+                continue
 
-            # if the review item is in progress or ends after the recording starts, keep it
-            # and stop looking at review items
+            # collect every review item that is in progress or ends after the
+            # recording starts, since their windows can overlap
             if (
                 review.end_time is None
                 or (review.end_time + record_config.get_review_post_capture(severity))
                 >= start_time.timestamp()
             ):
-                overlaps = True
-                break
+                modes.add(
+                    alerts_retain_mode
+                    if review.severity == "alert"
+                    else detections_retain_mode
+                )
 
-        if overlaps:
-            record_mode = (
-                alerts_retain_mode
-                if review.severity == "alert"
-                else detections_retain_mode
-            )
-
+        if modes:
             if segment_stats is None:
                 segment_stats = self.segment_stats(camera, start_time, end_time)
 
-            if not segment_stats.should_discard_segment(record_mode):
+            # keep the segment if any overlapping review item's mode keeps it
+            if any(not segment_stats.should_discard_segment(m) for m in modes):
                 # move from cache to recordings immediately
                 return await self.move_segment(
                     camera,
@@ -858,6 +863,7 @@ class RecordingMaintainer(threading.Thread):
                     audio_codec,
                     video_codec,
                     keyframes,
+                    audio_duration,
                 )
             else:
                 self.drop_segment(cache_path)
@@ -1004,6 +1010,7 @@ class RecordingMaintainer(threading.Thread):
         audio_codec: str | None = None,
         video_codec: str | None = None,
         keyframes: list[int] | None = None,
+        audio_duration: float | None = None,
     ) -> dict[str, Any] | None:
         path_time = segment_path_time(cache_path) or start_time
 
@@ -1096,6 +1103,7 @@ class RecordingMaintainer(threading.Thread):
                     Recordings.audio_codec.name: audio_codec,
                     Recordings.video_codec.name: video_codec,
                     Recordings.keyframes.name: keyframes,
+                    Recordings.audio_duration.name: audio_duration,
                 }
         except Exception:
             logger.exception(f"Unable to store recording segment {cache_path}")

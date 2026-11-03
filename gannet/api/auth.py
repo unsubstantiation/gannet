@@ -1028,7 +1028,13 @@ def profile(request: Request):
 )
 def logout(request: Request):
     auth_config: AuthConfig = request.app.frigate_config.auth
-    response = RedirectResponse("/login", status_code=303)
+    # The login page is served by the gateway at /login, outside this app's
+    # /api mount, so the redirect must drop the mount prefix but keep any
+    # outer path the gateway itself is served below.
+    base_path = (request.scope.get("root_path") or "").rstrip("/")
+    if base_path.endswith("/api"):
+        base_path = base_path[: -len("/api")]
+    response = RedirectResponse(f"{base_path}/login", status_code=303)
     response.delete_cookie(auth_config.cookie_name)
     return response
 
@@ -1059,6 +1065,10 @@ def login(request: Request, body: AppPostLoginBody):
     try:
         db_user: User = User.get_by_id(user)
     except DoesNotExist:
+        # Hash anyway so response timing doesn't reveal which usernames exist
+        hash_password(
+            password, iterations=request.app.frigate_config.auth.hash_iterations
+        )
         logger.warning(f"Login failed for unknown user '{user}' from {remote_addr}")
         failed_logins.record(user, time.time())
         return JSONResponse(content={"message": "Login failed"}, status_code=401)
