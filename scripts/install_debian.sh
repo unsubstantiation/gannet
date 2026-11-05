@@ -96,9 +96,16 @@ chmod -R go-w /opt/gannet
 chmod -R a+rX /opt/gannet/gannet /opt/gannet/migrations /opt/gannet/.python /opt/gannet/.venv /opt/gannet/bin /opt/gannet/web/dist /opt/gannet/docs/static
 chmod a+r /opt/gannet/labelmap.txt /opt/gannet/audio-labelmap.txt
 
+# Initialize the root-only OS credential host key before the restricted NVR
+# mount namespace is active. Do not create an application-readable master key.
+systemd-creds setup
+install -o root -g root -m 0644 /opt/gannet/scripts/gannet-wireguard@.service /etc/systemd/system/gannet-wireguard@.service
 install -o root -g root -m 0644 /opt/gannet/scripts/gannet.service /etc/systemd/system/gannet.service
 systemctl daemon-reload
-systemd-analyze verify /etc/systemd/system/gannet.service
+systemd-analyze verify /etc/systemd/system/gannet.service /etc/systemd/system/gannet-wireguard@.service
+# Preserve IDs and active routes when upgrading the former plaintext store.
+# A failed migration retains the original and stops installation.
+printf '{}\n' | /usr/local/libexec/gannet-wireguard migrate | /opt/gannet/.venv/bin/python -c 'import json,sys; result=json.load(sys.stdin); error=result.get("error"); print(error, file=sys.stderr) if error else None; sys.exit(1 if error else 0)'
 # Do not print generated credentials or configuration in the installer output.
 sudo -u gannet env GANNET_BASE_DIR=/var/lib/gannet GANNET_CONFIG_DIR=/etc/gannet GANNET_CACHE_DIR=/var/cache/gannet GANNET_TMP_DIR=/run/gannet PATH=/opt/gannet/bin:/usr/bin:/bin /opt/gannet/.venv/bin/python -m gannet --validate-config
 systemctl enable --now gannet.service

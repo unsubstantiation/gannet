@@ -2228,7 +2228,7 @@
     "name": "Tunnel name",
     "file": "Import a .conf file",
     "configuration": "WireGuard configuration",
-    "secretHelp": "Contains private keys. Sent only on import, stored with Windows DPAPI/admin-only permissions or Debian root-only files, and never returned by the API. Use HTTPS when accessing Gannet remotely.",
+    "secretHelp": "Contains private keys. Sent only on import, stored with Windows DPAPI/admin-only permissions or Debian systemd-encrypted/root-only credentials, and never returned by the API. Use HTTPS when accessing Gannet remotely.",
     "import": "Save tunnel",
     "start": "Start",
     "stop": "Stop",

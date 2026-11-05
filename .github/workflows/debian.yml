@@ -21,9 +21,16 @@ jobs:
         run: |
           apt-get update
           apt-get install -y ca-certificates curl git python3-venv build-essential ffmpeg systemd
+          apt-get install -y --no-install-recommends wireguard-tools
           python3 -m venv /tmp/tools
           /tmp/tools/bin/pip install uv==0.13.7
       - uses: actions/checkout@v5
+      - name: Trust and verify container checkout
+        run: |
+          # Container shell steps can use a different HOME/UID from checkout.
+          # Trust only this workspace, never every repository on the runner.
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git -C "$GITHUB_WORKSPACE" rev-parse --show-toplevel
       - name: Install CPython 3.12 and Debian requirements
         run: |
           /tmp/tools/bin/uv python install 3.12
@@ -35,13 +42,40 @@ jobs:
           .venv/bin/ruff format --check bootstrap_debian.py scripts/wireguard_helper.py gannet/test/test_debian.py gannet/util/wireguard_debian.py
           .venv/bin/python -m compileall -q bootstrap_debian.py gannet scripts/wireguard_helper.py
           bash -n scripts/install_debian.sh
+          systemd-analyze verify scripts/gannet-wireguard@.service
+      - name: Native credential encryption smoke check
+        run: |
+          .venv/bin/python - <<'PY'
+          import subprocess
+          subprocess.run(["systemd-creds", "setup"], check=True, capture_output=True)
+          plain = b"Disposable Gannet CI credential"
+          encrypted = subprocess.run(
+              ["systemd-creds", "encrypt", "--with-key=host", "--name=gannet-test.conf", "-", "-"],
+              input=plain, capture_output=True, check=True,
+          ).stdout
+          assert plain not in encrypted
+          decrypted = subprocess.run(
+              ["systemd-creds", "decrypt", "--name=gannet-test.conf", "-", "-"],
+              input=encrypted, capture_output=True, check=True,
+          ).stdout
+          assert decrypted == plain
+          wrong_name = subprocess.run(
+              ["systemd-creds", "decrypt", "--name=another.conf", "-", "-"],
+              input=encrypted, capture_output=True,
+          )
+          assert wrong_name.returncode != 0 and plain not in wrong_name.stdout
+          print("Credential roundtrip and name binding passed; no tunnel was started.")
+          PY
       - name: Full offline unit suite
         run: .venv/bin/python testing-scripts/run_native_unit_suite.py
       - name: Generated API and translations
         run: |
           .venv/bin/python generate_api_auth_spec.py --check
           .venv/bin/python generate_config_translations.py
-          git diff --exit-code -- docs/static/frigate-api.yaml web/public/locales/en/config
+          # Fail clearly if Git cannot recognize the checkout; otherwise diff
+          # can fall back to comparing the file and directory in no-index mode.
+          git -C "$GITHUB_WORKSPACE" rev-parse --show-toplevel
+          git -C "$GITHUB_WORKSPACE" diff --exit-code -- docs/static/frigate-api.yaml web/public/locales/en/config
 
   windows:
     name: Windows regression suite

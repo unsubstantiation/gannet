@@ -16,7 +16,17 @@ from gannet.util.wireguard_debian import DebianWireGuardManager  # noqa: E402
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "action", choices=("list", "get", "status", "create", "start", "stop", "delete")
+        "action",
+        choices=(
+            "list",
+            "get",
+            "status",
+            "create",
+            "start",
+            "stop",
+            "delete",
+            "migrate",
+        ),
     )
     parser.add_argument("tunnel_id", nargs="?", default="")
     args = parser.parse_args()
@@ -38,6 +48,8 @@ def main():
             ):
                 raise ValueError("Tunnel name and configuration are required.")
             result = manager.create(body["name"], body["config"])
+        elif args.action == "migrate":
+            result = manager.migrate()
         elif args.action == "list":
             result = manager.list()
         else:

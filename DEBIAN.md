@@ -62,7 +62,8 @@ sudo systemctl stop gannet
 | `/var/cache/gannet` | Video/cache data |
 | `/run/gannet` | Temporary files, child logs and restart marker; recreated by systemd |
 | `/etc/wireguard/gannet` | Root-only saved tunnel metadata |
-| `/etc/wireguard/gn*.conf` | Root-only managed WireGuard configurations with private keys |
+| `/etc/wireguard/gannet/gn*.cred` | Root-only encrypted managed WireGuard credentials |
+| `/var/lib/systemd/credential.secret` | OS-managed host key; root-only, required to restore encrypted credentials |
 
 Check configuration with the service's environment, not your login account's
 XDG paths:
@@ -100,17 +101,21 @@ Windows. Configurations must use split routes to camera networks. DNS, shell
 hooks, default/broad routes and overlapping saved routes remain rejected.
 Private keys are sent only on import and are never returned by the API.
 
-Debian uses standard **root-owned mode-0600 WireGuard files**, not Windows DPAPI.
-Protect backups and use disk encryption if protection against offline disk theft
-is required. The service account cannot read these keys. Its only sudo grant is
+Debian stores **root-owned mode-0600 encrypted credentials** using
+`systemd-creds --with-key=host`, the Linux OS-managed counterpart to Windows
+machine-scope DPAPI storage. PID 1 decrypts each credential only into the tunnel
+service's protected runtime credential directory; Gannet does not persist a
+plaintext `.conf` file. The service account cannot read the host key or decrypted
+credentials. This is host-key encryption, **not TPM-backed protection**: protect
+the OS host key and backups, and encrypt the disk against offline disk theft. Its only sudo grant is
 `/usr/local/libexec/gannet-wireguard`, an isolated Python entry point with fixed
 operations, validated 16-hex IDs, fixed paths and generated interface names under
 Linux's 15-character limit. It revalidates stored configuration before starting
-`wg-quick@gn….service`. The helper never accepts arbitrary commands, unit names,
+`gannet-wireguard@gn….service`. The helper never accepts arbitrary commands, unit names,
 paths, DNS settings or hooks. Do not add broad `sudo systemctl`/shell grants.
 
-Check a tunnel with `sudo systemctl status wg-quick@<interface>.service`,
-`sudo journalctl -u wg-quick@<interface>.service`, and `sudo wg show` locally.
+Check a tunnel with `sudo systemctl status gannet-wireguard@<interface>.service`,
+`sudo journalctl -u gannet-wireguard@<interface>.service`, and `sudo wg show` locally.
 Running service status is **not** evidence of a peer handshake or camera reachability.
 Routes affect the host, not just one camera, and there is no per-camera kill
 switch. Current/pending camera references block stop/delete through the API.
@@ -120,12 +125,25 @@ unreferenced tunnels are not separately enabled for boot by the helper.
 
 Windows DPAPI stores cannot be copied to Debian. Reimport the original configs
 and remove/reassign old camera tunnel IDs before validating the migrated config.
+Restoring Debian credentials onto another host also requires the original OS host
+key, or reimporting the original configurations. Never put that key in source
+control or expose it to the service account.
+
+Upgrades from the earlier Debian plaintext store migrate every managed tunnel
+while preserving its ID and camera associations. The installer seals and verifies
+the original configuration before removing it. Active legacy units are briefly
+stopped and replaced with credential-backed units; on failure, the installer
+attempts to restore the original service and retains the plaintext configuration
+for recovery. Installation fails rather than pretending migration succeeded.
+Inactive tunnels remain inactive. Back up first and schedule this route transition
+for a maintenance window. Removing a plaintext file cannot guarantee erasure of
+old filesystem snapshots, journal copies or backups.
 
 ## Upgrade, backup and removal
 
 Stop Gannet before backing up its database and changing the reviewed source
 revision. Back up `/etc/gannet`, `/var/lib/gannet`, and `/etc/wireguard` as root
-(the latter contains unencrypted private keys). Rerun the installer after updating
+(including encrypted credentials), plus the root-only OS credential host key. Rerun the installer after updating
 the source. It replaces the venv/assets/service, preserves data, and restarts Gannet.
 Keep a backup of the previous source/dependency environment for rollback.
 
@@ -181,14 +199,13 @@ That establishes code-path coverage, not a live-camera or GPU certification.
 | Setup wizard/config/health | Native families and presets exposed and classified, not hidden or mislabeled as Windows |
 | GPU telemetry | NVIDIA NVML is shared. Linux Intel/AMD gauges use driver sysfs counters when present; unavailable counters stay unknown, never fake zero. WMI-only engine/memory/NPU counters are not universally reproduced |
 | Managed reusable WireGuard | Same camera association, reference protection and lifecycle API; restricted root helper/systemd instead of SCM. Live handshake/routing acceptance is outstanding |
-| Secret storage | Debian root-only plaintext WireGuard files versus Windows DPAPI-encrypted files. Access control is implemented; cryptographic at-rest parity is **not** implemented. Encrypt the disk/backups as required |
+| Secret storage | Linux OS host-key encrypted credentials, root-only storage and runtime-only decrypted configs; Windows retains machine-scope DPAPI. Preserve the OS host key for recovery and encrypt disks/backups. Native PID 1 credential delivery still needs target-host acceptance |
 | Background service, stop/restart and child cleanup | systemd cgroups/SIGTERM instead of SCM/Job Objects; booted target-host lifecycle acceptance is outstanding |
 | Portable ZIP / Start Menu / Windows ML acquisition | Windows-specific distribution/integration, not present on Debian; Debian has the native installer/systemd workflow |
 | DirectML / Windows ML vendor EPs (including AMD MIGraphX and Qualcomm QNN) | Windows-only here. No supported equivalent Debian provider is implemented for every vendor. Do not call this complete GPU-inference parity |
 
 **Full platform parity is not yet certified.** In particular, AMD/Qualcomm vendor
-inference coverage, cryptographic tunnel-store parity, all hardware usage counters
-and target-host integration checks remain explicit gaps, not skipped successes.
+inference coverage, all hardware usage counters and target-host integration checks remain explicit gaps, not skipped successes.
 
 ### Native GPU setup
 
@@ -234,3 +251,24 @@ Only default model fetches are disabled by the outer test guard. Download tests
 supply their own mocks and still exercise verification/error paths. The suite
 has no new failure denylist. Native OS/driver tests keep explicit existing skips;
 those skips are not evidence of feature validation. See target acceptance above.
+
+
+### Release completion gate (not all checked yet)
+
+- [x] Shared feature unit/regression coverage and native preset/health paths.
+- [x] Encrypted tunnel storage, OS credential name binding, legacy-ID migration
+  and rollback tests; actual host-key CLI roundtrip on the development sandbox.
+- [x] Generated-artifact check trusts only the explicit CI checkout and rejects drift.
+- [ ] Green native Windows CI rerun. The prior Windows job installed dependencies
+  successfully but timed out during the full suite; it was not a passing run.
+  The runner now reports each test and periodic stack traces to locate stalls.
+- [ ] Green Debian 13/Python 3.12 CI including real systemd-creds smoke checks.
+- [ ] Booted Debian 13 installation, credential delivery by PID 1, reboot,
+  service stop/restart, child cleanup and recovery after a failed migration.
+- [ ] Live recording/playback/export, actual GPUs and vendor inference, WireGuard
+  handshake/routing/camera reuse, and configured external integrations.
+- [ ] Resolve or explicitly accept the vendor-only API and telemetry differences
+  listed in the feature matrix; these cannot be certified on absent hardware.
+
+The software changes and mocked tests are not a substitute for those unchecked
+acceptance checks. Do not label the release "all features complete" yet.

@@ -43,7 +43,8 @@ The name you enter is lowercased and spaces become underscores. If the result st
 Administrators can save reusable tunnels at **Settings > System > WireGuard**.
 Native Debian 13 installations use the restricted root helper and `wg-quick`
 systemd services installed by the [Debian installer](https://github.com/unsubstantiation/gannet/blob/dev/DEBIAN.md).
-The NVR runs unprivileged; keys live in root-only mode-0600 files, not DPAPI.
+The NVR runs unprivileged; keys use root-only systemd-encrypted credentials
+and are decrypted only into the tunnel unit's protected runtime directory.
 Tunnel associations, split-route restrictions, and host-wide routing semantics
 below apply to both platforms. The Windows-specific setup is:
 
