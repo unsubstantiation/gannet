@@ -21,7 +21,7 @@ from gannet.util.platform import (
     install_service_stop_watcher,
     install_signal_handlers,
     long_path_warning,
-    require_windows,
+    require_supported_platform,
 )
 
 
@@ -35,9 +35,8 @@ def _create_process_manager() -> SyncManager:
 
 
 def main() -> None:
-    # This is a native Windows application. Reject other operating systems
-    # before creating child processes, directories, loggers, or services.
-    require_windows()
+    # Reject unsupported hosts before creating runtime resources.
+    require_supported_platform()
 
     logger = logging.getLogger("gannet")
     manager = _create_process_manager()

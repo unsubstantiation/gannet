@@ -632,8 +632,13 @@ def get_windows_gpu_info(ffmpeg_path: str | None = None) -> dict[str, Any]:
     acceleration methods compiled into the installed FFmpeg, the accelerators
     go2rtc could open, and the ``preset-windows-*`` families Gannet would use.
     """
-    from gannet.util.hwaccel import hwaccel_options, windows_hwaccel_preset
+    from gannet.util.hwaccel import (
+        hwaccel_options,
+        linux_hwaccel_preset,
+        windows_hwaccel_preset,
+    )
     from gannet.util.platform import (
+        IS_WINDOWS,
         get_cpu_brand,
         get_display_adapter_vendors,
         get_display_adapters,
@@ -656,7 +661,9 @@ def get_windows_gpu_info(ffmpeg_path: str | None = None) -> dict[str, Any]:
         "decoders": [
             {"key": family.key, "presets": dict(family.presets)} for family in families
         ],
-        "recommended": windows_hwaccel_preset(go2rtc_sources),
+        "recommended": windows_hwaccel_preset(go2rtc_sources)
+        if IS_WINDOWS
+        else linux_hwaccel_preset(go2rtc_sources),
     }
 
     if "nvidia" in vendors:
@@ -684,8 +691,14 @@ def get_go2rtc_hardware_sources() -> list[dict[str, str]]:
 
 
 def auto_detect_hwaccel() -> str:
-    """Resolve automatic decoding against native Windows accelerators."""
+    """Resolve Windows hardware decoding or the supported Debian CPU path."""
     from gannet.util.hwaccel import windows_hwaccel_preset
+    from gannet.util.platform import IS_WINDOWS
+
+    if not IS_WINDOWS:
+        from gannet.util.hwaccel import linux_hwaccel_preset
+
+        return linux_hwaccel_preset(get_go2rtc_hardware_sources())
 
     preset = windows_hwaccel_preset(get_go2rtc_hardware_sources())
     if preset:

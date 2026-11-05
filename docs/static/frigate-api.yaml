@@ -2896,7 +2896,7 @@ paths:
       description: |-
         **Access:** Admin role required.
 
-        Return native Windows FFmpeg preset keys for the config UI.
+        Return FFmpeg preset keys supported by the native host.
       operationId: ffmpeg_presets_ffmpeg_presets_get
       responses:
         '200':

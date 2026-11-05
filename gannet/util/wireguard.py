@@ -14,7 +14,7 @@ from pathlib import Path
 
 from filelock import FileLock
 
-from gannet.util.platform import find_executable, get_config_dir
+from gannet.util.platform import IS_WINDOWS, find_executable, get_config_dir
 
 ID_PATTERN = r"[a-f0-9]{16}"
 
@@ -118,7 +118,7 @@ def validate_config(text: str) -> list[str]:
     return [str(route) for route in routes]
 
 
-class WireGuardManager:
+class WindowsWireGuardManager:
     def __init__(self, directory: Path | None = None):
         self.directory = directory or Path(get_config_dir()) / "wireguard"
 
@@ -335,6 +335,15 @@ class WireGuardManager:
                 self._command("/uninstalltunnelservice", f"gannet_{tunnel_id}")
             self._path(tunnel_id, ".conf.dpapi").unlink(missing_ok=True)
             self._path(tunnel_id, ".json").unlink()
+
+
+def WireGuardManager(directory: Path | None = None):
+    """Select the native backend without importing Win32 libraries on Debian."""
+    if IS_WINDOWS:
+        return WindowsWireGuardManager(directory)
+    from gannet.util.wireguard_debian import DebianWireGuardManager
+
+    return DebianWireGuardManager()
 
 
 def start_camera_tunnels(config):

@@ -20,7 +20,11 @@ def _build_scene_frigate_config(scene: str | None) -> FrigateConfig:
             "mqtt": {"host": "mqtt"},
             "models": [
                 {"devices": ["cpu"]},
-                {"scene": "outdoor", "devices": ["openvino:CPU"]},
+                {
+                    "scene": "outdoor",
+                    "path": "outdoor-model.onnx",
+                    "devices": ["openvino:CPU"],
+                },
             ],
             "cameras": {
                 "front_door": {

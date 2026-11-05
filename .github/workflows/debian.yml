@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
+name: Native feature parity checks
+on:
+  pull_request:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  debian:
+    runs-on: ubuntu-latest
+    # This supplies Debian userspace/wheels, not a deployed container runtime.
+    # A booted host is still required for systemd/WireGuard integration tests.
+    container: debian:13
+    timeout-minutes: 30
+    steps:
+      - name: Install build and validation tools
+        run: |
+          apt-get update
+          apt-get install -y ca-certificates curl git python3-venv build-essential ffmpeg systemd
+          python3 -m venv /tmp/tools
+          /tmp/tools/bin/pip install uv==0.13.7
+      - uses: actions/checkout@v5
+      - name: Install CPython 3.12 and Debian requirements
+        run: |
+          /tmp/tools/bin/uv python install 3.12
+          /tmp/tools/bin/uv venv --python 3.12 --managed-python .venv
+          /tmp/tools/bin/uv pip install --python .venv/bin/python -r requirements-debian.txt ruff
+      - name: Static checks
+        run: |
+          .venv/bin/ruff check bootstrap_debian.py gannet scripts/wireguard_helper.py
+          .venv/bin/ruff format --check bootstrap_debian.py scripts/wireguard_helper.py gannet/test/test_debian.py gannet/util/wireguard_debian.py
+          .venv/bin/python -m compileall -q bootstrap_debian.py gannet scripts/wireguard_helper.py
+          bash -n scripts/install_debian.sh
+      - name: Full offline unit suite
+        run: .venv/bin/python testing-scripts/run_native_unit_suite.py
+      - name: Generated API and translations
+        run: |
+          .venv/bin/python generate_api_auth_spec.py --check
+          .venv/bin/python generate_config_translations.py
+          git diff --exit-code -- docs/static/frigate-api.yaml web/public/locales/en/config
+
+  windows:
+    name: Windows regression suite
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          architecture: x64
+          cache: pip
+      - name: Install Windows requirements
+        run: python -m pip install -r requirements.txt
+      - name: Full offline unit suite
+        run: python testing-scripts/run_native_unit_suite.py

@@ -80,6 +80,7 @@ class TestNativeGo2rtcConfig(unittest.TestCase):
         self.assertEqual(config["api"]["origin"], "null")
 
 
+@patch("gannet.util.go2rtc_process.IS_WINDOWS", True)
 class TestGo2rtcProcess(unittest.TestCase):
     @patch("gannet.util.go2rtc_process.sp.Popen")
     @patch("gannet.util.go2rtc_process.prepare_homekit_config")

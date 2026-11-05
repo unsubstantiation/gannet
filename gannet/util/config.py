@@ -19,7 +19,7 @@ from gannet.const import (
 )
 from gannet.util.builtin import deep_merge
 from gannet.util.file import robust_move
-from gannet.util.platform import EXECUTABLE_SUFFIX, find_executable
+from gannet.util.platform import EXECUTABLE_SUFFIX, IS_WINDOWS, find_executable
 from gannet.util.services import get_video_properties
 
 logger = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ def _is_absolute_path(path: str) -> bool:
     """Whether a config value is a path rather than a version alias."""
     # Windows paths are absolute when they start with a drive or a separator,
     # which os.path.isabs knows and a leading slash test does not
-    return ntpath.isabs(path)
+    return ntpath.isabs(path) if IS_WINDOWS else os.path.isabs(path)
 
 
 def resolve_ffmpeg_path(path: str, binary: str = "ffmpeg") -> str:
@@ -78,7 +78,7 @@ def resolve_ffmpeg_path(path: str, binary: str = "ffmpeg") -> str:
         return found
 
     logger.warning(
-        "No %s executable was found. Run bootstrap_windows.py again or set "
+        "No %s executable was found. Install FFmpeg for your platform or set "
         "ffmpeg.path to its directory.",
         executable,
     )

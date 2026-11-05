@@ -1,36 +1,35 @@
 # Agent and contributor guide
 
-This repository is the native Windows edition of Gannet. It is a
-Windows-only application: 64-bit CPython 3.12, running directly on Windows
-as a normal process or SCM service. There is no container, WSL, POSIX, or
-Unix-service runtime, and changes must not reintroduce one. The full runtime
-contract is in [WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md); setup
-and review rules are in [CONTRIBUTING.md](CONTRIBUTING.md).
+Gannet supports native Windows x64 and native Debian 13 x86-64, both with
+CPython 3.12 and spawn multiprocessing. Containers, WSL, ARM, other Linux
+distributions and system Python 3.13 are not supported runtime targets.
+See [WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md) for the Windows contract,
+[DEBIAN.md](DEBIAN.md) for native systemd installation, and
+[CONTRIBUTING.md](CONTRIBUTING.md) for review rules.
 
 ## Runtime contract
 
-- `gannet.__main__` rejects every platform other than Windows before
-  runtime initialization (`gannet.util.platform.require_windows`).
-- Multiprocessing always uses `spawn`.
-- Interactive installs default writable data to `%LOCALAPPDATA%\Gannet`;
-  portable bundle launchers instead pin it to `<bundle>\data`. Both are
-  relocatable with `GANNET_BASE_DIR` and the `FRIGATE_*_DIR` overrides. Build
-  paths with `pathlib` or `os.path`; never introduce Unix root paths, device
-  nodes, Unix sockets, UID/GID ownership, or Unix service managers.
-- Executables are native `.exe` files, located through
-  `gannet.util.platform.find_executable`. The bootstrap installs pinned
-  FFmpeg and go2rtc builds and verifies their SHA-256 digests.
-- Process, IPC, shared-memory, priority, and service behavior goes through
-  `gannet/util/platform.py` and `gannet/util/job_object.py` where
-  practical. `platform.py` must remain importable during early startup
-  without importing other Gannet modules.
-- The public HTTP listener (default `0.0.0.0:8971`) is authenticated; the
-  internal listener (`127.0.0.1:5000`) is loopback-only and trusted. Never
-  trust client-supplied identity headers.
-- Supported detectors are CPU TensorFlow Lite, ONNX Runtime (CPU,
-  DirectML, CUDA, or Windows ML catalog providers), OpenVINO, and ZMQ remote
-  inference. Detector or acceleration additions must have a maintained native Windows runtime and CPython 3.12
-  x64 wheels where Python packages are required.
+- `gannet.__main__` calls `require_supported_platform` before initialization.
+- Multiprocessing always uses `spawn`; IPC remains loopback TCP on both targets.
+- Windows keeps native `.exe` discovery, PowerShell/SCM, DPAPI, Job Objects,
+  Windows quoting, priority classes and `%LOCALAPPDATA%\Gannet` defaults.
+  Do not introduce a POSIX dependency into Windows execution paths.
+- Debian uses native binaries, POSIX argument quoting, SIGTERM shutdown,
+  XDG defaults for foreground use, and dedicated systemd state/config/cache
+  directories. CPU, CUDA/NVENC, native Intel QSV and Intel/AMD VAAPI paths are
+  available with matching drivers and service render/video permissions. Never
+  select Windows device APIs on Debian. Auto decode requires a successful go2rtc
+  runtime probe, otherwise use CPU. See DEBIAN.md for remaining parity limits.
+- Platform/process behavior goes through `gannet/util/platform.py` and adapters.
+  Keep platform.py independent of other Gannet modules for early startup.
+- The Debian app runs unprivileged. Managed WireGuard uses a narrowly scoped,
+  root-owned isolated helper, never a root NVR or broad sudo/shell permissions.
+  Preserve hook/DNS/default-route rejection and metadata-only secret APIs on both
+  backends. Linux key files must remain root-only; Windows keeps DPAPI and ACLs.
+- The public listener (`0.0.0.0:8971`) is authenticated; the internal listener
+  (`127.0.0.1:5000`) is loopback-only and trusted. Never trust client identity headers.
+- Windows retains CPU TensorFlow Lite, ONNX Runtime CPU/DirectML/CUDA/Windows ML,
+  OpenVINO and ZMQ. Preserve existing Windows wheels and ML-provider behavior.
 
 ## Licensing rules an agent must follow
 
@@ -68,6 +67,10 @@ executables can only be validated on a Windows x64 host; results from other
 operating systems are not evidence for this runtime. Tests that cannot pass
 on Windows belong in `gannet/test/windows_suite_denylist.txt` with a
 concrete reason, and the list is expected to shrink, never grow silently.
+
+For Debian checks and target-machine acceptance tests, follow [DEBIAN.md](DEBIAN.md).
+Cross-platform mocked tests are not evidence of native SCM, systemd, VPN routing,
+GPU or live-camera behavior. New Debian files also require formatting/linting.
 
 Regenerate derived artifacts when their sources change:
 

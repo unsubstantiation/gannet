@@ -7,6 +7,7 @@ from unittest.mock import patch
 from gannet.util import hwaccel
 
 
+@patch("gannet.util.hwaccel.IS_WINDOWS", True)
 class TestIntelGeneration(unittest.TestCase):
     def test_numbered_generation(self) -> None:
         self.assertEqual(
@@ -23,6 +24,7 @@ class TestIntelGeneration(unittest.TestCase):
         self.assertIsNone(hwaccel._generation_of("Intel Xeon"))
 
 
+@patch("gannet.util.hwaccel.IS_WINDOWS", True)
 class TestWindowsFamilies(unittest.TestCase):
     def _adapters(self, vendors: set[str]):
         return (
@@ -72,6 +74,7 @@ class TestWindowsFamilies(unittest.TestCase):
         self.assertEqual(qsv.presets["h265"], "preset-windows-qsv-h265")
 
 
+@patch("gannet.util.hwaccel.IS_WINDOWS", True)
 class TestAutoPreset(unittest.TestCase):
     def test_go2rtc_cuda_wins(self) -> None:
         sources = [{"name": "OK", "url": "ffmpeg:camera#hardware=cuda"}]

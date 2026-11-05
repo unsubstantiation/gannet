@@ -207,6 +207,7 @@ class TestConfig(unittest.TestCase):
         self.assertIn("differ only by case", str(raised.exception))
 
     @patch("gannet.detectors.detector_config.load_labels")
+    @patch("gannet.ffmpeg_presets.IS_WINDOWS", True)
     def test_unknown_hwaccel_preset_is_rejected(self, mock_labels):
         mock_labels.return_value = {}
         config = deepcopy(self.minimal)
@@ -218,6 +219,7 @@ class TestConfig(unittest.TestCase):
         self.assertIn("not a supported preset", str(raised.exception))
 
     @patch("gannet.detectors.detector_config.load_labels")
+    @patch("gannet.ffmpeg_presets.IS_WINDOWS", True)
     def test_linux_only_hwaccel_preset_is_rejected_on_windows(self, mock_labels):
         mock_labels.return_value = {}
         config = deepcopy(self.minimal)
@@ -229,6 +231,7 @@ class TestConfig(unittest.TestCase):
         self.assertIn("preset-windows-d3d11va", str(raised.exception))
 
     @patch("gannet.detectors.detector_config.load_labels")
+    @patch("gannet.ffmpeg_presets.IS_WINDOWS", True)
     def test_windows_hwaccel_preset_is_accepted(self, mock_labels):
         mock_labels.return_value = {}
         config = deepcopy(self.minimal)

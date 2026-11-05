@@ -244,7 +244,8 @@ export function detectionRows({
 // ------------------------------------------------------------------ hwaccel
 
 export type HwaccelFamilyKey =
-  "windows-nvenc" | "windows-qsv" | "windows-d3d11va";
+  | "windows-nvenc" | "windows-qsv" | "windows-d3d11va"
+  | "nvidia" | "intel-qsv" | "vaapi";
 
 export type HwaccelClass =
   | { kind: "none" }
@@ -254,6 +255,9 @@ export type HwaccelClass =
 // Windows presets are checked first: preset-windows-qsv-h264 starts with
 // preset-windows-qsv, and preset-windows-nvenc is Nvidia, not Intel
 const PRESET_FAMILIES: [string, HwaccelFamilyKey][] = [
+  ["preset-nvidia", "nvidia"],
+  ["preset-intel-qsv", "intel-qsv"],
+  ["preset-vaapi", "vaapi"],
   ["preset-windows-nvenc", "windows-nvenc"],
   ["preset-windows-qsv", "windows-qsv"],
   ["preset-windows-d3d11va", "windows-d3d11va"],
@@ -278,6 +282,9 @@ export function hwaccelFamily(value: string | string[]): HwaccelClass {
 }
 
 const FAMILY_VENDORS: Record<HwaccelFamilyKey, GpuVendor[]> = {
+  nvidia: ["nvidia"],
+  "intel-qsv": ["intel"],
+  vaapi: ["intel", "amd"],
   "windows-nvenc": ["nvidia"],
   "windows-qsv": ["intel"],
   // D3D11VA decodes on any Windows GPU that has a driver.

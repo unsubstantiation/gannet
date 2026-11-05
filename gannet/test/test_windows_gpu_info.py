@@ -41,6 +41,8 @@ class TestFfmpegHwaccels(unittest.TestCase):
             self.assertEqual(services.get_ffmpeg_hwaccels("ffmpeg.exe"), [])
 
 
+@patch("gannet.util.platform.IS_WINDOWS", True)
+@patch("gannet.util.hwaccel.IS_WINDOWS", True)
 class TestWindowsGpuInfo(unittest.TestCase):
     def _info(
         self,

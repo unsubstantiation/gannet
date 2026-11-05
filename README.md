@@ -25,7 +25,9 @@ Use of a GPU or AI accelerator is highly recommended: accelerators outperform ev
 
 ## Native Windows application
 
-This distribution is designed exclusively for native 64-bit Windows. Gannet runs as a normal Windows process or SCM service; container, WSL, and Unix runtime paths are not supported. Gannet itself serves the API, media endpoints, and web interface.
+Gannet supports native 64-bit Windows and [native Debian 13 x86-64 with systemd](DEBIAN.md). Both use CPython 3.12; containers and WSL are not supported. The Windows installation below runs as a normal process or SCM service. Gannet itself serves the API, media endpoints, and web interface.
+
+For Debian installation, optional GPU acceleration, the feature-parity matrix, file locations, and managed WireGuard permissions, see [DEBIAN.md](DEBIAN.md).
 
 Install from an ordinary PowerShell window:
 

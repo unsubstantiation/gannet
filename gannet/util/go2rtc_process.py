@@ -13,6 +13,7 @@ import subprocess as sp
 
 from gannet.util.go2rtc_config import prepare_homekit_config
 from gannet.util.platform import (
+    IS_WINDOWS,
     find_executable,
     get_install_dir,
     get_service_log_path,
@@ -106,7 +107,8 @@ class Go2rtcProcess:
 
         # Keep go2rtc out of the console's Ctrl+C group so Gannet can stop it
         # after its own shutdown work is done.
-        kwargs["creationflags"] = sp.CREATE_NEW_PROCESS_GROUP
+        if IS_WINDOWS:
+            kwargs["creationflags"] = sp.CREATE_NEW_PROCESS_GROUP
 
         try:
             self.process = sp.Popen(command, **kwargs)

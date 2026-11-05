@@ -44,3 +44,7 @@ testing-scripts/genai-review-examples/*
 # Registry metadata cache written by scripts/license_audit.py; regenerable,
 # so it is not part of the tree.
 scripts/license_audit_cache.json
+
+# Native Debian installer: managed interpreter and bootstrap tooling.
+/.python/
+/.install-venv/

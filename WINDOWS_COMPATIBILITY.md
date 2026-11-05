@@ -1,13 +1,13 @@
 # Native Windows Architecture
 
-Gannet in this repository is a Windows-only application. It requires 64-bit
-CPython 3.12 and runs directly on Windows; there is no alternate container,
-WSL, POSIX, or Unix-service runtime.
+This document describes the native Windows runtime, requiring 64-bit CPython
+3.12. Native Debian 13 x86-64/systemd is a separate native target described
+in [DEBIAN.md](DEBIAN.md). Containers and WSL are not supported on either path.
 
 ## Runtime contract
 
-- `gannet.__main__` rejects every platform other than Windows before runtime
-  initialization.
+- `gannet.__main__` rejects unsupported hosts before runtime initialization;
+  the Windows branch preserves the behavior documented here.
 - Multiprocessing always uses `spawn`.
 - Interactive installs default writable data to `%LOCALAPPDATA%\Gannet`. The
   portable launchers set `GANNET_BASE_DIR` to `<bundle>\data`, so a moved bundle

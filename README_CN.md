@@ -30,7 +30,7 @@
 
 ## 原生 Windows 应用程序
 
-本发行版专为原生 64 位 Windows 设计。Gannet 作为普通 Windows 进程或 SCM 服务运行；不支持容器、WSL 或 Unix 运行时路径。API、媒体接口和 Web 界面均由 Gannet 自己提供。
+本发行版支持原生 64 位 Windows 和 [Debian 13 x86-64/systemd](DEBIAN.md)，均使用 CPython 3.12。Debian 支持 CPU 推理、可选 CUDA/OpenVINO，以及原生 VAAPI、Quick Sync、CUDA/NVENC 视频加速；驱动要求和功能差异见安装文档。在 Windows 上，Gannet 作为普通进程或 SCM 服务运行；不支持容器或 WSL。API、媒体接口和 Web 界面均由 Gannet 自己提供。
 
 在普通的 PowerShell 窗口中安装：
 

@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
+# Debian 13 x86-64, CPython 3.12. Share application pins with Windows;
+# requirements.txt gates pywin32/full OpenCV to Windows and uses headless
+# OpenCV on Linux. No DirectML/Windows ML extras.
+-r requirements.txt

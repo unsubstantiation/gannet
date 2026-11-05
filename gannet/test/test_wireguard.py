@@ -16,7 +16,9 @@ from fastapi.testclient import TestClient
 
 from gannet.api.wireguard import router
 from gannet.util.wireguard import (
-    WireGuardManager,
+    WindowsWireGuardManager as WireGuardManager,
+)
+from gannet.util.wireguard import (
     start_camera_tunnels,
     validate_config,
 )
@@ -319,14 +321,14 @@ class TestWireGuardCameraConfig(unittest.TestCase):
         with (
             patch("gannet.config.config._ensure_default_cpu_model"),
             patch(
-                "gannet.util.wireguard.WireGuardManager.get",
-                return_value={"id": TUNNEL_ID},
+                "gannet.util.wireguard.WireGuardManager",
+                return_value=SimpleNamespace(get=Mock(return_value={"id": TUNNEL_ID})),
             ) as get,
         ):
             parsed = FrigateConfig(**self._config())
         self.assertEqual(parsed.cameras["front"].wireguard_tunnel, TUNNEL_ID)
         self.assertNotIn(KEY, parsed.model_dump_json())
-        get.assert_called_once_with(TUNNEL_ID)
+        get.return_value.get.assert_called_once_with(TUNNEL_ID)
 
     def test_missing_saved_tunnel_is_a_configuration_error(self):
         from pydantic import ValidationError
@@ -335,8 +337,12 @@ class TestWireGuardCameraConfig(unittest.TestCase):
 
         with (
             patch(
-                "gannet.util.wireguard.WireGuardManager.get",
-                side_effect=ValueError("Saved WireGuard tunnel not found."),
+                "gannet.util.wireguard.WireGuardManager",
+                return_value=SimpleNamespace(
+                    get=Mock(
+                        side_effect=ValueError("Saved WireGuard tunnel not found.")
+                    )
+                ),
             ),
             self.assertRaises(ValidationError),
         ):

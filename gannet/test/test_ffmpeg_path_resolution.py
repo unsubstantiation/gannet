@@ -11,6 +11,8 @@ CUSTOM_EXE = os.path.join(CUSTOM_DIR, "ffmpeg.exe")
 CUSTOM_BIN_EXE = os.path.join(CUSTOM_DIR, "bin", "ffmpeg.exe")
 
 
+@patch("gannet.util.config.IS_WINDOWS", True)
+@patch("gannet.util.config.EXECUTABLE_SUFFIX", ".exe")
 class TestFfmpegPathResolution(unittest.TestCase):
     def test_explicit_executable_is_used(self) -> None:
         with patch("gannet.util.config.os.path.isfile", return_value=True):

@@ -52,7 +52,7 @@ def _failure(error: Exception):
         raise HTTPException(503, str(error)) from None
     raise HTTPException(
         503,
-        "WireGuard operation failed. Verify Windows administrator/LocalSystem permissions, the WireGuard installation, and Windows Event Viewer.",
+        "WireGuard operation failed. On Windows verify administrator/LocalSystem permissions and Event Viewer; on Debian verify the restricted sudo helper and journalctl.",
     ) from None
 
 

@@ -14,6 +14,7 @@ from collections.abc import Callable, Mapping
 from concurrent.futures import Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass, field
 from functools import partial
+from pathlib import Path
 from typing import Any
 
 from gannet.config import FrigateConfig
@@ -22,7 +23,7 @@ from gannet.config.camera.updater import (
     CameraConfigUpdateSubscriber,
 )
 from gannet.detectors.hardware import hardware_prober
-from gannet.util.platform import get_display_adapter_vendors
+from gannet.util.platform import IS_WINDOWS, get_display_adapter_vendors
 from gannet.util.services import get_cpu_stats, get_nvidia_gpu_stats
 
 logger = logging.getLogger(__name__)
@@ -316,12 +317,52 @@ def _poll_wmi_gpu_stats(config: FrigateConfig, vendor: str) -> HardwarePollResul
     )
 
 
+def _poll_linux_gpu(vendor: str) -> HardwarePollResult:
+    """Read driver-provided gauges without privileged perf access.
+
+    Missing counters stay unknown, not a misleading zero. Intel and AMD kernel
+    drivers expose different sets; NVIDIA continues through NVML on both OSes.
+    """
+    ids = {"intel": "0x8086", "amd": "0x1002"}
+    result = HardwarePollResult()
+    for card in sorted(Path("/sys/class/drm").glob("card[0-9]*")):
+        if not re.fullmatch(r"card[0-9]+", card.name):
+            continue
+        device = card / "device"
+        try:
+            if (device / "vendor").read_text().strip() != ids[vendor]:
+                continue
+        except OSError:
+            continue
+
+        def gauge(name: str) -> float | None:
+            try:
+                value = float((device / name).read_text())
+                return value if math.isfinite(value) and value >= 0 else None
+            except (OSError, ValueError):
+                return None
+
+        busy = gauge("gpu_busy_percent")
+        used = gauge("mem_info_vram_used")
+        total = gauge("mem_info_vram_total")
+        result.gpu[f"{vendor}-{card.name}"] = {
+            "vendor": vendor,
+            "gpu": f"{min(busy, 100):.2f}%" if busy is not None else "",
+            "mem": f"{min(used / total * 100, 100):.2f}%"
+            if used is not None and total
+            else "",
+        }
+    return result
+
+
 def _poll_intel_gpu(config: FrigateConfig) -> HardwarePollResult:
-    return _poll_wmi_gpu_stats(config, "intel")
+    return (
+        _poll_wmi_gpu_stats(config, "intel") if IS_WINDOWS else _poll_linux_gpu("intel")
+    )
 
 
 def _poll_amd_gpu(config: FrigateConfig) -> HardwarePollResult:
-    return _poll_wmi_gpu_stats(config, "amd")
+    return _poll_wmi_gpu_stats(config, "amd") if IS_WINDOWS else _poll_linux_gpu("amd")
 
 
 def _present_hardware() -> set[str]:

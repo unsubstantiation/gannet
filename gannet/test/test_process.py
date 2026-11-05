@@ -53,7 +53,7 @@ def _run_main_and_report(result_queue) -> None:
         with (
             patch.object(sys, "argv", ["frigate"]),
             patch.object(FrigateConfig, "load", load),
-            patch("gannet.__main__.require_windows"),
+            patch("gannet.__main__.require_supported_platform"),
             patch("gannet.__main__.setup_logging", setup_logging),
             patch("gannet.__main__.FrigateApp", FakeApp),
             patch("gannet.__main__.ensure_runtime_dirs"),

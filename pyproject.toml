@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "frigate-nvr"
 version = "0.19.0"
-description = "Native Windows network video recorder with local AI detection"
+description = "Native Windows and Debian network video recorder with local AI detection"
 requires-python = ">=3.12,<3.13"
 # Two licenses, deliberately. `LicenseRef-GNCL-1.0` is this fork's own
 # noncommercial license for the material it authored (LICENSE, and the paths
@@ -16,6 +16,7 @@ license = "LicenseRef-GNCL-1.0 AND MIT"
 license-files = ["LICENSE", "LICENSES/*.txt", "LICENSING.md", "THIRD_PARTY.md", "TRADEMARK.md"]
 classifiers = [
   "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
   "Programming Language :: Python :: 3.12",
 ]
 
