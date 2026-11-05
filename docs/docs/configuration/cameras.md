@@ -38,6 +38,71 @@ Enter a name for the camera along with its host or IP address and credentials, t
 
 The name you enter is lowercased and spaces become underscores. If the result still isn't a valid config key, the wizard generates a safe name and stores what you typed as `friendly_name`.
 
+#### Cameras over a managed WireGuard tunnel
+
+Administrators can save reusable tunnels at **Settings > System > WireGuard**.
+Install the official **WireGuard for Windows** application in its standard
+`%ProgramFiles%\WireGuard` location, and run Gannet elevated or as a
+**LocalSystem** service. Gannet does not install WireGuard or request elevation
+from the browser. A normal unelevated desktop process cannot manage these services.
+
+1. Import a `.conf` file, or paste its contents, give it a unique name, and select
+   **Save tunnel**. Saving validates and encrypts it; it does not connect yet.
+2. In the Add Camera Wizard's first step, select the saved **WireGuard tunnel**.
+   Gannet installs/starts its native tunnel service and waits for it to be running
+   before allowing you to continue. Alternatively use **Start** on the tunnels page.
+3. Enter the camera's **remote IP address** and normal ONVIF/RTSP credentials.
+   Use RTSP-over-TCP (the default generic RTSP preset) where practical.
+4. Reuse that tunnel for other cameras. For an existing camera, use its pencil
+   (**camera details**) button in Camera management to change the tunnel selection.
+
+Gannet saves only an opaque `wireguard_tunnel` id in the camera configuration.
+It restores services referenced by enabled cameras **before** starting ONVIF,
+go2rtc and other camera consumers. A startup service error stops initialization
+instead of silently ignoring the requested tunnel. Tunnel services use **manual
+startup**, so unused tunnels are not automatically brought up by Windows boot.
+They remain running when Gannet exits, to avoid interrupting shared users;
+**Stop** disconnects an unused tunnel. Removing a camera association does not
+stop the tunnel or change the camera's stream address.
+
+**Stop** and **Delete** are blocked while any camera references a tunnel, including
+disabled cameras, the active configuration, and saved edits awaiting restart.
+Detach those references first (and restart if an old active configuration still
+references it). Delete uninstalls only the service created for that saved tunnel
+and removes its encrypted configuration. To replace keys or configuration, detach
+cameras, delete and re-import the tunnel, then select its new id on those cameras.
+Gannet does not modify tunnels installed outside its own saved-tunnel store.
+
+Only **split-tunnel** configurations are accepted. Set each peer's `AllowedIPs`
+to its remote camera networks or host routes (for example `192.168.50.0/24`).
+IPv4 routes must be `/8` or narrower; IPv6 routes `/16` or narrower. Default routes,
+DNS changes, command hooks, unsupported options, and routes overlapping another
+saved tunnel or peer are rejected. Interface `Address` and a private key are
+required. Optional `ListenPort`, `MTU`, peer `Endpoint`, preshared key and
+`PersistentKeepalive` are supported. The remote peer/router must provide forwarding,
+return routes and firewall rules for the cameras; Gannet does not configure it.
+Avoid overlap with the Gannet computer's local LAN and other VPN routes as well.
+
+**Routing is host-wide, not per-camera isolation or a VPN kill switch.** Selecting
+**Direct connection** removes the association; it does not bypass Windows routes.
+Two sites with overlapping camera IP ranges cannot be independently selected this
+way: renumber them or configure distinct translated subnets at their gateways.
+The **Service running** label does not prove a peer handshake or camera reachability.
+Use the camera wizard's connection tests, and inspect Windows Event Viewer when a
+service fails. A lost peer connection is retried by WireGuard without reinstalling
+the tunnel. Multicast ONVIF discovery generally does not traverse a routed tunnel;
+enter the camera address or explicitly scan its remote private subnet instead.
+
+Configuration files are stored under the Gannet config directory's `wireguard`
+subdirectory as machine-scope **DPAPI-encrypted `.conf.dpapi` files**, compatible
+with the native service, with access restricted to Administrators and SYSTEM.
+Private keys are never returned by tunnel APIs or placed in the camera YAML;
+the browser clears imported configuration text after a successful save. Use HTTPS
+for remote administration and protect the original `.conf` file. This encrypted
+store is machine-bound: retain original configurations securely for migration to
+another Windows host. Moving the data directory while services are installed
+requires detaching/deleting/re-importing the tunnels so service paths are updated.
+
 #### Model and initial login guidance
 
 **Camera model** is optional and searchable by manufacturer or model. The bundled, offline catalog covers specific models and a few explicitly named series; each entry links to its manufacturer's source. It is available in both ONVIF and manual modes. If your camera is not listed, select **My model isn't listed** or leave the field empty and continue with ONVIF or a known custom URL.

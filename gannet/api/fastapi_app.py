@@ -29,6 +29,7 @@ from gannet.api import (
     preview,
     record,
     review,
+    wireguard,
 )
 from gannet.api.auth import get_jwt_secret, limiter, require_admin_by_default
 from gannet.comms.dispatcher import Dispatcher
@@ -143,6 +144,7 @@ def create_fastapi_app(
     # Routes
     # Order of include_router matters: https://fastapi.tiangolo.com/tutorial/path-params/#order-matters
     app.include_router(auth.router)
+    app.include_router(wireguard.router)
     app.include_router(camera_discovery.router)
     app.include_router(camera.router)
     app.include_router(chat.router)

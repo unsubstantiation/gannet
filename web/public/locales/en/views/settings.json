@@ -14,7 +14,8 @@
     "detectorsAndModel": "Detectors and model - Gannet",
     "notifications": "Notification Settings - Gannet",
     "maintenance": "Maintenance - Gannet",
-    "profiles": "Profiles - Gannet"
+    "profiles": "Profiles - Gannet",
+    "systemWireGuard": "WireGuard Tunnels - Gannet"
   },
   "button": {
     "overriddenGlobal": "Overridden (Global)",
@@ -117,7 +118,8 @@
     "debug": "Debug",
     "maintenance": "Maintenance",
     "mediaSync": "Media sync",
-    "regionGrid": "Region grid"
+    "regionGrid": "Region grid",
+    "systemWireGuard": "WireGuard"
   },
   "dialog": {
     "unsavedChanges": {
@@ -2217,6 +2219,35 @@
       "description": "The hardware this model runs its detection on.",
       "detectorCountDescription": "How many detection processes to run on this hardware. More detectors keep up with more cameras, at the cost of extra device memory.",
       "unitsDescription": "Each unit runs its own detection process. Shareable CPU, ONNX, and OpenVINO devices may be assigned according to the hardware shown by Gannet."
+    }
+  },
+  "wireguard": {
+    "title": "WireGuard tunnels",
+    "description": "Save a tunnel once and reuse it when adding or editing cameras. Routes apply to the whole Windows host, not just the selected cameras. Overlapping remote camera networks are not supported.",
+    "requirements": "Install official WireGuard for Windows and run Gannet elevated or as LocalSystem. Use split-tunnel AllowedIPs for remote camera networks; default routes, DNS changes and scripts are not supported. Service status is not a peer-handshake or camera-reachability test.",
+    "name": "Tunnel name",
+    "file": "Import a .conf file",
+    "configuration": "WireGuard configuration",
+    "secretHelp": "Contains private keys. Sent only on import, stored with Windows DPAPI encryption and administrator/System-only permissions, and never returned by the API. Use HTTPS when accessing Gannet remotely.",
+    "import": "Save tunnel",
+    "start": "Start",
+    "stop": "Stop",
+    "delete": "Delete",
+    "deleteConfirm": "Delete tunnel {{name}}? This removes its Windows service and encrypted configuration.",
+    "empty": "No saved tunnels.",
+    "unavailable": "WireGuard is unavailable. Install WireGuard for Windows and run Gannet elevated or as LocalSystem.",
+    "operationError": "WireGuard operation failed. Check service permissions, installation, routes and Windows Event Viewer.",
+    "fileTooLarge": "The configuration file must be no larger than 64 KiB.",
+    "cameraLabel": "WireGuard tunnel",
+    "direct": "Direct connection (no tunnel association)",
+    "cameraHelp": "Select a saved tunnel to start it before testing the camera. Use the remote camera address in RTSP/ONVIF settings. Manage saved tunnels under System → WireGuard.",
+    "cameraCount_one": "{{count}} camera uses this tunnel.",
+    "cameraCount_other": "{{count}} cameras use this tunnel.",
+    "status": {
+      "running": "Service running",
+      "stopped": "Stopped",
+      "pending": "Service changing state",
+      "not_installed": "Saved, not started"
     }
   }
 }

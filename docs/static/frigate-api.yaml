@@ -296,6 +296,140 @@ paths:
       security:
         - frigateAdminAuth: []
       x-required-role: admin
+  /wireguard/tunnels:
+    get:
+      tags:
+        - Camera
+      summary: List saved WireGuard tunnels
+      operationId: list_tunnels_wireguard_tunnels_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TunnelSummary'
+                title: Response List Tunnels Wireguard Tunnels Get
+      security:
+        - frigateAdminAuth: []
+      x-required-role: admin
+      description: '**Access:** Admin role required.'
+    post:
+      tags:
+        - Camera
+      summary: Import a WireGuard tunnel
+      operationId: import_tunnel_wireguard_tunnels_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TunnelImport'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TunnelSummary'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - frigateAdminAuth: []
+      x-required-role: admin
+      description: '**Access:** Admin role required.'
+  /wireguard/tunnels/{tunnel_id}/start:
+    post:
+      tags:
+        - Camera
+      summary: Start a saved WireGuard tunnel
+      operationId: start_tunnel_wireguard_tunnels__tunnel_id__start_post
+      parameters:
+        - name: tunnel_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Tunnel Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TunnelSummary'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - frigateAdminAuth: []
+      x-required-role: admin
+      description: '**Access:** Admin role required.'
+  /wireguard/tunnels/{tunnel_id}/stop:
+    post:
+      tags:
+        - Camera
+      summary: Stop an unused WireGuard tunnel
+      operationId: stop_tunnel_wireguard_tunnels__tunnel_id__stop_post
+      parameters:
+        - name: tunnel_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Tunnel Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TunnelSummary'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - frigateAdminAuth: []
+      x-required-role: admin
+      description: '**Access:** Admin role required.'
+  /wireguard/tunnels/{tunnel_id}:
+    delete:
+      tags:
+        - Camera
+      summary: Delete an unused WireGuard tunnel
+      operationId: delete_tunnel_wireguard_tunnels__tunnel_id__delete
+      parameters:
+        - name: tunnel_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Tunnel Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - frigateAdminAuth: []
+      x-required-role: admin
+      description: '**Access:** Admin role required.'
   /camera_discovery:
     post:
       tags:
@@ -9634,6 +9768,51 @@ components:
         - thumbnail
         - description
       title: TriggerType
+    TunnelImport:
+      properties:
+        name:
+          type: string
+          maxLength: 80
+          minLength: 1
+          title: Name
+        config:
+          type: string
+          format: password
+          title: Config
+          writeOnly: true
+      type: object
+      required:
+        - name
+        - config
+      title: TunnelImport
+    TunnelSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+        name:
+          type: string
+          title: Name
+        routes:
+          items:
+            type: string
+          type: array
+          title: Routes
+        status:
+          type: string
+          title: Status
+        cameras:
+          items:
+            type: string
+          type: array
+          title: Cameras
+      type: object
+      required:
+        - id
+        - name
+        - routes
+        - status
+      title: TunnelSummary
     VLMMonitorRequest:
       properties:
         camera:

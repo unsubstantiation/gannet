@@ -1151,6 +1151,14 @@ class FrigateConfig(FrigateBaseModel):
 
     @model_validator(mode="after")
     def post_validation(self) -> Self:
+        # References contain only opaque ids; private keys live in the protected
+        # WireGuard store, never in the application configuration or schema.
+        for camera in self.cameras.values():
+            if camera.wireguard_tunnel:
+                from gannet.util.wireguard import WireGuardManager
+
+                WireGuardManager().get(camera.wireguard_tunnel)
+
         # set notifications state
         self.notifications.enabled_in_config = self.notifications.enabled
 

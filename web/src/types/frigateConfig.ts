@@ -48,6 +48,7 @@ export type LiveTranscodeConfig = {
 };
 
 export interface CameraConfig {
+  wireguard_tunnel?: string | null;
   friendly_name: string;
   audio: {
     enabled: boolean;

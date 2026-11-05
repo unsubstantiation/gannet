@@ -77,6 +77,7 @@ export const settingsViewGroups = [
       "systemTls",
       "systemAuthentication",
       "systemNetworking",
+      "systemWireGuard",
       "systemProxy",
       "systemUi",
       "systemLogging",

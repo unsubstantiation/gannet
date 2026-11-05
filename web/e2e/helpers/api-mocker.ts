@@ -279,6 +279,10 @@ export class ApiMocker {
       route.fulfill({ json: {} }),
     );
 
+    await this.page.route("**/api/wireguard/tunnels", (route) =>
+      route.fulfill({ json: [] }),
+    );
+
     // Generic mutation catch-all for remaining endpoints.
     // Uses route.fallback() to defer to more specific routes registered above.
     // Playwright matches routes in reverse registration order (last wins),

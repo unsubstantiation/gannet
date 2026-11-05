@@ -1,3 +1,4 @@
+import WireGuardSettingsView from "@/views/settings/WireGuardSettingsView";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -290,6 +291,7 @@ const SECTION_VIEWS = {
   systemTls: SystemTlsSettingsPage,
   systemAuthentication: SystemAuthenticationSettingsPage,
   systemNetworking: SystemNetworkingSettingsPage,
+  systemWireGuard: WireGuardSettingsView,
   systemProxy: SystemProxySettingsPage,
   systemUi: SystemUiSettingsPage,
   systemLogging: SystemLoggingSettingsPage,

@@ -239,6 +239,9 @@ export default function CameraWizardDialog({
         },
       };
 
+      configData.cameras[finalCameraName].wireguard_tunnel =
+        wizardData.wireguardTunnel ?? null;
+
       // Add live.streams configuration for go2rtc streams
       if (wizardData.streams && wizardData.streams.length > 0) {
         configData.cameras[finalCameraName].live = {

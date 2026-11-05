@@ -78,6 +78,10 @@ IMPORT_TO_DISTRIBUTION = {
     "pydantic_settings": "pydantic-settings",
     "tensorflow": "tensorflow-cpu",
     # the pywin32 package provides the SCM modules the Windows service imports
+    "ntsecuritycon": "pywin32",
+    "pywintypes": "pywin32",
+    "win32crypt": "pywin32",
+    "win32security": "pywin32",
     "servicemanager": "pywin32",
     "win32com": "pywin32",
     "win32event": "pywin32",

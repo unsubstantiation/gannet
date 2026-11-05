@@ -34,6 +34,7 @@ export type CandidateTestMap = Record<
 >;
 
 export type WizardFormData = {
+  wireguardTunnel?: string | null;
   cameraName?: string;
   host?: string;
   username?: string;
@@ -101,6 +102,7 @@ export type CameraConfigData = {
     [cameraName: string]: {
       enabled: boolean;
       friendly_name?: string;
+      wireguard_tunnel?: string | null;
       ffmpeg: {
         apple_compatibility?: boolean;
         inputs: {

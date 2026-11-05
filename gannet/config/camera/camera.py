@@ -56,6 +56,13 @@ class CameraTypeEnum(str, Enum):
 
 
 class CameraConfig(FrigateBaseModel):
+    wireguard_tunnel: str | None = Field(
+        default=None,
+        pattern=r"^[a-f0-9]{16}$",
+        title="WireGuard tunnel",
+        description="Saved Gannet-managed WireGuard tunnel id. Routes are shared by the Windows host, not isolated per camera.",
+    )
+
     name: str | None = Field(
         None,
         title="Camera name",

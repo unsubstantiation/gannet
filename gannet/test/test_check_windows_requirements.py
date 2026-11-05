@@ -77,7 +77,15 @@ class TestParseRequirements(unittest.TestCase):
 
 class TestImportedDistribution(unittest.TestCase):
     def test_pywin32_import_names_map_to_the_distribution(self):
-        self.assertEqual(checker.imported_distribution("win32com"), "pywin32")
+        for module in (
+            "win32com",
+            "ntsecuritycon",
+            "pywintypes",
+            "win32crypt",
+            "win32security",
+        ):
+            with self.subTest(module=module):
+                self.assertEqual(checker.imported_distribution(module), "pywin32")
 
 
 class TestMatchesPin(unittest.TestCase):
