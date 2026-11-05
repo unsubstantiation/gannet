@@ -6,6 +6,7 @@ outer offline guard. Live camera/driver/systemd tests remain separate acceptance
 checks; this runner does not certify hardware or a production installation.
 """
 
+import faulthandler
 import sys
 import unittest
 from pathlib import Path
@@ -29,7 +30,15 @@ def main() -> int:
         suite = unittest.defaultTestLoader.discover(
             str(ROOT / "gannet/test"), top_level_dir=str(ROOT)
         )
-        result = unittest.TextTestRunner(verbosity=1).run(suite)
+        # A previous native Windows run reached the job timeout without
+        # identifying its stalled test. Report test names and periodic stacks
+        # instead of leaving another opaque cancelled CI job.
+        faulthandler.enable(all_threads=True)
+        faulthandler.dump_traceback_later(300, repeat=True)
+        try:
+            result = unittest.TextTestRunner(verbosity=2).run(suite)
+        finally:
+            faulthandler.cancel_dump_traceback_later()
     return 0 if result.wasSuccessful() else 1
 
 

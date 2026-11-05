@@ -1425,6 +1425,7 @@ path = [
     "requirements.txt",
     "scripts/build_portable.ps1",
     "scripts/build_portable.py",
+    "scripts/gannet-wireguard@.service",
     "scripts/gannet.service",
     "scripts/generate_reuse_toml.py",
     "scripts/install_debian.sh",

@@ -13,6 +13,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
+from cryptography.fernet import Fernet, InvalidToken
+
 from gannet.util import platform
 from gannet.util.wireguard_debian import HELPER, DebianWireGuardManager
 
@@ -419,6 +421,21 @@ class TestDebianWireGuardStore(unittest.TestCase):
             self.manager = DebianWireGuardManager(
                 privileged=True, directory=Path(self.temporary.name) / "gannet"
             )
+        # Test the storage/lifecycle contract without touching the host's OS
+        # credential key. The real systemd-creds command is asserted separately.
+        self.cipher = Fernet(Fernet.generate_key())
+
+        def crypt(action, tunnel_id, value):
+            try:
+                if action == "encrypt":
+                    return self.cipher.encrypt(value.encode()).decode()
+                return self.cipher.decrypt(value.encode()).decode()
+            except InvalidToken:
+                raise RuntimeError("Credential authentication failed.") from None
+
+        codec = patch.object(self.manager, "_crypt", side_effect=crypt)
+        codec.start()
+        self.addCleanup(codec.stop)
         self.command = patch.object(
             self.manager,
             "_systemctl",
@@ -432,12 +449,14 @@ class TestDebianWireGuardStore(unittest.TestCase):
         tunnel_id = record["id"]
         self.assertEqual(len(tunnel_id), 16)
         self.assertLess(len(self.manager.interface(tunnel_id)), 16)
-        self.assertEqual(self.manager._config(tunnel_id).stat().st_mode & 0o777, 0o600)
+        self.assertEqual(self.manager._sealed(tunnel_id).stat().st_mode & 0o777, 0o600)
         self.assertEqual(
             self.manager._metadata(tunnel_id).stat().st_mode & 0o777, 0o600
         )
         self.assertEqual(self.manager.directory.stat().st_mode & 0o777, 0o700)
-        self.assertIn(KEY, self.manager._config(tunnel_id).read_text())
+        self.assertFalse(self.manager._config(tunnel_id).exists())
+        self.assertNotIn(KEY, self.manager._sealed(tunnel_id).read_text())
+        self.assertEqual(self.manager._open(tunnel_id), CONFIG)
         self.assertNotIn(KEY, json.dumps(self.manager.list()))
         self.assertNotIn(KEY, json.dumps(self.manager.get(tunnel_id)))
 
@@ -448,6 +467,7 @@ class TestDebianWireGuardStore(unittest.TestCase):
         self.manager.stop(tunnel_id)
         self.run.assert_called_with("stop", tunnel_id)
         self.manager.delete(tunnel_id)
+        self.assertFalse(self.manager._sealed(tunnel_id).exists())
         self.assertFalse(self.manager._config(tunnel_id).exists())
         self.assertEqual(self.manager.list(), [])
 
@@ -464,12 +484,126 @@ class TestDebianWireGuardStore(unittest.TestCase):
             )
         self.run.assert_not_called()
         tunnel_id = self.manager.create("Cabin", CONFIG)["id"]
-        self.manager._config(tunnel_id).write_text(
-            CONFIG.replace("[Peer]", "PostUp=touch /tmp/unsafe\n[Peer]")
+        self.manager._sealed(tunnel_id).write_text(
+            self.cipher.encrypt(
+                CONFIG.replace("[Peer]", "PostUp=touch /tmp/unsafe\n[Peer]").encode()
+            ).decode()
         )
         with self.assertRaises(ValueError):
             self.manager.start(tunnel_id)
         self.run.assert_not_called()
+
+    def test_encryption_command_uses_os_host_key_and_stdin(self):
+        result = subprocess.CompletedProcess([], 0, "encrypted envelope")
+        with patch(
+            "gannet.util.wireguard_debian.subprocess.run", return_value=result
+        ) as run:
+            envelope = DebianWireGuardManager._crypt(
+                self.manager, "encrypt", TUNNEL_ID, CONFIG
+            )
+        self.assertEqual(envelope, "encrypted envelope")
+        self.assertEqual(
+            run.call_args.args[0],
+            [
+                "/usr/bin/systemd-creds",
+                "encrypt",
+                "--name=gn0123456789ab.conf",
+                "--with-key=host",
+                "-",
+                "-",
+            ],
+        )
+        self.assertNotIn(KEY, " ".join(run.call_args.args[0]))
+        self.assertEqual(run.call_args.kwargs["input"], CONFIG)
+        self.assertTrue(run.call_args.kwargs["check"])
+
+    def test_crypto_errors_and_tampered_credentials_never_start_or_leak_keys(self):
+        with (
+            patch(
+                "gannet.util.wireguard_debian.subprocess.run",
+                side_effect=subprocess.CalledProcessError(1, [], stderr=KEY),
+            ),
+            self.assertRaises(RuntimeError) as error,
+        ):
+            DebianWireGuardManager._crypt(
+                self.manager, "decrypt", TUNNEL_ID, "tampered"
+            )
+        self.assertNotIn(KEY, str(error.exception))
+        tunnel_id = self.manager.create("Cabin", CONFIG)["id"]
+        self.manager._sealed(tunnel_id).write_text("tampered")
+        with self.assertRaises(RuntimeError):
+            self.manager.start(tunnel_id)
+        self.run.assert_not_called()
+
+    def _legacy(self):
+        tunnel_id = self.manager.create("Legacy", CONFIG)["id"]
+        self.manager._sealed(tunnel_id).unlink()
+        self.manager._write_private(self.manager._config(tunnel_id), CONFIG)
+        return tunnel_id
+
+    def test_migration_preserves_id_and_only_removes_plaintext_after_sealing(self):
+        tunnel_id = self._legacy()
+        self.manager.migrate()
+        self.assertEqual(self.manager.get(tunnel_id)["id"], tunnel_id)
+        self.assertFalse(self.manager._config(tunnel_id).exists())
+        self.assertEqual(self.manager._open(tunnel_id), CONFIG)
+        self.run.assert_any_call("stop", tunnel_id, legacy=True)
+        self.assertFalse(
+            any(call.args[0] == "start" for call in self.run.call_args_list)
+        )
+
+    def test_live_migration_rolls_back_original_service_on_failure(self):
+        tunnel_id = self._legacy()
+
+        def command(action, name, *, legacy=False):
+            if action == "is-active":
+                return subprocess.CompletedProcess([], 0, "active")
+            if action == "start" and not legacy:
+                raise RuntimeError("Replacement failed")
+            return subprocess.CompletedProcess([], 0, "")
+
+        self.run.side_effect = command
+        with self.assertRaises(RuntimeError):
+            self.manager.migrate()
+        self.assertTrue(self.manager._config(tunnel_id).exists())
+        self.assertEqual(self.manager._open(tunnel_id), CONFIG)
+        self.run.assert_any_call("start", tunnel_id, legacy=True)
+        self.run.side_effect = None
+        self.run.return_value = subprocess.CompletedProcess([], 0, "active")
+        self.manager.migrate()
+        self.assertFalse(self.manager._config(tunnel_id).exists())
+        self.run.assert_any_call("start", tunnel_id)
+
+    def test_migration_conflict_keeps_both_copies_and_does_not_change_routes(self):
+        tunnel_id = self.manager.create("Cabin", CONFIG)["id"]
+        self.manager._write_private(
+            self.manager._config(tunnel_id), CONFIG + "\n# administrator edit\n"
+        )
+        with self.assertRaises(ValueError):
+            self.manager.migrate()
+        self.assertTrue(self.manager._config(tunnel_id).exists())
+        self.assertTrue(self.manager._sealed(tunnel_id).exists())
+        self.run.assert_not_called()
+
+    def test_generated_service_and_credential_template_use_no_persistent_plaintext(
+        self,
+    ):
+        with patch(
+            "gannet.util.wireguard_debian.subprocess.run",
+            return_value=subprocess.CompletedProcess([], 0, ""),
+        ) as run:
+            DebianWireGuardManager._systemctl(self.manager, "start", TUNNEL_ID)
+        self.assertEqual(
+            run.call_args.args[0][-1], "gannet-wireguard@gn0123456789ab.service"
+        )
+        unit = (
+            Path(__file__).resolve().parents[2] / "scripts/gannet-wireguard@.service"
+        ).read_text()
+        self.assertIn(
+            "LoadCredentialEncrypted=%i.conf:/etc/wireguard/gannet/%i.cred", unit
+        )
+        self.assertIn("${CREDENTIALS_DIRECTORY}/%i.conf", unit)
+        self.assertNotIn("User=gannet", unit)
 
     def test_private_write_refuses_symlinks(self):
         target = Path(self.temporary.name) / "target"
@@ -511,6 +645,80 @@ class TestDebianAssets(unittest.TestCase):
         ):
             self.assertIn(setting, unit)
         self.assertNotIn("User=root", unit)
+
+    @unittest.skipUnless(os.name == "posix", "Debian container shell regression")
+    def test_container_artifact_check_trusts_only_workspace_and_detects_drift(self):
+        workflow = (
+            Path(__file__).resolve().parents[2] / ".github/workflows/debian.yml"
+        ).read_text()
+
+        def git_commands(step_name):
+            step = workflow.split(f"      - name: {step_name}\n", 1)[1]
+            step = step.split("\n      - ", 1)[0]
+            return "\n".join(
+                line.strip()
+                for line in step.splitlines()
+                if line.strip().startswith("git ")
+            )
+
+        trust = git_commands("Trust and verify container checkout")
+        verify = git_commands("Generated API and translations")
+        self.assertIn("rev-parse --show-toplevel", verify.splitlines()[0])
+        self.assertIn("diff --exit-code --", verify)
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            repo = root / "checkout with spaces"
+            repo.mkdir()
+            outside = root / "outside"
+            outside.mkdir()
+            env = {
+                **os.environ,
+                "GITHUB_WORKSPACE": str(repo),
+                "LC_ALL": "C",
+                "GIT_TEST_ASSUME_DIFFERENT_OWNER": "1",
+                "GIT_CONFIG_NOSYSTEM": "1",
+                "GIT_CONFIG_GLOBAL": str(root / "gitconfig"),
+            }
+
+            def run(command, cwd=outside):
+                return subprocess.run(
+                    command, cwd=cwd, env=env, capture_output=True, text=True
+                )
+
+            self.assertEqual(run(["git", "init", "-q", str(repo)]).returncode, 0)
+            paths = (
+                "docs/static/frigate-api.yaml",
+                "web/public/locales/en/config/cameras.json",
+            )
+            for path in paths:
+                target = repo / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("original\n")
+            # Before trusting the checkout, reproduce the container ownership
+            # failure rather than assuming a passing local checkout proves it.
+            before = run(["git", "-C", str(repo), "rev-parse", "--show-toplevel"])
+            self.assertNotEqual(before.returncode, 0)
+            self.assertIn("dubious ownership", before.stderr)
+            self.assertEqual(run(["bash", "-e", "-c", trust]).returncode, 0)
+            trusted = run(["git", "config", "--global", "--get-all", "safe.directory"])
+            self.assertEqual(trusted.stdout.strip(), str(repo))
+            self.assertEqual(run(["git", "-C", str(repo), "add", "."]).returncode, 0)
+            # Run from outside the checkout: -C must select the correct repo.
+            clean = run(["bash", "-e", "-c", verify])
+            self.assertEqual(clean.returncode, 0, clean.stderr)
+            for path in paths:
+                target = repo / path
+                target.write_text("generated drift\n")
+                changed = run(["bash", "-e", "-c", verify])
+                self.assertEqual(changed.returncode, 1, changed.stderr)
+                self.assertIn(path, changed.stdout)
+                target.write_text("original\n")
+            # A missing checkout must fail at rev-parse, never silently enter
+            # Git's no-index file-versus-directory comparison mode.
+            env["GITHUB_WORKSPACE"] = str(outside)
+            missing = run(["bash", "-e", "-c", verify])
+            self.assertEqual(missing.returncode, 128, missing.stderr)
+            self.assertIn("not a git repository", missing.stderr)
 
 
 if __name__ == "__main__":

@@ -25,7 +25,10 @@ See [WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md) for the Windows contrac
 - The Debian app runs unprivileged. Managed WireGuard uses a narrowly scoped,
   root-owned isolated helper, never a root NVR or broad sudo/shell permissions.
   Preserve hook/DNS/default-route rejection and metadata-only secret APIs on both
-  backends. Linux key files must remain root-only; Windows keeps DPAPI and ACLs.
+  backends. Debian uses systemd host-key encrypted credentials, with plaintext
+  available only in the root tunnel unit's runtime credential directory; keep
+  host keys root-only and preserve legacy IDs during migration. Windows keeps
+  DPAPI and ACLs.
 - The public listener (`0.0.0.0:8971`) is authenticated; the internal listener
   (`127.0.0.1:5000`) is loopback-only and trusted. Never trust client identity headers.
 - Windows retains CPU TensorFlow Lite, ONNX Runtime CPU/DirectML/CUDA/Windows ML,

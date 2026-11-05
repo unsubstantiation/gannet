@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
+[Unit]
+Description=Gannet managed encrypted WireGuard tunnel %i
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# PID 1 decrypts into its protected runtime credential directory; no persistent
+# plaintext config or application-readable key is written by Gannet.
+LoadCredentialEncrypted=%i.conf:/etc/wireguard/gannet/%i.cred
+ExecStart=/usr/bin/wg-quick up ${CREDENTIALS_DIRECTORY}/%i.conf
+ExecStop=/usr/bin/wg-quick down ${CREDENTIALS_DIRECTORY}/%i.conf
+TimeoutStartSec=60
+TimeoutStopSec=60
+UMask=0077
