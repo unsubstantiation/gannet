@@ -1637,6 +1637,53 @@ async def end_event(request: Request, event_id: str, body: EventsEndBody):
     )
 
 
+def _get_trigger_thumbnail(camera_name: str, event_id: str) -> bytes:
+    """Resolve a live event thumbnail or the retained copy after event expiry."""
+    path = get_trigger_thumbnail_path(camera_name, event_id)
+    if path is None:
+        raise ValueError("Invalid data for thumbnail trigger")
+
+    try:
+        event = Event.get(Event.id == event_id)
+    except DoesNotExist:
+        try:
+            thumbnail = Path(path).read_bytes()
+        except FileNotFoundError as exc:
+            raise ValueError("Failed to fetch event for thumbnail trigger") from exc
+    else:
+        if event.data.get("type") != "object":
+            raise ValueError(
+                f"Event {event_id} is not a tracked object for thumbnail trigger"
+            )
+        thumbnail = get_event_thumbnail_bytes(event)
+
+    if not thumbnail:
+        raise ValueError(
+            f"Failed to get thumbnail for {event_id} for thumbnail trigger"
+        )
+    return thumbnail
+
+
+def _remove_unused_trigger_thumbnail(camera_name: str, name: str, trigger: Trigger):
+    """A thumbnail is shared by all triggers using the same camera/event pair."""
+    if trigger.type != "thumbnail" or (
+        Trigger.select()
+        .where(
+            (Trigger.camera == camera_name)
+            & (Trigger.name != name)
+            & (Trigger.type == "thumbnail")
+            & (Trigger.data == trigger.data)
+        )
+        .exists()
+    ):
+        return
+
+    path = get_trigger_thumbnail_path(camera_name, trigger.data)
+    if path is None:
+        raise ValueError(f"Invalid trigger thumbnail path for {trigger.data}")
+    robust_remove(path, missing_ok=True)
+
+
 @router.post(
     "/trigger/embedding",
     response_model=dict,
@@ -1683,31 +1730,10 @@ def create_trigger_embedding(
             embedding = context.generate_description_embedding(body.data)
         elif body.type == "thumbnail":
             try:
-                event: Event = Event.get(Event.id == body.data)
-            except DoesNotExist:
-                # TODO: check triggers directory for image
+                thumbnail = _get_trigger_thumbnail(camera_name, body.data)
+            except ValueError as exc:
                 return JSONResponse(
-                    content={
-                        "success": False,
-                        "message": f"Failed to fetch event for {body.type} trigger",
-                    },
-                    status_code=400,
-                )
-
-            # Skip the event if not an object
-            if event.data.get("type") != "object":
-                return
-
-            # Get the thumbnail
-            thumbnail = get_event_thumbnail_bytes(event)
-
-            if thumbnail is None:
-                return JSONResponse(
-                    content={
-                        "success": False,
-                        "message": f"Failed to get thumbnail for {body.data} for {body.type} trigger",
-                    },
-                    status_code=400,
+                    content={"success": False, "message": str(exc)}, status_code=400
                 )
 
             # Try to reuse existing embedding from database
@@ -1821,47 +1847,12 @@ def update_trigger_embedding(
         if body.type == "description":
             embedding = context.generate_description_embedding(body.data)
         elif body.type == "thumbnail":
-            webp_path = get_trigger_thumbnail_path(camera_name, body.data)
-
-            if webp_path is None:
-                return JSONResponse(
-                    content={
-                        "success": False,
-                        "message": f"Invalid data for {body.type} trigger",
-                    },
-                    status_code=400,
-                )
-
             try:
-                event: Event = Event.get(Event.id == body.data)
-                # Skip the event if not an object
-                if event.data.get("type") != "object":
-                    return JSONResponse(
-                        content={
-                            "success": False,
-                            "message": f"Event {body.data} is not a tracked object for {body.type} trigger",
-                        },
-                        status_code=400,
-                    )
-                # Extract valid thumbnail
-                thumbnail = get_event_thumbnail_bytes(event)
-
-                with open(webp_path, "wb") as f:
-                    f.write(thumbnail)
-            except DoesNotExist:
-                # check triggers directory for image
-                if not os.path.exists(webp_path):
-                    return JSONResponse(
-                        content={
-                            "success": False,
-                            "message": f"Failed to fetch event for {body.type} trigger",
-                        },
-                        status_code=400,
-                    )
-                else:
-                    # Load the image from the triggers directory
-                    with open(webp_path, "rb") as f:
-                        thumbnail = f.read()
+                thumbnail = _get_trigger_thumbnail(camera_name, body.data)
+            except ValueError as exc:
+                return JSONResponse(
+                    content={"success": False, "message": str(exc)}, status_code=400
+                )
 
             embedding = context.generate_image_embedding(
                 body.data, (base64.b64encode(thumbnail).decode("ASCII"))
@@ -1885,25 +1876,18 @@ def update_trigger_embedding(
 
         if trigger:
             # Update existing trigger
-            if trigger.data != body.data:  # Delete old thumbnail only if data changes
+            if trigger.type == "thumbnail" and (
+                trigger.data != body.data or body.type != "thumbnail"
+            ):
                 try:
-                    old_path = get_trigger_thumbnail_path(camera_name, trigger.data)
-
-                    if old_path is None:
-                        raise ValueError(
-                            f"Invalid trigger thumbnail path for {trigger.data}"
-                        )
-
-                    robust_remove(old_path)
-                    logger.debug(
-                        f"Deleted thumbnail for trigger with data {trigger.data} in {camera_name}."
-                    )
+                    _remove_unused_trigger_thumbnail(camera_name, name, trigger)
                 except Exception:
                     logger.exception(
                         f"Failed to delete thumbnail for trigger with data {trigger.data} in {camera_name}"
                     )
 
             Trigger.update(
+                type=body.type,
                 data=body.data,
                 model=request.app.frigate_config.semantic_search.model,
                 embedding=np.array(embedding, dtype=np.float32).tobytes(),
@@ -2005,15 +1989,7 @@ def delete_trigger_embedding(
             )
 
         try:
-            thumbnail_path = get_trigger_thumbnail_path(camera_name, trigger.data)
-
-            if thumbnail_path is None:
-                raise ValueError(f"Invalid trigger thumbnail path for {trigger.data}")
-
-            robust_remove(thumbnail_path)
-            logger.debug(
-                f"Deleted thumbnail for trigger with data {trigger.data} in {camera_name}."
-            )
+            _remove_unused_trigger_thumbnail(camera_name, name, trigger)
         except Exception:
             logger.exception(
                 f"Failed to delete thumbnail for trigger with data {trigger.data} in {camera_name}"

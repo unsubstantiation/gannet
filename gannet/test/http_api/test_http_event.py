@@ -1,12 +1,15 @@
+import base64
 from datetime import datetime
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from playhouse.shortcuts import model_to_dict
 
 from gannet.api.auth import get_allowed_cameras_for_filter, get_current_user
 from gannet.comms.event_metadata_updater import EventMetadataPublisher
-from gannet.models import Event, Recordings, ReviewSegment, Timeline
+from gannet.models import Event, Recordings, ReviewSegment, Timeline, Trigger
 from gannet.stats.emitter import StatsEmitter
 from gannet.test.http_api.base_http_test import AuthTestClient, BaseTestHttp, Request
 from gannet.test.test_storage import _insert_mock_event
@@ -614,3 +617,108 @@ class TestHttpApp(BaseTestHttp):
         )
         assert 'frigate_camera_events{camera="porch",label="Mock"} 2.0' in event.text
         assert 'frigate_camera_events{camera="porch",label="inside"} 2.0' in event.text
+
+
+class TestTriggerEmbeddings(BaseTestHttp):
+    def setUp(self):
+        super().setUp([Event, Trigger])
+        self.app = self.create_app()
+        self.app.frigate_config.semantic_search.enabled = True
+        self.app.embeddings = Mock()
+        self.app.embeddings.generate_image_embedding.return_value = [0.1, 0.2]
+        self.app.embeddings.generate_description_embedding.return_value = [0.3, 0.4]
+        self.app.embeddings.db.execute_sql.return_value.fetchone.return_value = None
+        self.thumbnails = TemporaryDirectory()
+        self.addCleanup(self.thumbnails.cleanup)
+        self.thumbnail = Path(self.thumbnails.name) / "new" / "event.webp"
+        path_patch = patch(
+            "gannet.api.event.get_trigger_thumbnail_path",
+            return_value=str(self.thumbnail),
+        )
+        path_patch.start()
+        self.addCleanup(path_patch.stop)
+
+    def _save(self, method="post", **overrides):
+        body = {"type": "thumbnail", "data": "123.object", **overrides}
+        with AuthTestClient(self.app) as client:
+            if method == "post":
+                return client.post(
+                    "/trigger/embedding?camera_name=front_door&name=test", json=body
+                )
+            return client.put("/trigger/embedding/front_door/test", json=body)
+
+    def test_create_reuses_saved_thumbnail_after_event_expiry(self):
+        self.thumbnail.parent.mkdir()
+        self.thumbnail.write_bytes(b"saved thumbnail")
+        self.assertEqual(self._save().status_code, 200)
+        self.app.embeddings.generate_image_embedding.assert_called_once_with(
+            "123.object", base64.b64encode(b"saved thumbnail").decode("ASCII")
+        )
+        self.assertEqual(Trigger.get().type, "thumbnail")
+
+    def test_update_creates_thumbnail_directory_for_live_event(self):
+        self.insert_mock_event("123.object", data={"type": "object"})
+        with patch("gannet.api.event.get_event_thumbnail_bytes", return_value=b"image"):
+            self.assertEqual(self._save("put").status_code, 200)
+        self.assertEqual(self.thumbnail.read_bytes(), b"image")
+
+    def test_missing_empty_and_non_object_thumbnails_are_bad_requests(self):
+        for method in ("post", "put"):
+            self.assertEqual(self._save(method).status_code, 400)
+        self.thumbnail.parent.mkdir()
+        self.thumbnail.write_bytes(b"")
+        self.assertEqual(self._save().status_code, 400)
+        self.insert_mock_event("123.object", data={"type": "audio"})
+        self.assertEqual(self._save().status_code, 400)
+        self.assertEqual(Trigger.select().count(), 0)
+
+    def test_missing_live_thumbnail_does_not_write_a_trigger(self):
+        self.insert_mock_event("123.object", data={"type": "object"})
+        with patch("gannet.api.event.get_event_thumbnail_bytes", return_value=None):
+            for method in ("post", "put"):
+                self.assertEqual(self._save(method).status_code, 400)
+        self.assertFalse(self.thumbnail.exists())
+        self.assertEqual(Trigger.select().count(), 0)
+
+    def test_update_changes_stored_type(self):
+        self.assertEqual(
+            self._save("put", type="description", data="a car").status_code, 200
+        )
+        self.insert_mock_event("123.object", data={"type": "object"})
+        with patch("gannet.api.event.get_event_thumbnail_bytes", return_value=b"image"):
+            self.assertEqual(self._save("put").status_code, 200)
+        self.assertEqual(Trigger.get().type, "thumbnail")
+        self.assertEqual(
+            self._save("put", type="description", data="a car").status_code, 200
+        )
+        self.assertEqual(Trigger.get().type, "description")
+        self.assertFalse(self.thumbnail.exists())
+
+    def test_unsafe_thumbnail_data_is_rejected(self):
+        with patch("gannet.api.event.get_trigger_thumbnail_path", return_value=None):
+            for method in ("post", "put"):
+                self.assertEqual(self._save(method, data="../escape").status_code, 400)
+        self.assertEqual(Trigger.select().count(), 0)
+
+    def test_updating_or_deleting_trigger_preserves_shared_thumbnail(self):
+        self.thumbnail.parent.mkdir()
+        self.thumbnail.write_bytes(b"saved")
+        self.assertEqual(self._save().status_code, 200)
+        with AuthTestClient(self.app) as client:
+            response = client.post(
+                "/trigger/embedding?camera_name=front_door&name=other",
+                json={"type": "thumbnail", "data": "123.object"},
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(
+                self._save("put", type="description", data="a car").status_code, 200
+            )
+            self.assertTrue(self.thumbnail.exists())
+            self.assertEqual(
+                client.delete("/trigger/embedding/front_door/test").status_code, 200
+            )
+            self.assertTrue(self.thumbnail.exists())
+            self.assertEqual(
+                client.delete("/trigger/embedding/front_door/other").status_code, 200
+            )
+            self.assertFalse(self.thumbnail.exists())

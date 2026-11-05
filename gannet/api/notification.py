@@ -83,8 +83,14 @@ def get_vapid_pub_key(request: Request):
 )
 def register_notifications(request: Request, body: dict = None):
     if request.app.frigate_config.auth.enabled:
-        # FIXME: For FastAPI the remote-user is not being populated
-        username = request.headers.get("remote-user") or "admin"
+        # The native gateway supplies verified identity headers. Never fall back
+        # to another account if an authenticated request has no identity.
+        username = request.headers.get("remote-user")
+        if not username:
+            return JSONResponse(
+                content={"success": False, "message": "Authentication required."},
+                status_code=401,
+            )
     else:
         username = "admin"
 
@@ -108,19 +114,39 @@ def register_notifications(request: Request, body: dict = None):
             status_code=400,
         )
 
-    updated = (
-        User.update(notification_tokens=User.notification_tokens.append(sub))
-        .where(User.username == username)
-        .execute()
-    )
+    # Compare-and-swap avoids losing another device's registration while
+    # replacing all older copies of this endpoint (including rotated keys).
+    # SqliteQueueDatabase does not support transactions spanning these queries.
+    for _ in range(5):
+        user = User.get_or_none(User.username == username)
+        if user is None:
+            return JSONResponse(
+                content={"success": False, "message": "Could not find user."},
+                status_code=404,
+            )
 
-    if not updated:
-        logger.warning(
-            "Rejected notification registration for unknown user %s", username
-        )
+        tokens = [
+            token
+            for token in (user.notification_tokens or [])
+            if not isinstance(token, dict) or token.get("endpoint") != sub["endpoint"]
+        ]
+        tokens.append(sub)
+        if (
+            User.update(notification_tokens=tokens)
+            .where(
+                (User.username == username)
+                & (User.notification_tokens == user.notification_tokens)
+            )
+            .execute()
+        ):
+            break
+    else:
         return JSONResponse(
-            content=({"success": False, "message": "Could not find user."}),
-            status_code=404,
+            content={
+                "success": False,
+                "message": "Registration changed; please retry.",
+            },
+            status_code=409,
         )
 
     return JSONResponse(
