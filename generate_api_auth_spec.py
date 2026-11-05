@@ -65,6 +65,7 @@ from gannet.api import (
     preview,
     record,
     review,
+    wireguard,
 )
 from gannet.api.auth import require_admin_by_default
 
@@ -140,6 +141,7 @@ ACCESS_NOTES = {
 # Mirrors the router set wired up in gannet.api.fastapi_app.
 ROUTERS = [
     auth.router,
+    wireguard.router,
     camera_discovery.router,
     camera.router,
     chat.router,

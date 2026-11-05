@@ -1,3 +1,4 @@
+import WireGuardTunnelSelect from "@/components/settings/WireGuardTunnelSelect";
 import Heading from "@/components/ui/heading";
 import {
   useCallback,
@@ -716,6 +717,7 @@ type CameraDetailsEditorProps = {
 };
 
 type CameraDetailsFormValues = {
+  wireguardTunnel: string;
   friendlyName: string;
   webuiUrl: string;
   dashboard: boolean;
@@ -730,7 +732,10 @@ function CameraDetailsEditor({
   const { data: config } = useSWR<FrigateConfig>("config");
   const [open, setOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [tunnelBusy, setTunnelBusy] = useState(false);
 
+  const currentWireguardTunnel =
+    config?.cameras?.[cameraName]?.wireguard_tunnel ?? "";
   const currentFriendlyName = config?.cameras?.[cameraName]?.friendly_name;
   const currentWebuiUrl = config?.cameras?.[cameraName]?.webui_url;
   const currentDashboard = config?.cameras?.[cameraName]?.ui?.dashboard ?? true;
@@ -739,6 +744,7 @@ function CameraDetailsEditor({
   const formSchema = useMemo(
     () =>
       z.object({
+        wireguardTunnel: z.string(),
         friendlyName: z.string(),
         dashboard: z.boolean(),
         review: z.boolean(),
@@ -766,6 +772,7 @@ function CameraDetailsEditor({
   const form = useForm<CameraDetailsFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      wireguardTunnel: currentWireguardTunnel,
       friendlyName: currentFriendlyName ?? "",
       webuiUrl: currentWebuiUrl ?? "",
       dashboard: currentDashboard,
@@ -777,6 +784,7 @@ function CameraDetailsEditor({
   useEffect(() => {
     if (open) {
       form.reset({
+        wireguardTunnel: currentWireguardTunnel,
         friendlyName: currentFriendlyName ?? "",
         webuiUrl: currentWebuiUrl ?? "",
         dashboard: currentDashboard,
@@ -785,6 +793,7 @@ function CameraDetailsEditor({
     }
   }, [
     open,
+    currentWireguardTunnel,
     currentFriendlyName,
     currentWebuiUrl,
     currentDashboard,
@@ -794,12 +803,14 @@ function CameraDetailsEditor({
 
   const onSubmit = useCallback(
     async (values: CameraDetailsFormValues) => {
-      if (isSaving) return;
+      if (isSaving || tunnelBusy) return;
 
       // only send fields the user actually changed
       const newFriendly = values.friendlyName.trim() || null;
       const newWebui = values.webuiUrl.trim() || null;
       const cameraUpdate: Record<string, unknown> = {};
+      if (values.wireguardTunnel !== currentWireguardTunnel)
+        cameraUpdate.wireguard_tunnel = values.wireguardTunnel || null;
       if (newFriendly !== (currentFriendlyName ?? null)) {
         cameraUpdate.friendly_name = newFriendly;
       }
@@ -858,11 +869,13 @@ function CameraDetailsEditor({
     },
     [
       cameraName,
+      currentWireguardTunnel,
       currentFriendlyName,
       currentWebuiUrl,
       currentDashboard,
       currentReview,
       isSaving,
+      tunnelBusy,
       onConfigChanged,
       t,
     ],
@@ -929,6 +942,20 @@ function CameraDetailsEditor({
                       })}
                     </p>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="wireguardTunnel"
+                render={({ field }) => (
+                  <FormItem>
+                    <WireGuardTunnelSelect
+                      value={field.value}
+                      onBusyChange={setTunnelBusy}
+                      onChange={(value) => field.onChange(value || "")}
+                      disabled={isSaving}
+                    />
                   </FormItem>
                 )}
               />
@@ -1020,7 +1047,11 @@ function CameraDetailsEditor({
                 >
                   {t("button.cancel", { ns: "common" })}
                 </Button>
-                <Button variant="select" type="submit" disabled={isSaving}>
+                <Button
+                  variant="select"
+                  type="submit"
+                  disabled={isSaving || tunnelBusy}
+                >
                   {isSaving ? (
                     <div className="flex flex-row items-center gap-2">
                       <ActivityIndicator className="size-4" />

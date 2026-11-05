@@ -654,6 +654,9 @@ class FrigateApp:
         self.init_camera_metrics()
         self.init_queues()
         self.init_database()
+        from gannet.util.wireguard import start_camera_tunnels
+
+        start_camera_tunnels(self.config)
         self.init_onvif()
         self.init_recording_manager()
         self.init_review_segment_manager()

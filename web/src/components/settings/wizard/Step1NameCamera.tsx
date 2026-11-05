@@ -1,3 +1,4 @@
+import WireGuardTunnelSelect from "@/components/settings/WireGuardTunnelSelect";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -277,6 +278,8 @@ export default function Step1NameCamera({
     setModelOpen(false);
   };
 
+  const [tunnelBusy, setTunnelBusy] = useState(false);
+
   const onSubmit = (data: z.infer<typeof step1FormData>) => {
     onUpdate({
       ...data,
@@ -287,6 +290,7 @@ export default function Step1NameCamera({
   };
 
   const handleContinue = useCallback(async () => {
+    if (tunnelBusy) return;
     const isValid = await form.trigger();
     if (isValid) {
       const data = form.getValues();
@@ -297,7 +301,7 @@ export default function Step1NameCamera({
         probeMode,
       });
     }
-  }, [form, probeMode, onNext]);
+  }, [form, probeMode, onNext, tunnelBusy]);
 
   // Keep the translated labels explicit so they are discovered by i18n extraction.
   const profileLabels: Record<CameraProfileLabel, string> = {
@@ -363,6 +367,11 @@ export default function Step1NameCamera({
         {t("cameraWizard.step1.description")}
       </div>
 
+      <WireGuardTunnelSelect
+        value={wizardData.wireguardTunnel}
+        onBusyChange={setTunnelBusy}
+        onChange={(wireguardTunnel) => onUpdate({ wireguardTunnel })}
+      />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -992,7 +1001,7 @@ export default function Step1NameCamera({
         <Button
           type="button"
           onClick={handleContinue}
-          disabled={!isContinueButtonEnabled}
+          disabled={!isContinueButtonEnabled || tunnelBusy}
           variant="select"
           className="flex items-center justify-center gap-2 sm:flex-1"
         >
