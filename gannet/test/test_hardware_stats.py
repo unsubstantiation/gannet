@@ -65,6 +65,7 @@ def _counter(name: str, **attributes) -> MagicMock:
     return entry
 
 
+@patch("gannet.stats.hardware.IS_WINDOWS", True)
 class TestHardwareStats(unittest.TestCase):
     def test_hwaccel_hardware_detects_vendor_specific_families(self) -> None:
         for args, vendor in (
@@ -143,7 +144,12 @@ class TestHardwareStats(unittest.TestCase):
         self.assertIn("nvidia-gpu", result.gpu)
 
     def test_wmi_service_unavailable_returns_none(self) -> None:
-        with patch("win32com.client.GetObject", side_effect=Exception("no WMI")):
+        client = MagicMock()
+        client.GetObject.side_effect = Exception("no WMI")
+        with patch.dict(
+            sys.modules,
+            {"win32com": SimpleNamespace(client=client), "win32com.client": client},
+        ):
             self.assertIsNone(_wmi_service())
 
     def test_directx_registry_adapters_are_keyed_by_luid(self) -> None:
@@ -288,9 +294,7 @@ class TestHardwareStats(unittest.TestCase):
 
         with (
             patch("gannet.stats.hardware._wmi_service", return_value=mock_wmi),
-            patch(
-                "gannet.stats.hardware._windows_gpu_adapters", return_value=adapters
-            ),
+            patch("gannet.stats.hardware._windows_gpu_adapters", return_value=adapters),
         ):
             result = _poll_wmi_gpu_stats(None, "intel")  # type: ignore[arg-type]
 
@@ -337,9 +341,7 @@ class TestHardwareStats(unittest.TestCase):
             }
         )
 
-        with patch(
-            "gannet.stats.hardware._present_gpu", return_value={"intel", "amd"}
-        ):
+        with patch("gannet.stats.hardware._present_gpu", return_value={"intel", "amd"}):
             self.assertEqual(stats._scan_ffmpeg(), {"intel", "amd"})
 
     def test_amf_hwaccel_enables_amd_poller(self) -> None:

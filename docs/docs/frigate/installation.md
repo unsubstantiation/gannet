@@ -3,8 +3,10 @@ id: installation
 title: Windows installation
 ---
 
-Gannet is installed directly on 64-bit Windows. Docker, WSL, Linux packages,
-and Home Assistant add-on images are not supported by this edition.
+These instructions cover native 64-bit Windows. Native Debian 13 x86-64
+(CPython 3.12, systemd, optional native GPU acceleration) is also supported; see the
+[Debian installation guide](https://github.com/unsubstantiation/gannet/blob/dev/DEBIAN.md).
+Docker, WSL and Home Assistant add-on images are not supported runtime targets.
 
 ## Requirements
 

@@ -1,10 +1,11 @@
 # Contributing
 
-This repository is the native Windows edition of Gannet. Changes must preserve
-the Windows-only runtime contract: 64-bit CPython 3.12, `spawn`
-multiprocessing, native Windows paths and executables, and no dependency on
-WSL, containers, Unix sockets, device nodes, UID/GID ownership, or Unix service
-managers.
+This repository supports native Windows x64 and Debian 13 x86-64 with CPython
+3.12 and spawn multiprocessing. Preserve the Windows runtime contract in
+[WINDOWS_COMPATIBILITY.md](WINDOWS_COMPATIBILITY.md); isolate Debian-specific
+paths, ownership, process and systemd behavior behind platform adapters.
+Containers, WSL, ARM and other Linux distributions are not supported targets.
+See [DEBIAN.md](DEBIAN.md) for native installation and Debian checks.
 
 Open pull requests against `dev`. Keep each pull request focused and describe
 the behavior, tests, and any hardware that was used for validation.

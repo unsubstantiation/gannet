@@ -25,6 +25,8 @@ from gannet.ffmpeg_presets import (
 from gannet.util.platform import quote_ffmpeg_arg, split_ffmpeg_command
 
 
+@patch("gannet.ffmpeg_presets.IS_WINDOWS", True)
+@patch("gannet.util.platform.IS_WINDOWS", True)
 class TestFfmpegPresets(unittest.TestCase):
     def test_encode_preset_preserves_windows_paths_with_spaces(self):
         executable = r"C:\Program Files\FFmpeg\bin\ffmpeg.exe"
@@ -129,6 +131,8 @@ class TestFfmpegPresets(unittest.TestCase):
         self.assertIn("d3d11va", command)
 
 
+@patch("gannet.ffmpeg_presets.IS_WINDOWS", True)
+@patch("gannet.util.platform.IS_WINDOWS", True)
 class TestPresetValidation(unittest.TestCase):
     def test_known_presets_are_accepted(self):
         validate_ffmpeg_args(
@@ -219,6 +223,8 @@ class TestPresetValidation(unittest.TestCase):
         CameraInput(path="rtsp://camera/stream", roles=["detect"])
 
 
+@patch("gannet.ffmpeg_presets.IS_WINDOWS", True)
+@patch("gannet.util.platform.IS_WINDOWS", True)
 class TestWindowsDecodePresets(unittest.TestCase):
     def test_documented_windows_presets_exist_for_decode(self):
         for preset in (

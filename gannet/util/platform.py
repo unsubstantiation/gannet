@@ -1,16 +1,16 @@
 # SPDX-License-Identifier: LicenseRef-GNCL-1.0
-"""Native Windows paths, processes, hardware APIs, and IPC helpers.
+"""Native Windows and Debian paths, process controls, executable and IPC helpers.
 
-The application has one runtime platform. Files live below a writable Windows
-application-data root, child processes use ``spawn``, local IPC uses loopback
-TCP, and external tools are Windows executables. ``IS_WINDOWS`` is retained
-only so imports and unit tests can fail cleanly on a development host; startup
-calls :func:`require_windows` before creating any resources.
+Keep this module independent of other Gannet modules for early startup.
+Both platforms use spawn and loopback TCP IPC. Windows uses Job Objects;
+Debian services use systemd cgroup containment.
 """
 
 import datetime
 import logging
 import os
+import platform
+import shlex
 import shutil
 import subprocess
 import sys
@@ -25,7 +25,7 @@ IS_WINDOWS = os.name == "nt"
 
 
 class UnsupportedPlatformError(RuntimeError):
-    """Raised when the Windows application is started on another OS."""
+    """Raised when startup is attempted on an unsupported native host."""
 
 
 def require_windows() -> None:
@@ -34,6 +34,26 @@ def require_windows() -> None:
         raise UnsupportedPlatformError(
             "This application runs only on native Windows. "
             f"The current platform is {sys.platform!r}."
+        )
+
+
+def require_supported_platform() -> None:
+    """Accept Windows or the supported Debian 13 x86-64/Python 3.12 runtime."""
+    if IS_WINDOWS:
+        return
+    try:
+        release = platform.freedesktop_os_release()
+    except OSError:
+        release = {}
+    if (
+        sys.platform != "linux"
+        or release.get("ID") != "debian"
+        or release.get("VERSION_ID") != "13"
+        or platform.machine().lower() not in ("x86_64", "amd64")
+        or sys.version_info[:2] != (3, 12)
+    ):
+        raise UnsupportedPlatformError(
+            "Supported runtimes are Windows or native Debian 13 x86-64 with CPython 3.12."
         )
 
 
@@ -117,16 +137,19 @@ def get_install_dir() -> str:
 
 
 def _default_root() -> str:
-    local_app_data = os.environ.get("LOCALAPPDATA")
-    return local_app_data or os.path.expanduser("~")
+    if IS_WINDOWS:
+        return os.environ.get("LOCALAPPDATA") or os.path.expanduser("~")
+    return os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share")
 
 
 def get_base_dir() -> str:
-    """Writable root, defaulting to ``%LOCALAPPDATA%\\Gannet``."""
+    """Writable root: Windows LocalAppData or Debian XDG data home."""
     override = _env_path(BASE_DIR_VAR)
     if override:
         return override
-    return os.path.abspath(os.path.join(_default_root(), DATA_DIR_NAME))
+    return os.path.abspath(
+        os.path.join(_default_root(), DATA_DIR_NAME if IS_WINDOWS else "gannet")
+    )
 
 
 def _runtime_dir(variable: str, child: str) -> str:
@@ -286,7 +309,10 @@ def ffmpeg_stdin_input() -> str:
 
 
 def ffmpeg_concat_file_line(path: str) -> str:
-    normalized = str(path).replace("\\", "/").replace("'", "'\\''")
+    normalized = str(path)
+    if IS_WINDOWS:
+        normalized = normalized.replace("\\", "/")
+    normalized = normalized.replace("'", "'\\''")
     return f"file '{normalized}'"
 
 
@@ -345,11 +371,13 @@ def _split_windows_command(command: str) -> list[str]:
 
 
 def quote_ffmpeg_arg(value: str) -> str:
-    return subprocess.list2cmdline([str(value)])
+    return (
+        subprocess.list2cmdline([str(value)]) if IS_WINDOWS else shlex.quote(str(value))
+    )
 
 
 def split_ffmpeg_command(command: str) -> list[str]:
-    return _split_windows_command(command)
+    return _split_windows_command(command) if IS_WINDOWS else shlex.split(command)
 
 
 def get_service_log_path(service: str) -> str:
@@ -361,15 +389,20 @@ def get_mp_start_method() -> str:
 
 
 def get_shared_memory_total_mb() -> float | None:
-    """Windows shared memory is page-file backed and has no /dev/shm quota."""
+    """Windows mappings are page-file backed; Debian uses the tmpfs quota."""
+    if not IS_WINDOWS:
+        try:
+            return shutil.disk_usage("/dev/shm").total / (1024 * 1024)
+        except OSError:
+            pass
     return None
 
 
-EXECUTABLE_SUFFIX = ".exe"
+EXECUTABLE_SUFFIX = ".exe" if IS_WINDOWS else ""
 
 
 def executable_name(name: str) -> str:
-    return name if name.lower().endswith(".exe") else f"{name}.exe"
+    return name if not IS_WINDOWS or name.lower().endswith(".exe") else f"{name}.exe"
 
 
 def get_ffmpeg_dir() -> str:
@@ -383,6 +416,13 @@ def get_ffmpeg_dir() -> str:
 
 
 def _path_candidates() -> list[str]:
+    if not IS_WINDOWS:
+        return [
+            get_ffmpeg_dir(),
+            os.path.join(get_install_dir(), "bin"),
+            "/usr/local/bin",
+            "/usr/bin",
+        ]
     local_app_data = os.environ.get("LOCALAPPDATA", "")
     user_profile = os.environ.get("USERPROFILE", "")
     return [
@@ -417,13 +457,43 @@ def resolve_ffmpeg_binary(name: str = "ffmpeg") -> str:
 _display_adapters: list[str] | None = None
 
 
+def linux_render_node(vendor: str | None = None) -> str | None:
+    """First render node the service can actually open, optionally by vendor."""
+    vendors = {"0x8086": "intel", "0x1002": "amd", "0x10de": "nvidia"}
+    for device in sorted(Path("/sys/class/drm").glob("renderD[0-9]*")):
+        try:
+            found = vendors.get((device / "device/vendor").read_text().strip())
+        except OSError:
+            continue
+        node = "/dev/dri/" + device.name
+        if (vendor is None or vendor == found) and os.access(node, os.R_OK | os.W_OK):
+            return node
+    return None
+
+
+def linux_display_adapters() -> list[str]:
+    """Discover PCI display controllers without root privileges or shell tools."""
+    vendors = {"0x8086": "Intel", "0x1002": "AMD", "0x10de": "NVIDIA"}
+    adapters = []
+    for device in sorted(Path("/sys/bus/pci/devices").glob("*")):
+        try:
+            if not (device / "class").read_text().strip().startswith("0x03"):
+                continue
+            vendor = (device / "vendor").read_text().strip()
+            model = (device / "device").read_text().strip()
+            adapters.append(f"{vendors.get(vendor, vendor)} {model} ({device.name})")
+        except OSError:
+            continue
+    return adapters
+
+
 def get_display_adapters(refresh: bool = False) -> list[str]:
     """Enumerate active display adapters through Win32 ``EnumDisplayDevices``."""
     global _display_adapters
     if _display_adapters is not None and not refresh:
         return _display_adapters
-    if not IS_WINDOWS:  # enables import-only tooling on non-Windows hosts
-        _display_adapters = []
+    if not IS_WINDOWS:
+        _display_adapters = linux_display_adapters()
         return _display_adapters
 
     import ctypes
@@ -485,7 +555,13 @@ def get_display_adapter_vendors(refresh: bool = False) -> set[str]:
 
 def get_cpu_brand() -> str:
     if not IS_WINDOWS:
-        return ""
+        try:
+            for line in Path("/proc/cpuinfo").read_text().splitlines():
+                if line.startswith("model name"):
+                    return line.partition(":")[2].strip()
+        except OSError:
+            pass
+        return platform.processor()
     try:
         import winreg
 
@@ -516,7 +592,11 @@ def set_process_priority(priority: int) -> None:
     try:
         import psutil
 
-        value = get_process_priority_class(priority)
+        value = (
+            get_process_priority_class(priority)
+            if IS_WINDOWS
+            else max(-20, min(19, priority))
+        )
         if value is not None:
             psutil.Process().nice(value)
     except Exception as err:  # pragma: no cover - host permissions
@@ -529,8 +609,9 @@ def install_signal_handlers(stop_event) -> None:
     Windows delivers two console control events to a process that has a
     console: Ctrl+C, which CPython reports as ``SIGINT``, and Ctrl+Break or a
     closing console window, which it reports as ``SIGBREAK``. There is no
-    ``SIGTERM`` delivery, so the SCM service path uses the named event that
-    :func:`install_service_stop_watcher` waits on instead.
+    ``SIGTERM`` delivery on Windows, so the SCM service path uses the named event that
+    :func:`install_service_stop_watcher` waits on instead. Debian's systemd
+    service delivers SIGTERM directly.
     """
     import signal
 
@@ -538,6 +619,12 @@ def install_signal_handlers(stop_event) -> None:
         signal.signal(signal.SIGINT, lambda sig, frame: stop_event.set())
     except (ValueError, OSError):
         pass
+
+    if not IS_WINDOWS:
+        try:
+            signal.signal(signal.SIGTERM, lambda sig, frame: stop_event.set())
+        except (ValueError, OSError):
+            pass
 
     if (first_env_value(SERVICE_MODE_VAR) or "0") != "1":
         break_signal = getattr(signal, "SIGBREAK", None)
@@ -723,7 +810,7 @@ def get_fs_type(path: str) -> str:
 
 def describe() -> str:
     return (
-        f"Windows | python {sys.version.split()[0]} | "
+        f"{'Windows' if IS_WINDOWS else 'Debian'} | python {sys.version.split()[0]} | "
         f"install={get_install_dir()} config={get_config_dir()} "
         f"media={get_media_dir()} cache={get_cache_dir()} tmp={get_tmp_dir()}"
     )

@@ -6,6 +6,7 @@ from unittest.mock import patch
 from gannet.util import hwaccel
 
 
+@patch("gannet.util.hwaccel.IS_WINDOWS", True)
 class TestIntelGeneration(unittest.TestCase):
     def test_numbered_generation_is_detected(self):
         self.assertEqual(
@@ -23,6 +24,7 @@ class TestIntelGeneration(unittest.TestCase):
         self.assertIsNone(hwaccel._generation_of(""))
 
 
+@patch("gannet.util.hwaccel.IS_WINDOWS", True)
 class TestAvailableFamilies(unittest.TestCase):
     def _options(
         self,
@@ -140,6 +142,7 @@ class TestAvailableFamilies(unittest.TestCase):
         self.assertEqual(recommended, "windows-d3d11va")
 
 
+@patch("gannet.util.hwaccel.IS_WINDOWS", True)
 class TestAutomaticPreset(unittest.TestCase):
     def _preset(
         self,

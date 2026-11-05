@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: LicenseRef-GNCL-1.0
+[Unit]
+Description=Gannet network video recorder
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=120
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=gannet
+Group=gannet
+WorkingDirectory=/opt/gannet
+ExecStart=/opt/gannet/.venv/bin/python -m gannet
+Environment=PATH=/opt/gannet/bin:/opt/gannet/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=GANNET_BASE_DIR=/var/lib/gannet
+Environment=GANNET_CONFIG_DIR=/etc/gannet
+Environment=GANNET_CACHE_DIR=/var/cache/gannet
+Environment=GANNET_TMP_DIR=/run/gannet
+Environment=GANNET_WEB_DIR=/opt/gannet/web/dist
+StateDirectory=gannet
+StateDirectoryMode=0750
+ConfigurationDirectory=gannet
+ConfigurationDirectoryMode=0750
+CacheDirectory=gannet
+CacheDirectoryMode=0750
+RuntimeDirectory=gannet
+RuntimeDirectoryMode=0750
+UMask=0077
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=120
+Restart=always
+RestartSec=5
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+# Only the root-owned sudo helper can pass DAC permissions on this directory.
+ReadWritePaths=/etc/wireguard
+# sudo is required for the narrowly scoped WireGuard helper, never a root app.
+NoNewPrivileges=false
+LimitNOFILE=65536
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

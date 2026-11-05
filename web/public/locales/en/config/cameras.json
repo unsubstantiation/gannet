@@ -2,7 +2,7 @@
   "label": "CameraConfig",
   "wireguard_tunnel": {
     "label": "WireGuard tunnel",
-    "description": "Saved Gannet-managed WireGuard tunnel id. Routes are shared by the Windows host, not isolated per camera."
+    "description": "Saved Gannet-managed WireGuard tunnel id. Routes are shared by the host, not isolated per camera."
   },
   "name": {
     "label": "Camera name",

@@ -60,7 +60,7 @@ class CameraConfig(FrigateBaseModel):
         default=None,
         pattern=r"^[a-f0-9]{16}$",
         title="WireGuard tunnel",
-        description="Saved Gannet-managed WireGuard tunnel id. Routes are shared by the Windows host, not isolated per camera.",
+        description="Saved Gannet-managed WireGuard tunnel id. Routes are shared by the host, not isolated per camera.",
     )
 
     name: str | None = Field(

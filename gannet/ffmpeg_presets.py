@@ -5,7 +5,12 @@ from enum import Enum
 from typing import Any
 
 from gannet.const import FFMPEG_HVC1_ARGS, LIBAVFORMAT_VERSION_MAJOR
-from gannet.util.platform import quote_ffmpeg_arg, split_ffmpeg_command
+from gannet.util.platform import (
+    IS_WINDOWS,
+    linux_render_node,
+    quote_ffmpeg_arg,
+    split_ffmpeg_command,
+)
 from gannet.util.version import VERSION
 
 logger = logging.getLogger(__name__)
@@ -61,6 +66,85 @@ PRESETS_HW_ACCEL_ENCODE_PREVIEW = {
 }
 
 
+LINUX_DECODE_PRESETS = [
+    "preset-nvidia",
+    "preset-intel-qsv-h264",
+    "preset-intel-qsv-h265",
+    "preset-vaapi",
+]
+# Reuse codec/filter parameters, never Windows device APIs. The native QSV
+# render node is resolved at expansion time for mixed Intel/AMD hosts.
+for native, windows in (
+    ("preset-nvidia", "preset-windows-nvenc"),
+    ("preset-intel-qsv-h264", "preset-windows-qsv-h264"),
+    ("preset-intel-qsv-h265", "preset-windows-qsv-h265"),
+):
+    PRESETS_HW_ACCEL_DECODE[native] = PRESETS_HW_ACCEL_DECODE[windows]
+    PRESETS_HW_ACCEL_SCALE[native] = PRESETS_HW_ACCEL_SCALE[windows]
+    for mapping in (
+        PRESETS_HW_ACCEL_ENCODE_BIRDSEYE,
+        PRESETS_HW_ACCEL_ENCODE_TIMELAPSE,
+    ):
+        mapping[native] = mapping[windows]
+    if "qsv" in native:
+        PRESETS_HW_ACCEL_DECODE[native] = (
+            "-qsv_device {device} " + PRESETS_HW_ACCEL_DECODE[native]
+        )
+        for mapping in (
+            PRESETS_HW_ACCEL_ENCODE_BIRDSEYE,
+            PRESETS_HW_ACCEL_ENCODE_TIMELAPSE,
+        ):
+            mapping[native] = mapping[native].replace(
+                "-hide_banner", "-hide_banner -qsv_device {device}"
+            )
+for mapping in (PRESETS_HW_ACCEL_ENCODE_BIRDSEYE, PRESETS_HW_ACCEL_ENCODE_TIMELAPSE):
+    mapping["preset-vaapi"] = mapping[
+        "default"
+    ]  # validated key; native expansion below
+
+PRESETS_HW_ACCEL_DECODE["preset-vaapi"] = (
+    "-hwaccel vaapi -hwaccel_device {device} -hwaccel_output_format vaapi"
+)
+PRESETS_HW_ACCEL_SCALE["preset-vaapi"] = (
+    "-r {0} -vf fps={0},scale_vaapi=w={1}:h={2}:format=nv12,hwdownload,format=nv12,format=yuv420p"
+)
+
+
+def native_decode_presets() -> list[str]:
+    return windows_decode_presets() if IS_WINDOWS else list(LINUX_DECODE_PRESETS)
+
+
+def _render_device(preset: str) -> str:
+    if IS_WINDOWS or preset not in LINUX_DECODE_PRESETS:
+        return ""
+    vendor = "intel" if "qsv" in preset else None
+    # The conventional path also lets config validation/command construction
+    # run without a GPU attached. Runtime permission/driver errors stay visible.
+    return linux_render_node(vendor) or "/dev/dri/renderD128"
+
+
+def _vaapi_encode(ffmpeg_path: str, input: str, output: str) -> str | None:
+    """Append upload after the caller's CPU filters, never discard its graph."""
+    filters = []
+    sides = []
+    for side in (input, output):
+        tokens = split_ffmpeg_command(side)
+        if any(token.startswith("-filter_complex") for token in tokens):
+            return None  # retain the known software path for complex graphs
+        retained = []
+        i = 0
+        while i < len(tokens):
+            if tokens[i] in ("-vf", "-filter:v") and i + 1 < len(tokens):
+                filters.append(tokens[i + 1])
+                i += 2
+            else:
+                retained.append(tokens[i])
+                i += 1
+        sides.append(" ".join(quote_ffmpeg_arg(token) for token in retained))
+    graph = ",".join([*filters, "format=nv12", "hwupload"])
+    return f"{quote_ffmpeg_arg(ffmpeg_path)} -hide_banner -vaapi_device {_render_device('preset-vaapi')} {sides[0]} -vf {quote_ffmpeg_arg(graph)} -c:v h264_vaapi {sides[1]}"
+
+
 def parse_preset_hardware_acceleration_decode(
     arg: Any, fps: int, width: int, height: int, gpu: int
 ) -> list[str] | None:
@@ -70,7 +154,7 @@ def parse_preset_hardware_acceleration_decode(
     decode = PRESETS_HW_ACCEL_DECODE.get(arg)
     if decode is None:
         return None
-    return decode.format(fps, width, height, gpu).split(" ")
+    return decode.format(fps, width, height, gpu, device=_render_device(arg)).split(" ")
 
 
 def parse_preset_hardware_acceleration_scale(
@@ -104,6 +188,10 @@ def parse_preset_hardware_acceleration_encode(
     type: EncodeTypeEnum = EncodeTypeEnum.birdseye,
 ) -> str:
     """Expand a Windows encode preset, falling back to software encoding."""
+    if not IS_WINDOWS and arg == "preset-vaapi" and type != EncodeTypeEnum.preview:
+        encoded = _vaapi_encode(ffmpeg_path, input, output)
+        if encoded is not None:
+            return encoded
     if type == EncodeTypeEnum.birdseye:
         arg_map = PRESETS_HW_ACCEL_ENCODE_BIRDSEYE
     elif type == EncodeTypeEnum.preview:
@@ -116,7 +204,13 @@ def parse_preset_hardware_acceleration_encode(
         if isinstance(arg, str)
         else arg_map["default"]
     )
-    return preset.format(quote_ffmpeg_arg(ffmpeg_path), input, output, 0)
+    return preset.format(
+        quote_ffmpeg_arg(ffmpeg_path),
+        input,
+        output,
+        0,
+        device=_render_device(arg if isinstance(arg, str) else ""),
+    )
 
 
 PRESETS_INPUT = {
@@ -404,8 +498,16 @@ def windows_decode_presets() -> list[str]:
 
 def _valid_presets(setting: str, presets: dict[str, Any] | list[str]) -> list[str]:
     if setting == "ffmpeg.hwaccel_args":
-        return windows_decode_presets()
-    return sorted(presets)
+        return native_decode_presets()
+    return sorted(
+        preset
+        for preset in presets
+        if (
+            not preset.startswith("preset-windows-")
+            if not IS_WINDOWS
+            else preset not in LINUX_DECODE_PRESETS
+        )
+    )
 
 
 def _preset_error(
@@ -413,7 +515,9 @@ def _preset_error(
 ) -> str | None:
     if not value.startswith("preset-"):
         return None
-    if value in presets:
+    if not IS_WINDOWS and value.startswith("preset-windows-"):
+        return "Windows hardware presets cannot run on Debian; select a native VAAPI, QSV or NVIDIA preset."
+    if value in presets and not (IS_WINDOWS and value in LINUX_DECODE_PRESETS):
         return None
     return (
         f"{value} is not a supported preset for {setting}; "
@@ -514,6 +618,11 @@ def validate_ffmpeg_platform_args(value: str | list[str] | None, setting: str) -
     if value is None:
         return
     args = [value] if isinstance(value, str) else value
+    if not IS_WINDOWS:
+        tokens = [token.lower() for arg in args for token in split_ffmpeg_command(arg)]
+        if any(token in ("d3d11va", "dxva2", "dshow") for token in tokens):
+            raise ValueError("Windows FFmpeg device APIs cannot run on Debian.")
+        return
     error = _windows_raw_hardware_error(args, setting)
     if error:
         raise ValueError(error)

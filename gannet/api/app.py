@@ -45,7 +45,7 @@ from gannet.config.camera.updater import (
     CameraConfigUpdateTopic,
 )
 from gannet.const import REDACTED_CREDENTIAL_SENTINEL
-from gannet.ffmpeg_presets import windows_decode_presets
+from gannet.ffmpeg_presets import native_decode_presets
 from gannet.genai import PROVIDERS, load_providers
 from gannet.jobs.media_sync import (
     get_current_media_sync_job,
@@ -455,8 +455,8 @@ def get_active_profile(request: Request):
 
 @router.get("/ffmpeg/presets", dependencies=[Depends(allow_any_authenticated())])
 def ffmpeg_presets():
-    """Return native Windows FFmpeg preset keys for the config UI."""
-    hwaccel_presets = windows_decode_presets()
+    """Return FFmpeg preset keys supported by the native host."""
+    hwaccel_presets = native_decode_presets()
 
     input_presets = [
         "preset-http-jpeg-generic",

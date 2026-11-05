@@ -1,8 +1,8 @@
-"""Load the detector backends supported by the native Windows application.
+"""Load the detector backends supported by the native application.
 
 Detector discovery is deliberately explicit so startup and the configuration
 schema do not depend on unrelated SDKs installed on the machine. The native
-Windows build supports exactly these backends:
+native build supports exactly these backends:
 
 * ``cpu`` — TensorFlow Lite on the host CPU
 * ``onnx`` — ONNX Runtime (CPU, DirectML, or a provider installed by the user)
@@ -45,7 +45,7 @@ for module_name in SUPPORTED_DETECTOR_MODULES:
         # useful detector-specific message instead of failing the entire app.
         failed_plugin_imports[module_name] = str(err)
         logger.warning(
-            "Windows detector plugin %s could not be imported: %s", module_name, err
+            "Native detector plugin %s could not be imported: %s", module_name, err
         )
         continue
 

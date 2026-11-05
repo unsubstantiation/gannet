@@ -14,6 +14,7 @@ from gannet.detectors.windows_ml import (
     registered_provider_devices,
 )
 from gannet.util.model import get_ort_providers
+from gannet.util.platform import IS_WINDOWS
 
 logger = logging.getLogger(__name__)
 
@@ -695,6 +696,12 @@ def get_optimized_runner(
         )
 
     providers, options = get_ort_providers(device == "CPU", device, **kwargs)
+    if not IS_WINDOWS and "CUDAExecutionProvider" in providers:
+        # CUDA/cuDNN pip wheels live outside the system loader search path.
+        # ORT resolves its own compatible NVIDIA libraries before session load.
+        preload = getattr(ort, "preload_dlls", None)
+        if preload is not None:
+            preload(directory="")
 
     if providers[0] == "CPUExecutionProvider":
         # A CPU-only ONNX Runtime install can still delegate AUTO/GPU/NPU to

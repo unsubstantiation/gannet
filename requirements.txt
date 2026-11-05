@@ -62,7 +62,8 @@ titlecase == 2.4.*
 # them without dropping norfair makes `pip install -r requirements.txt`
 # unresolvable.
 numpy == 1.26.*
-opencv-contrib-python == 4.11.0.*
+opencv-contrib-python == 4.11.0.* ; sys_platform == "win32"
+opencv-contrib-python-headless == 4.11.0.* ; sys_platform == "linux"
 scipy == 1.17.*
 
 # OpenVINO and ONNX Runtime
@@ -89,7 +90,7 @@ pywebpush == 2.5.*
 # scripts/install_gannet_service.ps1 drives the install through them. pywin32
 # ships those as compiled extension modules in its cp312 win_amd64 wheel, so
 # `bootstrap_windows.py --install-service` has nothing left to fetch.
-pywin32 == 312
+pywin32 == 312 ; sys_platform == "win32"
 
 # ALPR and hardware helpers
 pyclipper == 1.4.*

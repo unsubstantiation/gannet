@@ -1,13 +1,16 @@
 """Recommend FFmpeg hardware acceleration exposed by native Windows APIs."""
 
+import os
 import re
 
 from pydantic import BaseModel, Field
 
 from gannet.util.platform import (
+    IS_WINDOWS,
     get_cpu_brand,
     get_display_adapter_vendors,
     get_display_adapters,
+    linux_render_node,
 )
 
 ANY_CODEC = "any"
@@ -124,6 +127,31 @@ def hwaccel_options(
     detector_key: str | None = None, codecs: set[str] | None = None
 ) -> tuple[str, list[HwaccelFamily]]:
     """Return the recommended and available Windows decode families."""
+    if not IS_WINDOWS:
+        wanted = {CODEC_ALIASES.get(codec, codec) for codec in codecs or set()}
+        families = []
+        if "nvidia" in get_display_adapter_vendors() and os.access(
+            "/dev/nvidia0", os.R_OK | os.W_OK
+        ):
+            families.append(
+                HwaccelFamily(key="nvidia", presets={ANY_CODEC: "preset-nvidia"})
+            )
+        if linux_render_node("intel"):
+            families.append(
+                HwaccelFamily(
+                    key="intel-qsv",
+                    presets={
+                        "h264": "preset-intel-qsv-h264",
+                        "h265": "preset-intel-qsv-h265",
+                    },
+                )
+            )
+        if linux_render_node():
+            families.append(
+                HwaccelFamily(key="vaapi", presets={ANY_CODEC: "preset-vaapi"})
+            )
+        families = [family for family in families if _decodes(family, wanted)]
+        return _recommend(families, bool(wanted)), families
     wanted = {CODEC_ALIASES.get(codec, codec) for codec in codecs or set()}
     available = [
         family
@@ -177,3 +205,22 @@ def windows_hwaccel_preset(
     # Intel's efficient QSV decoders are codec-specific. With no codec context
     # D3D11VA is the safe automatic choice for Intel, AMD, and unknown vendors.
     return "preset-windows-d3d11va"
+
+
+def linux_hwaccel_preset(sources: list[dict[str, str]] | None = None) -> str:
+    """Only auto-select an accelerator go2rtc has successfully opened.
+
+    A compiled FFmpeg method or a PCI ID alone is not runtime verification.
+    Before go2rtc starts, CPU remains the safe automatic fallback; explicit
+    presets from the setup wizard remain available for installed drivers.
+    """
+    urls = [
+        source.get("url", "").lower()
+        for source in sources or []
+        if source.get("name") == "OK"
+    ]
+    if any("#hardware=cuda" in url for url in urls):
+        return "preset-nvidia"
+    if any("#hardware=vaapi" in url for url in urls) and linux_render_node():
+        return "preset-vaapi"
+    return ""

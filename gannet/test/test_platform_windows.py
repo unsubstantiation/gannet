@@ -38,6 +38,7 @@ from gannet.util.platform import (
 )
 
 
+@patch("gannet.util.platform.IS_WINDOWS", True)
 class TestWindowsFfmpegPaths(unittest.TestCase):
     def test_stdin_uses_pipe_protocol_on_windows(self):
         with patch("gannet.util.platform.IS_WINDOWS", True):
@@ -478,6 +479,7 @@ class TestServiceStopWatcher(unittest.TestCase):
 
 
 class TestGannetPathAliases(unittest.TestCase):
+    @patch("gannet.util.platform.IS_WINDOWS", True)
     def test_default_base_dir_uses_the_gannet_name(self):
         with tempfile.TemporaryDirectory() as appdata:
             with patch.dict(
